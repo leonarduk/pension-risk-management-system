@@ -69,7 +69,7 @@ public class WalkForward {
 		// Splitting the series into slices
 		StockFeed feed = new GoogleFeed();
 		String ticker = "VOD";
-		Stock stock = feed.get(EXCHANGE.London, ticker);
+		Stock stock = feed.get(EXCHANGE.London, ticker).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 		List<TimeSeries> subseries = series.split(Period.hours(1), Period.weeks(4));
 

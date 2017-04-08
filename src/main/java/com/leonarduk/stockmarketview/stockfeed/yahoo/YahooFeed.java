@@ -2,16 +2,21 @@ package com.leonarduk.stockmarketview.stockfeed.yahoo;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
-public class YahooFeed implements StockFeed {
+public class YahooFeed extends StockFeed {
 	@Override
-	public Stock get(StockFeed.EXCHANGE exchange, String ticker) throws IOException {
-		return YahooFinance.get(getQueryName(exchange, ticker));
+	public Optional<Stock> get(StockFeed.EXCHANGE exchange, String ticker) {
+		try {
+			return Optional.of(YahooFinance.get(getQueryName(exchange, ticker),true));
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 	private String getQueryName(StockFeed.EXCHANGE exchange, String ticker) {

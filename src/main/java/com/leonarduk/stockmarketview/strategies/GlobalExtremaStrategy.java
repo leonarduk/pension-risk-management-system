@@ -86,7 +86,7 @@ public class GlobalExtremaStrategy {
 
 		StockFeed feed = new GoogleFeed();
 		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker);
+		Stock stock = feed.get(EXCHANGE.London, ticker).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
 

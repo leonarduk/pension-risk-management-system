@@ -3,14 +3,14 @@ package com.leonarduk.stockmarketview.stockfeed.google;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
-import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 
-public class GoogleFeed implements StockFeed {
+public class GoogleFeed extends StockFeed {
 
 	public static void main(String[] args) throws IOException {
 		GoogleQuoteRequest request = new GoogleQuoteRequest();
@@ -26,28 +26,22 @@ public class GoogleFeed implements StockFeed {
 	}
 
 	@Override
-	public Stock get(EXCHANGE exchange, String ticker) throws IOException {
+	public Optional<Stock> get(EXCHANGE exchange, String ticker) {
 		GoogleQuoteRequest request = new GoogleQuoteRequest();
 		request.setSymbol(getQueryName(exchange, ticker));
 		request.setStartDate(DateUtils.yearStart());
 		request.setEndDate(DateUtils.yearEnd());
 
 		List<HistoricalQuote> quotes = new LinkedList<>();
-		while (request.next()) {
-			quotes.add(request.asHistoricalQuote());
+		try {
+			while (request.next()) {
+				quotes.add(request.asHistoricalQuote());
+			}
+		} catch (IOException e) {
+			return Optional.empty();
 		}
 
-		Stock stock = new Stock(ticker);
-
-		stock.setName(ticker);
-		// stock.setCurrency();
-		stock.setStockExchange(exchange.name());
-
-		// stock.setQuote(this.getQuote());
-		// stock.setStats(this.getStats());
-		// stock.setDividend(this.getDividend())
-		stock.setHistory(quotes);
-		return stock;
+		return Optional.of(createStock(exchange, ticker, ticker, quotes));
 	}
 
 	private String getQueryName(StockFeed.EXCHANGE exchange, String ticker) {
