@@ -2,18 +2,28 @@ package com.leonarduk.stockmarketview.stockfeed.yahoo;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Optional;
 
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
+import yahoofinance.histquotes.HistQuotesRequest;
+import yahoofinance.histquotes.Interval;
 
 public class YahooFeed extends StockFeed {
 	@Override
 	public Optional<Stock> get(StockFeed.EXCHANGE exchange, String ticker) {
 		try {
-			return Optional.of(YahooFinance.get(getQueryName(exchange, ticker),true));
+			Stock stock = YahooFinance.get(getQueryName(exchange, ticker));
+			Calendar from = Calendar.getInstance();
+
+			from.add(Calendar.YEAR, -20);
+
+			stock.getHistory(from, HistQuotesRequest.DEFAULT_TO, Interval.DAILY);
+
+			return Optional.of(stock);
 		} catch (Exception e) {
 			return Optional.empty();
 		}

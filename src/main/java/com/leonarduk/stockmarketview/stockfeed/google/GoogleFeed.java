@@ -1,6 +1,7 @@
 package com.leonarduk.stockmarketview.stockfeed.google;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +30,10 @@ public class GoogleFeed extends StockFeed {
 	public Optional<Stock> get(EXCHANGE exchange, String ticker) {
 		GoogleQuoteRequest request = new GoogleQuoteRequest();
 		request.setSymbol(getQueryName(exchange, ticker));
-		request.setStartDate(DateUtils.yearStart());
-		request.setEndDate(DateUtils.yearEnd());
+		Calendar from = Calendar.getInstance();
+		from.add(Calendar.YEAR, -20);
+		request.setStartDate(from);
+		request.setEndDate(Calendar.getInstance());
 
 		List<HistoricalQuote> quotes = new LinkedList<>();
 		try {

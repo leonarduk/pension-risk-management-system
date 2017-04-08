@@ -33,12 +33,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
+import java.util.logging.Logger;
 
+import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 
 /**
@@ -48,7 +47,7 @@ import yahoofinance.histquotes.HistoricalQuote;
 public class GoogleQuoteRequest {
 
 	/** The logger */
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+    public static final Logger log = Logger.getLogger(GoogleQuoteRequest.class.getName());
 	private static final String BASE_URL = "http://www.google.com/finance/historical";
 
 	private static final String PARAM_START_DATE = "startdate";
@@ -248,6 +247,7 @@ public class GoogleQuoteRequest {
 	 */
 	protected HttpRequest createRequest(final CharSequence uri) throws IOException {
 		try {
+			log.info("Request: " + uri);
 			return HttpRequest.get(uri);
 		} catch (HttpRequestException e) {
 			throw e.getCause();
@@ -290,7 +290,7 @@ public class GoogleQuoteRequest {
 		try {
 			return Optional.of(BigDecimal.valueOf(Double.valueOf(input)));
 		} catch (NumberFormatException e) {
-			log.warn("Failed to parse " + input, e);
+			log.warning("Failed to parse " + input);
 			return Optional.empty();
 		}
 	}
@@ -299,7 +299,7 @@ public class GoogleQuoteRequest {
 		try {
 			return Optional.of(Long.parseLong(input));
 		} catch (NumberFormatException e) {
-			log.warn("Failed to parse " + input, e);
+			log.warning("Failed to parse " + input);
 			return Optional.empty();
 		}
 	}

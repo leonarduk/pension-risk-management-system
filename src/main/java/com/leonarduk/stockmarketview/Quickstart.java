@@ -28,6 +28,7 @@ import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
+import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;
