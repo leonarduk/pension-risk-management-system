@@ -30,7 +30,6 @@ import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
 import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
 
 import eu.verdelhan.ta4j.Decimal;
@@ -110,6 +109,7 @@ public class GlobalExtremaStrategy {
 		BollingerBars.displayBollingerBars(stock);
 		// IndicatorsToCsv.exportToCsv(series);
 
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
+				GlobalExtremaStrategy.class.getName()));
 	}
 }

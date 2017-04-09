@@ -1,6 +1,5 @@
 package com.leonarduk.stockmarketview.chart;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,10 +7,28 @@ import org.joda.time.LocalDate;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;
+import eu.verdelhan.ta4j.Strategy;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.Trade;
 
 public class TraderOrderUtils {
+
+	public static class TradeWithStrategy extends Trade {
+		private Strategy strategy;
+		private String strategyName;
+
+		public TradeWithStrategy(Order entry, Order exit, Strategy strategy, String strategyName) {
+			super(entry, exit);
+			this.strategy = strategy;
+			this.strategyName = strategyName;
+		}
+
+		@Override
+		public String toString() {
+			return "TradeWithStrategy [strategy=" + strategy + ", strategyName=" + strategyName + ", "
+					+ super.toString() + "]";
+		}
+	}
 
 	public static class OrderWithDate extends Order {
 		public OrderWithDate(Order order, TimeSeries series) {
@@ -39,11 +56,11 @@ public class TraderOrderUtils {
 
 	}
 
-	public static List<Trade> getOrdersList(List<Trade> trades, TimeSeries series) {
+	public static List<Trade> getOrdersList(List<Trade> trades, TimeSeries series, Strategy strategy, String  strategyName) {
 		List<Trade> orders = new LinkedList<>();
 		for (Trade trade : trades) {
-			Trade newTrade = new Trade(new OrderWithDate(trade.getEntry(), series),
-					new OrderWithDate(trade.getExit(), series));
+			Trade newTrade = new TradeWithStrategy(new OrderWithDate(trade.getEntry(), series),
+					new OrderWithDate(trade.getExit(), series), strategy, strategyName);
 			orders.add(newTrade);
 		}
 		return orders;

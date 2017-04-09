@@ -105,7 +105,8 @@ public class RSI2Strategy {
 		// Running the strategy
 		TradingRecord tradingRecord = series.run(strategy);
 		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
+				RSI2Strategy.class.getName()));
 
 		// Analysis
 		System.out.println(

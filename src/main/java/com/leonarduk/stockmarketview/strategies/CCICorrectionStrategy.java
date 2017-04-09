@@ -91,7 +91,8 @@ public class CCICorrectionStrategy {
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
     
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
+				CCICorrectionStrategy.class.getName()));
 
     }
 }

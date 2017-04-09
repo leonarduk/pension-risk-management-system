@@ -116,6 +116,7 @@ public class MovingMomentumStrategy {
 		BollingerBars.displayBollingerBars(stock);
 		// IndicatorsToCsv.exportToCsv(series);
 
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
+				MovingMomentumStrategy.class.getName()));
 	}
 }
