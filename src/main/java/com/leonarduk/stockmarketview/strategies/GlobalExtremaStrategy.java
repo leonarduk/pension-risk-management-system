@@ -24,10 +24,14 @@ package com.leonarduk.stockmarketview.strategies;
 
 import java.io.IOException;
 
+import com.leonarduk.stockmarketview.chart.BollingerBars;
+import com.leonarduk.stockmarketview.chart.CandlestickChart;
+import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
+import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Rule;
@@ -50,54 +54,62 @@ import yahoofinance.Stock;
  */
 public class GlobalExtremaStrategy {
 
-    // We assume that there were at least one trade every 5 minutes during the whole week
-    private static final int NB_TICKS_PER_WEEK = 12 * 24 * 7;
+	// We assume that there were at least one trade every 5 minutes during the
+	// whole week
+	private static final int NB_TICKS_PER_WEEK = 12 * 24 * 7;
 
-    /**
-     * @param series a time series
-     * @return a global extrema strategy
-     */
-    public static Strategy buildStrategy(TimeSeries series) {
-        if (series == null) {
-            throw new IllegalArgumentException("Series cannot be null");
-        }
+	/**
+	 * @param series
+	 *            a time series
+	 * @return a global extrema strategy
+	 */
+	public static Strategy buildStrategy(TimeSeries series) {
+		if (series == null) {
+			throw new IllegalArgumentException("Series cannot be null");
+		}
 
-        ClosePriceIndicator closePrices = new ClosePriceIndicator(series);
+		ClosePriceIndicator closePrices = new ClosePriceIndicator(series);
 
-        // Getting the max price over the past week
-        MaxPriceIndicator maxPrices = new MaxPriceIndicator(series);
-        HighestValueIndicator weekMaxPrice = new HighestValueIndicator(maxPrices, NB_TICKS_PER_WEEK);
-        // Getting the min price over the past week
-        MinPriceIndicator minPrices = new MinPriceIndicator(series);
-        LowestValueIndicator weekMinPrice = new LowestValueIndicator(minPrices, NB_TICKS_PER_WEEK);
+		// Getting the max price over the past week
+		MaxPriceIndicator maxPrices = new MaxPriceIndicator(series);
+		HighestValueIndicator weekMaxPrice = new HighestValueIndicator(maxPrices, NB_TICKS_PER_WEEK);
+		// Getting the min price over the past week
+		MinPriceIndicator minPrices = new MinPriceIndicator(series);
+		LowestValueIndicator weekMinPrice = new LowestValueIndicator(minPrices, NB_TICKS_PER_WEEK);
 
-        // Going long if the close price goes below the min price
-        MultiplierIndicator downWeek = new MultiplierIndicator(weekMinPrice, Decimal.valueOf("1.004"));
-        Rule buyingRule = new UnderIndicatorRule(closePrices, downWeek);
+		// Going long if the close price goes below the min price
+		MultiplierIndicator downWeek = new MultiplierIndicator(weekMinPrice, Decimal.valueOf("1.004"));
+		Rule buyingRule = new UnderIndicatorRule(closePrices, downWeek);
 
-        // Going short if the close price goes above the max price
-        MultiplierIndicator upWeek = new MultiplierIndicator(weekMaxPrice, Decimal.valueOf("0.996"));
-        Rule sellingRule = new OverIndicatorRule(closePrices, upWeek);
+		// Going short if the close price goes above the max price
+		MultiplierIndicator upWeek = new MultiplierIndicator(weekMaxPrice, Decimal.valueOf("0.996"));
+		Rule sellingRule = new OverIndicatorRule(closePrices, upWeek);
 
-        return new Strategy(buyingRule, sellingRule);
-    }
+		return new Strategy(buyingRule, sellingRule);
+	}
 
-    public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 
-		StockFeed feed = new GoogleFeed();
+		StockFeed feed = new YahooFeed();
 		String ticker = "PHGP";
 		Stock stock = feed.get(EXCHANGE.London, ticker).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
+		// Building the trading strategy
+		Strategy strategy = buildStrategy(series);
 
-        // Building the trading strategy
-        Strategy strategy = buildStrategy(series);
+		// Running the strategy
+		TradingRecord tradingRecord = series.run(strategy);
+		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
 
-        // Running the strategy
-        TradingRecord tradingRecord = series.run(strategy);
-        System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
+		// Analysis
+		System.out.println(
+				"Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
 
-        // Analysis
-        System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-    }
+		CandlestickChart.displayCandlestickChart(stock);
+		BollingerBars.displayBollingerBars(stock);
+		// IndicatorsToCsv.exportToCsv(series);
+
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+	}
 }

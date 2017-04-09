@@ -24,6 +24,9 @@ package com.leonarduk.stockmarketview.strategies;
 
 import java.io.IOException;
 
+import com.leonarduk.stockmarketview.chart.BollingerBars;
+import com.leonarduk.stockmarketview.chart.CandlestickChart;
+import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
@@ -48,60 +51,71 @@ import yahoofinance.Stock;
 /**
  * Moving momentum strategy.
  * <p>
+ * 
  * @see http://stockcharts.com/help/doku.php?id=chart_school:trading_strategies:moving_momentum
  */
 public class MovingMomentumStrategy {
 
-    /**
-     * @param series a time series
-     * @return a moving momentum strategy
-     */
-    public static Strategy buildStrategy(TimeSeries series) {
-        if (series == null) {
-            throw new IllegalArgumentException("Series cannot be null");
-        }
+	/**
+	 * @param series
+	 *            a time series
+	 * @return a moving momentum strategy
+	 */
+	public static Strategy buildStrategy(TimeSeries series) {
+		if (series == null) {
+			throw new IllegalArgumentException("Series cannot be null");
+		}
 
-        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-        
-        // The bias is bullish when the shorter-moving average moves above the longer moving average.
-        // The bias is bearish when the shorter-moving average moves below the longer moving average.
-        EMAIndicator shortEma = new EMAIndicator(closePrice, 9);
-        EMAIndicator longEma = new EMAIndicator(closePrice, 26);
+		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 
-        StochasticOscillatorKIndicator stochasticOscillK = new StochasticOscillatorKIndicator(series, 14);
+		// The bias is bullish when the shorter-moving average moves above the
+		// longer moving average.
+		// The bias is bearish when the shorter-moving average moves below the
+		// longer moving average.
+		EMAIndicator shortEma = new EMAIndicator(closePrice, 9);
+		EMAIndicator longEma = new EMAIndicator(closePrice, 26);
 
-        MACDIndicator macd = new MACDIndicator(closePrice, 9, 26);
-        EMAIndicator emaMacd = new EMAIndicator(macd, 18);
-        
-        // Entry rule
-        Rule entryRule = new OverIndicatorRule(shortEma, longEma) // Trend
-                .and(new CrossedDownIndicatorRule(stochasticOscillK, Decimal.valueOf(20))) // Signal 1
-                .and(new OverIndicatorRule(macd, emaMacd)); // Signal 2
-        
-        // Exit rule
-        Rule exitRule = new UnderIndicatorRule(shortEma, longEma) // Trend
-                .and(new CrossedUpIndicatorRule(stochasticOscillK, Decimal.valueOf(80))) // Signal 1
-                .and(new UnderIndicatorRule(macd, emaMacd)); // Signal 2
-        
-        return new Strategy(entryRule, exitRule);
-    }
+		StochasticOscillatorKIndicator stochasticOscillK = new StochasticOscillatorKIndicator(series, 14);
 
-    public static void main(String[] args) throws IOException {
+		MACDIndicator macd = new MACDIndicator(closePrice, 9, 26);
+		EMAIndicator emaMacd = new EMAIndicator(macd, 18);
+
+		// Entry rule
+		Rule entryRule = new OverIndicatorRule(shortEma, longEma) // Trend
+				.and(new CrossedDownIndicatorRule(stochasticOscillK, Decimal.valueOf(20))) // Signal
+																							// 1
+				.and(new OverIndicatorRule(macd, emaMacd)); // Signal 2
+
+		// Exit rule
+		Rule exitRule = new UnderIndicatorRule(shortEma, longEma) // Trend
+				.and(new CrossedUpIndicatorRule(stochasticOscillK, Decimal.valueOf(80))) // Signal
+																							// 1
+				.and(new UnderIndicatorRule(macd, emaMacd)); // Signal 2
+
+		return new Strategy(entryRule, exitRule);
+	}
+
+	public static void main(String[] args) throws IOException {
 
 		StockFeed feed = new GoogleFeed();
 		String ticker = "PHGP";
 		Stock stock = feed.get(EXCHANGE.London, ticker).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
+		// Building the trading strategy
+		Strategy strategy = buildStrategy(series);
 
-        // Building the trading strategy
-        Strategy strategy = buildStrategy(series);
+		// Running the strategy
+		TradingRecord tradingRecord = series.run(strategy);
+		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
 
-        // Running the strategy
-        TradingRecord tradingRecord = series.run(strategy);
-        System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
+		// Analysis
+		System.out.println(
+				"Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
+		CandlestickChart.displayCandlestickChart(stock);
+		BollingerBars.displayBollingerBars(stock);
+		// IndicatorsToCsv.exportToCsv(series);
 
-        // Analysis
-        System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-    }
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+	}
 }

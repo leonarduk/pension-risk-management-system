@@ -24,11 +24,13 @@ package com.leonarduk.stockmarketview;
 
 import java.io.IOException;
 
+import com.leonarduk.stockmarketview.chart.BollingerBars;
+import com.leonarduk.stockmarketview.chart.CandlestickChart;
+import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
-import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;
@@ -121,6 +123,12 @@ public class Quickstart {
         // vs total profit of a buy-and-hold strategy
         AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
         System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
+		 CandlestickChart.displayCandlestickChart(stock);
+		 BollingerBars.displayBollingerBars(stock);
+		// IndicatorsToCsv.exportToCsv(series);
+
+			System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+
 
         // Your turn!
     }

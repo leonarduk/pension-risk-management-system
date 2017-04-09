@@ -24,6 +24,7 @@ package com.leonarduk.stockmarketview.strategies;
 
 import java.io.IOException;
 
+import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
@@ -104,7 +105,7 @@ public class RSI2Strategy {
 		// Running the strategy
 		TradingRecord tradingRecord = series.run(strategy);
 		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-		System.out.println(tradingRecord.getTrades());
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
 
 		// Analysis
 		System.out.println(

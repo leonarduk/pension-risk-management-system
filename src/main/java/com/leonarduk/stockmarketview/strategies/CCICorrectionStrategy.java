@@ -24,6 +24,7 @@ package com.leonarduk.stockmarketview.strategies;
 
 import java.io.IOException;
 
+import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
@@ -89,5 +90,8 @@ public class CCICorrectionStrategy {
 
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
+    
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series));
+
     }
 }

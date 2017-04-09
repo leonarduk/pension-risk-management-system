@@ -1,6 +1,7 @@
 package com.leonarduk.stockmarketview.stockfeed;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +15,9 @@ import yahoofinance.histquotes.HistoricalQuote;
 
 public class DailyTimeseries {
 	public static TimeSeries getTimeSeries(Stock stock) throws IOException {
-		Iterator<HistoricalQuote> series = stock.getHistory().iterator();
+		List<HistoricalQuote> history = stock.getHistory();
+		Collections.reverse(history);
+		Iterator<HistoricalQuote> series = history.iterator();
 
 		List<Tick> ticks = new LinkedList<>();
 		while (series.hasNext()) {
