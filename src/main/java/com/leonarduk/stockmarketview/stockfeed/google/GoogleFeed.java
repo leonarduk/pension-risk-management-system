@@ -13,25 +13,12 @@ import yahoofinance.histquotes.HistoricalQuote;
 
 public class GoogleFeed extends StockFeed {
 
-	public static void main(String[] args) throws IOException {
-		GoogleQuoteRequest request = new GoogleQuoteRequest();
-		request.setSymbol("LON:IMV");
-		request.setStartDate(DateUtils.yearStart());
-		request.setEndDate(DateUtils.yearEnd());
-
-		List<HistoricalQuote> quotes = new LinkedList<>();
-		while (request.next()) {
-			quotes.add(request.asHistoricalQuote());
-		}
-
-	}
-
 	@Override
-	public Optional<Stock> get(EXCHANGE exchange, String ticker) {
+	public Optional<Stock> get(EXCHANGE exchange, String ticker, int years) {
 		GoogleQuoteRequest request = new GoogleQuoteRequest();
 		request.setSymbol(getQueryName(exchange, ticker));
 		Calendar from = Calendar.getInstance();
-		from.add(Calendar.YEAR, -20);
+		from.add(Calendar.YEAR, -1 * years);
 		request.setStartDate(from);
 		request.setEndDate(Calendar.getInstance());
 

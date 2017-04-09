@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview.strategies;
+package com.leonarduk.stockmarketview;
 
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ public class TradingBotOnMovingTimeSeries {
     private static TimeSeries initMovingTimeSeries(int maxTickCount) throws IOException {
 		StockFeed feed = new GoogleFeed();
 		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
+		Stock stock = feed.get(EXCHANGE.London, ticker,1).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
         System.out.print("Initial tick count: " + series.getTickCount());
         // Limitating the number of ticks to maxTickCount

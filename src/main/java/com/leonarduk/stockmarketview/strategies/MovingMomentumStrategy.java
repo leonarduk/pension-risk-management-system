@@ -54,14 +54,18 @@ import yahoofinance.Stock;
  * 
  * @see http://stockcharts.com/help/doku.php?id=chart_school:trading_strategies:moving_momentum
  */
-public class MovingMomentumStrategy {
+public class MovingMomentumStrategy extends AbstractStrategy {
+
+	private MovingMomentumStrategy(String name, Strategy strategy) {
+		super(name, strategy);
+	}
 
 	/**
 	 * @param series
 	 *            a time series
 	 * @return a moving momentum strategy
 	 */
-	public static Strategy buildStrategy(TimeSeries series) {
+	public static AbstractStrategy buildStrategy(TimeSeries series) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");
 		}
@@ -92,31 +96,6 @@ public class MovingMomentumStrategy {
 																							// 1
 				.and(new UnderIndicatorRule(macd, emaMacd)); // Signal 2
 
-		return new Strategy(entryRule, exitRule);
-	}
-
-	public static void main(String[] args) throws IOException {
-
-		StockFeed feed = new GoogleFeed();
-		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
-
-		// Building the trading strategy
-		Strategy strategy = buildStrategy(series);
-
-		// Running the strategy
-		TradingRecord tradingRecord = series.run(strategy);
-		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-
-		// Analysis
-		System.out.println(
-				"Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-		CandlestickChart.displayCandlestickChart(stock);
-		BollingerBars.displayBollingerBars(stock);
-		// IndicatorsToCsv.exportToCsv(series);
-
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
-				MovingMomentumStrategy.class.getName()));
+		return new MovingMomentumStrategy("Moving Momentum", new Strategy(entryRule, exitRule));
 	}
 }

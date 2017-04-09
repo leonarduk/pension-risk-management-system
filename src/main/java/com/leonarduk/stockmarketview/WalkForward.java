@@ -20,7 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.leonarduk.stockmarketview.strategies;
+package com.leonarduk.stockmarketview;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,18 +28,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.Period;
 
-import com.leonarduk.stockmarketview.Demo;
 import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.SymbolFileReader;
 import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
+import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
+import com.leonarduk.stockmarketview.strategies.CCICorrectionStrategy;
+import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
+import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
+import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
+import com.leonarduk.stockmarketview.strategies.RSI2Strategy;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Strategy;
@@ -62,12 +68,14 @@ public class WalkForward {
 	 *            the time series
 	 * @return a map (key: strategy, value: name) of trading strategies
 	 */
-	public static Map<Strategy, String> buildStrategiesMap(TimeSeries series) {
-		HashMap<Strategy, String> strategies = new HashMap<Strategy, String>();
-		strategies.put(CCICorrectionStrategy.buildStrategy(series), "CCI Correction");
-		strategies.put(GlobalExtremaStrategy.buildStrategy(series), "Global Extrema");
-		strategies.put(MovingMomentumStrategy.buildStrategy(series), "Moving Momentum");
-		strategies.put(RSI2Strategy.buildStrategy(series), "RSI-2");
+	public static List<AbstractStrategy> buildStrategiesMap(TimeSeries series) {
+//		{Moving Momentum=24916, RSI-2=-81064, Global Extrema=23748, CCI Correction=-28035}
+		List<AbstractStrategy> strategies = new ArrayList<>();
+		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
+		strategies.add(MovingMomentumStrategy.buildStrategy(series));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 		return strategies;
 	}
 
@@ -90,12 +98,12 @@ public class WalkForward {
 
 	private static void computeForStrategies(Map<String, AtomicInteger> totalscores, StockFeed feed, String ticker)
 			throws IOException {
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
+		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 		List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
 
 		// Building the map of strategies
-		Map<Strategy, String> strategies = buildStrategiesMap(series);
+		List<AbstractStrategy> strategies = buildStrategiesMap(series);
 
 		// The analysis criterion
 		AnalysisCriterion profitCriterion = new TotalProfitCriterion();
@@ -105,17 +113,21 @@ public class WalkForward {
 			// For each sub-series...
 			calculateSubseries(strategies, profitCriterion, slice, scores);
 		}
-		totalscores.putAll(scores);
+
+		for (Entry<String, AtomicInteger> timeSeries : scores.entrySet()) {
+			totalscores.putIfAbsent(timeSeries.getKey(), new AtomicInteger());
+			totalscores.get(timeSeries.getKey()).addAndGet(timeSeries.getValue().get());
+		}
 		System.out.println(ticker + scores);
 	}
 
-	private static void calculateSubseries(Map<Strategy, String> strategies, AnalysisCriterion profitCriterion,
+	private static void calculateSubseries(List<AbstractStrategy> strategies, AnalysisCriterion profitCriterion,
 			TimeSeries slice, Map<String, AtomicInteger> scores) {
 		boolean interesting = false;
 		StringBuilder buf = new StringBuilder("Sub-series: " + slice.getSeriesPeriodDescription() + "\n");
-		for (Map.Entry<Strategy, String> entry : strategies.entrySet()) {
-			Strategy strategy = entry.getKey();
-			String name = entry.getValue();
+		for (AbstractStrategy entry : strategies) {
+			Strategy strategy = entry.getStrategy();
+			String name = entry.getName();
 			// For each strategy...
 			TradingRecord tradingRecord = slice.run(strategy);
 			double profit = profitCriterion.calculate(slice, tradingRecord);
@@ -135,8 +147,10 @@ public class WalkForward {
 			buf.append("\tProfit for " + name + ": " + profit + "\n");
 		}
 
-		Strategy bestStrategy = profitCriterion.chooseBest(slice, new ArrayList<Strategy>(strategies.keySet()));
-		buf.append("\t\t--> Best strategy: " + strategies.get(bestStrategy) + "\n");
+//		ArrayList<Strategy> strategies2 = new ArrayList<Strategy>();
+//		
+//		Strategy bestStrategy = profitCriterion.chooseBest(slice, strategies2);
+//		buf.append("\t\t--> Best strategy: " + strategies.get(bestStrategy) + "\n");
 		if (interesting) {
 			// System.out.println(buf.toString());
 		}

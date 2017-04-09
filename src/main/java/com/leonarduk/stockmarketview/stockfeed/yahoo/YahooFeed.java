@@ -14,12 +14,12 @@ import yahoofinance.histquotes.Interval;
 
 public class YahooFeed extends StockFeed {
 	@Override
-	public Optional<Stock> get(StockFeed.EXCHANGE exchange, String ticker) {
+	public Optional<Stock> get(StockFeed.EXCHANGE exchange, String ticker, int years) {
 		try {
 			Stock stock = YahooFinance.get(getQueryName(exchange, ticker));
 			Calendar from = Calendar.getInstance();
 
-			from.add(Calendar.YEAR, -20);
+			from.add(Calendar.YEAR, -1 * years);
 
 			stock.getHistory(from, HistQuotesRequest.DEFAULT_TO, Interval.DAILY);
 
@@ -35,18 +35,6 @@ public class YahooFeed extends StockFeed {
 			return ticker + ".L";
 		}
 		throw new IllegalArgumentException("Don't know how to handle " + exchange);
-	}
-
-	public static void main(String[] args) throws IOException {
-		Stock stock = YahooFinance.get("PHGP.L");
-
-		BigDecimal price = stock.getQuote().getPrice();
-		BigDecimal change = stock.getQuote().getChangeInPercent();
-		BigDecimal peg = stock.getStats().getPeg();
-		BigDecimal dividend = stock.getDividend().getAnnualYieldPercent();
-
-		stock.print();
-		System.out.println(stock.getHistory());
 	}
 
 }

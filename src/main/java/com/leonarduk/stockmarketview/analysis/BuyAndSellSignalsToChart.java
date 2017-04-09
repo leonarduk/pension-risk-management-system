@@ -25,7 +25,7 @@ package com.leonarduk.stockmarketview.analysis;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.chart.ChartFactory;
@@ -44,11 +44,13 @@ import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
+import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
+import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
 import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
+import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Indicator;
-import eu.verdelhan.ta4j.Strategy;
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.Trade;
@@ -56,112 +58,136 @@ import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
 import yahoofinance.Stock;
 
 /**
- * This class builds a graphical chart showing the buy/sell signals of a strategy.
+ * This class builds a graphical chart showing the buy/sell signals of a
+ * strategy.
  */
 public class BuyAndSellSignalsToChart {
 
-    /**
-     * Builds a JFreeChart time series from a Ta4j time series and an indicator.
-     * @param tickSeries the ta4j time series
-     * @param indicator the indicator
-     * @param name the name of the chart time series
-     * @return the JFreeChart time series
-     */
-    private static org.jfree.data.time.TimeSeries buildChartTimeSeries(TimeSeries tickSeries, Indicator<Decimal> indicator, String name) {
-        org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(name);
-        for (int i = 0; i < tickSeries.getTickCount(); i++) {
-            Tick tick = tickSeries.getTick(i);
-            chartTimeSeries.add(new Minute(tick.getEndTime().toDate()), indicator.getValue(i).toDouble());
-        }
-        return chartTimeSeries;
-    }
+	/**
+	 * Builds a JFreeChart time series from a Ta4j time series and an indicator.
+	 * 
+	 * @param tickSeries
+	 *            the ta4j time series
+	 * @param indicator
+	 *            the indicator
+	 * @param name
+	 *            the name of the chart time series
+	 * @return the JFreeChart time series
+	 */
+	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(TimeSeries tickSeries,
+			Indicator<Decimal> indicator, String name) {
+		org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(name);
+		for (int i = 0; i < tickSeries.getTickCount(); i++) {
+			Tick tick = tickSeries.getTick(i);
+			chartTimeSeries.add(new Minute(tick.getEndTime().toDate()), indicator.getValue(i).toDouble());
+		}
+		return chartTimeSeries;
+	}
 
-    /**
-     * Runs a strategy over a time series and adds the value markers
-     * corresponding to buy/sell signals to the plot.
-     * @param series a time series
-     * @param strategy a trading strategy
-     * @param plot the plot
-     */
-    private static void addBuySellSignals(TimeSeries series, Strategy strategy, XYPlot plot) {
-        // Running the strategy
-        List<Trade> trades = series.run(strategy).getTrades();
-        // Adding markers to plot
-        for (Trade trade : trades) {
-            // Buy signal
-            double buySignalTickTime = new Minute(series.getTick(trade.getEntry().getIndex()).getEndTime().toDate()).getFirstMillisecond();
-            Marker buyMarker = new ValueMarker(buySignalTickTime);
-            buyMarker.setPaint(Color.GREEN);
-            buyMarker.setLabel("B");
-            plot.addDomainMarker(buyMarker);
-            // Sell signal
-            double sellSignalTickTime = new Minute(series.getTick(trade.getExit().getIndex()).getEndTime().toDate()).getFirstMillisecond();
-            Marker sellMarker = new ValueMarker(sellSignalTickTime);
-            sellMarker.setPaint(Color.RED);
-            sellMarker.setLabel("S");
-            plot.addDomainMarker(sellMarker);
-        }
-    }
+	/**
+	 * Runs a strategy over a time series and adds the value markers
+	 * corresponding to buy/sell signals to the plot.
+	 * 
+	 * @param series
+	 *            a time series
+	 * @param strategy2
+	 *            a trading strategy
+	 * @param plot
+	 *            the plot
+	 */
+	private static void addBuySellSignals(TimeSeries series, AbstractStrategy strategy2, XYPlot plot) {
+		// Running the strategy 
+		List<Trade> trades = series.run(strategy2.getStrategy()).getTrades();
+		// Adding markers to plot
+		for (Trade trade : trades) {
+			// Buy signal
+			double buySignalTickTime = new Minute(series.getTick(trade.getEntry().getIndex()).getEndTime().toDate())
+					.getFirstMillisecond();
+			Marker buyMarker = new ValueMarker(buySignalTickTime);
+			buyMarker.setPaint(Color.GREEN);
+			buyMarker.setLabel("B");
+			plot.addDomainMarker(buyMarker);
+			// Sell signal
+			double sellSignalTickTime = new Minute(series.getTick(trade.getExit().getIndex()).getEndTime().toDate())
+					.getFirstMillisecond();
+			Marker sellMarker = new ValueMarker(sellSignalTickTime);
+			sellMarker.setPaint(Color.RED);
+			sellMarker.setLabel("S");
+			plot.addDomainMarker(sellMarker);
+		}
+	}
 
-    /**
-     * Displays a chart in a frame.
-     * @param chart the chart to be displayed
-     */
-    private static void displayChart(JFreeChart chart) {
-        // Chart panel
-        ChartPanel panel = new ChartPanel(chart);
-        panel.setFillZoomRectangle(true);
-        panel.setMouseWheelEnabled(true);
-        panel.setPreferredSize(new Dimension(1024, 400));
-        // Application frame
-        ApplicationFrame frame = new ApplicationFrame("Ta4j example - Buy and sell signals to chart");
-        frame.setContentPane(panel);
-        frame.pack();
-        RefineryUtilities.centerFrameOnScreen(frame);
-        frame.setVisible(true);
-    }
+	/**
+	 * Displays a chart in a frame.
+	 * 
+	 * @param chart
+	 *            the chart to be displayed
+	 */
+	private static void displayChart(JFreeChart chart) {
+		// Chart panel
+		ChartPanel panel = new ChartPanel(chart);
+		panel.setFillZoomRectangle(true);
+		panel.setMouseWheelEnabled(true);
+		panel.setPreferredSize(new Dimension(1024, 400));
+		// Application frame
+		ApplicationFrame frame = new ApplicationFrame("Ta4j example - Buy and sell signals to chart");
+		frame.setContentPane(panel);
+		frame.pack();
+		RefineryUtilities.centerFrameOnScreen(frame);
+		frame.setVisible(true);
+	}
 
-    public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 
-        // Getting the time series
-    	StockFeed feed = new GoogleFeed();
-		String ticker = "IUKD";
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
+		// Getting the time series
+		StockFeed feed = new GoogleFeed();
+		String ticker = "SEMB";
+		Stock stock = feed.get(EXCHANGE.London, ticker, 1).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
-        // Building the trading strategy
-        Strategy strategy = MovingMomentumStrategy.buildStrategy(series);
+		// Building the trading strategy
+		List<AbstractStrategy> strategies = new ArrayList<>();
+		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
+		strategies.add(MovingMomentumStrategy.buildStrategy(series));
+//		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
+//		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
+//		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 
-        /**
-         * Building chart datasets
-         */
-        TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(buildChartTimeSeries(series, new ClosePriceIndicator(series), "Bitstamp Bitcoin (BTC)"));
+		displayBuyAndSellChart(series, strategies, stock.getName());
+	}
 
-        /**
-         * Creating the chart
-         */
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                "Bitstamp BTC", // title
-                "Date", // x-axis label
-                "Price", // y-axis label
-                dataset, // data
-                true, // create legend?
-                true, // generate tooltips?
-                false // generate URLs?
-                );
-        XYPlot plot = (XYPlot) chart.getPlot();
-        DateAxis axis = (DateAxis) plot.getDomainAxis();
-        axis.setDateFormatOverride(new SimpleDateFormat("MM-dd HH:mm"));
+	public static void displayBuyAndSellChart(TimeSeries series, List<AbstractStrategy> strategies, String name) {
+		/**
+		 * Building chart datasets
+		 */
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		dataset.addSeries(buildChartTimeSeries(series, new ClosePriceIndicator(series), name));
 
-        /**
-         * Running the strategy and adding the buy and sell signals to plot
-         */
-        addBuySellSignals(series, strategy, plot);
+		/**
+		 * Creating the chart
+		 */
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(name, // title
+				"Date", // x-axis label
+				"Price", // y-axis label
+				dataset, // data
+				true, // create legend?
+				true, // generate tooltips?
+				false // generate URLs?
+		);
+		XYPlot plot = (XYPlot) chart.getPlot();
+		DateAxis axis = (DateAxis) plot.getDomainAxis();
+//		axis.setDateFormatOverride(new SimpleDateFormat("MM-dd HH:mm"));
 
-        /**
-         * Displaying the chart
-         */
-        displayChart(chart);
-    }
+		/**
+		 * Running the strategy and adding the buy and sell signals to plot
+		 */
+		for (AbstractStrategy strategy2 : strategies) {
+			addBuySellSignals(series, strategy2, plot);
+		}
+
+		/**
+		 * Displaying the chart
+		 */
+		displayChart(chart);
+	}
 }

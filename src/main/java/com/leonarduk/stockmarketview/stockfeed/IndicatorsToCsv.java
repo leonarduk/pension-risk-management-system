@@ -34,6 +34,7 @@ import eu.verdelhan.ta4j.indicators.oscillators.PPOIndicator;
 import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
 import eu.verdelhan.ta4j.indicators.simple.PriceVariationIndicator;
 import eu.verdelhan.ta4j.indicators.simple.TypicalPriceIndicator;
+import eu.verdelhan.ta4j.indicators.statistics.PeriodicalGrowthRateIndicator;
 import eu.verdelhan.ta4j.indicators.statistics.StandardDeviationIndicator;
 import eu.verdelhan.ta4j.indicators.trackers.EMAIndicator;
 import eu.verdelhan.ta4j.indicators.trackers.ROCIndicator;
@@ -47,6 +48,7 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
 public class IndicatorsToCsv {
 
 	private static final Logger LOGGER = Logger.getLogger(IndicatorsToCsv.class.getName());
+	private static final int ONE_YEAR = 252;
 
 	public static void exportToCsv(TimeSeries series) {
 		String fileName = series.getName() + "_indicators.csv";
@@ -78,11 +80,12 @@ public class IndicatorsToCsv {
 		// Standard deviation
 		StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, 14);
 
+		PeriodicalGrowthRateIndicator oneYear = new PeriodicalGrowthRateIndicator(closePrice, ONE_YEAR);
 		/**
 		 * Building header
 		 */
 		StringBuilder sb = new StringBuilder(
-				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd\n");
+				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1YR\n");
 
 		/**
 		 * Adding indicators values
@@ -95,7 +98,8 @@ public class IndicatorsToCsv {
 					.append(shortEma.getValue(i)).append(',').append(longEma.getValue(i)).append(',')
 					.append(ppo.getValue(i)).append(',').append(roc.getValue(i)).append(',').append(rsi.getValue(i))
 					.append(',').append(williamsR.getValue(i)).append(',').append(atr.getValue(i)).append(',')
-					.append(sd.getValue(i)).append('\n');
+					.append(sd.getValue(i)).append(',')
+					.append(oneYear.getValue(i)).append('\n');
 		}
 
 		/**

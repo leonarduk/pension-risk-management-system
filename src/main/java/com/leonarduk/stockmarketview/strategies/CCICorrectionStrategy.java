@@ -73,26 +73,4 @@ public class CCICorrectionStrategy {
         return strategy;
     }
 
-    public static void main(String[] args) throws IOException {
-
-		StockFeed feed = new GoogleFeed();
-		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
-
-
-        // Building the trading strategy
-        Strategy strategy = buildStrategy(series);
-
-        // Running the strategy
-        TradingRecord tradingRecord = series.run(strategy);
-        System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-
-        // Analysis
-        System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-    
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
-				CCICorrectionStrategy.class.getName()));
-
-    }
 }

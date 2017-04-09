@@ -63,7 +63,7 @@ public class Quickstart {
 		// Getting a time series (from any provider: CSV, web service, etc.)
 		StockFeed feed = new GoogleFeed();
 		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
+		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
 		// Getting the close price of the ticks

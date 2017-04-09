@@ -2,7 +2,6 @@ package com.leonarduk.stockmarketview;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,7 +53,7 @@ public class Demo {
 
 	public static boolean showForOneSeries(StockFeed feed, EXCHANGE exchange, String ticker) {
 		try {
-			Optional<Stock> stock = feed.get(exchange, ticker);
+			Optional<Stock> stock = feed.get(exchange, ticker,1);
 
 			if (stock.isPresent()) {
 				TimeSeries series;
@@ -62,7 +61,6 @@ public class Demo {
 				series = DailyTimeseries.getTimeSeries(stock.get());
 
 				// System.out.println("Series: " + series.getName() + " (" +
-				// series.getSeriesPeriodDescription() + ")");
 				// System.out.println("Number of ticks: " +
 				// series.getTickCount());
 				// System.out.println("First tick: \n" + "\tVolume: " +

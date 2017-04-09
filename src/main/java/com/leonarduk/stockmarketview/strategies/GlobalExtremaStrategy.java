@@ -51,7 +51,11 @@ import yahoofinance.Stock;
 /**
  * Strategies which compares current price to global extrema over a week.
  */
-public class GlobalExtremaStrategy {
+public class GlobalExtremaStrategy extends AbstractStrategy{
+
+	public GlobalExtremaStrategy(Strategy strategy) {
+		super("Global Extrema", strategy);
+	}
 
 	// We assume that there were at least one trade every 5 minutes during the
 	// whole week
@@ -62,7 +66,7 @@ public class GlobalExtremaStrategy {
 	 *            a time series
 	 * @return a global extrema strategy
 	 */
-	public static Strategy buildStrategy(TimeSeries series) {
+	public static GlobalExtremaStrategy buildStrategy(TimeSeries series) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");
 		}
@@ -84,32 +88,6 @@ public class GlobalExtremaStrategy {
 		MultiplierIndicator upWeek = new MultiplierIndicator(weekMaxPrice, Decimal.valueOf("0.996"));
 		Rule sellingRule = new OverIndicatorRule(closePrices, upWeek);
 
-		return new Strategy(buyingRule, sellingRule);
-	}
-
-	public static void main(String[] args) throws IOException {
-
-		StockFeed feed = new YahooFeed();
-		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
-
-		// Building the trading strategy
-		Strategy strategy = buildStrategy(series);
-
-		// Running the strategy
-		TradingRecord tradingRecord = series.run(strategy);
-		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-
-		// Analysis
-		System.out.println(
-				"Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-
-		CandlestickChart.displayCandlestickChart(stock);
-		BollingerBars.displayBollingerBars(stock);
-		// IndicatorsToCsv.exportToCsv(series);
-
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
-				GlobalExtremaStrategy.class.getName()));
+		return new GlobalExtremaStrategy(new Strategy(buyingRule, sellingRule));
 	}
 }

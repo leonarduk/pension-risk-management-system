@@ -20,15 +20,15 @@ public abstract class StockFeed {
 	 * @return
 	 * @throws IOException
 	 */
-	public Optional<Stock> get(Stock stock) {
+	public Optional<Stock> get(Stock stock, int years) {
 		try {
-			return get(EXCHANGE.valueOf(stock.getStockExchange()), stock.getSymbol());
+			return get(EXCHANGE.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
 		} catch (IOException e) {
 			return Optional.empty();
 		}
 	}
 
-	public abstract Optional<Stock> get(EXCHANGE exchange, String ticker) throws IOException;
+	public abstract Optional<Stock> get(EXCHANGE exchange, String ticker, int years) throws IOException;
 
 	public static Stock createStock(EXCHANGE exchange, String ticker, String name) {
 		return createStock(exchange, ticker, name, null);
