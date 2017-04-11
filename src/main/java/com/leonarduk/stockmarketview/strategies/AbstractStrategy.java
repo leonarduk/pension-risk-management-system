@@ -18,4 +18,9 @@ abstract public class AbstractStrategy {
 	public Strategy getStrategy() {
 		return strategy;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

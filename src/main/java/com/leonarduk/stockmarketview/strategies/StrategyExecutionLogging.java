@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
+import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
@@ -71,7 +72,7 @@ public class StrategyExecutionLogging {
         loadLoggerConfiguration();
 
         // Getting the time series
-		StockFeed feed = new GoogleFeed();
+		StockFeed feed = new IntelligentStockFeed();
 		String ticker = "PHGP";
 		Stock stock = feed.get(EXCHANGE.London, ticker,20).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);

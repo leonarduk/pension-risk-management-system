@@ -25,16 +25,18 @@ package com.leonarduk.stockmarketview.stockfeed;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.indicators.helpers.AverageTrueRangeIndicator;
 import eu.verdelhan.ta4j.indicators.oscillators.PPOIndicator;
 import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
 import eu.verdelhan.ta4j.indicators.simple.PriceVariationIndicator;
 import eu.verdelhan.ta4j.indicators.simple.TypicalPriceIndicator;
-import eu.verdelhan.ta4j.indicators.statistics.PeriodicalGrowthRateIndicator;
 import eu.verdelhan.ta4j.indicators.statistics.StandardDeviationIndicator;
 import eu.verdelhan.ta4j.indicators.trackers.EMAIndicator;
 import eu.verdelhan.ta4j.indicators.trackers.ROCIndicator;
@@ -48,10 +50,14 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
 public class IndicatorsToCsv {
 
 	private static final Logger LOGGER = Logger.getLogger(IndicatorsToCsv.class.getName());
-	private static final int ONE_YEAR = 252;
+	private static final int ONE_YEAR = 251;
+	private static final int TEN_YEAR = 10 * ONE_YEAR;
+	private static final int FIVE_YEAR = 5 * ONE_YEAR;
+	private static final int THREE_YEAR = 3 * ONE_YEAR;
+	private static final int HALF_YEAR = ONE_YEAR / 2;
 
 	public static void exportToCsv(TimeSeries series) {
-		String fileName = series.getName() + "_indicators.csv";
+		String fileName = "target/" + series.getName() + "_indicators.csv";
 		/**
 		 * Creating indicators
 		 */
@@ -80,28 +86,48 @@ public class IndicatorsToCsv {
 		// Standard deviation
 		StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, 14);
 
-		PeriodicalGrowthRateIndicator oneYear = new PeriodicalGrowthRateIndicator(closePrice, ONE_YEAR);
 		/**
 		 * Building header
 		 */
 		StringBuilder sb = new StringBuilder(
-				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1YR\n");
+				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1D,1W,1M,3M,6M1YR,3YR,5YR,10YR\n");
 
 		/**
 		 * Adding indicators values
 		 */
 		final int nbTicks = series.getTickCount();
 		for (int i = 0; i < nbTicks; i++) {
-			sb.append(series.getTick(i).getEndTime().getMillis() / 1000d).append(',').append(closePrice.getValue(i))
-					.append(',').append(typicalPrice.getValue(i)).append(',').append(priceVariation.getValue(i))
-					.append(',').append(shortSma.getValue(i)).append(',').append(longSma.getValue(i)).append(',')
-					.append(shortEma.getValue(i)).append(',').append(longEma.getValue(i)).append(',')
-					.append(ppo.getValue(i)).append(',').append(roc.getValue(i)).append(',').append(rsi.getValue(i))
-					.append(',').append(williamsR.getValue(i)).append(',').append(atr.getValue(i)).append(',')
-					.append(sd.getValue(i)).append(',')
-					.append(oneYear.getValue(i)).append('\n');
+			sb.append(series.getTick(i).getEndTime().toLocalDate()); //
+			addValue(sb, (closePrice.getValue(i)));
+			addValue(sb, (typicalPrice.getValue(i)));
+			addValue(sb, (priceVariation.getValue(i)));
+			addValue(sb, (shortSma.getValue(i)));
+			addValue(sb, (longSma.getValue(i)));
+			addValue(sb, (shortEma.getValue(i)));
+			addValue(sb, (longEma.getValue(i)));
+			addValue(sb, (ppo.getValue(i)));
+			addValue(sb, (roc.getValue(i)));
+			addValue(sb, (rsi.getValue(i)));
+			addValue(sb, (williamsR.getValue(i)));
+			addValue(sb, (atr.getValue(i)));
+			addValue(sb, sd.getValue(i)); //
+			addValue(sb, calculateReturn(series, 1, i));
+			addValue(sb, calculateReturn(series, 5, i));
+			addValue(sb, calculateReturn(series, 21, i));
+			addValue(sb, calculateReturn(series, 63, i));
+			addValue(sb, calculateReturn(series, HALF_YEAR, i));
+
+			addValue(sb, calculateReturn(series, ONE_YEAR, i));
+			addValue(sb, calculateReturn(series, THREE_YEAR, i));
+			addValue(sb, calculateReturn(series, FIVE_YEAR, i));
+			addValue(sb, calculateReturn(series, TEN_YEAR, i));
+			sb.append('\n');
 		}
 
+		writeFile(fileName, sb);
+	}
+
+	public static void writeFile(String fileName, StringBuilder sb) {
 		/**
 		 * Writing CSV file
 		 */
@@ -122,4 +148,26 @@ public class IndicatorsToCsv {
 			}
 		}
 	}
+
+	static NumberFormat formatter = new DecimalFormat("#0.00");
+
+	private static void addValue(StringBuilder buf, Number value) {
+		buf.append(',').append(formatter.format(value));
+	}
+
+	private static void addValue(StringBuilder buf, Decimal value) {
+		addValue(buf, (value.toDouble()));
+	}
+
+	private static Decimal calculateReturn(TimeSeries series, int timePeriod, int ticker) {
+		int index = ticker - timePeriod;
+		if (index < 0 || index > series.getEnd()) {
+			return Decimal.NaN;
+		}
+		Decimal initialValue = series.getTick(index).getClosePrice();
+		Decimal diff = series.getTick(ticker).getClosePrice().minus(initialValue);
+		return diff.dividedBy(initialValue);
+	}
+
+	
 }

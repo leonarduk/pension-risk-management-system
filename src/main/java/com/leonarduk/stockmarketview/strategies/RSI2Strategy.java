@@ -26,9 +26,9 @@ import java.io.IOException;
 
 import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
+import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Rule;
@@ -94,7 +94,7 @@ public class RSI2Strategy {
 
 	public static void main(String[] args) throws IOException {
 
-		StockFeed feed = new GoogleFeed();
+		StockFeed feed = new IntelligentStockFeed();
 		String ticker = "PHGP";
 		Stock stock = feed.get(EXCHANGE.London, ticker,20).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);

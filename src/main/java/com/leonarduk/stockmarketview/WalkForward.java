@@ -25,7 +25,6 @@ package com.leonarduk.stockmarketview;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,16 +35,14 @@ import org.joda.time.Period;
 
 import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
+import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.SymbolFileReader;
-import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
 import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
-import com.leonarduk.stockmarketview.strategies.CCICorrectionStrategy;
-import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
 import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
 import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
-import com.leonarduk.stockmarketview.strategies.RSI2Strategy;
+import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Strategy;
@@ -81,8 +78,8 @@ public class WalkForward {
 
 	public static void main(String[] args) throws IOException {
 		Map<String, AtomicInteger> totalscores = new ConcurrentHashMap<>();
-		StockFeed feed = new YahooFeed();
-
+		StockFeed feed = new IntelligentStockFeed();
+		
 		String filePath = new File(Demo.class.getClassLoader().getResource("Book1.csv").getFile()).getAbsolutePath();
 
 		SymbolFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {

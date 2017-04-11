@@ -25,9 +25,11 @@ package com.leonarduk.stockmarketview.analysis;
 import java.io.IOException;
 
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
+import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
+import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
 import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
 
 import eu.verdelhan.ta4j.Strategy;
@@ -53,15 +55,15 @@ public class StrategyAnalysis {
     public static void main(String[] args) throws IOException {
 
         // Getting the time series
-    	StockFeed feed = new GoogleFeed();
+    	StockFeed feed = new IntelligentStockFeed();
 		String ticker = "IUKD";
 		Stock stock = feed.get(EXCHANGE.London, ticker,20).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
         // Building the trading strategy
-        Strategy strategy = MovingMomentumStrategy.buildStrategy(series);
+        AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series);
         // Running the strategy
-        TradingRecord tradingRecord = series.run(strategy);
+        TradingRecord tradingRecord = series.run(strategy.getStrategy());
 
         /**
          * Analysis criteria

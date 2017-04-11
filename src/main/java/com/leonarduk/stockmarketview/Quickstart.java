@@ -28,9 +28,10 @@ import com.leonarduk.stockmarketview.chart.BollingerBars;
 import com.leonarduk.stockmarketview.chart.CandlestickChart;
 import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
+import com.leonarduk.stockmarketview.stockfeed.IndicatorsToCsv;
+import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;
@@ -61,8 +62,8 @@ public class Quickstart {
 	public static void main(String[] args) throws IOException {
 
 		// Getting a time series (from any provider: CSV, web service, etc.)
-		StockFeed feed = new GoogleFeed();
-		String ticker = "PHGP";
+		StockFeed feed = new IntelligentStockFeed();
+		String ticker = "INXG";
 		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
@@ -128,7 +129,7 @@ public class Quickstart {
 		System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
 		CandlestickChart.displayCandlestickChart(stock);
 		BollingerBars.displayBollingerBars(stock);
-		// IndicatorsToCsv.exportToCsv(series);
+		 IndicatorsToCsv.exportToCsv(series);
 
 		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy, strategyName));
 

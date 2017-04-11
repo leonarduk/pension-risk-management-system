@@ -41,6 +41,7 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
+import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
@@ -140,7 +141,7 @@ public class BuyAndSellSignalsToChart {
 	public static void main(String[] args) throws IOException {
 
 		// Getting the time series
-		StockFeed feed = new GoogleFeed();
+		StockFeed feed = new IntelligentStockFeed();
 		String ticker = "SEMB";
 		Stock stock = feed.get(EXCHANGE.London, ticker, 1).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
