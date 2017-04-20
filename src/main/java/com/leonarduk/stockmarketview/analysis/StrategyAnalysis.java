@@ -56,12 +56,12 @@ public class StrategyAnalysis {
 
         // Getting the time series
     	StockFeed feed = new IntelligentStockFeed();
-		String ticker = "IUKD";
+		String ticker = "XMJG";
 		Stock stock = feed.get(EXCHANGE.London, ticker,20).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
         // Building the trading strategy
-        AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series);
+        AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series,12,26,9);
         // Running the strategy
         TradingRecord tradingRecord = series.run(strategy.getStrategy());
 

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.stockfeed.SymbolFileReader;
+import com.leonarduk.stockmarketview.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
 import com.leonarduk.stockmarketview.stockfeed.yahoo.YahooFeed;
 
@@ -32,7 +32,7 @@ public class Demo {
 		 * CRU1=failed, XMEA=failed, BRDX=failed, SCHP=failed, GOLB=failed}
 		 * 
 		 */
-		SymbolFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
+		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
 			try {
 
 				if (showForOneSeries(yahoo, EXCHANGE.valueOf(stock.getStockExchange()), stock.getSymbol())) {

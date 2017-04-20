@@ -121,7 +121,8 @@ public class CashFlowToChart {
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
         // Building the trading strategy
-        AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series);
+        AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series,12,26,9);
+
         // Running the strategy
         TradingRecord tradingRecord = series.run(strategy.getStrategy());
         // Getting the cash flow of the resulting trades

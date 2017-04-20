@@ -62,8 +62,8 @@ public class BollingerBars {
 		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 		// Bollinger bands
 		BollingerBandsMiddleIndicator middleBBand = new BollingerBandsMiddleIndicator(closePrice);
-		BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, closePrice);
-		BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, closePrice);
+		BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, closePrice,Decimal.ONE);
+		BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, closePrice,Decimal.ONE);
 
 		/**
 		 * Building chart dataset

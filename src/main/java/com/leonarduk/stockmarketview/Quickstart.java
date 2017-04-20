@@ -24,14 +24,14 @@ package com.leonarduk.stockmarketview;
 
 import java.io.IOException;
 
+import com.leonarduk.stockmarketview.analysis.TraderOrderUtils;
 import com.leonarduk.stockmarketview.chart.BollingerBars;
 import com.leonarduk.stockmarketview.chart.CandlestickChart;
-import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
-import com.leonarduk.stockmarketview.stockfeed.IndicatorsToCsv;
 import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.stockmarketview.stockfeed.file.IndicatorsToCsv;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;
@@ -63,7 +63,7 @@ public class Quickstart {
 
 		// Getting a time series (from any provider: CSV, web service, etc.)
 		StockFeed feed = new IntelligentStockFeed();
-		String ticker = "INXG";
+		String ticker = "ISJP";
 		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
@@ -129,7 +129,7 @@ public class Quickstart {
 		System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
 		CandlestickChart.displayCandlestickChart(stock);
 		BollingerBars.displayBollingerBars(stock);
-		 IndicatorsToCsv.exportToCsv(series);
+		 IndicatorsToCsv.exportIndicatorsToCsv(series);
 
 		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy, strategyName));
 

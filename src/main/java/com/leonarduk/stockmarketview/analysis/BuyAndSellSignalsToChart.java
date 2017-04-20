@@ -44,7 +44,6 @@ import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.stockfeed.google.GoogleFeed;
 import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
 import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
 import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
@@ -63,6 +62,60 @@ import yahoofinance.Stock;
  * strategy.
  */
 public class BuyAndSellSignalsToChart {
+	public static void main(String[] args) throws IOException {
+
+		// Getting the time series
+		StockFeed feed = new IntelligentStockFeed();
+		String ticker = "ISXF";
+		Stock stock = feed.get(EXCHANGE.London, ticker, 1).get();
+		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
+
+		// Building the trading strategy
+		List<AbstractStrategy> strategies = new ArrayList<>();
+		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
+		strategies.add(MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
+
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
+
+		displayBuyAndSellChart(series, strategies, stock.getName());
+	}
+
+	public static void displayBuyAndSellChart(TimeSeries series, List<AbstractStrategy> strategies, String name) {
+		/**
+		 * Building chart datasets
+		 */
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		dataset.addSeries(buildChartTimeSeries(series, new ClosePriceIndicator(series), name));
+
+		/**
+		 * Creating the chart
+		 */
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(name, // title
+				"Date", // x-axis label
+				"Price", // y-axis label
+				dataset, // data
+				true, // create legend?
+				true, // generate tooltips?
+				false // generate URLs?
+		);
+		XYPlot plot = (XYPlot) chart.getPlot();
+		DateAxis axis = (DateAxis) plot.getDomainAxis();
+		// axis.setDateFormatOverride(new SimpleDateFormat("MM-dd HH:mm"));
+
+		/**
+		 * Running the strategy and adding the buy and sell signals to plot
+		 */
+		for (AbstractStrategy strategy2 : strategies) {
+			addBuySellSignals(series, strategy2, plot);
+		}
+
+		/**
+		 * Displaying the chart
+		 */
+		displayChart(chart);
+	}
 
 	/**
 	 * Builds a JFreeChart time series from a Ta4j time series and an indicator.
@@ -97,7 +150,7 @@ public class BuyAndSellSignalsToChart {
 	 *            the plot
 	 */
 	private static void addBuySellSignals(TimeSeries series, AbstractStrategy strategy2, XYPlot plot) {
-		// Running the strategy 
+		// Running the strategy
 		List<Trade> trades = series.run(strategy2.getStrategy()).getTrades();
 		// Adding markers to plot
 		for (Trade trade : trades) {
@@ -138,57 +191,4 @@ public class BuyAndSellSignalsToChart {
 		frame.setVisible(true);
 	}
 
-	public static void main(String[] args) throws IOException {
-
-		// Getting the time series
-		StockFeed feed = new IntelligentStockFeed();
-		String ticker = "SEMB";
-		Stock stock = feed.get(EXCHANGE.London, ticker, 1).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
-
-		// Building the trading strategy
-		List<AbstractStrategy> strategies = new ArrayList<>();
-		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
-		strategies.add(MovingMomentumStrategy.buildStrategy(series));
-//		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
-//		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
-//		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
-
-		displayBuyAndSellChart(series, strategies, stock.getName());
-	}
-
-	public static void displayBuyAndSellChart(TimeSeries series, List<AbstractStrategy> strategies, String name) {
-		/**
-		 * Building chart datasets
-		 */
-		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		dataset.addSeries(buildChartTimeSeries(series, new ClosePriceIndicator(series), name));
-
-		/**
-		 * Creating the chart
-		 */
-		JFreeChart chart = ChartFactory.createTimeSeriesChart(name, // title
-				"Date", // x-axis label
-				"Price", // y-axis label
-				dataset, // data
-				true, // create legend?
-				true, // generate tooltips?
-				false // generate URLs?
-		);
-		XYPlot plot = (XYPlot) chart.getPlot();
-		DateAxis axis = (DateAxis) plot.getDomainAxis();
-//		axis.setDateFormatOverride(new SimpleDateFormat("MM-dd HH:mm"));
-
-		/**
-		 * Running the strategy and adding the buy and sell signals to plot
-		 */
-		for (AbstractStrategy strategy2 : strategies) {
-			addBuySellSignals(series, strategy2, plot);
-		}
-
-		/**
-		 * Displaying the chart
-		 */
-		displayChart(chart);
-	}
 }

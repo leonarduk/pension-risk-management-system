@@ -22,7 +22,7 @@ public class YahooFeed extends StockFeed {
 			from.add(Calendar.YEAR, -1 * years);
 
 			stock.getHistory(from, HistQuotesRequest.DEFAULT_TO, Interval.DAILY);
-
+			stock.setStockExchange(exchange.name());
 			return Optional.of(stock);
 		} catch (Exception e) {
 			return Optional.empty();

@@ -22,6 +22,7 @@
  */
 package com.leonarduk.stockmarketview;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,12 +34,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.Period;
 
-import com.leonarduk.stockmarketview.chart.TraderOrderUtils;
+import com.leonarduk.stockmarketview.analysis.TraderOrderUtils;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.stockfeed.SymbolFileReader;
+import com.leonarduk.stockmarketview.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
 import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
 import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
@@ -69,7 +70,7 @@ public class WalkForward {
 //		{Moving Momentum=24916, RSI-2=-81064, Global Extrema=23748, CCI Correction=-28035}
 		List<AbstractStrategy> strategies = new ArrayList<>();
 		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
-		strategies.add(MovingMomentumStrategy.buildStrategy(series));
+		strategies.add(MovingMomentumStrategy.buildStrategy(series,12,26,9));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
@@ -82,7 +83,7 @@ public class WalkForward {
 		
 		String filePath = new File(Demo.class.getClassLoader().getResource("Book1.csv").getFile()).getAbsolutePath();
 
-		SymbolFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
+		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
 			try {
 				computeForStrategies(totalscores, feed, stock.getSymbol());
 			} catch (Exception e) {

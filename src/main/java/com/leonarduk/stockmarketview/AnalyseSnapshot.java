@@ -1,152 +1,143 @@
 package com.leonarduk.stockmarketview;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import com.leonarduk.stockmarketview.AnalyseSnapshot.Recommendation.Trade;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+
+import com.leonarduk.stockmarketview.portfolio.Position;
+import com.leonarduk.stockmarketview.portfolio.Recommendation;
+import com.leonarduk.stockmarketview.portfolio.RecommendedTrade;
+import com.leonarduk.stockmarketview.portfolio.Valuation;
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
-import com.leonarduk.stockmarketview.stockfeed.IndicatorsToCsv;
 import com.leonarduk.stockmarketview.stockfeed.Instrument;
 import com.leonarduk.stockmarketview.stockfeed.IntelligentStockFeed;
 import com.leonarduk.stockmarketview.stockfeed.StockFeed;
-import com.leonarduk.stockmarketview.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.stockmarketview.stockfeed.file.IndicatorsToCsv;
+import com.leonarduk.stockmarketview.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
 import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
 import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
 import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;
+import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
-import yahoofinance.Stock;
 
 /**
  * This class is an example of a dummy trading bot using ta4j.
  * <p>
  */
 public class AnalyseSnapshot {
+	private final static Logger logger = Logger.getLogger(AnalyseSnapshot.class.getName());
+	private static DecimalFormat format;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 		StockFeed feed = new IntelligentStockFeed();
-		analayzeAllEtfs(feed);
-	}
+		String resource = "C:/Users/Stephen/FinanceWorkspace/stockmarketview/src/main/resources/portfolios.csv";
 
-	@SuppressWarnings("unchecked")
-	public static void analayzeAllEtfs(StockFeed feed) throws IOException {
-		analayzeAllEtfs(feed, Arrays.asList(Instrument.values()));
+		List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile(resource);
+		List<Instrument> heldInstruments = positions.stream().filter(p -> p.getInstrument().equals(Instrument.UNKNOWN))
+				.map(p -> p.getInstrument()).collect(Collectors.toList());
 
-	}
+		// List<Position> emptyPositions = (List<Position>)
+		// Arrays.asList(Instrument.values()).stream().map(instrument -> {
+		// return new Position("", (Instrument) instrument, BigDecimal.ZERO);
+		// }).collect(Collectors.toList());
+		//
+		// Stock stock = feed.get(EXCHANGE.London, stock2.code(), 11).get();
 
-	public static void analayzeAllEtfs(StockFeed feed, List<Instrument> stocks) throws IOException {
-		Map<Instrument, Set<Recommendation>> recommendations = new ConcurrentHashMap<>();
-		stocks.parallelStream().forEach(stock -> {
-			try {
-				recommendations.putAll(analyseStock(stock, feed));
-			} catch (Exception e) {
-				System.err.println("Failed to compute " + stock);
-			}
-		});
-
-		StringBuilder buf = new StringBuilder("Symbol,Sector,Strategy,Recommendation\n");
-		for (Set<Recommendation> symbol : recommendations.values()) {
-			for (Recommendation recommendation : symbol) {
-				buf.append(recommendation.instrument.code()).append(",").append(recommendation.instrument.category())
-						.append(",").append(recommendation.strategy.getName()).append(",")
-						.append(recommendation.tradeRecommendation.name()).append("\n");
-			}
-
+		List<Valuation> valuations = analayzeAllEtfs(positions);
+		StringBuilder sb = new StringBuilder();
+		for (Valuation optional : valuations) {
+			logger.info(optional.toString());
+			sb.append(optional.toString()).append("\n");
 		}
-		IndicatorsToCsv.writeFile("target/recommendations.csv", buf);
+		IndicatorsToCsv.writeFile("recommendations.csv", sb);
 	}
 
-	public static Map<Instrument, Set<Recommendation>> analyseStock(Instrument stock2, StockFeed feed)
-			throws IOException {
-		Map<Instrument, Set<Recommendation>> recommendations = new ConcurrentHashMap<>();
+	public static List<Valuation> analayzeAllEtfs(List<Position> stocks) throws IOException {
+		return stocks.parallelStream().map(AnalyseSnapshot::analyseStock).collect(Collectors.toList());
+	}
 
-		Stock stock = feed.get(EXCHANGE.London, stock2.code(), 11).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
+	public static Valuation analyseStock(Position stock2) {
+		TimeSeries series;
+		try {
+			series = DailyTimeseries.getTimeSeries(stock2.getStock().get());
 
-		List<AbstractStrategy> strategies = new ArrayList<>();
-		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
-		strategies.add(MovingMomentumStrategy.buildStrategy(series));
-		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
-		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
-		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
+			List<AbstractStrategy> strategies = new ArrayList<>();
+			strategies.add(GlobalExtremaStrategy.buildStrategy(series));
+			strategies.add(MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
+			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
+			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
+			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 
-		IndicatorsToCsv.exportToCsv(series);
-		// Initializing the trading history
-		TradingRecord tradingRecord = new TradingRecord();
+			IndicatorsToCsv.exportIndicatorsToCsv(series);
+			TradingRecord tradingRecord = new TradingRecord();
 
-		for (AbstractStrategy strategy : strategies) {
+			Tick mostRecentTick = series.getFirstTick();
+			Valuation valuation = createValuation(stock2, mostRecentTick);
+			for (AbstractStrategy strategy : strategies) {
 
-			int endIndex = series.getEnd();
-			if (strategy.getStrategy().shouldEnter(endIndex)) {
-				// Our strategy should enter
-				Set<Recommendation> tickerRecommendations = recommendations.getOrDefault(stock2, new HashSet<>());
-				tickerRecommendations.add(new Recommendation(Trade.BUY, strategy, stock2));
-				recommendations.put(stock2, tickerRecommendations);
-				boolean entered = tradingRecord.enter(endIndex, series.getLastTick().getAmount(), Decimal.TEN);
-				if (entered) {
-					Order entry = tradingRecord.getLastEntry();
-					System.out.println("Entered on " + entry.getIndex() + " (price=" + entry.getPrice().toDouble()
-							+ ", amount=" + entry.getAmount().toDouble() + ")");
-				}
-			} else if (strategy.getStrategy().shouldExit(endIndex)) {
-				// Our strategy should exit
-				Set<Recommendation> tickerRecommendations = recommendations.getOrDefault(stock2, new HashSet<>());
-				tickerRecommendations.add(new Recommendation(Trade.SELL, strategy, stock2));
-				recommendations.put(stock2, tickerRecommendations);
-				boolean exited = tradingRecord.exit(endIndex, series.getLastTick().getClosePrice(), Decimal.TEN);
-				if (exited) {
-					Order exit = tradingRecord.getLastExit();
-					System.out.println("Exited on " + exit.getIndex() + " (price=" + exit.getPrice().toDouble()
-							+ ", amount=" + exit.getAmount().toDouble() + ")");
+				int endIndex = series.getEnd();
+				if (strategy.getStrategy().shouldEnter(endIndex)) {
+					// Our strategy should enter
+					valuation.addRecommendation(
+							new Recommendation(RecommendedTrade.BUY, strategy, stock2.getInstrument()));
+					boolean entered = tradingRecord.enter(endIndex, mostRecentTick.getAmount(), Decimal.TEN);
+					if (entered) {
+						Order entry = tradingRecord.getLastEntry();
+						System.out.println("Entered on " + entry.getIndex() + " (price=" + entry.getPrice().toDouble()
+								+ ", amount=" + entry.getAmount().toDouble() + ")");
+					}
+				} else if (strategy.getStrategy().shouldExit(endIndex)) {
+					// Our strategy should exit
+					valuation.addRecommendation(
+							new Recommendation(RecommendedTrade.SELL, strategy, stock2.getInstrument()));
+					boolean exited = tradingRecord.exit(endIndex, mostRecentTick.getClosePrice(), Decimal.TEN);
+					if (exited) {
+						Order exit = tradingRecord.getLastExit();
+						System.out.println("Exited on " + exit.getIndex() + " (price=" + exit.getPrice().toDouble()
+								+ ", amount=" + exit.getAmount().toDouble() + ")");
+					}
 				}
 			}
+
+			valuation.addReturn(Period.days(1), calculateReturn(series, 1));
+			valuation.addReturn(Period.days(5), calculateReturn(series, 5));
+			valuation.addReturn(Period.days(21), calculateReturn(series, 21));
+			valuation.addReturn(Period.days(63), calculateReturn(series, 63));
+
+			return valuation;
+		} catch (Exception e) {
+			return new Valuation(stock2, Decimal.NaN, LocalDate.now());
 		}
-		return recommendations;
 	}
 
-	static class Recommendation {
-		enum Trade {
-			BUY, SELL, HOLD
-		}
+	protected static Valuation createValuation(Position position, Tick lastTick) {
+		Decimal price = lastTick.getClosePrice();
+		Decimal volume = position.getAmount();
+		Valuation valuation = new Valuation(position, price.multipliedBy(volume),
+				lastTick.getEndTime().toLocalDate());
+		return valuation;
+	}
 
-		private Trade tradeRecommendation;
-		private AbstractStrategy strategy;
-		private Instrument instrument;
+	protected static Decimal calculateReturn(TimeSeries series, int timePeriod) {
+		Decimal initialValue = series.getLastTick().getClosePrice();
+		Decimal diff = series.getTick(series.getEnd() - timePeriod).getClosePrice().minus(initialValue);
+		return roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
+	}
 
-		public Recommendation(Trade tradeRecommendation, AbstractStrategy strategy, Instrument stock2) {
-			this.tradeRecommendation = tradeRecommendation;
-			this.strategy = strategy;
-			this.instrument = stock2;
-		}
-
-		public Trade getTradeRecommendation() {
-			return tradeRecommendation;
-		}
-
-		public AbstractStrategy getStrategy() {
-			return strategy;
-		}
-
-		public Instrument getSymbol() {
-			return instrument;
-		}
-
-		@Override
-		public String toString() {
-			return "Recommendation [tradeRecommendation=" + tradeRecommendation + ", strategy=" + strategy + ", symbol="
-					+ instrument + "]";
-		}
-
+	public static Decimal roundDecimal(Decimal decimal) {
+		format = new DecimalFormat("#.##");
+		return Decimal.valueOf(format.format(decimal.toDouble()));
 	}
 
 }
