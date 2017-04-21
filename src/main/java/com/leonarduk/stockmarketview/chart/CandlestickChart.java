@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.DatasetRenderingOrder;
@@ -38,8 +37,6 @@ import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.OHLCDataset;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 
@@ -93,27 +90,7 @@ public class CandlestickChart {
 		/**
 		 * Displaying the chart
 		 */
-		displayChart(chart);
-	}
-
-	/**
-	 * Displays a chart in a frame.
-	 * 
-	 * @param chart
-	 *            the chart to be displayed
-	 */
-	private static void displayChart(JFreeChart chart) {
-		// Chart panel
-		ChartPanel panel = new ChartPanel(chart);
-		panel.setFillZoomRectangle(true);
-		panel.setMouseWheelEnabled(true);
-		panel.setPreferredSize(new java.awt.Dimension(740, 300));
-		// Application frame
-		ApplicationFrame frame = new ApplicationFrame("Ta4j example - Candlestick chart");
-		frame.setContentPane(panel);
-		frame.pack();
-		RefineryUtilities.centerFrameOnScreen(frame);
-		frame.setVisible(true);
+		ChartDisplay.displayChartInFrame(chart, 740,300,"Candlestick Chart");
 	}
 
 	/**

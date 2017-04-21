@@ -161,6 +161,8 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	private Optional<BigDecimal> parseBigDecimal(final String input) {
 		try {
+			if (input.equals("-"))
+				return Optional.empty();
 			return Optional.of(BigDecimal.valueOf(Double.valueOf(input)));
 		} catch (NumberFormatException e) {
 			log.warning("Failed to parse " + input);
@@ -206,10 +208,14 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	protected boolean parseReader(BufferedReader reader2) throws IOException {
 		try {
-			final String line = reader2.readLine();
+			String line = reader2.readLine();
 			if (line == null || line.length() == 0) {
 				release();
 				return false;
+			}
+			if (line.contains("\t")) {
+				log.warning("Messed up Csv - found tabs");
+				line = line.replace("\t", ",");
 			}
 
 			final int length = line.length();

@@ -26,14 +26,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
 import com.leonarduk.stockmarketview.stockfeed.DailyTimeseries;
 
@@ -62,8 +59,8 @@ public class BollingerBars {
 		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 		// Bollinger bands
 		BollingerBandsMiddleIndicator middleBBand = new BollingerBandsMiddleIndicator(closePrice);
-		BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, closePrice,Decimal.ONE);
-		BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, closePrice,Decimal.ONE);
+		BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, closePrice, Decimal.ONE);
+		BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, closePrice, Decimal.ONE);
 
 		/**
 		 * Building chart dataset
@@ -92,7 +89,7 @@ public class BollingerBars {
 		/**
 		 * Displaying the chart
 		 */
-		displayChart(chart);
+		ChartDisplay.displayChartInFrame(chart, 500, 270, "Bollinger chart");
 	}
 
 	/**
@@ -114,26 +111,6 @@ public class BollingerBars {
 			chartTimeSeries.add(new Day(tick.getEndTime().toDate()), indicator.getValue(i).toDouble());
 		}
 		return chartTimeSeries;
-	}
-
-	/**
-	 * Displays a chart in a frame.
-	 * 
-	 * @param chart
-	 *            the chart to be displayed
-	 */
-	private static void displayChart(JFreeChart chart) {
-		// Chart panel
-		ChartPanel panel = new ChartPanel(chart);
-		panel.setFillZoomRectangle(true);
-		panel.setMouseWheelEnabled(true);
-		panel.setPreferredSize(new java.awt.Dimension(500, 270));
-		// Application frame
-		ApplicationFrame frame = new ApplicationFrame("Ta4j example - Indicators to chart");
-		frame.setContentPane(panel);
-		frame.pack();
-		RefineryUtilities.centerFrameOnScreen(frame);
-		frame.setVisible(true);
 	}
 
 }
