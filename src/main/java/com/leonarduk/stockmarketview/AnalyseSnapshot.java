@@ -68,7 +68,7 @@ public class AnalyseSnapshot {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><body><table><tr>");
 
-		for (String name : new String[] { "Name", "ISIN", "Code","Sector", "Price", "AsOf", "1D", "5D", "21D", "63D", "365d" }) {
+		for (String name : new String[] { "Name", "ISIN", "Code","Sector", "Type","Price", "AsOf", "1D", "5D", "21D", "63D", "365d" }) {
 			addHeader(name, sb);
 		}
 		String[] strategies = new String[] { "Global Extrema", "Moving Momentum", "SMA (12days)", "SMA (20days)",
@@ -83,6 +83,7 @@ public class AnalyseSnapshot {
 			sb.append("<tr><td>").append(optional.getPosition().getSymbol()).append("</td><td>");
 			sb.append(instrument.name()).append("</td><td>");
 			sb.append(instrument.category()).append("</td><td>");
+			sb.append(instrument.assetType()).append("</td><td>");
 			
 			sb.append(instrument.getCode()).append("</td><td>").append(optional.getPrice()).append("</td><td>");
 			sb.append(optional.getValuationDate().toString()).append("</td>");
