@@ -13,14 +13,15 @@ public class StockFeedFactory {
 
 	public static StockFeed getDataFeed(Source source) {
 		switch (source) {
-		case Google:
-			return GOOGLE_FEED;
 		case FT:
 			return FT_FEED;
 		case MANUAL:
 			return CACHED_FEED;
-		default:
+		case Yahoo:
 			return YAHOO_FEED;
+		case Google:
+		default:
+			return GOOGLE_FEED;
 		}
 	}
 
