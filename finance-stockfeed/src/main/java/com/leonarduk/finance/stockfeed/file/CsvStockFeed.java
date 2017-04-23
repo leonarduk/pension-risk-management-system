@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.ComparableHistoricalQuote;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.google.DateUtils;
 

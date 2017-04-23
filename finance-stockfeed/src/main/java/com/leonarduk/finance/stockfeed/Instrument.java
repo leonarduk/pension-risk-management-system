@@ -27,8 +27,8 @@ public class Instrument {
 		private Instrument create(String line) {
 			@SuppressWarnings("unchecked")
 			Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
-			return new Instrument(iter.next(), AssetType.valueOf(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(),
-					iter.next(), iter.next(), iter.next(), iter.next());
+			return new Instrument(iter.next(), AssetType.valueOf(iter.next().toUpperCase()),
+					Source.valueOf(iter.next()), iter.next(), iter.next(), iter.next(), iter.next(), iter.next());
 		}
 
 		private void init() throws IOException {
@@ -38,7 +38,8 @@ public class Instrument {
 			}
 			instruments = Resources.readLines(url, Charset.defaultCharset()).stream().skip(1).map(line -> create(line))
 					.collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
-			instruments.values().stream().forEach(i -> instruments.put(i.getIsin(), i));
+			instruments.values().stream().forEach(i -> instruments.put(i.getIsin().toUpperCase(), i));
+			instruments.put(CASH.isin.toUpperCase(), CASH);
 		}
 
 	}
@@ -54,8 +55,8 @@ public class Instrument {
 				return Instrument.UNKNOWN;
 			}
 		}
-		if (InstrumentLoader.instance.instruments.containsKey(symbol)) {
-			return InstrumentLoader.instance.instruments.get(symbol);
+		if (InstrumentLoader.instance.instruments.containsKey(symbol.toUpperCase())) {
+			return InstrumentLoader.instance.instruments.get(symbol.toUpperCase());
 		}
 
 		LOGGER.warning("Could not map " + symbol);
@@ -68,7 +69,7 @@ public class Instrument {
 			"UNKNOWN", "UNKNOWN", "GBP", "UNKNOWN");
 	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, Source.MANUAL, "Cash", "Cash", "Cash",
 			"GBP", "");
-	
+
 	private AssetType assetType;
 	private String category;
 	private String code;
