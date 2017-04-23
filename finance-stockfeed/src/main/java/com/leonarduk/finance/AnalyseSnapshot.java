@@ -49,6 +49,11 @@ public class AnalyseSnapshot {
 	private static int years = 20;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
+		StringBuilder buf = createPortfolioReport();
+		IndicatorsToCsv.writeFile("recommendations.html", buf);
+	}
+
+	public static StringBuilder createPortfolioReport() throws IOException {
 		List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile(
 				new File(Resources.getResource("data/portfolios.csv").getFile()).getAbsolutePath());
 		List<Instrument> heldInstruments = positions.stream().filter(p -> p.getInstrument().equals(Instrument.UNKNOWN))
@@ -59,11 +64,11 @@ public class AnalyseSnapshot {
 		StringBuilder sbBody = new StringBuilder();
 		StringBuilder sbHead = new StringBuilder();
 
-//		IntelligentStockFeed.setRefresh(false);
+		// IntelligentStockFeed.setRefresh(false);
 
 		List<Valuation> valuations = analayzeAllEtfs(positions);
 		createValuationsTable(valuations, sbBody, true);
-		sbBody.append("<hr>");
+		sbBody.append("<hr/>");
 		PieChartFactory pieChartFactory = new PieChartFactory("Asset Allocation");
 		valuations.stream().forEach(v -> {
 			pieChartFactory.add(v.getPosition().getInstrument().assetType().name(), v.getValuation().toDouble());
@@ -75,7 +80,8 @@ public class AnalyseSnapshot {
 		// createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody,
 		// false);
 
-		saveResults(sbHead, sbBody);
+		StringBuilder buf = createHtmlText(sbHead, sbBody);
+		return buf;
 	}
 
 	public static List<Position> getListedInstruments(List<Instrument> heldInstruments) {
@@ -88,10 +94,10 @@ public class AnalyseSnapshot {
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	protected static void saveResults(StringBuilder sbHead, StringBuilder sbBody) {
+	public static StringBuilder createHtmlText(StringBuilder sbHead, StringBuilder sbBody) {
 		StringBuilder buf = new StringBuilder("<html><head>").append(sbHead).append("</head><body>");
 		buf.append(sbBody).append("</body></html>\n");
-		IndicatorsToCsv.writeFile("recommendations.html", buf);
+		return buf;
 	}
 
 	protected static void createValuationsTable(List<Valuation> valuations, StringBuilder sb,

@@ -26,7 +26,7 @@ public class ChartDisplay {
 		String imageName = imageNamePrefix + ".png";
 		ChartDisplay.saveChartAsPng(imageName, chart, width, height);
 		StringBuilder sb = new StringBuilder("<IMG SRC=\"").append(imageName).append("\" WIDTH=\"").append(width)
-				.append("\" HEIGHT=\"").append(height).append("\" BORDER=\"0\" USEMAP=\"#chart\">");
+				.append("\" HEIGHT=\"").append(height).append("\" BORDER=\"0\" USEMAP=\"#chart\"/>");
 		return sb;
 	}
 
@@ -49,6 +49,7 @@ public class ChartDisplay {
 				.append("</th></tr>");
 		map.entrySet().stream().forEach(entry -> sb.append("<tr><td>").append(entry.getKey().toString())
 				.append("</td><td>").append(entry.getValue().toString()).append("</td></tr>"));
+		sb.append("</table>");
 		return sb;
 	}
 }
