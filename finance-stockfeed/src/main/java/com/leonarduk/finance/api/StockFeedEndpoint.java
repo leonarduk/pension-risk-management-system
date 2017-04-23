@@ -35,7 +35,7 @@ public class StockFeedEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("history/csv")
-	public Response calc(@QueryParam("ticker") String ticker, @QueryParam("years") int years) throws IOException {
+	public Response downloadHistoryCsv(@QueryParam("ticker") String ticker, @QueryParam("years") int years) throws IOException {
 		List<HistoricalQuote> series = getHistory(ticker, years);
 		EXCHANGE exchange = EXCHANGE.London;
 		String fileName = exchange.name() + "_" + ticker + ".csv";
