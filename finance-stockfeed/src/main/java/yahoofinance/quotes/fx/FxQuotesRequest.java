@@ -3,7 +3,9 @@ package yahoofinance.quotes.fx;
 
 import java.util.ArrayList;
 import java.util.List;
-import yahoofinance.Utils;
+
+import com.leonarduk.finance.utils.Utils;
+
 import yahoofinance.YahooFinance;
 import yahoofinance.quotes.QuotesProperty;
 import yahoofinance.quotes.QuotesRequest;

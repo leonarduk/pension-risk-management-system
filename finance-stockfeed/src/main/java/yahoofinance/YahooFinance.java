@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import com.leonarduk.finance.utils.Utils;
+
 import yahoofinance.histquotes.HistQuotesRequest;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.fx.FxQuote;

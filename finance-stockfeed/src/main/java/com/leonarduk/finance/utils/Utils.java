@@ -1,4 +1,4 @@
-package yahoofinance;
+package com.leonarduk.finance.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.logging.Level;
+
+import yahoofinance.YahooFinance;
 
 /**
  *

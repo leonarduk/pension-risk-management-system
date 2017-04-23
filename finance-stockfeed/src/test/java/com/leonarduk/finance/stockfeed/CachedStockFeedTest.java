@@ -15,7 +15,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.finance.stockfeed.google.DateUtils;
+import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;

@@ -19,7 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.leonarduk.finance.stockfeed.google;
+package com.leonarduk.finance.utils;
 
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.MONTH;

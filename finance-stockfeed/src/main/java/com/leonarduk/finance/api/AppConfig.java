@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed;
+package com.leonarduk.finance.api;
 
 import net.sf.log4jdbc.sql.jdbcapi.DataSourceSpy;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -19,7 +19,7 @@ public class AppConfig {
     @Named
     static class JerseyConfig extends ResourceConfig {
         public JerseyConfig() {
-            this.packages("com.leonarduk.finance.stockfeed");
+            this.packages("com.leonarduk.finance.api");
         }
     }
 

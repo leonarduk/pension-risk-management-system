@@ -4,7 +4,8 @@ package yahoofinance.quotes.stock;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.TimeZone;
-import yahoofinance.Utils;
+
+import com.leonarduk.finance.utils.Utils;
 
 /**
  * All getters can return null in case the data is not available from Yahoo Finance.

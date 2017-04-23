@@ -1,7 +1,8 @@
 package yahoofinance.quotes.stock;
 
+import com.leonarduk.finance.utils.Utils;
+
 import yahoofinance.Stock;
-import yahoofinance.Utils;
 import yahoofinance.exchanges.ExchangeTimeZone;
 import yahoofinance.quotes.QuotesProperty;
 

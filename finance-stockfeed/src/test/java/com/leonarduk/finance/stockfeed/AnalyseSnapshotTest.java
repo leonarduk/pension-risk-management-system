@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
-import com.leonarduk.stockmarketview.AnalyseSnapshot;
-import com.leonarduk.stockmarketview.portfolio.Position;
+import com.leonarduk.finance.AnalyseSnapshot;
+import com.leonarduk.finance.portfolio.Position;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Tick;
