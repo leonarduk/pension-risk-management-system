@@ -1,6 +1,9 @@
 package com.leonarduk.finance.stockfeed;
 
+import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.addValue;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,6 +85,20 @@ public abstract class StockFeed {
 			stock.setHistory(quotes);
 		}
 		return stock;
+	}
+
+	public static StringBuilder seriesToCsv(List<HistoricalQuote> series) {
+		StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+		for (HistoricalQuote historicalQuote : series) {
+			sb.append(format1.format(historicalQuote.getDate().getTime()));
+			addValue(sb, historicalQuote.getOpen());
+			addValue(sb, historicalQuote.getHigh());
+			addValue(sb, historicalQuote.getLow());
+			addValue(sb, historicalQuote.getClose());
+			sb.append(",").append(historicalQuote.getVolume()).append("\n");
+		}
+		return sb;
 	}
 
 }

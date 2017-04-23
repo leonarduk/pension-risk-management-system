@@ -1,13 +1,11 @@
 package com.leonarduk.finance.stockfeed;
 
-import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.addValue;
 import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.writeFile;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -58,21 +56,12 @@ public class CachedStockFeed extends CsvStockFeed {
 
 		File file = getFile(stock);
 		log.info("Save stock to " + file.getAbsolutePath());
+		List<HistoricalQuote> series = stock.getHistory();
 
 		/**
 		 * Building header
 		 */
-		StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
-		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-		List<HistoricalQuote> series = stock.getHistory();
-		for (HistoricalQuote historicalQuote : series) {
-			sb.append(format1.format(historicalQuote.getDate().getTime()));
-			addValue(sb, historicalQuote.getOpen());
-			addValue(sb, historicalQuote.getHigh());
-			addValue(sb, historicalQuote.getLow());
-			addValue(sb, historicalQuote.getClose());
-			sb.append(",").append(historicalQuote.getVolume()).append("\n");
-		}
+		StringBuilder sb = seriesToCsv(series);
 		writeFile(file.getAbsolutePath(), sb);
 
 	}
