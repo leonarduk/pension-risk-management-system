@@ -2,101 +2,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.leonarduk</groupId>
-	<artifactId>stockmarketview</artifactId>
+	<artifactId>finance</artifactId>
 	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>stockmarketview Maven Webapp</name>
+	<name>Parent pom</name>
 	<url>http://maven.apache.org</url>
-
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<webscraper-core.version>1.0.13-SNAPSHOT</webscraper-core.version>
-	</properties>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.leonarduk</groupId>
-			<artifactId>webscraper-core</artifactId>
-			<version>${webscraper-core.version}</version>
-		</dependency>
-		<!-- ta4j -->
-		<dependency>
-			<groupId>eu.verdelhan</groupId>
-			<artifactId>ta4j</artifactId>
-			<version>0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>au.com.bytecode</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.19</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
-		<!-- google finance -->
-		<dependency>
-			<groupId>com.github.kevinsawicki</groupId>
-			<artifactId>http-request</artifactId>
-			<version>5.4</version>
-		</dependency>
-
-		<!-- yahoo -->
-		<dependency>
-			<groupId>com.yahoofinance-api</groupId>
-			<artifactId>YahooFinanceAPI</artifactId>
-			<version>3.6.0</version>
-		</dependency>
-		<!-- test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- web -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>4.3.7.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>4.3.7.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>4.3.7.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>4.3.7.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-
 	</dependencies>
-	<build>
-		<finalName>stockmarketview</finalName>
-	</build>
   <modules>
-    <module>web</module>
-    <module>data</module>
+    <module>finance-stockfeed</module>
   </modules>
 </project>
