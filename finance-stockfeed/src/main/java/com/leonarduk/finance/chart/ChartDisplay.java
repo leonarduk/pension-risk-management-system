@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview.chart;
+package com.leonarduk.finance.chart;
 
 import java.io.File;
 import java.io.IOException;

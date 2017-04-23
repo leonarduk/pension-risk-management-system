@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview;
+package com.leonarduk.finance;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,22 +15,22 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import com.google.common.io.Resources;
+import com.leonarduk.finance.chart.ChartDisplay;
+import com.leonarduk.finance.chart.PieChartFactory;
+import com.leonarduk.finance.portfolio.Position;
+import com.leonarduk.finance.portfolio.Recommendation;
+import com.leonarduk.finance.portfolio.RecommendedTrade;
+import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
-import com.leonarduk.stockmarketview.chart.ChartDisplay;
-import com.leonarduk.stockmarketview.chart.PieChartFactory;
-import com.leonarduk.stockmarketview.portfolio.Position;
-import com.leonarduk.stockmarketview.portfolio.Recommendation;
-import com.leonarduk.stockmarketview.portfolio.RecommendedTrade;
-import com.leonarduk.stockmarketview.portfolio.Valuation;
-import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
-import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
-import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
-import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
+import com.leonarduk.finance.strategies.AbstractStrategy;
+import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
+import com.leonarduk.finance.strategies.MovingMomentumStrategy;
+import com.leonarduk.finance.strategies.SimpleMovingAverageStrategy;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;

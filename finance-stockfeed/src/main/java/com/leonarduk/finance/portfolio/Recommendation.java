@@ -1,7 +1,7 @@
-package com.leonarduk.stockmarketview.portfolio;
+package com.leonarduk.finance.portfolio;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
+import com.leonarduk.finance.strategies.AbstractStrategy;
 
 public class Recommendation {
 

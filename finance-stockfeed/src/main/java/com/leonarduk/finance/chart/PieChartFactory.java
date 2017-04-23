@@ -37,7 +37,7 @@
  *
  */
 
-package com.leonarduk.stockmarketview.chart;
+package com.leonarduk.finance.chart;
 
 import java.awt.Font;
 import java.io.BufferedOutputStream;

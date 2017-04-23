@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview.strategies;
+package com.leonarduk.finance.strategies;
 
 import eu.verdelhan.ta4j.Strategy;
 

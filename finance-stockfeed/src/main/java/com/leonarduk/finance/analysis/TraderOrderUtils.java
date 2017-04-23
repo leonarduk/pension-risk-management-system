@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview.analysis;
+package com.leonarduk.finance.analysis;
 
 import java.util.LinkedList;
 import java.util.List;

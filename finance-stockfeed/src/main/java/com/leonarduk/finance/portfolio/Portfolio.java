@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview.portfolio;
+package com.leonarduk.finance.portfolio;
 
 import java.util.Set;
 

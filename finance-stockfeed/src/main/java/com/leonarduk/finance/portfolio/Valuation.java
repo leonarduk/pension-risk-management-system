@@ -1,4 +1,4 @@
-package com.leonarduk.stockmarketview.portfolio;
+package com.leonarduk.finance.portfolio;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import com.google.common.collect.Maps;
-import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
+import com.leonarduk.finance.strategies.AbstractStrategy;
 
 import eu.verdelhan.ta4j.Decimal;
 

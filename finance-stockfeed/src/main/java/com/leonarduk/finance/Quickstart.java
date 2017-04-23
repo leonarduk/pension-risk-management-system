@@ -20,18 +20,18 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.leonarduk.stockmarketview;
+package com.leonarduk.finance;
 
 import java.io.IOException;
 
+import com.leonarduk.finance.analysis.TraderOrderUtils;
+import com.leonarduk.finance.chart.BollingerBars;
+import com.leonarduk.finance.chart.CandlestickChart;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
-import com.leonarduk.stockmarketview.analysis.TraderOrderUtils;
-import com.leonarduk.stockmarketview.chart.BollingerBars;
-import com.leonarduk.stockmarketview.chart.CandlestickChart;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;

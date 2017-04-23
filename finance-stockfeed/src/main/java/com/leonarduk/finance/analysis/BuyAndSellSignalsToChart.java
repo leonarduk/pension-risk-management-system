@@ -20,7 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.leonarduk.stockmarketview.analysis;
+package com.leonarduk.finance.analysis;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -44,10 +44,10 @@ import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.strategies.AbstractStrategy;
-import com.leonarduk.stockmarketview.strategies.GlobalExtremaStrategy;
-import com.leonarduk.stockmarketview.strategies.MovingMomentumStrategy;
-import com.leonarduk.stockmarketview.strategies.SimpleMovingAverageStrategy;
+import com.leonarduk.finance.strategies.AbstractStrategy;
+import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
+import com.leonarduk.finance.strategies.MovingMomentumStrategy;
+import com.leonarduk.finance.strategies.SimpleMovingAverageStrategy;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Indicator;

@@ -10,11 +10,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
-import com.leonarduk.stockmarketview.portfolio.Position;
 
 import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.Stock;
