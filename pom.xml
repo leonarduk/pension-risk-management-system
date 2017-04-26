@@ -33,6 +33,5 @@
   <modules>
     <module>finance-stockfeed</module>
     <module>finance-reports</module>
-    <module>finances-html5</module>
   </modules>
 </project>

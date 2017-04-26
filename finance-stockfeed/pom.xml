@@ -25,7 +25,7 @@
 		<rest.assured.version>2.3.3</rest.assured.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<webscraper-core.version>1.0.13-SNAPSHOT</webscraper-core.version>
+		<webscraper-core.version>1.0.14</webscraper-core.version>
 	</properties>
 
 	<dependencies>
