@@ -16,7 +16,16 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class Instrument {
 	public enum AssetType {
-		CASH, ETF, FUND, UNKNOWN
+		CASH, EQUITY, BOND, COMMODITIES, PROPERTY, ETF, FUND, UNKNOWN;
+
+		public static AssetType fromString(String value) {
+			try {
+				return AssetType.valueOf(value.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				LOGGER.warning("Cannot map " + e + " to AssetType");
+				return AssetType.UNKNOWN;
+			}
+		}
 	}
 
 	static class InstrumentLoader {
@@ -27,8 +36,9 @@ public class Instrument {
 		private Instrument create(String line) {
 			@SuppressWarnings("unchecked")
 			Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
-			return new Instrument(iter.next(), AssetType.valueOf(iter.next().toUpperCase()),
-					Source.valueOf(iter.next()), iter.next(), iter.next(), iter.next(), iter.next(), iter.next());
+			return new Instrument(iter.next(), AssetType.fromString(iter.next().toUpperCase()),
+					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(), iter.next(),
+					iter.next(), iter.next(), iter.next());
 		}
 
 		private void init() throws IOException {
@@ -65,10 +75,10 @@ public class Instrument {
 
 	private static final Logger LOGGER = Logger.getLogger(Instrument.class.getName());
 
-	public static final Instrument UNKNOWN = new Instrument("UNKNOWN", AssetType.UNKNOWN, Source.MANUAL, "UNKNOWN",
-			"UNKNOWN", "UNKNOWN", "GBP", "UNKNOWN");
-	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, Source.MANUAL, "Cash", "Cash", "Cash",
-			"GBP", "");
+	public static final Instrument UNKNOWN = new Instrument("UNKNOWN", AssetType.UNKNOWN, AssetType.UNKNOWN,
+			Source.MANUAL, "UNKNOWN", "UNKNOWN", "UNKNOWN", "GBP", "UNKNOWN");
+	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL, "Cash",
+			"Cash", "Cash", "GBP", "");
 
 	private AssetType assetType;
 	private String category;
@@ -84,9 +94,12 @@ public class Instrument {
 
 	private Source source;
 
-	Instrument(String name, AssetType type, Source source, String isin, String code, String category, String currency,
-			String googleCode) {
+	private AssetType underlyingType;
+
+	Instrument(String name, AssetType type, AssetType underlying, Source source, String isin, String code,
+			String category, String currency, String googleCode) {
 		this.assetType = type;
+		this.underlyingType = underlying;
 		this.source = source;
 		this.isin = isin;
 		this.code = code;
@@ -98,6 +111,10 @@ public class Instrument {
 
 	public AssetType assetType() {
 		return assetType;
+	}
+
+	public AssetType underlyingType() {
+		return underlyingType;
 	}
 
 	public String category() {

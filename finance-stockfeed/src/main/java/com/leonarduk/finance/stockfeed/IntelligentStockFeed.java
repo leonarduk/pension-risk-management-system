@@ -34,15 +34,7 @@ public class IntelligentStockFeed extends StockFeed {
 			String ticker = instrument.code();
 
 			if (instrument.equals(Instrument.CASH)) {
-				Stock cash = new Stock(instrument.getCode());
-				List<HistoricalQuote> history = Lists.newArrayList();
-				history.add(new ComparableHistoricalQuote(ticker, Calendar.getInstance(), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-						BigDecimal.ONE, BigDecimal.ONE, 0l));
-				cash.setHistory(history);
-				StockQuote quote = new StockQuote(ticker);
-				quote.setPrice(BigDecimal.ONE);
-				cash.setQuote(quote);
-				return Optional.of(cash);
+				return getFlatCashSeries(instrument, ticker);
 			}
 			CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
 
@@ -65,6 +57,18 @@ public class IntelligentStockFeed extends StockFeed {
 			log.warning(e.getMessage());
 			return Optional.empty();
 		}
+	}
+
+	public static Optional<Stock> getFlatCashSeries(Instrument instrument, String ticker) {
+		Stock cash = new Stock(instrument.getCode());
+		List<HistoricalQuote> history = Lists.newArrayList();
+		history.add(new ComparableHistoricalQuote(ticker, Calendar.getInstance(), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+				BigDecimal.ONE, BigDecimal.ONE, 0l));
+		cash.setHistory(history);
+		StockQuote quote = new StockQuote(ticker);
+		quote.setPrice(BigDecimal.ONE);
+		cash.setQuote(quote);
+		return Optional.of(cash);
 	}
 
 }

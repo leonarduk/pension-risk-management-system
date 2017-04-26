@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
 import jersey.repackaged.com.google.common.collect.Lists;
+import yahoofinance.Stock;
 
 /**
  * This class is an example of a dummy trading bot using ta4j.
@@ -67,21 +69,32 @@ public class AnalyseSnapshot {
 		// IntelligentStockFeed.setRefresh(false);
 
 		List<Valuation> valuations = analayzeAllEtfs(positions);
+
 		createValuationsTable(valuations, sbBody, true);
 		sbBody.append("<hr/>");
-		PieChartFactory pieChartFactory = new PieChartFactory("Asset Allocation");
-		valuations.stream().forEach(v -> {
-			pieChartFactory.add(v.getPosition().getInstrument().assetType().name(), v.getValuation().toDouble());
-		});
-		TreeMap<String, Double> valueMap = new TreeMap<>(pieChartFactory.getValueMap());
-		valueMap.put("Total", roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
-		sbBody.append(ChartDisplay.getTable(valueMap, "Asset", "Value"));
-		sbBody.append(ChartDisplay.saveImageAndReturnHtmlLink("assets", 400, 400, pieChartFactory.buildChart()));
-		// createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody,
-		// false);
+
+		Map<String, Double> assetTypeMap = (Map<String, Double>) valuations.parallelStream()
+				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().assetType().name(),
+						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
+		Map<String, Double> underlyingTypeMap = (Map<String, Double>) valuations.parallelStream()
+				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().underlyingType().name(),
+						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
+
+		addPieChartAndTable(assetTypeMap, sbBody, valuations,"Owned Assets", "Type", "Value");
+		addPieChartAndTable(underlyingTypeMap, sbBody, valuations,"Underlying Assets", "Type", "Value");
 
 		StringBuilder buf = createHtmlText(sbHead, sbBody);
 		return buf;
+	}
+
+	public static void addPieChartAndTable(Map<String, Double> assetTypeMap, StringBuilder sbBody,
+			List<Valuation> valuations, String title, String key, String value) throws IOException {
+		PieChartFactory pieChartFactory = new PieChartFactory(title);
+		pieChartFactory.addAll(assetTypeMap);
+		assetTypeMap.put("Total", roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
+		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
+		String filename = title.replace(" ", "_");
+		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
 	}
 
 	public static List<Position> getListedInstruments(List<Instrument> heldInstruments) {
@@ -192,7 +205,11 @@ public class AnalyseSnapshot {
 	public static Valuation analyseStock(Position stock2) {
 		TimeSeries series;
 		try {
-			series = DailyTimeseries.getTimeSeries(stock2.getStock().get());
+			Optional<Stock> stock = stock2.getStock();
+			if (!stock.isPresent()) {
+				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), stock2.getSymbol());
+			}
+			series = DailyTimeseries.getTimeSeries(stock.get());
 
 			List<AbstractStrategy> strategies = new ArrayList<>();
 			strategies.add(GlobalExtremaStrategy.buildStrategy(series));

@@ -1,5 +1,6 @@
 package com.leonarduk.finance.chart;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -9,6 +10,8 @@ import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.StandardEntityCollection;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
@@ -21,10 +24,27 @@ public class ChartDisplay {
 
 	}
 
-	public static StringBuilder saveImageAndReturnHtmlLink(String imageNamePrefix, int width, int height,
+	public static StringBuilder saveImageAsPngAndReturnHtmlLink(String imageNamePrefix, int width, int height,
 			JFreeChart chart) throws IOException {
+
 		String imageName = imageNamePrefix + ".png";
 		ChartDisplay.saveChartAsPng(imageName, chart, width, height);
+		StringBuilder sb = new StringBuilder("<IMG SRC=\"").append(imageName).append("\" WIDTH=\"").append(width)
+				.append("\" HEIGHT=\"").append(height).append("\" BORDER=\"0\" USEMAP=\"#chart\"/>");
+		return sb;
+	}
+
+	public static StringBuilder saveImageAsSvgAndReturnHtmlLink(String imageNamePrefix, int width, int height,
+			JFreeChart chart) throws IOException {
+
+		SVGGraphics2D g2 = new SVGGraphics2D(width, height);
+		Rectangle r = new Rectangle(0, 0, width, height);
+		chart.draw(g2, r);
+		String imageName = imageNamePrefix + ".svg";
+		File f = new File(imageName);
+		SVGUtils.writeToSVG(f, g2.getSVGElement());
+
+		// <img src="data:image/jpg;base64,BASE64ENCODEDSTRINGHERE" />
 		StringBuilder sb = new StringBuilder("<IMG SRC=\"").append(imageName).append("\" WIDTH=\"").append(width)
 				.append("\" HEIGHT=\"").append(height).append("\" BORDER=\"0\" USEMAP=\"#chart\"/>");
 		return sb;

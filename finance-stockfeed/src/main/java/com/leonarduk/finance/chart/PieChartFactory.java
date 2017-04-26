@@ -79,7 +79,7 @@ public class PieChartFactory {
 			writer.println("<HEAD><TITLE>JFreeChart Image Map Demo</TITLE></HEAD>");
 			writer.println("<BODY>");
 			// ChartUtilities.writeImageMap(writer, "chart", info);
-			writer.println(ChartDisplay.saveImageAndReturnHtmlLink("345", 400, 400, factory.buildChart()));
+			writer.println(ChartDisplay.saveImageAsPngAndReturnHtmlLink("345", 400, 400, factory.buildChart()));
 			writer.println("</BODY>");
 			writer.println("</HTML>");
 			writer.close();
