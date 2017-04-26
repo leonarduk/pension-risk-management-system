@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,8 +12,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.google.common.io.Resources;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class Instrument {
 	public enum AssetType {
@@ -34,7 +33,6 @@ public class Instrument {
 		private Map<String, Instrument> instruments;
 
 		private Instrument create(String line) {
-			@SuppressWarnings("unchecked")
 			Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
 			return new Instrument(iter.next(), AssetType.fromString(iter.next().toUpperCase()),
 					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(), iter.next(),
