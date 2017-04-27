@@ -60,8 +60,8 @@ public class AnalyseSnapshot {
 				new File(Resources.getResource("data/portfolios.csv").getFile()).getAbsolutePath());
 		List<Instrument> heldInstruments = positions.stream().filter(p -> p.getInstrument().equals(Instrument.UNKNOWN))
 				.map(p -> p.getInstrument()).collect(Collectors.toList());
-		// List<Position> emptyPositions =
-		// getListedInstruments(heldInstruments);
+		 List<Position> emptyPositions =
+		 getListedInstruments(heldInstruments);
 
 		StringBuilder sbBody = new StringBuilder();
 		StringBuilder sbHead = new StringBuilder();
@@ -83,7 +83,11 @@ public class AnalyseSnapshot {
 		addPieChartAndTable(assetTypeMap, sbBody, valuations,"Owned Assets", "Type", "Value");
 		addPieChartAndTable(underlyingTypeMap, sbBody, valuations,"Underlying Assets", "Type", "Value");
 
+		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, true);
+
+		
 		StringBuilder buf = createHtmlText(sbHead, sbBody);
+		
 		return buf;
 	}
 
