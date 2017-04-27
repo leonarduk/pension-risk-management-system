@@ -14,7 +14,7 @@ import yahoofinance.histquotes.Interval;
 
 public class YahooFeed extends StockFeed {
 	@Override
-	public Optional<Stock> get(StockFeed.EXCHANGE exchange, String ticker, int years) {
+	public Optional<Stock> get(StockFeed.Exchange exchange, String ticker, int years) {
 		try {
 			Stock stock = YahooFinance.get(getQueryName(exchange, ticker));
 			Calendar from = Calendar.getInstance();
@@ -29,7 +29,7 @@ public class YahooFeed extends StockFeed {
 		}
 	}
 
-	private String getQueryName(StockFeed.EXCHANGE exchange, String ticker) {
+	private String getQueryName(StockFeed.Exchange exchange, String ticker) {
 		switch (exchange) {
 		case London:
 			return ticker + ".L";

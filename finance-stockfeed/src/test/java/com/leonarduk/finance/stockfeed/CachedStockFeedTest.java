@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.Stock;
@@ -28,7 +28,7 @@ public class CachedStockFeedTest {
 		CachedStockFeed feed = new CachedStockFeed(storeLocation);
 		String symbol = "test";
 		Stock stock = new Stock(symbol);
-		stock.setStockExchange(EXCHANGE.London.name());
+		stock.setStockExchange(Exchange.London.name());
 		List<HistoricalQuote> history = Lists.newArrayList();
 		history.add(new ComparableHistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
 				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),

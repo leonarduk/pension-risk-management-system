@@ -38,7 +38,7 @@ import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
@@ -96,7 +96,7 @@ public class WalkForward {
 
 	private static void computeForStrategies(Map<String, AtomicInteger> totalscores, StockFeed feed, String ticker)
 			throws IOException {
-		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
+		Stock stock = feed.get(Exchange.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 		List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
 

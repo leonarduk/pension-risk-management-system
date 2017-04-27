@@ -16,59 +16,62 @@ public class IntelligentStockFeed extends StockFeed {
 
 	private static boolean refresh = true;
 
-	public static void setRefresh(boolean refresh) {
+	public static Optional<Stock> getFlatCashSeries(final Instrument instrument, final String ticker) {
+		final Stock cash = new Stock(instrument.getCode());
+		final List<HistoricalQuote> history = Lists.newArrayList();
+		history.add(new ComparableHistoricalQuote(ticker, Calendar.getInstance(), BigDecimal.ONE, BigDecimal.ONE,
+				BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 0l));
+		cash.setHistory(history);
+		final StockQuote quote = new StockQuote(ticker);
+		quote.setPrice(BigDecimal.ONE);
+		cash.setQuote(quote);
+		return Optional.of(cash);
+	}
+
+	public static void setRefresh(final boolean refresh) {
 		IntelligentStockFeed.refresh = refresh;
 	}
 
-	public Optional<Stock> get(Stock stock, int years) {
-		return get(EXCHANGE.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
+	@Override
+	public Optional<Stock> get(final Exchange exchange, final String ticker, final int years) {
+		return this.get(Instrument.fromString(ticker), years);
 	}
 
-	public Optional<Stock> get(EXCHANGE exchange, String ticker, int years) {
-		return get(Instrument.fromString(ticker), years);
-	}
-
-	public Optional<Stock> get(Instrument instrument, int years) {
+	public Optional<Stock> get(final Instrument instrument, final int years) {
 		try {
-			EXCHANGE exchange = EXCHANGE.London;
-			String ticker = instrument.code();
+			final String ticker = instrument.code();
 
 			if (instrument.equals(Instrument.CASH)) {
 				return getFlatCashSeries(instrument, ticker);
 			}
-			CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
+			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
 
-			Optional<Stock> cachedData = dataFeed.get(exchange, ticker, years);
+			final Optional<Stock> cachedData = dataFeed.get(instrument.getExchange(), ticker, years);
 
-			StockFeed feed = StockFeedFactory.getDataFeed(instrument.getSource());
+			final StockFeed feed = StockFeedFactory.getDataFeed(instrument.getSource());
 
-			Optional<Stock> liveData = refresh ? feed.get(exchange, ticker, years) : Optional.empty();
+			final Optional<Stock> liveData = refresh ? feed.get(instrument.getExchange(), ticker, years)
+					: Optional.empty();
 			if (cachedData.isPresent()) {
 				if (liveData.isPresent()) {
-					mergeSeries(cachedData.get(), liveData.get().getHistory(), cachedData.get().getHistory());
+					this.mergeSeries(cachedData.get(), liveData.get().getHistory(), cachedData.get().getHistory());
 					dataFeed.storeSeries(cachedData.get());
 				}
 				return Optional.of(cachedData.get());
 			}
-			if (liveData.isPresent())
+			if (liveData.isPresent()) {
 				dataFeed.storeSeries(liveData.get());
+			}
 			return liveData;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			log.warning(e.getMessage());
 			return Optional.empty();
 		}
 	}
 
-	public static Optional<Stock> getFlatCashSeries(Instrument instrument, String ticker) {
-		Stock cash = new Stock(instrument.getCode());
-		List<HistoricalQuote> history = Lists.newArrayList();
-		history.add(new ComparableHistoricalQuote(ticker, Calendar.getInstance(), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-				BigDecimal.ONE, BigDecimal.ONE, 0l));
-		cash.setHistory(history);
-		StockQuote quote = new StockQuote(ticker);
-		quote.setPrice(BigDecimal.ONE);
-		cash.setQuote(quote);
-		return Optional.of(cash);
+	@Override
+	public Optional<Stock> get(final Stock stock, final int years) {
+		return this.get(Exchange.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
 	}
 
 }

@@ -25,7 +25,6 @@ import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
@@ -50,163 +49,49 @@ public class AnalyseSnapshot {
 	private static DecimalFormat format;
 	private static int years = 20;
 
-	public static void main(String[] args) throws InterruptedException, IOException {
-		StringBuilder buf = createPortfolioReport();
-		IndicatorsToCsv.writeFile("recommendations.html", buf);
-	}
-
-	public static StringBuilder createPortfolioReport() throws IOException {
-		List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile(
-				new File(Resources.getResource("data/portfolios.csv").getFile()).getAbsolutePath());
-		List<Instrument> heldInstruments = positions.stream().filter(p -> p.getInstrument().equals(Instrument.UNKNOWN))
-				.map(p -> p.getInstrument()).collect(Collectors.toList());
-		 List<Position> emptyPositions =
-		 getListedInstruments(heldInstruments);
-
-		StringBuilder sbBody = new StringBuilder();
-		StringBuilder sbHead = new StringBuilder();
-
-		// IntelligentStockFeed.setRefresh(false);
-
-		List<Valuation> valuations = analayzeAllEtfs(positions);
-
-		createValuationsTable(valuations, sbBody, true);
-		sbBody.append("<hr/>");
-
-		Map<String, Double> assetTypeMap = (Map<String, Double>) valuations.parallelStream()
-				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().assetType().name(),
-						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
-		Map<String, Double> underlyingTypeMap = (Map<String, Double>) valuations.parallelStream()
-				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().underlyingType().name(),
-						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
-
-		addPieChartAndTable(assetTypeMap, sbBody, valuations,"Owned Assets", "Type", "Value");
-		addPieChartAndTable(underlyingTypeMap, sbBody, valuations,"Underlying Assets", "Type", "Value");
-
-		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, true);
-
-		
-		StringBuilder buf = createHtmlText(sbHead, sbBody);
-		
-		return buf;
-	}
-
-	public static void addPieChartAndTable(Map<String, Double> assetTypeMap, StringBuilder sbBody,
-			List<Valuation> valuations, String title, String key, String value) throws IOException {
-		PieChartFactory pieChartFactory = new PieChartFactory(title);
-		pieChartFactory.addAll(assetTypeMap);
-		assetTypeMap.put("Total", roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
-		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
-		String filename = title.replace(" ", "_");
-		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
-	}
-
-	public static List<Position> getListedInstruments(List<Instrument> heldInstruments) {
-		List<Instrument> emptyInstruments = Lists.newArrayList(Instrument.values());
-		IntelligentStockFeed feed = new IntelligentStockFeed();
-		emptyInstruments.removeAll(heldInstruments);
-		return (List<Position>) emptyInstruments.stream().map(instrument -> {
-			return new Position("", (Instrument) instrument, Decimal.ZERO,
-					feed.get(EXCHANGE.London, instrument.getCode(), years), instrument.getIsin());
-		}).filter(Objects::nonNull).collect(Collectors.toList());
-	}
-
-	public static StringBuilder createHtmlText(StringBuilder sbHead, StringBuilder sbBody) {
-		StringBuilder buf = new StringBuilder("<html><head>").append(sbHead).append("</head><body>");
-		buf.append(sbBody).append("</body></html>\n");
-		return buf;
-	}
-
-	protected static void createValuationsTable(List<Valuation> valuations, StringBuilder sb,
-			boolean showPositionsHeld) {
-
-		sb.append("<table><tr>");
-
-		for (String name : new String[] { "Name", "ISIN", "Code", "Sector", "Type" }) {
-			addHeader(name, sb);
-		}
-
-		if (showPositionsHeld) {
-			for (String name : new String[] { "Quantity Owned", "Value Owned" }) {
-				addHeader(name, sb);
-			}
-		}
-		for (String name : new String[] { "Price", "AsOf", "Age of quote", "1D", "5D", "21D", "63D", "365d" }) {
-			addHeader(name, sb);
-		}
-
-		String[] strategies = new String[] { "Global Extrema", "Moving Momentum", "SMA (12days)", "SMA (20days)",
-				"SMA (50days)" };
-		for (String name : strategies) {
-			addHeader(name, sb);
-		}
-		sb.append("</tr>");
-		for (Valuation optional : valuations) {
-			logger.info(optional.toString());
-			Instrument instrument = optional.getPosition().getInstrument();
-
-			sb.append("<tr><td>");
-			sb.append(instrument.fullName()).append("</td><td>"); //
-			sb.append(instrument.getIsin()).append("</td><td>"); // ISIN
-			sb.append(optional.getPosition().getSymbol()).append("</td><td>"); // Code
-			sb.append(instrument.category()).append("</td><td>");
-			sb.append(instrument.assetType()).append("</td><td>");
-
-			if (showPositionsHeld) {
-				sb.append(optional.getPosition().getAmount()).append("</td><td>");
-				sb.append(optional.getValuation()).append("</td><td>");
-			}
-			sb.append(optional.getPrice()).append("</td><td>");
-			LocalDate valuationDate = optional.getValuationDate();
-
-			sb.append(valuationDate.toString()).append("</td>");
-			addField(Decimal.valueOf(Days.daysBetween(LocalDate.now(), valuationDate).getDays()), sb);
-
-			addField(optional.getReturn(Period.days(1)), sb);
-			addField(optional.getReturn(Period.days(5)), sb);
-			addField(optional.getReturn(Period.days(21)), sb);
-			addField(optional.getReturn(Period.days(63)), sb);
-			addField(optional.getReturn(Period.days(365)), sb);
-			for (String name : strategies) {
-				addField(optional.getRecommendation(name).getTradeRecommendation(), sb);
-			}
-			sb.append("</tr>");
-		}
-		sb.append("</table>");
-	}
-
-	public static void addHeader(String name, StringBuilder sb) {
-		sb.append("<th>").append(name).append("</th>");
-	}
-
-	public static void addField(RecommendedTrade recommendedTrade, StringBuilder sb) {
+	public static void addField(final Decimal decimal, final StringBuilder sb) {
 		String colour = "red";
 
-		if (recommendedTrade != null && recommendedTrade.equals(RecommendedTrade.BUY)) {
+		if ((decimal != null) && decimal.isGreaterThan(Decimal.ZERO)) {
 			colour = "green";
-		}
-		if (recommendedTrade != null && recommendedTrade.equals(RecommendedTrade.HOLD)) {
-			colour = "white";
-		}
-		sb.append("<td bgcolor='" + colour + "'>").append(recommendedTrade).append("</td>");
-	}
-
-	public static void addField(Decimal decimal, StringBuilder sb) {
-		String colour = "red";
-
-		if (decimal != null && decimal.isGreaterThan(Decimal.ZERO)) {
-			colour = "green";
-		} else if (decimal != null && decimal.equals(Decimal.ZERO)) {
+		} else if ((decimal != null) && decimal.equals(Decimal.ZERO)) {
 			colour = "white";
 		}
 		sb.append("<td bgcolor='" + colour + "'>").append(decimal).append("</td>");
 	}
 
-	public static List<Valuation> analayzeAllEtfs(List<Position> stocks) throws IOException {
+	public static void addField(final RecommendedTrade recommendedTrade, final StringBuilder sb) {
+		String colour = "red";
+
+		if ((recommendedTrade != null) && recommendedTrade.equals(RecommendedTrade.BUY)) {
+			colour = "green";
+		}
+		if ((recommendedTrade != null) && recommendedTrade.equals(RecommendedTrade.HOLD)) {
+			colour = "white";
+		}
+		sb.append("<td bgcolor='" + colour + "'>").append(recommendedTrade).append("</td>");
+	}
+
+	public static void addHeader(final String name, final StringBuilder sb) {
+		sb.append("<th>").append(name).append("</th>");
+	}
+
+	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
+			final List<Valuation> valuations, final String title, final String key, final String value)
+			throws IOException {
+		final PieChartFactory pieChartFactory = new PieChartFactory(title);
+		pieChartFactory.addAll(assetTypeMap);
+		assetTypeMap.put("Total", roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
+		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
+		final String filename = title.replace(" ", "_");
+		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
+	}
+
+	public static List<Valuation> analayzeAllEtfs(final List<Position> stocks) throws IOException {
 		return stocks.parallelStream().map(AnalyseSnapshot::analyseStock).collect(Collectors.toList());
 	}
 
-	public static Valuation analyseStock(Position stock2) {
+	public static Valuation analyseStock(final Position stock2) {
 		TimeSeries series;
 		try {
 			Optional<Stock> stock = stock2.getStock();
@@ -215,7 +100,7 @@ public class AnalyseSnapshot {
 			}
 			series = DailyTimeseries.getTimeSeries(stock.get());
 
-			List<AbstractStrategy> strategies = new ArrayList<>();
+			final List<AbstractStrategy> strategies = new ArrayList<>();
 			strategies.add(GlobalExtremaStrategy.buildStrategy(series));
 			strategies.add(MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
 			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
@@ -223,20 +108,20 @@ public class AnalyseSnapshot {
 			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 
 			IndicatorsToCsv.exportIndicatorsToCsv(series);
-			TradingRecord tradingRecord = new TradingRecord();
+			final TradingRecord tradingRecord = new TradingRecord();
 
-			Tick mostRecentTick = series.getFirstTick();
-			Valuation valuation = createValuation(stock2, mostRecentTick);
-			for (AbstractStrategy strategy : strategies) {
+			final Tick mostRecentTick = series.getFirstTick();
+			final Valuation valuation = createValuation(stock2, mostRecentTick);
+			for (final AbstractStrategy strategy : strategies) {
 
-				int endIndex = series.getEnd();
+				final int endIndex = series.getEnd();
 				if (strategy.getStrategy().shouldEnter(endIndex)) {
 					// Our strategy should enter
 					valuation.addRecommendation(strategy,
 							new Recommendation(RecommendedTrade.BUY, strategy, stock2.getInstrument()));
-					boolean entered = tradingRecord.enter(endIndex, mostRecentTick.getAmount(), Decimal.TEN);
+					final boolean entered = tradingRecord.enter(endIndex, mostRecentTick.getAmount(), Decimal.TEN);
 					if (entered) {
-						Order entry = tradingRecord.getLastEntry();
+						final Order entry = tradingRecord.getLastEntry();
 						System.out.println("Entered on " + entry.getIndex() + " (price=" + entry.getPrice().toDouble()
 								+ ", amount=" + entry.getAmount().toDouble() + ")");
 					}
@@ -244,9 +129,9 @@ public class AnalyseSnapshot {
 					// Our strategy should exit
 					valuation.addRecommendation(strategy,
 							new Recommendation(RecommendedTrade.SELL, strategy, stock2.getInstrument()));
-					boolean exited = tradingRecord.exit(endIndex, mostRecentTick.getClosePrice(), Decimal.TEN);
+					final boolean exited = tradingRecord.exit(endIndex, mostRecentTick.getClosePrice(), Decimal.TEN);
 					if (exited) {
-						Order exit = tradingRecord.getLastExit();
+						final Order exit = tradingRecord.getLastExit();
 						System.out.println("Exited on " + exit.getIndex() + " (price=" + exit.getPrice().toDouble()
 								+ ", amount=" + exit.getAmount().toDouble() + ")");
 					}
@@ -260,32 +145,147 @@ public class AnalyseSnapshot {
 			valuation.addReturn(Period.days(365), calculateReturn(series, 365));
 
 			return valuation;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return new Valuation(stock2, Decimal.NaN, LocalDate.now(), Decimal.ONE);
 		}
 	}
 
-	public static Valuation createValuation(Position position, Tick lastTick) {
+	public static Decimal calculateReturn(final TimeSeries series, final int timePeriod) {
+		final Decimal initialValue = series.getLastTick().getClosePrice();
+		final int i = series.getEnd() - timePeriod;
+		final Decimal diff = i > -1 ? series.getTick(i).getClosePrice().minus(initialValue) : Decimal.ZERO;
+		return roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
+	}
+
+	public static StringBuilder createHtmlText(final StringBuilder sbHead, final StringBuilder sbBody) {
+		final StringBuilder buf = new StringBuilder("<html><head>").append(sbHead).append("</head><body>");
+		buf.append(sbBody).append("</body></html>\n");
+		return buf;
+	}
+
+	public static StringBuilder createPortfolioReport() throws IOException {
+		final List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile(
+				new File(Resources.getResource("data/portfolios.csv").getFile()).getAbsolutePath());
+		final List<Instrument> heldInstruments = positions.stream()
+				.filter(p -> p.getInstrument().equals(Instrument.UNKNOWN)).map(p -> p.getInstrument())
+				.collect(Collectors.toList());
+		final List<Position> emptyPositions = getListedInstruments(heldInstruments);
+
+		final StringBuilder sbBody = new StringBuilder();
+		final StringBuilder sbHead = new StringBuilder();
+
+		// IntelligentStockFeed.setRefresh(false);
+
+		final List<Valuation> valuations = analayzeAllEtfs(positions);
+
+		createValuationsTable(valuations, sbBody, true);
+		sbBody.append("<hr/>");
+
+		final Map<String, Double> assetTypeMap = valuations.parallelStream()
+				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().assetType().name(),
+						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
+		final Map<String, Double> underlyingTypeMap = valuations.parallelStream()
+				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().underlyingType().name(),
+						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
+
+		addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type", "Value");
+		addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets", "Type", "Value");
+
+		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, true);
+
+		final StringBuilder buf = createHtmlText(sbHead, sbBody);
+
+		return buf;
+	}
+
+	public static Valuation createValuation(final Position position, final Tick lastTick) {
 		Decimal price = lastTick.getClosePrice();
 		if (position.getInstrument().currency().equals("GBX")) {
 			price = price.dividedBy(Decimal.HUNDRED);
 		}
-		Decimal volume = position.getAmount();
-		Valuation valuation = new Valuation(position, roundDecimal(price.multipliedBy(volume)),
+		final Decimal volume = position.getAmount();
+		final Valuation valuation = new Valuation(position, roundDecimal(price.multipliedBy(volume)),
 				lastTick.getEndTime().toLocalDate(), roundDecimal(price));
 		return valuation;
 	}
 
-	public static Decimal calculateReturn(TimeSeries series, int timePeriod) {
-		Decimal initialValue = series.getLastTick().getClosePrice();
-		int i = series.getEnd() - timePeriod;
-		Decimal diff = i > -1 ? series.getTick(i).getClosePrice().minus(initialValue) : Decimal.ZERO;
-		return roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
+	protected static void createValuationsTable(final List<Valuation> valuations, final StringBuilder sb,
+			final boolean showPositionsHeld) {
+
+		sb.append("<table><tr>");
+
+		for (final String name : new String[] { "Name", "ISIN", "Code", "Sector", "Type" }) {
+			addHeader(name, sb);
+		}
+
+		if (showPositionsHeld) {
+			for (final String name : new String[] { "Quantity Owned", "Value Owned" }) {
+				addHeader(name, sb);
+			}
+		}
+		for (final String name : new String[] { "Price", "AsOf", "Age of quote", "1D", "5D", "21D", "63D", "365d" }) {
+			addHeader(name, sb);
+		}
+
+		final String[] strategies = new String[] { "Global Extrema", "Moving Momentum", "SMA (12days)", "SMA (20days)",
+				"SMA (50days)" };
+		for (final String name : strategies) {
+			addHeader(name, sb);
+		}
+		sb.append("</tr>");
+		for (final Valuation optional : valuations) {
+			logger.info(optional.toString());
+			final Instrument instrument = optional.getPosition().getInstrument();
+
+			sb.append("<tr><td>");
+			sb.append(instrument.isin()).append("</td><td>"); //
+			sb.append(instrument.getIsin()).append("</td><td>"); // ISIN
+			sb.append(optional.getPosition().getSymbol()).append("</td><td>"); // Code
+			sb.append(instrument.category()).append("</td><td>");
+			sb.append(instrument.assetType()).append("</td><td>");
+
+			if (showPositionsHeld) {
+				sb.append(optional.getPosition().getAmount()).append("</td><td>");
+				sb.append(optional.getValuation()).append("</td><td>");
+			}
+			sb.append(optional.getPrice()).append("</td><td>");
+			final LocalDate valuationDate = optional.getValuationDate();
+
+			sb.append(valuationDate.toString()).append("</td>");
+			addField(Decimal.valueOf(Days.daysBetween(LocalDate.now(), valuationDate).getDays()), sb);
+
+			addField(optional.getReturn(Period.days(1)), sb);
+			addField(optional.getReturn(Period.days(5)), sb);
+			addField(optional.getReturn(Period.days(21)), sb);
+			addField(optional.getReturn(Period.days(63)), sb);
+			addField(optional.getReturn(Period.days(365)), sb);
+			for (final String name : strategies) {
+				addField(optional.getRecommendation(name).getTradeRecommendation(), sb);
+			}
+			sb.append("</tr>");
+		}
+		sb.append("</table>");
 	}
 
-	public static Decimal roundDecimal(Decimal decimal) {
-		if (Decimal.NaN.equals(decimal))
+	public static List<Position> getListedInstruments(final List<Instrument> heldInstruments) {
+		final List<Instrument> emptyInstruments = Lists.newArrayList(Instrument.values());
+		final IntelligentStockFeed feed = new IntelligentStockFeed();
+		emptyInstruments.removeAll(heldInstruments);
+		return emptyInstruments.stream().map(instrument -> {
+			return new Position("", instrument, Decimal.ZERO,
+					feed.get(instrument.getExchange(), instrument.getCode(), years), instrument.getIsin());
+		}).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	public static void main(final String[] args) throws InterruptedException, IOException {
+		final StringBuilder buf = createPortfolioReport();
+		IndicatorsToCsv.writeFile("recommendations.html", buf);
+	}
+
+	public static Decimal roundDecimal(final Decimal decimal) {
+		if (Decimal.NaN.equals(decimal)) {
 			return decimal;
+		}
 		format = new DecimalFormat("#.##");
 		return Decimal.valueOf(format.format(decimal.toDouble()));
 	}

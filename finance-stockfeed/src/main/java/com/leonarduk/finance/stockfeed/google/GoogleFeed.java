@@ -92,7 +92,7 @@ public class GoogleFeed extends CsvStockFeed {
 	}
 
 	@Override
-	protected String getQueryName(StockFeed.EXCHANGE exchange, String ticker) {
+	protected String getQueryName(StockFeed.Exchange exchange, String ticker) {
 		switch (exchange) {
 		case London:
 			return "LON:" + ticker;

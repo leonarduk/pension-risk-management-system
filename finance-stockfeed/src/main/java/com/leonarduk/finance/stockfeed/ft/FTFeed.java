@@ -14,7 +14,7 @@ import yahoofinance.Stock;
 public class FTFeed extends StockFeed {
 
 	@Override
-	public Optional<Stock> get(EXCHANGE exchange, String ticker, int years) throws IOException {
+	public Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException {
 		try {
 			HtmlParser parser = new HtmlParserImpl("https://markets.ft.com/data/etfs/tearsheet/historical?s=" + ticker);
 			/**

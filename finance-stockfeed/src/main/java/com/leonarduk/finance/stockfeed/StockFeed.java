@@ -17,7 +17,7 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
 public abstract class StockFeed {
-	public enum EXCHANGE {
+	public enum Exchange {
 		London
 	}
 
@@ -31,15 +31,15 @@ public abstract class StockFeed {
 	 */
 	public Optional<Stock> get(Stock stock, int years) {
 		try {
-			return get(EXCHANGE.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
+			return get(Exchange.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
 		} catch (IOException e) {
 			return Optional.empty();
 		}
 	}
 
-	public abstract Optional<Stock> get(EXCHANGE exchange, String ticker, int years) throws IOException;
+	public abstract Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException;
 
-	public static Stock createStock(EXCHANGE exchange, String ticker, String name) {
+	public static Stock createStock(Exchange exchange, String ticker, String name) {
 		return createStock(exchange, ticker, name, null);
 	}
 
@@ -62,7 +62,7 @@ public abstract class StockFeed {
 		
 	}
 
-	public static Stock createStock(EXCHANGE exchange, String ticker, String name, List<HistoricalQuote> quotes) {
+	public static Stock createStock(Exchange exchange, String ticker, String name, List<HistoricalQuote> quotes) {
 		Stock stock = new Stock(ticker);
 
 		stock.setName(name);

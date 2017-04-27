@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -73,7 +73,7 @@ public class StrategyExecutionLogging {
         // Getting the time series
 		StockFeed feed = new IntelligentStockFeed();
 		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker,20).get();
+		Stock stock = feed.get(Exchange.London, ticker,20).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
         // Building the trading strategy

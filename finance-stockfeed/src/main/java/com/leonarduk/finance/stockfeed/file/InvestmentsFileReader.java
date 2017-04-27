@@ -14,7 +14,7 @@ import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.Stock;
@@ -51,7 +51,7 @@ public class InvestmentsFileReader {
 		}
 		int isinIdx = 1;
 		int nameIndex = 0;
-		return StockFeed.createStock(EXCHANGE.London, list.get(isinIdx), list.get(nameIndex));
+		return StockFeed.createStock(Exchange.London, list.get(isinIdx), list.get(nameIndex));
 	}
 
 	private static Position createPosition(List<String> list) {

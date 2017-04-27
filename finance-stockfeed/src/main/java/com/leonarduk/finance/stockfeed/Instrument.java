@@ -12,15 +12,16 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.google.common.io.Resources;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 public class Instrument {
 	public enum AssetType {
-		CASH, EQUITY, BOND, COMMODITIES, PROPERTY, ETF, FUND, UNKNOWN;
+		CASH, EQUITY, BOND, COMMODITIES, PROPERTY, ETF, FUND, FX, UNKNOWN;
 
-		public static AssetType fromString(String value) {
+		public static AssetType fromString(final String value) {
 			try {
 				return AssetType.valueOf(value.toUpperCase());
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				LOGGER.warning("Cannot map " + e + " to AssetType");
 				return AssetType.UNKNOWN;
 			}
@@ -32,32 +33,40 @@ public class Instrument {
 
 		private Map<String, Instrument> instruments;
 
-		private Instrument create(String line) {
-			Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
+		private Instrument create(final String line) {
+			final Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
 			return new Instrument(iter.next(), AssetType.fromString(iter.next().toUpperCase()),
-					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(), iter.next(),
-					iter.next(), iter.next(), iter.next());
+					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(),
+					iter.next(), Exchange.valueOf(iter.next()), iter.next(), iter.next(), iter.next());
 		}
 
 		private void init() throws IOException {
-			URL url = new File(Resources.getResource("data/instruments_list.csv").getFile()).toURL();
+			final URL url = new File(Resources.getResource("data/instruments_list.csv").getFile()).toURL();
 			if (url == null) {
 				throw new IOException("Failed to find instrument list");
 			}
-			instruments = Resources.readLines(url, Charset.defaultCharset()).stream().skip(1).map(line -> create(line))
-					.collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
-			instruments.values().stream().forEach(i -> instruments.put(i.getIsin().toUpperCase(), i));
-			instruments.put(CASH.isin.toUpperCase(), CASH);
+			this.instruments = Resources.readLines(url, Charset.defaultCharset()).stream().skip(1)
+					.map(line -> this.create(line)).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
+			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
+			this.instruments.put(CASH.isin.toUpperCase(), CASH);
 		}
 
 	}
 
-	public static Instrument fromString(String symbol) {
+	private static final Logger LOGGER = Logger.getLogger(Instrument.class.getName());
+
+	public static final Instrument UNKNOWN = new Instrument("UNKNOWN", AssetType.UNKNOWN, AssetType.UNKNOWN,
+			Source.MANUAL, "UNKNOWN", "UNKNOWN", Exchange.London, "UNKNOWN", "GBP", "UNKNOWN");
+
+	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL, "Cash",
+			"Cash", Exchange.London, "Cash", "GBP", "");
+
+	public static Instrument fromString(final String symbol) {
 		if (InstrumentLoader.instance == null) {
 			InstrumentLoader.instance = new InstrumentLoader();
 			try {
 				InstrumentLoader.instance.init();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				LOGGER.warning(e.getMessage());
 				LOGGER.warning("Could not map " + symbol);
 				return Instrument.UNKNOWN;
@@ -71,31 +80,32 @@ public class Instrument {
 		return Instrument.UNKNOWN;
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(Instrument.class.getName());
+	public static Collection<Instrument> values() {
+		return InstrumentLoader.instance.instruments.values();
+	}
 
-	public static final Instrument UNKNOWN = new Instrument("UNKNOWN", AssetType.UNKNOWN, AssetType.UNKNOWN,
-			Source.MANUAL, "UNKNOWN", "UNKNOWN", "UNKNOWN", "GBP", "UNKNOWN");
-	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL, "Cash",
-			"Cash", "Cash", "GBP", "");
+	private final AssetType assetType;
+	private final String category;
 
-	private AssetType assetType;
-	private String category;
-	private String code;
+	private final String code;
 
-	private String currency;
+	private final String currency;
 
-	private String googleCode;
+	private final String googleCode;
 
-	private String isin;
+	private final String isin;
 
-	private String name;
+	private final String name;
 
-	private Source source;
+	private final Source source;
 
-	private AssetType underlyingType;
+	private final AssetType underlyingType;
 
-	Instrument(String name, AssetType type, AssetType underlying, Source source, String isin, String code,
-			String category, String currency, String googleCode) {
+	private final Exchange exchange;
+
+	Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
+			final String isin, final String code, final Exchange exchange, final String category, final String currency,
+			final String googleCode) {
 		this.assetType = type;
 		this.underlyingType = underlying;
 		this.source = source;
@@ -105,70 +115,71 @@ public class Instrument {
 		this.category = category;
 		this.currency = currency;
 		this.googleCode = googleCode;
+		this.exchange = exchange;
 	}
 
 	public AssetType assetType() {
-		return assetType;
-	}
-
-	public AssetType underlyingType() {
-		return underlyingType;
+		return this.assetType;
 	}
 
 	public String category() {
-		return category;
+		return this.category;
 	}
 
 	public String code() {
-		return code;
+		return this.code;
 	}
 
 	public String currency() {
-		return currency;
-	}
-
-	public String fullName() {
-		return isin;
+		return this.currency;
 	}
 
 	public AssetType getAssetType() {
-		return assetType;
+		return this.assetType;
 	}
 
 	public String getCategory() {
-		return category;
+		return this.category;
 	}
 
 	public String getCode() {
-		return code;
+		return this.code;
 	}
 
 	public String getCurrency() {
-		return currency;
+		return this.currency;
+	}
+
+	public Exchange getExchange() {
+		return this.exchange;
 	}
 
 	public String getGoogleCode() {
-		return googleCode;
+		return this.googleCode;
 	}
 
 	public String getIsin() {
-		return isin;
+		return this.isin;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public Source getSource() {
-		return source;
+		return this.source;
+	}
+
+	public String isin() {
+		return this.isin;
 	}
 
 	public Source source() {
-		return source;
+		return this.source;
 	}
 
-	public static Collection<Instrument> values() {
-		return InstrumentLoader.instance.instruments.values();
+	public AssetType underlyingType() {
+		return this.underlyingType;
 	}
 
 }

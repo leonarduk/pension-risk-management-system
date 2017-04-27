@@ -30,7 +30,7 @@ import com.leonarduk.finance.chart.CandlestickChart;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
@@ -64,7 +64,7 @@ public class Quickstart {
 		// Getting a time series (from any provider: CSV, web service, etc.)
 		StockFeed feed = new IntelligentStockFeed();
 		String ticker = "ISJP";
-		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
+		Stock stock = feed.get(Exchange.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
 		// Getting the close price of the ticks

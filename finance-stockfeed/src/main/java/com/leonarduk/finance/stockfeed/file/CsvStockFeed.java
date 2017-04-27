@@ -51,7 +51,7 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	private Optional<Long> volume;
 
-	private EXCHANGE exchange;
+	private Exchange exchange;
 
 	public HistoricalQuote asHistoricalQuote() {
 		return new ComparableHistoricalQuote(this.symbol, DateUtils.dateToCalendar(date), getOpen().orElse(null),
@@ -125,7 +125,7 @@ public abstract class CsvStockFeed extends StockFeed {
 		return symbol;
 	}
 
-	public EXCHANGE getExchange() {
+	public Exchange getExchange() {
 		return exchange;
 	}
 
@@ -179,10 +179,10 @@ public abstract class CsvStockFeed extends StockFeed {
 		}
 	}
 
-	protected abstract String getQueryName(StockFeed.EXCHANGE exchange, String ticker);
+	protected abstract String getQueryName(StockFeed.Exchange exchange, String ticker);
 
 	@Override
-	public Optional<Stock> get(EXCHANGE exchange, String ticker, int years) throws IOException {
+	public Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException {
 		this.setSymbol(ticker);
 		this.setExchange(exchange);
 		Calendar from = Calendar.getInstance();
@@ -202,7 +202,7 @@ public abstract class CsvStockFeed extends StockFeed {
 		return Optional.of(createStock(exchange, ticker, ticker, quotes));
 	}
 
-	public void setExchange(EXCHANGE exchange2) {
+	public void setExchange(Exchange exchange2) {
 		this.exchange = exchange2;
 	}
 

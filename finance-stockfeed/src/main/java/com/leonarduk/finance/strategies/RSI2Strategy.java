@@ -28,7 +28,7 @@ import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Rule;
@@ -96,7 +96,7 @@ public class RSI2Strategy {
 
 		StockFeed feed = new IntelligentStockFeed();
 		String ticker = "PHGP";
-		Stock stock = feed.get(EXCHANGE.London, ticker,20).get();
+		Stock stock = feed.get(Exchange.London, ticker,20).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
 		// Building the trading strategy

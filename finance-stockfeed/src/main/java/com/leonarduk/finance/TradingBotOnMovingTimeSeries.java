@@ -6,7 +6,7 @@ import org.joda.time.DateTime;
 
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;
@@ -37,7 +37,7 @@ public class TradingBotOnMovingTimeSeries {
      */
     private static TimeSeries initMovingTimeSeries(int maxTickCount) throws IOException {
 		String ticker = "PHGP";
-		Stock stock = new IntelligentStockFeed().get(EXCHANGE.London, ticker,1).get();
+		Stock stock = new IntelligentStockFeed().get(Exchange.London, ticker,1).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
         System.out.print("Initial tick count: " + series.getTickCount());
         // Limitating the number of ticks to maxTickCount

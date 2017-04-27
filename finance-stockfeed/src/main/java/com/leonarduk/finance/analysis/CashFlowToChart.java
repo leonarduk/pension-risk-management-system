@@ -42,7 +42,7 @@ import org.jfree.ui.RefineryUtilities;
 import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 
@@ -115,7 +115,7 @@ public class CashFlowToChart {
         // Getting the time series
     	StockFeed feed = new IntelligentStockFeed();
 		String ticker = "IUKD";
-		Stock stock = feed.get(EXCHANGE.London, ticker,2).get();
+		Stock stock = feed.get(Exchange.London, ticker,2).get();
 		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
 
         // Building the trading strategy

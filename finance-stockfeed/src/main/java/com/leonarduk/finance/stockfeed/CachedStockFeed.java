@@ -81,7 +81,7 @@ public class CachedStockFeed extends CsvStockFeed {
 	}
 
 	protected File getFile(String stockExchange, String symbol) {
-		return new File(this.storeLocation, getQueryName(EXCHANGE.valueOf(stockExchange), symbol));
+		return new File(this.storeLocation, getQueryName(Exchange.valueOf(stockExchange), symbol));
 	}
 
 	protected File getFile(Stock stock) throws IOException {
@@ -96,7 +96,7 @@ public class CachedStockFeed extends CsvStockFeed {
 	}
 
 	@Override
-	protected String getQueryName(EXCHANGE exchange, String ticker) {
+	protected String getQueryName(Exchange exchange, String ticker) {
 		return exchange.name() + "_" + ticker + ".csv";
 	}
 

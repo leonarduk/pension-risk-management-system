@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.EXCHANGE;
+import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 import yahoofinance.Stock;
@@ -26,26 +26,26 @@ public class StockFeedEndpoint {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("history")
-	public List<HistoricalQuote> getHistory(@QueryParam("ticker") String ticker, @QueryParam("years") int years)
-			throws IOException {
-		return getHistoryData(ticker, years);
+	@Path("history/csv")
+	public Response downloadHistoryCsv(@QueryParam("exchange") final String exchange,
+			@QueryParam("ticker") final String ticker, @QueryParam("years") final int years) throws IOException {
+		final List<HistoricalQuote> series = this.getHistory(exchange, ticker, years);
+		final String fileName = exchange + "_" + ticker + ".csv";
+		final String myCsvText = StockFeed.seriesToCsv(series).toString();
+		return Response.ok(myCsvText).header("Content-Disposition", "attachment; filename=" + fileName).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("history/csv")
-	public Response downloadHistoryCsv(@QueryParam("ticker") String ticker, @QueryParam("years") int years) throws IOException {
-		List<HistoricalQuote> series = getHistory(ticker, years);
-		EXCHANGE exchange = EXCHANGE.London;
-		String fileName = exchange.name() + "_" + ticker + ".csv";
-		String myCsvText = StockFeed.seriesToCsv(series).toString();
-		return Response.ok(myCsvText).header("Content-Disposition", "attachment; filename=" + fileName).build();
+	@Path("history")
+	public List<HistoricalQuote> getHistory(@QueryParam("exchange") final String exchange,
+			@QueryParam("ticker") final String ticker, @QueryParam("years") final int years) throws IOException {
+		return this.getHistoryData(exchange, ticker, years);
 	}
 
-	private List<HistoricalQuote> getHistoryData(String ticker, int years) throws IOException {
-		EXCHANGE exchange = EXCHANGE.London;
-		Optional<Stock> stock = new IntelligentStockFeed().get(exchange, ticker, years);
+	private List<HistoricalQuote> getHistoryData(final String exchange, final String ticker, final int years)
+			throws IOException {
+		final Optional<Stock> stock = new IntelligentStockFeed().get(Exchange.valueOf(exchange), ticker, years);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}
