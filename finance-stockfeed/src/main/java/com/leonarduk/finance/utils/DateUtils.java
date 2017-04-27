@@ -30,31 +30,16 @@ import static java.util.Locale.US;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 
 /**
  * Helpers for common dates
  */
 public class DateUtils {
-
-	/**
-	 * Get today's date
-	 *
-	 * @return date
-	 */
-	public static Date today() {
-		return new Date();
-	}
-
-	/**
-	 * Get yesterday's date
-	 *
-	 * @return date
-	 */
-	public static Date yesterday() {
-		final GregorianCalendar calendar = new GregorianCalendar(US);
-		calendar.add(DAY_OF_YEAR, -1);
-		return calendar.getTime();
-	}
 
 	/**
 	 * Add the given number of days to the given date
@@ -129,42 +114,6 @@ public class DateUtils {
 	}
 
 	/**
-	 * Add the given number of years to the given date
-	 *
-	 * @param years
-	 * @param from
-	 * @return date
-	 */
-	public static Date addYears(final int years, final Calendar from) {
-		return addYears(years, from.getTimeInMillis());
-	}
-
-	/**
-	 * Add the given number of years to the given date
-	 *
-	 * @param years
-	 * @param from
-	 * @return date
-	 */
-	public static Date addYears(final int years, final Date from) {
-		return addYears(years, from.getTime());
-	}
-
-	/**
-	 * Add the given number of years to the given date
-	 *
-	 * @param years
-	 * @param from
-	 * @return date
-	 */
-	public static Date addYears(final int years, final long from) {
-		final GregorianCalendar date = new GregorianCalendar(US);
-		date.setTimeInMillis(from);
-		date.add(YEAR, years);
-		return date.getTime();
-	}
-
-	/**
 	 * Add the given number of weeks to the given date
 	 *
 	 * @param weeks
@@ -201,14 +150,84 @@ public class DateUtils {
 	}
 
 	/**
-	 * Get the date of the first day of the current year
+	 * Add the given number of years to the given date
+	 *
+	 * @param years
+	 * @param from
+	 * @return date
+	 */
+	public static Date addYears(final int years, final Calendar from) {
+		return addYears(years, from.getTimeInMillis());
+	}
+
+	/**
+	 * Add the given number of years to the given date
+	 *
+	 * @param years
+	 * @param from
+	 * @return date
+	 */
+	public static Date addYears(final int years, final Date from) {
+		return addYears(years, from.getTime());
+	}
+
+	/**
+	 * Add the given number of years to the given date
+	 *
+	 * @param years
+	 * @param from
+	 * @return date
+	 */
+	public static Date addYears(final int years, final long from) {
+		final GregorianCalendar date = new GregorianCalendar(US);
+		date.setTimeInMillis(from);
+		date.add(YEAR, years);
+		return date.getTime();
+	}
+
+	public static Calendar dateToCalendar(final Date date) {
+		final Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar;
+	}
+
+	public static int getDiffInWorkDays(final LocalDate currentDate, final LocalDate nextDate) {
+		final int calendarDaysDiff = Math.abs(Days.daysBetween(nextDate, currentDate).getDays());
+		final int weeks = Math.round(calendarDaysDiff / 7);
+		return Math.abs((5 * weeks) + Math.min(calendarDaysDiff % 7, 5));
+	}
+
+	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate startDate, final LocalDate lastDate) {
+		return new Iterator<LocalDate>() {
+
+			LocalDate nextDate = startDate;
+
+			@Override
+			public boolean hasNext() {
+				return this.nextDate.isBefore(lastDate) || this.nextDate.equals(lastDate);
+			}
+
+			@Override
+			public LocalDate next() {
+				final LocalDate currentDate = this.nextDate;
+				if (this.nextDate.getDayOfWeek() == DateTimeConstants.FRIDAY) {
+					this.nextDate = this.nextDate.plusDays(2);
+				}
+				this.nextDate = this.nextDate.plusDays(1);
+				return currentDate;
+			}
+
+		};
+
+	}
+
+	/**
+	 * Get today's date
 	 *
 	 * @return date
 	 */
-	public static Date yearStart() {
-		final GregorianCalendar calendar = new GregorianCalendar(US);
-		calendar.set(DAY_OF_YEAR, 1);
-		return calendar.getTime();
+	public static Date today() {
+		return new Date();
 	}
 
 	/**
@@ -224,9 +243,25 @@ public class DateUtils {
 		return calendar.getTime();
 	}
 
-	public static Calendar dateToCalendar(Date date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		return calendar;
+	/**
+	 * Get the date of the first day of the current year
+	 *
+	 * @return date
+	 */
+	public static Date yearStart() {
+		final GregorianCalendar calendar = new GregorianCalendar(US);
+		calendar.set(DAY_OF_YEAR, 1);
+		return calendar.getTime();
+	}
+
+	/**
+	 * Get yesterday's date
+	 *
+	 * @return date
+	 */
+	public static Date yesterday() {
+		final GregorianCalendar calendar = new GregorianCalendar(US);
+		calendar.add(DAY_OF_YEAR, -1);
+		return calendar.getTime();
 	}
 }

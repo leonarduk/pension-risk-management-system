@@ -24,12 +24,12 @@ package com.leonarduk.finance.analysis;
 
 import java.io.IOException;
 
-import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
@@ -46,47 +46,52 @@ import eu.verdelhan.ta4j.analysis.criteria.VersusBuyAndHoldCriterion;
 import yahoofinance.Stock;
 
 /**
- * This class diplays analysis criterion values after running a trading strategy over a time series.
+ * This class diplays analysis criterion values after running a trading strategy
+ * over a time series.
  */
 public class StrategyAnalysis {
 
-    public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 
-        // Getting the time series
-    	StockFeed feed = new IntelligentStockFeed();
-		String ticker = "XMJG";
-		Stock stock = feed.get(Exchange.London, ticker,20).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
+		// Getting the time series
+		final StockFeed feed = new IntelligentStockFeed();
+		final String ticker = "XMJG";
+		final Stock stock = feed.get(Exchange.London, ticker, 20).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
-        // Building the trading strategy
-        AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series,12,26,9);
-        // Running the strategy
-        TradingRecord tradingRecord = series.run(strategy.getStrategy());
+		// Building the trading strategy
+		final AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series, 12, 26, 9);
+		// Running the strategy
+		final TradingRecord tradingRecord = series.run(strategy.getStrategy());
 
-        /**
-         * Analysis criteria
-         */
+		/**
+		 * Analysis criteria
+		 */
 
-        // Total profit
-        TotalProfitCriterion totalProfit = new TotalProfitCriterion();
-        System.out.println("Total profit: " + totalProfit.calculate(series, tradingRecord));
-        // Number of ticks
-        System.out.println("Number of ticks: " + new NumberOfTicksCriterion().calculate(series, tradingRecord));
-        // Average profit (per tick)
-        System.out.println("Average profit (per tick): " + new AverageProfitCriterion().calculate(series, tradingRecord));
-        // Number of trades
-        System.out.println("Number of trades: " + new NumberOfTradesCriterion().calculate(series, tradingRecord));
-        // Profitable trades ratio
-        System.out.println("Profitable trades ratio: " + new AverageProfitableTradesCriterion().calculate(series, tradingRecord));
-        // Maximum drawdown
-        System.out.println("Maximum drawdown: " + new MaximumDrawdownCriterion().calculate(series, tradingRecord));
-        // Reward-risk ratio
-        System.out.println("Reward-risk ratio: " + new RewardRiskRatioCriterion().calculate(series, tradingRecord));
-        // Total transaction cost
-        System.out.println("Total transaction cost (from $1000): " + new LinearTransactionCostCriterion(1000, 0.005).calculate(series, tradingRecord));
-        // Buy-and-hold
-        System.out.println("Buy-and-hold: " + new BuyAndHoldCriterion().calculate(series, tradingRecord));
-        // Total profit vs buy-and-hold
-        System.out.println("Custom strategy profit vs buy-and-hold strategy profit: " + new VersusBuyAndHoldCriterion(totalProfit).calculate(series, tradingRecord));
-    }
+		// Total profit
+		final TotalProfitCriterion totalProfit = new TotalProfitCriterion();
+		System.out.println("Total profit: " + totalProfit.calculate(series, tradingRecord));
+		// Number of ticks
+		System.out.println("Number of ticks: " + new NumberOfTicksCriterion().calculate(series, tradingRecord));
+		// Average profit (per tick)
+		System.out
+				.println("Average profit (per tick): " + new AverageProfitCriterion().calculate(series, tradingRecord));
+		// Number of trades
+		System.out.println("Number of trades: " + new NumberOfTradesCriterion().calculate(series, tradingRecord));
+		// Profitable trades ratio
+		System.out.println(
+				"Profitable trades ratio: " + new AverageProfitableTradesCriterion().calculate(series, tradingRecord));
+		// Maximum drawdown
+		System.out.println("Maximum drawdown: " + new MaximumDrawdownCriterion().calculate(series, tradingRecord));
+		// Reward-risk ratio
+		System.out.println("Reward-risk ratio: " + new RewardRiskRatioCriterion().calculate(series, tradingRecord));
+		// Total transaction cost
+		System.out.println("Total transaction cost (from $1000): "
+				+ new LinearTransactionCostCriterion(1000, 0.005).calculate(series, tradingRecord));
+		// Buy-and-hold
+		System.out.println("Buy-and-hold: " + new BuyAndHoldCriterion().calculate(series, tradingRecord));
+		// Total profit vs buy-and-hold
+		System.out.println("Custom strategy profit vs buy-and-hold strategy profit: "
+				+ new VersusBuyAndHoldCriterion(totalProfit).calculate(series, tradingRecord));
+	}
 }

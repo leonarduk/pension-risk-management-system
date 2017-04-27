@@ -22,7 +22,6 @@ import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.portfolio.Recommendation;
 import com.leonarduk.finance.portfolio.RecommendedTrade;
 import com.leonarduk.finance.portfolio.Valuation;
-import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
@@ -31,6 +30,7 @@ import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 import com.leonarduk.finance.strategies.SimpleMovingAverageStrategy;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;
@@ -98,7 +98,7 @@ public class AnalyseSnapshot {
 			if (!stock.isPresent()) {
 				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), stock2.getSymbol());
 			}
-			series = DailyTimeseries.getTimeSeries(stock.get());
+			series = TimeseriesUtils.getTimeSeries(stock.get());
 
 			final List<AbstractStrategy> strategies = new ArrayList<>();
 			strategies.add(GlobalExtremaStrategy.buildStrategy(series));

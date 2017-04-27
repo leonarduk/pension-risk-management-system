@@ -27,11 +27,11 @@ import java.io.IOException;
 import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.chart.BollingerBars;
 import com.leonarduk.finance.chart.CandlestickChart;
-import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;
@@ -59,19 +59,19 @@ import yahoofinance.Stock;
  */
 public class Quickstart {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 
 		// Getting a time series (from any provider: CSV, web service, etc.)
-		StockFeed feed = new IntelligentStockFeed();
-		String ticker = "ISJP";
-		Stock stock = feed.get(Exchange.London, ticker,2).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
+		final StockFeed feed = new IntelligentStockFeed();
+		final String ticker = "ISJP";
+		final Stock stock = feed.get(Exchange.London, ticker, 2).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
 		// Getting the close price of the ticks
-		Decimal firstClosePrice = series.getTick(0).getClosePrice();
+		final Decimal firstClosePrice = series.getTick(0).getClosePrice();
 		System.out.println("First close price: " + firstClosePrice.toDouble());
 		// Or within an indicator:
-		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+		final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 		// Here is the same close price:
 		System.out.println(firstClosePrice.isEqual(closePrice.getValue(0))); // equal
 																				// to
@@ -79,12 +79,12 @@ public class Quickstart {
 
 		// Getting the simple moving average (SMA) of the close price over the
 		// last 5 ticks
-		SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
+		final SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
 		// Here is the 5-ticks-SMA value at the 42nd index
 		System.out.println("5-ticks-SMA value at the 42nd index: " + shortSma.getValue(42).toDouble());
 
 		// Getting a longer SMA (e.g. over the 30 last ticks)
-		SMAIndicator longSma = new SMAIndicator(closePrice, 30);
+		final SMAIndicator longSma = new SMAIndicator(closePrice, 30);
 
 		// Ok, now let's building our trading rules!
 
@@ -92,7 +92,7 @@ public class Quickstart {
 		// We want to buy:
 		// - if the 5-ticks SMA crosses over 30-ticks SMA
 		// - or if the price goes below a defined price (e.g $800.00)
-		Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
+		final Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
 		// .or(new CrossedDownIndicatorRule(closePrice,
 		// Decimal.valueOf("800")));
 
@@ -101,35 +101,35 @@ public class Quickstart {
 		// - if the 5-ticks SMA crosses under 30-ticks SMA
 		// - or if if the price looses more than 3%
 		// - or if the price earns more than 2%
-		Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma)
+		final Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma)
 				.or(new StopLossRule(closePrice, Decimal.valueOf("3")))
 				.or(new StopGainRule(closePrice, Decimal.valueOf("2")));
 
 		// Running our juicy trading strategy...
-		Strategy strategy = new Strategy(buyingRule, sellingRule);
-		String strategyName = "30-tick-SMA";
-		TradingRecord tradingRecord = series.run(strategy);
+		final Strategy strategy = new Strategy(buyingRule, sellingRule);
+		final String strategyName = "30-tick-SMA";
+		final TradingRecord tradingRecord = series.run(strategy);
 		System.out.println("Number of trades for our strategy: " + tradingRecord.getTradeCount());
 
 		// Analysis
 
 		// Getting the cash flow of the resulting trades
-		CashFlow cashFlow = new CashFlow(series, tradingRecord);
+		final CashFlow cashFlow = new CashFlow(series, tradingRecord);
 
 		// Getting the profitable trades ratio
-		AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
+		final AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
 		System.out.println("Profitable trades ratio: " + profitTradesRatio.calculate(series, tradingRecord));
 		// Getting the reward-risk ratio
-		AnalysisCriterion rewardRiskRatio = new RewardRiskRatioCriterion();
+		final AnalysisCriterion rewardRiskRatio = new RewardRiskRatioCriterion();
 		System.out.println("Reward-risk ratio: " + rewardRiskRatio.calculate(series, tradingRecord));
 
 		// Total profit of our strategy
 		// vs total profit of a buy-and-hold strategy
-		AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
+		final AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
 		System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
 		CandlestickChart.displayCandlestickChart(stock);
 		BollingerBars.displayBollingerBars(stock);
-		 IndicatorsToCsv.exportIndicatorsToCsv(series);
+		IndicatorsToCsv.exportIndicatorsToCsv(series);
 
 		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy, strategyName));
 

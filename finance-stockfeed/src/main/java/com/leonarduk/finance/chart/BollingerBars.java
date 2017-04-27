@@ -32,7 +32,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeriesCollection;
 
-import com.leonarduk.finance.stockfeed.DailyTimeseries;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Indicator;
@@ -49,52 +49,9 @@ import yahoofinance.Stock;
  */
 public class BollingerBars {
 
-	public static void displayBollingerBars(Stock stock) throws IOException {
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
-
-		/**
-		 * Creating indicators
-		 */
-		// Close price
-		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-		// Bollinger bands
-		BollingerBandsMiddleIndicator middleBBand = new BollingerBandsMiddleIndicator(closePrice);
-		BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, closePrice, Decimal.ONE);
-		BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, closePrice, Decimal.ONE);
-
-		/**
-		 * Building chart dataset
-		 */
-		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		dataset.addSeries(buildChartTimeSeries(series, closePrice,
-				stock.getName() + ". (" + stock.getSymbol() + ") - " + stock.getStockExchange()));
-		dataset.addSeries(buildChartTimeSeries(series, lowBBand, "Low Bollinger Band"));
-		dataset.addSeries(buildChartTimeSeries(series, upBBand, "High Bollinger Band"));
-
-		/**
-		 * Creating the chart
-		 */
-		JFreeChart chart = ChartFactory.createTimeSeriesChart(stock.getName() + "Close Prices", // title
-				"Date", // x-axis label
-				"Price Per Unit", // y-axis label
-				dataset, // data
-				true, // create legend?
-				true, // generate tooltips?
-				false // generate URLs?
-		);
-		XYPlot plot = (XYPlot) chart.getPlot();
-		DateAxis axis = (DateAxis) plot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM-dd"));
-
-		/**
-		 * Displaying the chart
-		 */
-		ChartDisplay.displayChartInFrame(chart, 500, 270, "Bollinger chart");
-	}
-
 	/**
 	 * Builds a JFreeChart time series from a Ta4j time series and an indicator.
-	 * 
+	 *
 	 * @param tickSeries
 	 *            the ta4j time series
 	 * @param indicator
@@ -103,14 +60,59 @@ public class BollingerBars {
 	 *            the name of the chart time series
 	 * @return the JFreeChart time series
 	 */
-	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(TimeSeries tickSeries,
-			Indicator<Decimal> indicator, String name) {
-		org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(name);
+	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(final TimeSeries tickSeries,
+			final Indicator<Decimal> indicator, final String name) {
+		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(name);
 		for (int i = 0; i < tickSeries.getTickCount(); i++) {
-			Tick tick = tickSeries.getTick(i);
+			final Tick tick = tickSeries.getTick(i);
 			chartTimeSeries.add(new Day(tick.getEndTime().toDate()), indicator.getValue(i).toDouble());
 		}
 		return chartTimeSeries;
+	}
+
+	public static void displayBollingerBars(final Stock stock) throws IOException {
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+
+		/**
+		 * Creating indicators
+		 */
+		// Close price
+		final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+		// Bollinger bands
+		final BollingerBandsMiddleIndicator middleBBand = new BollingerBandsMiddleIndicator(closePrice);
+		final BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, closePrice,
+				Decimal.ONE);
+		final BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, closePrice,
+				Decimal.ONE);
+
+		/**
+		 * Building chart dataset
+		 */
+		final TimeSeriesCollection dataset = new TimeSeriesCollection();
+		dataset.addSeries(buildChartTimeSeries(series, closePrice,
+				stock.getName() + ". (" + stock.getSymbol() + ") - " + stock.getStockExchange()));
+		dataset.addSeries(buildChartTimeSeries(series, lowBBand, "Low Bollinger Band"));
+		dataset.addSeries(buildChartTimeSeries(series, upBBand, "High Bollinger Band"));
+
+		/**
+		 * Creating the chart
+		 */
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(stock.getName() + "Close Prices", // title
+				"Date", // x-axis label
+				"Price Per Unit", // y-axis label
+				dataset, // data
+				true, // create legend?
+				true, // generate tooltips?
+				false // generate URLs?
+		);
+		final XYPlot plot = (XYPlot) chart.getPlot();
+		final DateAxis axis = (DateAxis) plot.getDomainAxis();
+		axis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM-dd"));
+
+		/**
+		 * Displaying the chart
+		 */
+		ChartDisplay.displayChartInFrame(chart, 500, 270, "Bollinger chart");
 	}
 
 }

@@ -29,10 +29,10 @@ import java.util.logging.Logger;
 
 import org.slf4j.LoggerFactory;
 
-import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -47,39 +47,42 @@ import yahoofinance.Stock;
  */
 public class StrategyExecutionLogging {
 
-    private static final URL LOGBACK_CONF_FILE = StrategyExecutionLogging.class.getClassLoader().getResource("logback-traces.xml");
-    
-    /**
-     * Loads the Logback configuration from a resource file.
-     * Only here to avoid polluting other examples with logs. Could be replaced by a simple logback.xml file in the resource folder.
-     */
-    private static void loadLoggerConfiguration() {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset();
+	private static final URL LOGBACK_CONF_FILE = StrategyExecutionLogging.class.getClassLoader()
+			.getResource("logback-traces.xml");
 
-        JoranConfigurator configurator = new JoranConfigurator();
-        configurator.setContext(context);
-        try {
-            configurator.doConfigure(LOGBACK_CONF_FILE);
-        } catch (JoranException je) {
-            Logger.getLogger(StrategyExecutionLogging.class.getName()).log(Level.SEVERE, "Unable to load Logback configuration", je);
-        }
-    }
+	/**
+	 * Loads the Logback configuration from a resource file. Only here to avoid
+	 * polluting other examples with logs. Could be replaced by a simple
+	 * logback.xml file in the resource folder.
+	 */
+	private static void loadLoggerConfiguration() {
+		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset();
 
-    public static void main(String[] args) throws IOException {
-        // Loading the Logback configuration
-        loadLoggerConfiguration();
+		final JoranConfigurator configurator = new JoranConfigurator();
+		configurator.setContext(context);
+		try {
+			configurator.doConfigure(LOGBACK_CONF_FILE);
+		} catch (final JoranException je) {
+			Logger.getLogger(StrategyExecutionLogging.class.getName()).log(Level.SEVERE,
+					"Unable to load Logback configuration", je);
+		}
+	}
 
-        // Getting the time series
-		StockFeed feed = new IntelligentStockFeed();
-		String ticker = "PHGP";
-		Stock stock = feed.get(Exchange.London, ticker,20).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
+	public static void main(final String[] args) throws IOException {
+		// Loading the Logback configuration
+		loadLoggerConfiguration();
 
-        // Building the trading strategy
-        Strategy strategy = CCICorrectionStrategy.buildStrategy(series);
+		// Getting the time series
+		final StockFeed feed = new IntelligentStockFeed();
+		final String ticker = "PHGP";
+		final Stock stock = feed.get(Exchange.London, ticker, 20).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
-        // Running the strategy
-        series.run(strategy);
-    }
+		// Building the trading strategy
+		final Strategy strategy = CCICorrectionStrategy.buildStrategy(series);
+
+		// Running the strategy
+		series.run(strategy);
+	}
 }

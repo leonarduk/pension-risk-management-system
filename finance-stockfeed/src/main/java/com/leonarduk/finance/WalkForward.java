@@ -22,7 +22,6 @@
  */
 package com.leonarduk.finance;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.Period;
 
 import com.leonarduk.finance.analysis.TraderOrderUtils;
-import com.leonarduk.finance.stockfeed.DailyTimeseries;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
@@ -44,6 +42,7 @@ import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 import com.leonarduk.finance.strategies.SimpleMovingAverageStrategy;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Strategy;
@@ -55,7 +54,7 @@ import yahoofinance.Stock;
 /**
  * Walk-forward optimization example.
  * <p>
- * 
+ *
  * @see http://en.wikipedia.org/wiki/Walk_forward_optimization
  * @see http://www.futuresmag.com/2010/04/01/can-your-system-do-the-walk
  */
@@ -66,69 +65,28 @@ public class WalkForward {
 	 *            the time series
 	 * @return a map (key: strategy, value: name) of trading strategies
 	 */
-	public static List<AbstractStrategy> buildStrategiesMap(TimeSeries series) {
-//		{Moving Momentum=24916, RSI-2=-81064, Global Extrema=23748, CCI Correction=-28035}
-		List<AbstractStrategy> strategies = new ArrayList<>();
+	public static List<AbstractStrategy> buildStrategiesMap(final TimeSeries series) {
+		// {Moving Momentum=24916, RSI-2=-81064, Global Extrema=23748, CCI
+		// Correction=-28035}
+		final List<AbstractStrategy> strategies = new ArrayList<>();
 		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
-		strategies.add(MovingMomentumStrategy.buildStrategy(series,12,26,9));
+		strategies.add(MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 		return strategies;
 	}
 
-	public static void main(String[] args) throws IOException {
-		Map<String, AtomicInteger> totalscores = new ConcurrentHashMap<>();
-		StockFeed feed = new IntelligentStockFeed();
-		
-		String filePath = new File(Demo.class.getClassLoader().getResource("Book1.csv").getFile()).getAbsolutePath();
-
-		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
-			try {
-				computeForStrategies(totalscores, feed, stock.getSymbol());
-			} catch (Exception e) {
-				System.err.println("Failed to compute " + stock.getSymbol());
-			}
-		});
-
-		System.out.println(totalscores);
-	}
-
-	private static void computeForStrategies(Map<String, AtomicInteger> totalscores, StockFeed feed, String ticker)
-			throws IOException {
-		Stock stock = feed.get(Exchange.London, ticker,2).get();
-		TimeSeries series = DailyTimeseries.getTimeSeries(stock);
-		List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
-
-		// Building the map of strategies
-		List<AbstractStrategy> strategies = buildStrategiesMap(series);
-
-		// The analysis criterion
-		AnalysisCriterion profitCriterion = new TotalProfitCriterion();
-		Map<String, AtomicInteger> scores = new ConcurrentHashMap<>();
-
-		for (TimeSeries slice : subseries) {
-			// For each sub-series...
-			calculateSubseries(strategies, profitCriterion, slice, scores);
-		}
-
-		for (Entry<String, AtomicInteger> timeSeries : scores.entrySet()) {
-			totalscores.putIfAbsent(timeSeries.getKey(), new AtomicInteger());
-			totalscores.get(timeSeries.getKey()).addAndGet(timeSeries.getValue().get());
-		}
-		System.out.println(ticker + scores);
-	}
-
-	private static void calculateSubseries(List<AbstractStrategy> strategies, AnalysisCriterion profitCriterion,
-			TimeSeries slice, Map<String, AtomicInteger> scores) {
+	private static void calculateSubseries(final List<AbstractStrategy> strategies,
+			final AnalysisCriterion profitCriterion, final TimeSeries slice, final Map<String, AtomicInteger> scores) {
 		boolean interesting = false;
-		StringBuilder buf = new StringBuilder("Sub-series: " + slice.getSeriesPeriodDescription() + "\n");
-		for (AbstractStrategy entry : strategies) {
-			Strategy strategy = entry.getStrategy();
-			String name = entry.getName();
+		final StringBuilder buf = new StringBuilder("Sub-series: " + slice.getSeriesPeriodDescription() + "\n");
+		for (final AbstractStrategy entry : strategies) {
+			final Strategy strategy = entry.getStrategy();
+			final String name = entry.getName();
 			// For each strategy...
-			TradingRecord tradingRecord = slice.run(strategy);
-			double profit = profitCriterion.calculate(slice, tradingRecord);
+			final TradingRecord tradingRecord = slice.run(strategy);
+			final double profit = profitCriterion.calculate(slice, tradingRecord);
 			if (profit != 1.0) {
 				interesting = true;
 				if (profit > 1.0) {
@@ -145,12 +103,57 @@ public class WalkForward {
 			buf.append("\tProfit for " + name + ": " + profit + "\n");
 		}
 
-//		ArrayList<Strategy> strategies2 = new ArrayList<Strategy>();
-//		
-//		Strategy bestStrategy = profitCriterion.chooseBest(slice, strategies2);
-//		buf.append("\t\t--> Best strategy: " + strategies.get(bestStrategy) + "\n");
+		// ArrayList<Strategy> strategies2 = new ArrayList<Strategy>();
+		//
+		// Strategy bestStrategy = profitCriterion.chooseBest(slice,
+		// strategies2);
+		// buf.append("\t\t--> Best strategy: " + strategies.get(bestStrategy) +
+		// "\n");
 		if (interesting) {
 			// System.out.println(buf.toString());
 		}
+	}
+
+	private static void computeForStrategies(final Map<String, AtomicInteger> totalscores, final StockFeed feed,
+			final String ticker) throws IOException {
+		final Stock stock = feed.get(Exchange.London, ticker, 2).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
+
+		// Building the map of strategies
+		final List<AbstractStrategy> strategies = buildStrategiesMap(series);
+
+		// The analysis criterion
+		final AnalysisCriterion profitCriterion = new TotalProfitCriterion();
+		final Map<String, AtomicInteger> scores = new ConcurrentHashMap<>();
+
+		for (final TimeSeries slice : subseries) {
+			// For each sub-series...
+			calculateSubseries(strategies, profitCriterion, slice, scores);
+		}
+
+		for (final Entry<String, AtomicInteger> timeSeries : scores.entrySet()) {
+			totalscores.putIfAbsent(timeSeries.getKey(), new AtomicInteger());
+			totalscores.get(timeSeries.getKey()).addAndGet(timeSeries.getValue().get());
+		}
+		System.out.println(ticker + scores);
+	}
+
+	public static void main(final String[] args) throws IOException {
+		final Map<String, AtomicInteger> totalscores = new ConcurrentHashMap<>();
+		final StockFeed feed = new IntelligentStockFeed();
+
+		final String filePath = new File(Demo.class.getClassLoader().getResource("Book1.csv").getFile())
+				.getAbsolutePath();
+
+		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
+			try {
+				computeForStrategies(totalscores, feed, stock.getSymbol());
+			} catch (final Exception e) {
+				System.err.println("Failed to compute " + stock.getSymbol());
+			}
+		});
+
+		System.out.println(totalscores);
 	}
 }
