@@ -1,9 +1,7 @@
 package com.leonarduk.finance.stockfeed;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,8 +9,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.google.common.io.Resources;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
+import com.leonarduk.finance.utils.ResourceTools;
 
 public class Instrument {
 	public enum AssetType {
@@ -40,12 +38,8 @@ public class Instrument {
 					iter.next(), Exchange.valueOf(iter.next()), iter.next(), iter.next(), iter.next());
 		}
 
-		private void init() throws IOException {
-			final URL url = new File(Resources.getResource("data/instruments_list.csv").getFile()).toURL();
-			if (url == null) {
-				throw new IOException("Failed to find instrument list");
-			}
-			this.instruments = Resources.readLines(url, Charset.defaultCharset()).stream().skip(1)
+		private void init() throws IOException, URISyntaxException {
+			this.instruments = ResourceTools.getResourceAsLines("resources/data/instruments_list.csv").stream().skip(1)
 					.map(line -> this.create(line)).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
 			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
 			this.instruments.put(CASH.isin.toUpperCase(), CASH);
@@ -66,7 +60,7 @@ public class Instrument {
 			InstrumentLoader.instance = new InstrumentLoader();
 			try {
 				InstrumentLoader.instance.init();
-			} catch (final IOException e) {
+			} catch (final IOException | URISyntaxException e) {
 				LOGGER.warning(e.getMessage());
 				LOGGER.warning("Could not map " + symbol);
 				return Instrument.UNKNOWN;

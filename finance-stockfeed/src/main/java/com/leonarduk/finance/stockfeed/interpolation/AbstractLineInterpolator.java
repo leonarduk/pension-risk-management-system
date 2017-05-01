@@ -27,19 +27,19 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	@Override
 	public TimeSeries interpolate(final TimeSeries series) {
 		final TimeSeries newSeries = new TimeSeries(Period.days(1));
-		final Tick lastQuote = series.getLastTick();
+		final Tick oldestQuote = series.getFirstTick();
 
 		final Iterator<Tick> seriesIter = TimeseriesUtils.getTimeSeriesIterator(series);
 		Tick currentQuote = seriesIter.next();
 
 		final Iterator<LocalDate> dateIter = DateUtils.getLocalDateIterator(currentQuote.getEndTime().toLocalDate(),
-				lastQuote.getEndTime().toLocalDate());
+				oldestQuote.getEndTime().toLocalDate());
 		LocalDate currentDate = dateIter.next();
 
-		newSeries.addTick(series.getFirstTick());
+		newSeries.addTick(series.getLastTick());
 
 		// until the end
-		while (currentDate.isBefore(lastQuote.getEndTime().toLocalDate())) {
+		while (currentDate.isBefore(oldestQuote.getEndTime().toLocalDate())) {
 			final Tick nextQuote = seriesIter.next();
 			currentDate = dateIter.next();
 

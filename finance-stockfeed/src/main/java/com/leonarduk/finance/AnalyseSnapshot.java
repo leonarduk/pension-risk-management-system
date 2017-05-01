@@ -1,7 +1,7 @@
 package com.leonarduk.finance;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,6 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
-import com.google.common.io.Resources;
 import com.leonarduk.finance.chart.ChartDisplay;
 import com.leonarduk.finance.chart.PieChartFactory;
 import com.leonarduk.finance.portfolio.Position;
@@ -163,9 +162,9 @@ public class AnalyseSnapshot {
 		return buf;
 	}
 
-	public static StringBuilder createPortfolioReport() throws IOException {
-		final List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile(
-				new File(Resources.getResource("data/portfolios.csv").getFile()).getAbsolutePath());
+	public static StringBuilder createPortfolioReport() throws IOException, URISyntaxException {
+
+		final List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile("resources/data/portfolios.csv");
 		final List<Instrument> heldInstruments = positions.stream()
 				.filter(p -> p.getInstrument().equals(Instrument.UNKNOWN)).map(p -> p.getInstrument())
 				.collect(Collectors.toList());
@@ -277,7 +276,7 @@ public class AnalyseSnapshot {
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	public static void main(final String[] args) throws InterruptedException, IOException {
+	public static void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
 		final StringBuilder buf = createPortfolioReport();
 		IndicatorsToCsv.writeFile("recommendations.html", buf);
 	}

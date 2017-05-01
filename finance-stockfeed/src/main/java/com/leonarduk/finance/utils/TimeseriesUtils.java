@@ -52,16 +52,16 @@ public class TimeseriesUtils {
 
 	public static Iterator<Tick> getTimeSeriesIterator(final TimeSeries series) {
 		final Iterator<Tick> iter = new Iterator<Tick>() {
-			int index = 0;
+			int index = series.getEnd();
 
 			@Override
 			public boolean hasNext() {
-				return this.index < (series.getMaximumTickCount() - 1);
+				return this.index > (series.getBegin() - 1);
 			}
 
 			@Override
 			public Tick next() {
-				return series.getTick(this.index++);
+				return series.getTick(this.index--);
 			}
 		};
 		return iter;

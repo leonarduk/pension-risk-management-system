@@ -1,20 +1,17 @@
 package com.leonarduk.finance.stockfeed.file;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
+import com.leonarduk.finance.utils.ResourceTools;
 
 import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.Stock;
@@ -22,50 +19,43 @@ import yahoofinance.Stock;
 public class InvestmentsFileReader {
 	private final static Logger logger = Logger.getLogger(InvestmentsFileReader.class.getName());
 
-	static List<List<String>> readCsvRecords(String fileName) throws IOException {
-		logger.info("Parse file:" + fileName);
-		try (Stream<String> lines = Files.lines(Paths.get(fileName))) {
-			return lines.map(line -> Arrays.asList(line.split(","))).collect(Collectors.toList());
+	private static Position createPosition(final List<String> list) {
+		if (list.size() < 2) {
+			logger.warning("not enough details: " + list);
+			return null;
 		}
+		final int years = 10;
+		final int portfolioIdx = 0;
+		final int isinIdx = 1;
+		final int amountIndex = 2;
+		final String symbol = list.get(isinIdx);
+		final Instrument instrument = Instrument.fromString(symbol);
+		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years);
+		return new Position(list.get(portfolioIdx), instrument, Decimal.valueOf(list.get(amountIndex)), stock, symbol);
 	}
 
-	public static List<Stock> getStocksFromCSVFile(String filePath) throws IOException {
-		List<List<String>> stream = readCsvRecords(filePath);
+	private static Stock createStock(final List<String> list) {
+		if (list.size() < 2) {
+			logger.warning("not enough details: " + list);
+			return null;
+		}
+		final int isinIdx = 1;
+		final int nameIndex = 0;
+		return StockFeed.createStock(Exchange.London, list.get(isinIdx), list.get(nameIndex));
+	}
+
+	public static List<Position> getPositionsFromCSVFile(final String filePath) throws IOException {
+		final List<List<String>> stream = ResourceTools.readCsvRecords(filePath);
+		return stream.stream().skip(1).map(InvestmentsFileReader::createPosition).collect(Collectors.toList());
+	}
+
+	public static List<Stock> getStocksFromCSVFile(final String filePath) throws IOException {
+		final List<List<String>> stream = ResourceTools.readCsvRecords(filePath);
 		// List<String> inputList = stream.get(0);
 		// Map<String, Integer> outputMap = new HashMap<>();
 		// for (int j = 0; j < inputList.size(); j++) {
 		// outputMap.put(inputList.get(j), 1 + j);
 		// }
 		return stream.stream().skip(1).map(InvestmentsFileReader::createStock).collect(Collectors.toList());
-	}
-
-	public static List<Position> getPositionsFromCSVFile(String filePath) throws IOException {
-		List<List<String>> stream = readCsvRecords(filePath);
-		return stream.stream().skip(1).map(InvestmentsFileReader::createPosition).collect(Collectors.toList());
-	}
-
-	private static Stock createStock(List<String> list) {
-		if (list.size() < 2) {
-			logger.warning("not enough details: " + list);
-			return null;
-		}
-		int isinIdx = 1;
-		int nameIndex = 0;
-		return StockFeed.createStock(Exchange.London, list.get(isinIdx), list.get(nameIndex));
-	}
-
-	private static Position createPosition(List<String> list) {
-		if (list.size() < 2) {
-			logger.warning("not enough details: " + list);
-			return null;
-		}
-		int years = 10;
-		int portfolioIdx = 0;
-		int isinIdx = 1;
-		int amountIndex = 2;
-		String symbol = list.get(isinIdx);
-		Instrument instrument = Instrument.fromString(symbol);
-		Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years);
-		return new Position(list.get(portfolioIdx), instrument, Decimal.valueOf(list.get(amountIndex)), stock,symbol);
 	}
 }

@@ -1,6 +1,7 @@
 package com.leonarduk.finance.api;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.inject.Named;
 import javax.ws.rs.GET;
@@ -17,7 +18,7 @@ public class PortfolioFeedEndpoint {
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("analysis")
-	public String getHistory() throws IOException {
+	public String getHistory() throws IOException, URISyntaxException {
 		return AnalyseSnapshot.createPortfolioReport().toString();
 	}
 
