@@ -162,14 +162,19 @@ public class AnalyseSnapshot {
 		return buf;
 	}
 
-	public static StringBuilder createPortfolioReport() throws IOException, URISyntaxException {
+	public static StringBuilder createPortfolioReport(final boolean extendedReport)
+			throws IOException, URISyntaxException {
 
 		final List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile("resources/data/portfolios.csv");
 		final List<Instrument> heldInstruments = positions.stream()
 				.filter(p -> p.getInstrument().equals(Instrument.UNKNOWN)).map(p -> p.getInstrument())
 				.collect(Collectors.toList());
-		final List<Position> emptyPositions = getListedInstruments(heldInstruments);
 
+		List<Position> emptyPositions = Lists.newArrayList();
+
+		if (extendedReport) {
+			emptyPositions = getListedInstruments(heldInstruments);
+		}
 		final StringBuilder sbBody = new StringBuilder();
 		final StringBuilder sbHead = new StringBuilder();
 
@@ -277,7 +282,7 @@ public class AnalyseSnapshot {
 	}
 
 	public static void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
-		final StringBuilder buf = createPortfolioReport();
+		final StringBuilder buf = createPortfolioReport(true);
 		IndicatorsToCsv.writeFile("recommendations.html", buf);
 	}
 
