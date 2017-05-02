@@ -3,7 +3,6 @@ package com.leonarduk.finance.stockfeed;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,15 +22,11 @@ public class AnalyseSnapshotTest {
 	public void testCalculateReturn() {
 
 		final List<Tick> ticks = new ArrayList<>();
-		ticks.add(new Tick(LocalDate.parse("2017-04-13").toDateTimeAtCurrentTime(), 105.0, 115.0, 95.0, 110.0, 20.0));
-		ticks.add(new Tick(LocalDate.parse("2017-04-12").toDateTimeAtCurrentTime(), 100.0, 110.0, 90.0, 105.0, 10.0));
-		ticks.add(new Tick(LocalDate.parse("2017-04-11").toDateTimeAtCurrentTime(), 100.0, 110.0, 90.0, 105.0, 10.0));
-		ticks.add(new Tick(LocalDate.parse("2017-04-10").toDateTimeAtCurrentTime(), 85.0, 95.0, 75.0, 90.0, 10.0));
 		ticks.add(new Tick(LocalDate.parse("2017-04-07").toDateTimeAtCurrentTime(), 80.0, 90.0, 70.0, 85.0, 10.0));
-
-		Collections.sort(ticks, (o1, o2) -> {
-			return o2.getEndTime().compareTo(o1.getEndTime());
-		});
+		ticks.add(new Tick(LocalDate.parse("2017-04-10").toDateTimeAtCurrentTime(), 85.0, 95.0, 75.0, 90.0, 10.0));
+		ticks.add(new Tick(LocalDate.parse("2017-04-11").toDateTimeAtCurrentTime(), 100.0, 110.0, 90.0, 105.0, 10.0));
+		ticks.add(new Tick(LocalDate.parse("2017-04-12").toDateTimeAtCurrentTime(), 100.0, 110.0, 90.0, 105.0, 10.0));
+		ticks.add(new Tick(LocalDate.parse("2017-04-13").toDateTimeAtCurrentTime(), 105.0, 115.0, 95.0, 110.0, 20.0));
 
 		final TimeSeries series = new TimeSeries(ticks);
 		assertEquals(5.88, AnalyseSnapshot.calculateReturn(series, 1).toDouble(), 0);
