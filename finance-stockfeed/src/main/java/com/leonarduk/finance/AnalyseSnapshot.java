@@ -121,7 +121,7 @@ public class AnalyseSnapshot {
 			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
 			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 
-			IndicatorsToCsv.exportIndicatorsToCsv(series);
+			// IndicatorsToCsv.exportIndicatorsToCsv(series);
 			final TradingRecord tradingRecord = new TradingRecord();
 
 			final Tick mostRecentTick = series.getLastTick();
@@ -160,11 +160,15 @@ public class AnalyseSnapshot {
 
 			return valuation;
 		} catch (final Exception e) {
+			logger.warning("Failed:" + e.getMessage());
 			return new Valuation(stock2, Decimal.NaN, LocalDate.now(), Decimal.ONE);
 		}
 	}
 
 	public static Decimal calculateReturn(final TimeSeries series, final int timePeriod) {
+		if (timePeriod > series.getEnd()) {
+			return Decimal.NaN;
+		}
 		final Decimal initialValue = series.getFirstTick().getClosePrice();
 		final int i = timePeriod;
 		final Decimal diff = i > -1 ? series.getTick(i).getClosePrice().minus(initialValue) : Decimal.ZERO;
@@ -240,7 +244,7 @@ public class AnalyseSnapshot {
 			final Instrument instrument = optional.getPosition().getInstrument();
 
 			fields.add(new DataField("Name", instrument.getName()));
-			fields.add(new DataField("ISIN", instrument.getIsin(), false));
+			fields.add(new DataField("ISIN", instrument.getIsin(), true));
 			fields.add(new DataField("Code", instrument.getCode()));
 			fields.add(new DataField("Sector", instrument.getCategory()));
 			fields.add(new DataField("Type", instrument.getAssetType().name()));
@@ -257,9 +261,9 @@ public class AnalyseSnapshot {
 				fields.add(new DataField(day + "D", optional.getReturn(Period.days(day))));
 			}
 
-			for (final String name : new String[] { "Global Extrema", "Moving Momentum", "SMA (12days)", "SMA (20days)",
-					"SMA (50days)" }) {
-				fields.add(new DataField("Global Extrema", optional.getRecommendation(name).getTradeRecommendation()));
+			for (final String name : new String[] { "SMA (12days)", "SMA (20days)", "SMA (50days)", "Global Extrema",
+					"Moving Momentum", }) {
+				fields.add(new DataField(name, optional.getRecommendation(name).getTradeRecommendation()));
 			}
 		}
 

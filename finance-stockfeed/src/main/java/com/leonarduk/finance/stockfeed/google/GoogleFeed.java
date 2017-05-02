@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.github.kevinsawicki.http.HttpRequest;
@@ -15,6 +16,8 @@ import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
+
+import yahoofinance.Stock;
 
 public class GoogleFeed extends CsvStockFeed {
 	/** The logger */
@@ -31,14 +34,9 @@ public class GoogleFeed extends CsvStockFeed {
 
 	private static final String OUTPUT_CSV = "csv";
 
-
 	private static final DateFormat PARAM_FORMATTER = new SimpleDateFormat("MMM'+'d'%2c+'yyyy");
 	private static final DateFormat RESULT_FORMATTER = new SimpleDateFormat("dd-MMM-yy");
 
-	@Override
-	protected Date parseDate(String fieldValue) throws ParseException {
-		return RESULT_FORMATTER.parse(fieldValue);
-	}
 	/**
 	 * Create request to uri
 	 * <p>
@@ -53,9 +51,23 @@ public class GoogleFeed extends CsvStockFeed {
 		try {
 			log.info("Request: " + uri);
 			return HttpRequest.get(uri);
-		} catch (HttpRequestException e) {
+		} catch (final HttpRequestException e) {
 			throw e.getCause();
 		}
+	}
+
+	@Override
+	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
+		return this.get(instrument.getExchange(), instrument.getGoogleCode(), years);
+	}
+
+	@Override
+	protected String getQueryName(final StockFeed.Exchange exchange, final String ticker) {
+		switch (exchange) {
+		case London:
+			return "LON:" + ticker;
+		}
+		throw new IllegalArgumentException("Don't know how to handle " + exchange);
 	}
 
 	/**
@@ -68,22 +80,25 @@ public class GoogleFeed extends CsvStockFeed {
 	 */
 	@Override
 	protected BufferedReader openReader() throws IOException {
-		Map<Object, Object> params = new HashMap<Object, Object>(4, 1);
+		final Map<Object, Object> params = new HashMap<>(4, 1);
 		params.put(PARAM_OUTPUT, OUTPUT_CSV);
-		params.put(PARAM_SYMBOL, Instrument.fromString(getSymbol()).getGoogleCode());
-		if (getStartDate() != null)
-			params.put(PARAM_START_DATE, formatDate(PARAM_FORMATTER, getStartDate()));
-		if (getEndDate() != null)
-			params.put(PARAM_END_DATE, formatDate(PARAM_FORMATTER, getEndDate()));
+		params.put(PARAM_SYMBOL, Instrument.fromString(this.getSymbol()).getGoogleCode());
+		if (this.getStartDate() != null) {
+			params.put(PARAM_START_DATE, formatDate(PARAM_FORMATTER, this.getStartDate()));
+		}
+		if (this.getEndDate() != null) {
+			params.put(PARAM_END_DATE, formatDate(PARAM_FORMATTER, this.getEndDate()));
+		}
 
-		final HttpRequest request = createRequest(HttpRequest.append(BASE_URL, params));
-		if (!request.ok())
+		final HttpRequest request = this.createRequest(HttpRequest.append(BASE_URL, params));
+		if (!request.ok()) {
 			throw new IOException("Bad response " + request.code());
+		}
 
 		final BufferedReader reader;
 		try {
 			reader = request.bufferedReader();
-		} catch (HttpRequestException e) {
+		} catch (final HttpRequestException e) {
 			throw e.getCause();
 		}
 		// Skip first line that contains column names
@@ -92,11 +107,7 @@ public class GoogleFeed extends CsvStockFeed {
 	}
 
 	@Override
-	protected String getQueryName(StockFeed.Exchange exchange, String ticker) {
-		switch (exchange) {
-		case London:
-			return "LON:" + ticker;
-		}
-		throw new IllegalArgumentException("Don't know how to handle " + exchange);
+	protected Date parseDate(final String fieldValue) throws ParseException {
+		return RESULT_FORMATTER.parse(fieldValue);
 	}
 }

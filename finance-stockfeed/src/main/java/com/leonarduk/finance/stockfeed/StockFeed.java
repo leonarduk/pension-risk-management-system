@@ -4,7 +4,6 @@ import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.addValue;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.joda.time.LocalDate;
+
+import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
@@ -21,57 +23,21 @@ public abstract class StockFeed {
 		London
 	}
 
-	/**
-	 * Bit of a hack - supply one Stock with minimal details in it to get new
-	 * instance fully populated
-	 * 
-	 * @param stock
-	 * @return
-	 * @throws IOException
-	 */
-	public Optional<Stock> get(Stock stock, int years) {
-		try {
-			return get(Exchange.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
-		} catch (IOException e) {
-			return Optional.empty();
-		}
-	}
-
-	public abstract Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException;
-
-	public static Stock createStock(Exchange exchange, String ticker, String name) {
+	public static Stock createStock(final Exchange exchange, final String ticker, final String name) {
 		return createStock(exchange, ticker, name, null);
 	}
 
-	public void mergeSeries(Stock stock, List<HistoricalQuote> original) throws IOException {
-		List<HistoricalQuote> newSeries = stock.getHistory();
-		mergeSeries(stock, original, newSeries);
-	}
-
-	public void mergeSeries(Stock stock, List<HistoricalQuote> original, List<HistoricalQuote> newSeries) {
-		Map<Calendar, HistoricalQuote> dates = original.stream()
-				.collect(Collectors.toMap(HistoricalQuote::getDate, Function.identity()));
-		Map<Calendar, HistoricalQuote> newdates = newSeries.stream()
-				.collect(Collectors.toMap(HistoricalQuote::getDate, Function.identity()));
-		dates.keySet().removeAll(newdates.keySet());
-		newdates.putAll(dates);
-
-		List<HistoricalQuote> sortedList = new LinkedList<>(newdates.values());
-		sortedList.sort((quote1, quote2) -> quote1.getDate().compareTo(quote2.getDate()));
-		stock.setHistory(sortedList);
-		
-	}
-
-	public static Stock createStock(Exchange exchange, String ticker, String name, List<HistoricalQuote> quotes) {
-		Stock stock = new Stock(ticker);
+	public static Stock createStock(final Exchange exchange, final String ticker, final String name,
+			final List<HistoricalQuote> quotes) {
+		final Stock stock = new Stock(ticker);
 
 		stock.setName(name);
 		// stock.setCurrency();
 		stock.setStockExchange(exchange.name());
-		StockQuote quote = new StockQuote(ticker);
+		final StockQuote quote = new StockQuote(ticker);
 
 		if (!quotes.isEmpty()) {
-			HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
+			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
 
 			quote.setDayHigh(historicalQuote.getHigh());
 			quote.setDayLow(historicalQuote.getLow());
@@ -87,10 +53,10 @@ public abstract class StockFeed {
 		return stock;
 	}
 
-	public static StringBuilder seriesToCsv(List<HistoricalQuote> series) {
-		StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
-		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-		for (HistoricalQuote historicalQuote : series) {
+	public static StringBuilder seriesToCsv(final List<HistoricalQuote> series) {
+		final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
+		final SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+		for (final HistoricalQuote historicalQuote : series) {
 			sb.append(format1.format(historicalQuote.getDate().getTime()));
 			addValue(sb, historicalQuote.getOpen());
 			addValue(sb, historicalQuote.getHigh());
@@ -99,6 +65,54 @@ public abstract class StockFeed {
 			sb.append(",").append(historicalQuote.getVolume()).append("\n");
 		}
 		return sb;
+	}
+
+	public abstract Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException;
+
+	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
+		try {
+			return this.get(instrument.getExchange(), instrument.getCode(), years);
+		} catch (final IOException e) {
+			return Optional.empty();
+		}
+	}
+
+	/**
+	 * Bit of a hack - supply one Stock with minimal details in it to get new
+	 * instance fully populated
+	 *
+	 * @param stock
+	 * @return
+	 * @throws IOException
+	 */
+	public Optional<Stock> get(final Stock stock, final int years) {
+		try {
+			return this.get(Exchange.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
+		} catch (final IOException e) {
+			return Optional.empty();
+		}
+	}
+
+	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original) throws IOException {
+		final List<HistoricalQuote> newSeries = stock.getHistory();
+		this.mergeSeries(stock, original, newSeries);
+	}
+
+	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original,
+			final List<HistoricalQuote> newSeries) {
+		final Map<LocalDate, HistoricalQuote> dates = original.stream()
+				.collect(Collectors.toMap(quote -> LocalDate.fromCalendarFields(quote.getDate()), Function.identity()));
+		newSeries.stream().forEach(historicalQuote -> {
+			if (!dates.containsKey(LocalDate.fromCalendarFields(historicalQuote.getDate()))
+					&& !historicalQuote.getClose().equals(Decimal.ZERO)) {
+				dates.put(LocalDate.fromCalendarFields(historicalQuote.getDate()), historicalQuote);
+			}
+		});
+
+		final List<HistoricalQuote> sortedList = new LinkedList<>(dates.values());
+		sortedList.sort((quote1, quote2) -> quote1.getDate().compareTo(quote2.getDate()));
+		stock.setHistory(sortedList);
+
 	}
 
 }

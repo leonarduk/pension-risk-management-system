@@ -37,6 +37,7 @@ public class IntelligentStockFeed extends StockFeed {
 		return this.get(Instrument.fromString(ticker), years);
 	}
 
+	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) {
 		try {
 			final String ticker = instrument.code();
@@ -52,13 +53,13 @@ public class IntelligentStockFeed extends StockFeed {
 
 			Optional<Stock> liveData;
 			try {
-				liveData = refresh ? feed.get(instrument.getExchange(), ticker, years) : Optional.empty();
+				liveData = refresh ? feed.get(instrument, years) : Optional.empty();
 			} catch (final Throwable e) {
 				liveData = Optional.empty();
 			}
 			if (cachedData.isPresent()) {
 				if (liveData.isPresent()) {
-					this.mergeSeries(cachedData.get(), liveData.get().getHistory(), cachedData.get().getHistory());
+					this.mergeSeries(cachedData.get(), cachedData.get().getHistory(), liveData.get().getHistory());
 					dataFeed.storeSeries(cachedData.get());
 				}
 				return Optional.of(cachedData.get());

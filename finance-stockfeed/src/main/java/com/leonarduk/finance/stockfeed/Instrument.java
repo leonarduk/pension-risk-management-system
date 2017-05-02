@@ -42,6 +42,7 @@ public class Instrument {
 			this.instruments = ResourceTools.getResourceAsLines("resources/data/instruments_list.csv").stream().skip(1)
 					.map(line -> this.create(line)).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
 			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
+			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
 			this.instruments.put(CASH.isin.toUpperCase(), CASH);
 		}
 
