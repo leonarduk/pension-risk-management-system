@@ -50,8 +50,12 @@ public class IntelligentStockFeed extends StockFeed {
 
 			final StockFeed feed = StockFeedFactory.getDataFeed(instrument.getSource());
 
-			final Optional<Stock> liveData = refresh ? feed.get(instrument.getExchange(), ticker, years)
-					: Optional.empty();
+			Optional<Stock> liveData;
+			try {
+				liveData = refresh ? feed.get(instrument.getExchange(), ticker, years) : Optional.empty();
+			} catch (final Throwable e) {
+				liveData = Optional.empty();
+			}
 			if (cachedData.isPresent()) {
 				if (liveData.isPresent()) {
 					this.mergeSeries(cachedData.get(), liveData.get().getHistory(), cachedData.get().getHistory());

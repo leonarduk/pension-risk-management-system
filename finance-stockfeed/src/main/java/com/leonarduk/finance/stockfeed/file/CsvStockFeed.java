@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,9 +55,35 @@ public abstract class CsvStockFeed extends StockFeed {
 	private Exchange exchange;
 
 	public HistoricalQuote asHistoricalQuote() {
-		return new ComparableHistoricalQuote(this.symbol, DateUtils.dateToCalendar(date), getOpen().orElse(null),
-				getLow().orElse(null), getHigh().orElse(null), getClose().orElse(null), getClose().orElse(null),
-				getVolume().orElse(0L));
+		return new ComparableHistoricalQuote(this.symbol, DateUtils.dateToCalendar(this.date),
+				this.getOpen().orElse(null), this.getLow().orElse(null), this.getHigh().orElse(null),
+				this.getClose().orElse(null), this.getClose().orElse(null), this.getVolume().orElse(0L));
+	}
+
+	@Override
+	public Optional<Stock> get(final Exchange exchange, final String ticker, final int years) throws IOException {
+		this.setSymbol(ticker);
+		this.setExchange(exchange);
+		final Calendar from = Calendar.getInstance();
+		from.add(Calendar.YEAR, -1 * years);
+		this.setStartDate(from);
+		this.setEndDate(Calendar.getInstance());
+
+		final List<HistoricalQuote> quotes = new LinkedList<>();
+		try {
+			while (this.next()) {
+				quotes.add(this.asHistoricalQuote());
+			}
+
+			Collections.sort(quotes, (o1, o2) -> {
+				return o2.getDate().compareTo(o1.getDate());
+			});
+
+		} catch (final IOException e) {
+			return Optional.empty();
+		}
+
+		return Optional.of(createStock(exchange, ticker, ticker, quotes));
 	}
 
 	/**
@@ -66,7 +93,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return close
 	 */
 	public Optional<BigDecimal> getClose() {
-		return close;
+		return this.close;
 	}
 
 	/**
@@ -76,11 +103,15 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return date
 	 */
 	public Date getDate() {
-		return date;
+		return this.date;
 	}
 
 	public Date getEndDate() {
-		return endDate;
+		return this.endDate;
+	}
+
+	public Exchange getExchange() {
+		return this.exchange;
 	}
 
 	/**
@@ -90,7 +121,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return high
 	 */
 	public Optional<BigDecimal> getHigh() {
-		return high;
+		return this.high;
 	}
 
 	/**
@@ -100,7 +131,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return low
 	 */
 	public Optional<BigDecimal> getLow() {
-		return low;
+		return this.low;
 	}
 
 	/**
@@ -110,23 +141,21 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return open
 	 */
 	public Optional<BigDecimal> getOpen() {
-		return open;
+		return this.open;
 	}
 
+	protected abstract String getQueryName(StockFeed.Exchange exchange, String ticker);
+
 	public BufferedReader getReader() {
-		return reader;
+		return this.reader;
 	}
 
 	public Date getStartDate() {
-		return startDate;
+		return this.startDate;
 	}
 
 	public String getSymbol() {
-		return symbol;
-	}
-
-	public Exchange getExchange() {
-		return exchange;
+		return this.symbol;
 	}
 
 	/**
@@ -136,7 +165,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return volume
 	 */
 	public Optional<Long> getVolume() {
-		return volume;
+		return this.volume;
 	}
 
 	/**
@@ -151,66 +180,45 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @
 	 */
 	public boolean next() throws IOException {
-		if (reader == null)
-			reader = openReader();
+		if (this.reader == null) {
+			this.reader = this.openReader();
+		}
 
-		return parseReader(reader);
+		return this.parseReader(this.reader);
 	}
 
 	protected abstract BufferedReader openReader() throws IOException;
 
 	private Optional<BigDecimal> parseBigDecimal(final String input) {
 		try {
-			if (input.equals("-"))
+			if (input.equals("-")) {
 				return Optional.empty();
+			}
 			return Optional.of(BigDecimal.valueOf(Double.valueOf(input)));
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			log.warning("Failed to parse " + input);
 			return Optional.empty();
 		}
+	}
+
+	protected Date parseDate(final String fieldValue) throws ParseException {
+		return LocalDate.parse(fieldValue).toDate();
 	}
 
 	private Optional<Long> parseLong(final String input) {
 		try {
 			return Optional.of(Long.parseLong(input));
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			log.warning("Failed to parse " + input);
 			return Optional.empty();
 		}
 	}
 
-	protected abstract String getQueryName(StockFeed.Exchange exchange, String ticker);
-
-	@Override
-	public Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException {
-		this.setSymbol(ticker);
-		this.setExchange(exchange);
-		Calendar from = Calendar.getInstance();
-		from.add(Calendar.YEAR, -1 * years);
-		this.setStartDate(from);
-		this.setEndDate(Calendar.getInstance());
-
-		List<HistoricalQuote> quotes = new LinkedList<>();
-		try {
-			while (this.next()) {
-				quotes.add(this.asHistoricalQuote());
-			}
-		} catch (IOException e) {
-			return Optional.empty();
-		}
-
-		return Optional.of(createStock(exchange, ticker, ticker, quotes));
-	}
-
-	public void setExchange(Exchange exchange2) {
-		this.exchange = exchange2;
-	}
-
-	protected boolean parseReader(BufferedReader reader2) throws IOException {
+	protected boolean parseReader(final BufferedReader reader2) throws IOException {
 		try {
 			String line = reader2.readLine();
-			if (line == null || line.length() == 0) {
-				release();
+			if ((line == null) || (line.length() == 0)) {
+				this.release();
 				return false;
 			}
 			if (line.contains("\t")) {
@@ -223,40 +231,37 @@ public abstract class CsvStockFeed extends StockFeed {
 			int comma = line.indexOf(',');
 			int column = 0;
 			while (start < length) {
-				String fieldValue = line.substring(start, comma);
+				final String fieldValue = line.substring(start, comma);
 				switch (column++) {
 				case 0:
-					date = parseDate(fieldValue);
+					this.date = this.parseDate(fieldValue);
 					break;
 				case 1:
-					open = parseBigDecimal(fieldValue);
+					this.open = this.parseBigDecimal(fieldValue);
 					break;
 				case 2:
-					high = parseBigDecimal(fieldValue);
+					this.high = this.parseBigDecimal(fieldValue);
 					break;
 				case 3:
-					low = parseBigDecimal(fieldValue);
+					this.low = this.parseBigDecimal(fieldValue);
 					break;
 				case 4:
-					close = parseBigDecimal(fieldValue);
+					this.close = this.parseBigDecimal(fieldValue);
 					break;
 				case 5:
-					volume = parseLong(fieldValue);
+					this.volume = this.parseLong(fieldValue);
 					break;
 				}
 				start = comma + 1;
 				comma = line.indexOf(',', start);
-				if (comma == -1)
+				if (comma == -1) {
 					comma = length;
+				}
 			}
 			return true;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IOException(e);
 		}
-	}
-
-	protected Date parseDate(String fieldValue) throws ParseException {
-		return LocalDate.parse(fieldValue).toDate();
 	}
 
 	/**
@@ -265,13 +270,14 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return this request
 	 */
 	public CsvStockFeed release() {
-		if (reader != null)
+		if (this.reader != null) {
 			try {
-				reader.close();
-			} catch (IOException ignored) {
+				this.reader.close();
+			} catch (final IOException ignored) {
 				// Ignored
 			}
-		reader = null;
+		}
+		this.reader = null;
 		return this;
 	}
 
@@ -282,7 +288,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return this request
 	 */
 	public CsvStockFeed setEndDate(final Calendar endDate) {
-		return setEndDate(endDate != null ? endDate.getTime() : null);
+		return this.setEndDate(endDate != null ? endDate.getTime() : null);
 	}
 
 	/**
@@ -296,6 +302,10 @@ public abstract class CsvStockFeed extends StockFeed {
 		return this;
 	}
 
+	public void setExchange(final Exchange exchange2) {
+		this.exchange = exchange2;
+	}
+
 	/**
 	 * Set start date of request
 	 *
@@ -303,7 +313,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @return this request
 	 */
 	public CsvStockFeed setStartDate(final Calendar startDate) {
-		return setStartDate(startDate != null ? startDate.getTime() : null);
+		return this.setStartDate(startDate != null ? startDate.getTime() : null);
 	}
 
 	/**

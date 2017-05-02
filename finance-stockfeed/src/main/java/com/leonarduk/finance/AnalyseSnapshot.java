@@ -44,31 +44,46 @@ import yahoofinance.Stock;
  * <p>
  */
 public class AnalyseSnapshot {
-	private final static Logger logger = Logger.getLogger(AnalyseSnapshot.class.getName());
-	private static DecimalFormat format;
-	private static int years = 20;
+	public static class DataField {
+		private final String name;
+		private final Object value;
+		private boolean display;
 
-	public static void addField(final Decimal decimal, final StringBuilder sb) {
-		String colour = "red";
-
-		if ((decimal != null) && decimal.isGreaterThan(Decimal.ZERO)) {
-			colour = "green";
-		} else if ((decimal != null) && decimal.equals(Decimal.ZERO)) {
-			colour = "white";
+		public DataField(final String name, final Object value) {
+			this(name, value, true);
 		}
-		sb.append("<td bgcolor='" + colour + "'>").append(decimal).append("</td>");
+
+		public DataField(final String name, final Object value, final boolean display) {
+			this.name = name;
+			this.value = value;
+			this.display = display;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Object getValue() {
+			return this.value;
+		}
+
+		public void hide() {
+			this.display = false;
+		}
+
+		public boolean isDisplay() {
+			return this.display;
+		}
+
 	}
 
-	public static void addField(final RecommendedTrade recommendedTrade, final StringBuilder sb) {
-		String colour = "red";
+	private final static Logger logger = Logger.getLogger(AnalyseSnapshot.class.getName());
+	private static DecimalFormat format;
 
-		if ((recommendedTrade != null) && recommendedTrade.equals(RecommendedTrade.BUY)) {
-			colour = "green";
-		}
-		if ((recommendedTrade != null) && recommendedTrade.equals(RecommendedTrade.HOLD)) {
-			colour = "white";
-		}
-		sb.append("<td bgcolor='" + colour + "'>").append(recommendedTrade).append("</td>");
+	private static int years = 20;
+
+	public static void addField(final Object value, final StringBuilder sb) {
+		sb.append("<td bgcolor='" + getColour(value) + "'>").append(value).append("</td>");
 	}
 
 	public static void addHeader(final String name, final StringBuilder sb) {
@@ -109,7 +124,7 @@ public class AnalyseSnapshot {
 			IndicatorsToCsv.exportIndicatorsToCsv(series);
 			final TradingRecord tradingRecord = new TradingRecord();
 
-			final Tick mostRecentTick = series.getFirstTick();
+			final Tick mostRecentTick = series.getLastTick();
 			final Valuation valuation = createValuation(stock2, mostRecentTick);
 			for (final AbstractStrategy strategy : strategies) {
 
@@ -150,8 +165,8 @@ public class AnalyseSnapshot {
 	}
 
 	public static Decimal calculateReturn(final TimeSeries series, final int timePeriod) {
-		final Decimal initialValue = series.getLastTick().getClosePrice();
-		final int i = series.getEnd() - timePeriod;
+		final Decimal initialValue = series.getFirstTick().getClosePrice();
+		final int i = timePeriod;
 		final Decimal diff = i > -1 ? series.getTick(i).getClosePrice().minus(initialValue) : Decimal.ZERO;
 		return roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
 	}
@@ -216,59 +231,79 @@ public class AnalyseSnapshot {
 	protected static void createValuationsTable(final List<Valuation> valuations, final StringBuilder sb,
 			final boolean showPositionsHeld) {
 
-		sb.append("<table><tr>");
+		final List<List<DataField>> records = Lists.newLinkedList();
 
-		for (final String name : new String[] { "Name", "ISIN", "Code", "Sector", "Type" }) {
-			addHeader(name, sb);
-		}
-
-		if (showPositionsHeld) {
-			for (final String name : new String[] { "Quantity Owned", "Value Owned" }) {
-				addHeader(name, sb);
-			}
-		}
-		for (final String name : new String[] { "Price", "AsOf", "Age of quote", "1D", "5D", "21D", "63D", "365d" }) {
-			addHeader(name, sb);
-		}
-
-		final String[] strategies = new String[] { "Global Extrema", "Moving Momentum", "SMA (12days)", "SMA (20days)",
-				"SMA (50days)" };
-		for (final String name : strategies) {
-			addHeader(name, sb);
-		}
-		sb.append("</tr>");
 		for (final Valuation optional : valuations) {
+			final List<DataField> fields = Lists.newLinkedList();
+			records.add(fields);
 			logger.info(optional.toString());
 			final Instrument instrument = optional.getPosition().getInstrument();
 
-			sb.append("<tr><td>");
-			sb.append(instrument.isin()).append("</td><td>"); //
-			sb.append(instrument.getIsin()).append("</td><td>"); // ISIN
-			sb.append(optional.getPosition().getSymbol()).append("</td><td>"); // Code
-			sb.append(instrument.category()).append("</td><td>");
-			sb.append(instrument.assetType()).append("</td><td>");
+			fields.add(new DataField("Name", instrument.getName()));
+			fields.add(new DataField("ISIN", instrument.getIsin(), false));
+			fields.add(new DataField("Code", instrument.getCode()));
+			fields.add(new DataField("Sector", instrument.getCategory()));
+			fields.add(new DataField("Type", instrument.getAssetType().name()));
 
-			if (showPositionsHeld) {
-				sb.append(optional.getPosition().getAmount()).append("</td><td>");
-				sb.append(optional.getValuation()).append("</td><td>");
-			}
-			sb.append(optional.getPrice()).append("</td><td>");
+			fields.add(new DataField("Quantity Owned", optional.getPosition().getAmount(), showPositionsHeld));
+			fields.add(new DataField("Value Owned", optional.getValuation(), showPositionsHeld));
+
 			final LocalDate valuationDate = optional.getValuationDate();
 
-			sb.append(valuationDate.toString()).append("</td>");
-			addField(Decimal.valueOf(Days.daysBetween(LocalDate.now(), valuationDate).getDays()), sb);
+			fields.add(new DataField("Price", optional.getPrice()));
+			fields.add(new DataField("AsOf", valuationDate));
 
-			addField(optional.getReturn(Period.days(1)), sb);
-			addField(optional.getReturn(Period.days(5)), sb);
-			addField(optional.getReturn(Period.days(21)), sb);
-			addField(optional.getReturn(Period.days(63)), sb);
-			addField(optional.getReturn(Period.days(365)), sb);
-			for (final String name : strategies) {
-				addField(optional.getRecommendation(name).getTradeRecommendation(), sb);
+			for (final int day : new Integer[] { 1, 5, 21, 63, 365 }) {
+				fields.add(new DataField(day + "D", optional.getReturn(Period.days(day))));
 			}
-			sb.append("</tr>");
+
+			for (final String name : new String[] { "Global Extrema", "Moving Momentum", "SMA (12days)", "SMA (20days)",
+					"SMA (50days)" }) {
+				fields.add(new DataField("Global Extrema", optional.getRecommendation(name).getTradeRecommendation()));
+			}
 		}
-		sb.append("</table>");
+
+		if (records.size() > 0) {
+			sb.append("<table><tr>");
+			records.get(0).stream().forEach(f -> {
+				if (f.isDisplay()) {
+					addHeader(f.getName(), sb);
+				}
+			});
+			sb.append("</tr>");
+
+			for (final List<DataField> list : records) {
+				sb.append("<tr>");
+				list.stream().forEach(f -> {
+					if (f.isDisplay()) {
+						addField(f.getValue(), sb);
+					}
+				});
+				sb.append("</tr>");
+
+			}
+			sb.append("</table>");
+		}
+	}
+
+	public static String getColour(final Object value) {
+		String colour = "white";
+		if ((value != null) && (value.equals(RecommendedTrade.BUY) || ((value instanceof LocalDate)
+				&& (Decimal.valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
+						.equals(Decimal.ZERO))
+
+				|| ((value instanceof Decimal) && ((Decimal) value).isGreaterThan(Decimal.ZERO)))) {
+			colour = "green";
+		}
+
+		if (((value != null) && value.equals(RecommendedTrade.SELL))
+				|| ((value instanceof LocalDate)
+						&& (Decimal.valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
+								.isGreaterThan(Decimal.ONE))
+				|| ((value instanceof Decimal) && ((Decimal) value).isLessThan(Decimal.ZERO))) {
+			colour = "red";
+		}
+		return colour;
 	}
 
 	public static List<Position> getListedInstruments(final List<Instrument> heldInstruments) {
