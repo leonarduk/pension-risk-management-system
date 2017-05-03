@@ -214,7 +214,7 @@ public class AnalyseSnapshot {
 		addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type", "Value");
 		addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets", "Type", "Value");
 
-		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, true);
+		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, false);
 
 		final StringBuilder buf = createHtmlText(sbHead, sbBody);
 

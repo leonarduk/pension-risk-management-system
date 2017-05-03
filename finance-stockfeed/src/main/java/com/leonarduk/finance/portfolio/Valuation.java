@@ -1,7 +1,9 @@
 package com.leonarduk.finance.portfolio;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -10,38 +12,32 @@ import com.google.common.collect.Maps;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 
 import eu.verdelhan.ta4j.Decimal;
+import yahoofinance.Stock;
 
 public class Valuation {
-	private Decimal price;
+	private final Decimal price;
 
-	public Position getPosition() {
-		return position;
-	}
+	private final Position position;
 
-	public Decimal getValuation() {
-		return valuation;
-	}
+	private final Decimal valuation;
 
-	public Decimal getPrice() {
-		return price;
-	}
-
-	public LocalDate getValuationDate() {
-		return valuationDate;
-	}
-
-	public Recommendation getRecommendation(String name) {
-		return recommendation.getOrDefault(name, new Recommendation(RecommendedTrade.HOLD, null, null));
-	}
-
-	private Position position;
-	private Decimal valuation;
 	LocalDate valuationDate;
-	final Map<String, Recommendation> recommendation;
-	private Map<Period, Decimal> returns;
 
-	public Valuation(Position position, Decimal valuation, LocalDate valuationDate, Decimal price) {
+	final Map<String, Recommendation> recommendation;
+
+	private final Map<Period, Decimal> returns;
+
+	public Valuation(final Position position, final Decimal valuation, final LocalDate valuationDate,
+			final Decimal price) {
 		this.position = position;
+		final Optional<Stock> stock = this.position.getStock();
+		if (stock.isPresent()) {
+			try {
+				stock.get().getHistory().clear();
+			} catch (final IOException e) {
+				// ignore
+			}
+		}
 		this.valuation = valuation;
 		this.valuationDate = valuationDate;
 		this.recommendation = Maps.newHashMap();
@@ -49,22 +45,42 @@ public class Valuation {
 		this.price = price;
 	}
 
-	public void addRecommendation(AbstractStrategy strategy, Recommendation recommendation2) {
+	public void addRecommendation(final AbstractStrategy strategy, final Recommendation recommendation2) {
 		this.recommendation.put(strategy.getName(), recommendation2);
+	}
+
+	public void addReturn(final Period days, final Decimal change) {
+		this.returns.put(days, change);
+	}
+
+	public Position getPosition() {
+		return this.position;
+	}
+
+	public Decimal getPrice() {
+		return this.price;
+	}
+
+	public Recommendation getRecommendation(final String name) {
+		return this.recommendation.getOrDefault(name, new Recommendation(RecommendedTrade.HOLD, null, null));
+	}
+
+	public Decimal getReturn(final Period days) {
+		return this.returns.get(days);
+	}
+
+	public Decimal getValuation() {
+		return this.valuation;
+	}
+
+	public LocalDate getValuationDate() {
+		return this.valuationDate;
 	}
 
 	@Override
 	public String toString() {
-		return "Valuation [position=" + position + ", valuation=" + valuation + ", valuationDate=" + valuationDate
-				+ ", recommendation=" + recommendation + ", returns=" + returns + "]";
-	}
-
-	public void addReturn(Period days, Decimal change) {
-		this.returns.put(days, change);
-	}
-
-	public Decimal getReturn(Period days) {
-		return this.returns.get(days);
+		return "Valuation [position=" + this.position + ", valuation=" + this.valuation + ", valuationDate="
+				+ this.valuationDate + ", recommendation=" + this.recommendation + ", returns=" + this.returns + "]";
 	}
 
 }
