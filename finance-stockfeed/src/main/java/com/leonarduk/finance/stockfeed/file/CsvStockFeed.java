@@ -13,11 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import org.joda.time.LocalDate;
-
-import com.leonarduk.finance.stockfeed.ComparableHistoricalQuote;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
+import com.leonarduk.finance.utils.Utils;
 
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -48,22 +47,19 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	private Date startDate;
 
-	private String symbol;
-
 	private Optional<Long> volume;
 
-	private Exchange exchange;
+	private Instrument instrument;
 
 	public HistoricalQuote asHistoricalQuote() {
-		return new ComparableHistoricalQuote(this.symbol, DateUtils.dateToCalendar(this.date),
-				this.getOpen().orElse(null), this.getLow().orElse(null), this.getHigh().orElse(null),
-				this.getClose().orElse(null), this.getClose().orElse(null), this.getVolume().orElse(0L));
+		return new HistoricalQuote(this.instrument, DateUtils.dateToCalendar(this.date), this.getOpen().orElse(null),
+				this.getLow().orElse(null), this.getHigh().orElse(null), this.getClose().orElse(null),
+				this.getClose().orElse(null), this.getVolume().orElse(0L));
 	}
 
 	@Override
-	public Optional<Stock> get(final Exchange exchange, final String ticker, final int years) throws IOException {
-		this.setSymbol(ticker);
-		this.setExchange(exchange);
+	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
+		this.setInstrument(instrument);
 		final Calendar from = Calendar.getInstance();
 		from.add(Calendar.YEAR, -1 * years);
 		this.setStartDate(from);
@@ -80,10 +76,11 @@ public abstract class CsvStockFeed extends StockFeed {
 			});
 
 		} catch (final IOException e) {
+			log.warning("Failed:" + e.getMessage());
 			return Optional.empty();
 		}
 
-		return Optional.of(createStock(exchange, ticker, ticker, quotes));
+		return Optional.of(createStock(instrument, quotes));
 	}
 
 	/**
@@ -111,7 +108,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	}
 
 	public Exchange getExchange() {
-		return this.exchange;
+		return this.instrument.getExchange();
 	}
 
 	/**
@@ -122,6 +119,10 @@ public abstract class CsvStockFeed extends StockFeed {
 	 */
 	public Optional<BigDecimal> getHigh() {
 		return this.high;
+	}
+
+	public Instrument getInstrument() {
+		return this.instrument;
 	}
 
 	/**
@@ -144,7 +145,7 @@ public abstract class CsvStockFeed extends StockFeed {
 		return this.open;
 	}
 
-	protected abstract String getQueryName(StockFeed.Exchange exchange, String ticker);
+	protected abstract String getQueryName(final Instrument instrument);
 
 	public BufferedReader getReader() {
 		return this.reader;
@@ -155,7 +156,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	}
 
 	public String getSymbol() {
-		return this.symbol;
+		return this.instrument.code();
 	}
 
 	/**
@@ -194,7 +195,7 @@ public abstract class CsvStockFeed extends StockFeed {
 			if (input.equals("-")) {
 				return Optional.empty();
 			}
-			return Optional.of(BigDecimal.valueOf(Double.valueOf(input)));
+			return Optional.of(Utils.getBigDecimal(input));
 		} catch (final NumberFormatException e) {
 			log.warning("Failed to parse " + input);
 			return Optional.empty();
@@ -202,7 +203,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	}
 
 	protected Date parseDate(final String fieldValue) throws ParseException {
-		return LocalDate.parse(fieldValue).toDate();
+		return DateUtils.parseDate(fieldValue);
 	}
 
 	private Optional<Long> parseLong(final String input) {
@@ -302,8 +303,8 @@ public abstract class CsvStockFeed extends StockFeed {
 		return this;
 	}
 
-	public void setExchange(final Exchange exchange2) {
-		this.exchange = exchange2;
+	public void setInstrument(final Instrument instrument) {
+		this.instrument = instrument;
 	}
 
 	/**
@@ -324,17 +325,6 @@ public abstract class CsvStockFeed extends StockFeed {
 	 */
 	public CsvStockFeed setStartDate(final Date startDate) {
 		this.startDate = startDate;
-		return this;
-	}
-
-	/**
-	 * Set symbol of request
-	 *
-	 * @param symbol
-	 * @return this request
-	 */
-	public CsvStockFeed setSymbol(final String symbol) {
-		this.symbol = symbol;
 		return this;
 	}
 

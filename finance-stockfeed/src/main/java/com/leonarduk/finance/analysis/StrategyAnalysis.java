@@ -24,9 +24,9 @@ package com.leonarduk.finance.analysis;
 
 import java.io.IOException;
 
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 import com.leonarduk.finance.utils.TimeseriesUtils;
@@ -56,7 +56,7 @@ public class StrategyAnalysis {
 		// Getting the time series
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "XMJG";
-		final Stock stock = feed.get(Exchange.London, ticker, 20).get();
+		final Stock stock = feed.get(Instrument.fromString(ticker), 20).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
 		// Building the trading strategy

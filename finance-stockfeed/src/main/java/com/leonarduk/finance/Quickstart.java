@@ -27,9 +27,9 @@ import java.io.IOException;
 import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.chart.BollingerBars;
 import com.leonarduk.finance.chart.CandlestickChart;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -64,7 +64,7 @@ public class Quickstart {
 		// Getting a time series (from any provider: CSV, web service, etc.)
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "ISJP";
-		final Stock stock = feed.get(Exchange.London, ticker, 2).get();
+		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
 		// Getting the close price of the ticks

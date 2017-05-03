@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 import com.leonarduk.finance.utils.Utils;
 
 import yahoofinance.YahooFinance;
@@ -23,123 +25,120 @@ import yahoofinance.YahooFinance;
  */
 public class HistQuotesRequest {
 
-    private final String symbol;
+	public static final Calendar DEFAULT_FROM = Calendar.getInstance();
 
-    private final Calendar from;
-    private final Calendar to;
+	static {
+		DEFAULT_FROM.add(Calendar.YEAR, -1);
+	}
+	public static final Calendar DEFAULT_TO = Calendar.getInstance();
 
-    private final Interval interval;
+	public static final Interval DEFAULT_INTERVAL = Interval.MONTHLY;
 
-    public static final Calendar DEFAULT_FROM = Calendar.getInstance();
+	private final Instrument instrument;
 
-    static {
-        DEFAULT_FROM.add(Calendar.YEAR, -1);
-    }
-    public static final Calendar DEFAULT_TO = Calendar.getInstance();
-    public static final Interval DEFAULT_INTERVAL = Interval.MONTHLY;
+	private final Calendar from;
+	private final Calendar to;
+	private final Interval interval;
 
-    public HistQuotesRequest(String symbol) {
-        this(symbol, DEFAULT_INTERVAL);
-    }
+	public HistQuotesRequest(final Instrument instrument) {
+		this(instrument, DEFAULT_INTERVAL);
+	}
 
-    public HistQuotesRequest(String symbol, Interval interval) {
-        this(symbol, DEFAULT_FROM, DEFAULT_TO, interval);
-    }
+	public HistQuotesRequest(final Instrument instrument, final Calendar from, final Calendar to) {
+		this(instrument, from, to, DEFAULT_INTERVAL);
+	}
 
-    public HistQuotesRequest(String symbol, Calendar from, Calendar to) {
-        this(symbol, from, to, DEFAULT_INTERVAL);
-    }
+	public HistQuotesRequest(final Instrument instrument, final Calendar from, final Calendar to,
+			final Interval interval) {
+		this.instrument = instrument;
+		this.from = this.cleanHistCalendar(from);
+		this.to = this.cleanHistCalendar(to);
+		this.interval = interval;
+	}
 
-    public HistQuotesRequest(String symbol, Calendar from, Calendar to, Interval interval) {
-        this.symbol = symbol;
-        this.from = this.cleanHistCalendar(from);
-        this.to = this.cleanHistCalendar(to);
-        this.interval = interval;
-    }
+	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to) {
+		this(instrument, from, to, DEFAULT_INTERVAL);
+	}
 
-    public HistQuotesRequest(String symbol, Date from, Date to) {
-        this(symbol, from, to, DEFAULT_INTERVAL);
-    }
+	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to, final Interval interval) {
+		this(instrument, interval);
+		this.from.setTime(from);
+		this.to.setTime(to);
+		this.cleanHistCalendar(this.from);
+		this.cleanHistCalendar(this.to);
+	}
 
-    public HistQuotesRequest(String symbol, Date from, Date to, Interval interval) {
-        this(symbol, interval);
-        this.from.setTime(from);
-        this.to.setTime(to);
-        this.cleanHistCalendar(this.from);
-        this.cleanHistCalendar(this.to);
-    }
-    
-    /**
-     * Put everything smaller than days at 0
-     * @param cal calendar to be cleaned
-     */
-    private Calendar cleanHistCalendar(Calendar cal) {
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
-        return cal;
-    }
+	public HistQuotesRequest(final Instrument instrument, final Interval interval) {
+		this(instrument, DEFAULT_FROM, DEFAULT_TO, interval);
+	}
 
-    public List<HistoricalQuote> getResult() throws IOException {
+	/**
+	 * Put everything smaller than days at 0
+	 *
+	 * @param cal
+	 *            calendar to be cleaned
+	 */
+	private Calendar cleanHistCalendar(final Calendar cal) {
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.HOUR, 0);
+		return cal;
+	}
 
-        List<HistoricalQuote> result = new ArrayList<HistoricalQuote>();
-        
-        if(this.from.after(this.to)) {
-            YahooFinance.logger.log(Level.WARNING, "Unable to retrieve historical quotes. "
-                    + "From-date should not be after to-date. From: "
-                    + this.from.getTime() + ", to: " + this.to.getTime());
-            return result;
-        }
-        
-        Map<String, String> params = new LinkedHashMap<String, String>();
-        params.put("s", this.symbol);
+	public List<HistoricalQuote> getResult() throws IOException {
 
-        params.put("a", String.valueOf(this.from.get(Calendar.MONTH)));
-        params.put("b", String.valueOf(this.from.get(Calendar.DAY_OF_MONTH)));
-        params.put("c", String.valueOf(this.from.get(Calendar.YEAR)));
+		final List<HistoricalQuote> result = new ArrayList<>();
 
-        params.put("d", String.valueOf(this.to.get(Calendar.MONTH)));
-        params.put("e", String.valueOf(this.to.get(Calendar.DAY_OF_MONTH)));
-        params.put("f", String.valueOf(this.to.get(Calendar.YEAR)));
+		if (this.from.after(this.to)) {
+			YahooFinance.logger.log(Level.WARNING,
+					"Unable to retrieve historical quotes. " + "From-date should not be after to-date. From: "
+							+ this.from.getTime() + ", to: " + this.to.getTime());
+			return result;
+		}
 
-        params.put("g", this.interval.getTag());
+		final Map<String, String> params = new LinkedHashMap<>();
+		params.put("s", YahooFeed.getQueryName(this.instrument));
 
-        params.put("ignore", ".csv");
+		params.put("a", String.valueOf(this.from.get(Calendar.MONTH)));
+		params.put("b", String.valueOf(this.from.get(Calendar.DAY_OF_MONTH)));
+		params.put("c", String.valueOf(this.from.get(Calendar.YEAR)));
 
-        String url = YahooFinance.HISTQUOTES_BASE_URL + "?" + Utils.getURLParameters(params);
+		params.put("d", String.valueOf(this.to.get(Calendar.MONTH)));
+		params.put("e", String.valueOf(this.to.get(Calendar.DAY_OF_MONTH)));
+		params.put("f", String.valueOf(this.to.get(Calendar.YEAR)));
 
-        // Get CSV from Yahoo
-        YahooFinance.logger.log(Level.INFO, ("Sending request: " + url));
+		params.put("g", this.interval.getTag());
 
-        URL request = new URL(url);
-        URLConnection connection = request.openConnection();
-        connection.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
-        connection.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
-        InputStreamReader is = new InputStreamReader(connection.getInputStream());
-        BufferedReader br = new BufferedReader(is);
-        br.readLine(); // skip the first line
-        // Parse CSV
-        for (String line = br.readLine(); line != null; line = br.readLine()) {
+		params.put("ignore", ".csv");
 
-            YahooFinance.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
-            HistoricalQuote quote = this.parseCSVLine(line);
-            result.add(quote);
-        }
-        return result;
-    }
+		final String url = YahooFinance.HISTQUOTES_BASE_URL + "?" + Utils.getURLParameters(params);
 
-    private HistoricalQuote parseCSVLine(String line) {
-        String[] data = line.split(YahooFinance.QUOTES_CSV_DELIMITER);
-        return new HistoricalQuote(this.symbol,
-                Utils.parseHistDate(data[0]),
-                Utils.getBigDecimal(data[1]),
-                Utils.getBigDecimal(data[3]),
-                Utils.getBigDecimal(data[2]),
-                Utils.getBigDecimal(data[4]),
-                Utils.getBigDecimal(data[6]),
-                Utils.getLong(data[5])
-        );
-    }
+		// Get CSV from Yahoo
+		YahooFinance.logger.log(Level.INFO, ("Sending request: " + url));
+
+		final URL request = new URL(url);
+		final URLConnection connection = request.openConnection();
+		connection.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
+		connection.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
+		final InputStreamReader is = new InputStreamReader(connection.getInputStream());
+		final BufferedReader br = new BufferedReader(is);
+		br.readLine(); // skip the first line
+		// Parse CSV
+		for (String line = br.readLine(); line != null; line = br.readLine()) {
+
+			YahooFinance.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
+			final HistoricalQuote quote = this.parseCSVLine(line);
+			result.add(quote);
+		}
+		return result;
+	}
+
+	private HistoricalQuote parseCSVLine(final String line) {
+		final String[] data = line.split(YahooFinance.QUOTES_CSV_DELIMITER);
+		return new HistoricalQuote(this.instrument, Utils.parseHistDate(data[0]), Utils.getBigDecimal(data[1]),
+				Utils.getBigDecimal(data[3]), Utils.getBigDecimal(data[2]), Utils.getBigDecimal(data[4]),
+				Utils.getBigDecimal(data[6]), Utils.getLong(data[5]));
+	}
 
 }

@@ -8,16 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
-
-import yahoofinance.Stock;
 
 public class GoogleFeed extends CsvStockFeed {
 	/** The logger */
@@ -57,17 +53,8 @@ public class GoogleFeed extends CsvStockFeed {
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
-		return this.get(instrument.getExchange(), instrument.getGoogleCode(), years);
-	}
-
-	@Override
-	protected String getQueryName(final StockFeed.Exchange exchange, final String ticker) {
-		switch (exchange) {
-		case London:
-			return "LON:" + ticker;
-		}
-		throw new IllegalArgumentException("Don't know how to handle " + exchange);
+	protected String getQueryName(final Instrument instrument) {
+		return instrument.getGoogleCode();
 	}
 
 	/**

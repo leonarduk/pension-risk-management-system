@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.joda.time.DateTime;
 
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Decimal;
@@ -52,7 +52,7 @@ public class TradingBotOnMovingTimeSeries {
 
 	/**
 	 * Generates a random tick.
-	 * 
+	 *
 	 * @return a random tick
 	 */
 	private static Tick generateRandomTick() {
@@ -70,7 +70,7 @@ public class TradingBotOnMovingTimeSeries {
 	/**
 	 * Builds a moving time series (i.e. keeping only the maxTickCount last
 	 * ticks)
-	 * 
+	 *
 	 * @param maxTickCount
 	 *            the number of ticks to keep in the time series (at maximum)
 	 * @return a moving time series
@@ -78,7 +78,7 @@ public class TradingBotOnMovingTimeSeries {
 	 */
 	private static TimeSeries initMovingTimeSeries(final int maxTickCount) throws IOException {
 		final String ticker = "PHGP";
-		final Stock stock = new IntelligentStockFeed().get(Exchange.London, ticker, 1).get();
+		final Stock stock = new IntelligentStockFeed().get(Instrument.fromString(ticker), 1).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 		System.out.print("Initial tick count: " + series.getTickCount());
 		// Limitating the number of ticks to maxTickCount
@@ -138,7 +138,7 @@ public class TradingBotOnMovingTimeSeries {
 
 	/**
 	 * Generates a random decimal number between min and max.
-	 * 
+	 *
 	 * @param min
 	 *            the minimum bound
 	 * @param max

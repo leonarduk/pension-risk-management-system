@@ -56,7 +56,10 @@ public class Instrument {
 	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL, "Cash",
 			"Cash", Exchange.London, "Cash", "GBP", "");
 
-	public static Instrument fromString(final String symbol) {
+	public static Instrument fromString(String symbol) {
+		if (symbol.contains(".")) {
+			symbol = symbol.substring(0, symbol.indexOf("."));
+		}
 		if (InstrumentLoader.instance == null) {
 			InstrumentLoader.instance = new InstrumentLoader();
 			try {
@@ -80,8 +83,8 @@ public class Instrument {
 	}
 
 	private final AssetType assetType;
-	private final String category;
 
+	private final String category;
 	private final String code;
 
 	private final String currency;
@@ -123,6 +126,10 @@ public class Instrument {
 
 	public String code() {
 		return this.code;
+	}
+
+	public int compareTo(final Instrument instrument) {
+		return this.code.compareTo(instrument.code);
 	}
 
 	public String currency() {
@@ -171,6 +178,14 @@ public class Instrument {
 
 	public Source source() {
 		return this.source;
+	}
+
+	@Override
+	public String toString() {
+		return "Instrument [assetType=" + this.assetType + ", category=" + this.category + ", code=" + this.code
+				+ ", currency=" + this.currency + ", googleCode=" + this.googleCode + ", isin=" + this.isin + ", name="
+				+ this.name + ", source=" + this.source + ", underlyingType=" + this.underlyingType + ", exchange="
+				+ this.exchange + "]";
 	}
 
 	public AssetType underlyingType() {

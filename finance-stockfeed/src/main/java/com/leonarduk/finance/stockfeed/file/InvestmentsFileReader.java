@@ -8,9 +8,7 @@ import java.util.stream.Collectors;
 
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.ResourceTools;
 
 import eu.verdelhan.ta4j.Decimal;
@@ -24,13 +22,12 @@ public class InvestmentsFileReader {
 			logger.warning("not enough details: " + list);
 			return null;
 		}
-		final int years = 10;
 		final int portfolioIdx = 0;
 		final int isinIdx = 1;
 		final int amountIndex = 2;
 		final String symbol = list.get(isinIdx);
 		final Instrument instrument = Instrument.fromString(symbol);
-		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years);
+		final Optional<Stock> stock = Optional.of(new Stock(instrument));
 		return new Position(list.get(portfolioIdx), instrument, Decimal.valueOf(list.get(amountIndex)), stock, symbol);
 	}
 
@@ -40,8 +37,7 @@ public class InvestmentsFileReader {
 			return null;
 		}
 		final int isinIdx = 1;
-		final int nameIndex = 0;
-		return StockFeed.createStock(Exchange.London, list.get(isinIdx), list.get(nameIndex));
+		return StockFeed.createStock(Instrument.fromString(list.get(isinIdx)));
 	}
 
 	public static List<Position> getPositionsFromCSVFile(final String filePath) throws IOException {

@@ -34,9 +34,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.Period;
 
 import com.leonarduk.finance.analysis.TraderOrderUtils;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
@@ -116,7 +116,7 @@ public class WalkForward {
 
 	private static void computeForStrategies(final Map<String, AtomicInteger> totalscores, final StockFeed feed,
 			final String ticker) throws IOException {
-		final Stock stock = feed.get(Exchange.London, ticker, 2).get();
+		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
 

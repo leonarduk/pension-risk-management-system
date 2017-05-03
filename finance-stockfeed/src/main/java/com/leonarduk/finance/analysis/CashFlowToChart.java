@@ -39,9 +39,9 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 import com.leonarduk.finance.utils.TimeseriesUtils;
@@ -62,7 +62,7 @@ public class CashFlowToChart {
 
 	/**
 	 * Adds the cash flow axis to the plot.
-	 * 
+	 *
 	 * @param plot
 	 *            the plot
 	 * @param dataset
@@ -81,7 +81,7 @@ public class CashFlowToChart {
 
 	/**
 	 * Builds a JFreeChart time series from a Ta4j time series and an indicator.
-	 * 
+	 *
 	 * @param tickSeries
 	 *            the ta4j time series
 	 * @param indicator
@@ -102,7 +102,7 @@ public class CashFlowToChart {
 
 	/**
 	 * Displays a chart in a frame.
-	 * 
+	 *
 	 * @param chart
 	 *            the chart to be displayed
 	 */
@@ -125,7 +125,7 @@ public class CashFlowToChart {
 		// Getting the time series
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "IUKD";
-		final Stock stock = feed.get(Exchange.London, ticker, 2).get();
+		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
 		// Building the trading strategy

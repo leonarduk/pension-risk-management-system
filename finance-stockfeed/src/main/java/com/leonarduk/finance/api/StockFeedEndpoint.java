@@ -12,9 +12,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 import yahoofinance.Stock;
@@ -45,7 +45,7 @@ public class StockFeedEndpoint {
 
 	private List<HistoricalQuote> getHistoryData(final String exchange, final String ticker, final int years)
 			throws IOException {
-		final Optional<Stock> stock = new IntelligentStockFeed().get(Exchange.valueOf(exchange), ticker, years);
+		final Optional<Stock> stock = new IntelligentStockFeed().get(Instrument.fromString(ticker), years);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}

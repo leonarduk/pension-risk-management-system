@@ -27,19 +27,25 @@ import static java.util.Calendar.WEEK_OF_YEAR;
 import static java.util.Calendar.YEAR;
 import static java.util.Locale.US;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import jersey.repackaged.com.google.common.collect.Maps;
+
 /**
  * Helpers for common dates
  */
 public class DateUtils {
+
+	private static Map<String, Date> dates;
 
 	/**
 	 * Add the given number of days to the given date
@@ -219,6 +225,13 @@ public class DateUtils {
 
 		};
 
+	}
+
+	public static Date parseDate(final String fieldValue) throws ParseException {
+		if (null == dates) {
+			dates = Maps.newConcurrentMap();
+		}
+		return (dates.computeIfAbsent(fieldValue, v -> LocalDate.parse(v).toDate()));
 	}
 
 	/**

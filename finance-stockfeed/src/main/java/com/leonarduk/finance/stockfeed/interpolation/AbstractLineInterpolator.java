@@ -26,6 +26,9 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 
 	@Override
 	public TimeSeries interpolate(final TimeSeries series) {
+		if (series.getEnd() < 0) {
+			return series;
+		}
 		final TimeSeries newSeries = new TimeSeries(Period.days(1));
 		final Tick oldestQuote = series.getFirstTick();
 

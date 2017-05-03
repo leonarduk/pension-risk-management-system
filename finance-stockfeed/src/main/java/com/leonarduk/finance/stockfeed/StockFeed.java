@@ -23,18 +23,15 @@ public abstract class StockFeed {
 		London
 	}
 
-	public static Stock createStock(final Exchange exchange, final String ticker, final String name) {
-		return createStock(exchange, ticker, name, null);
+	public static Stock createStock(final Instrument instrument) {
+		return createStock(instrument, null);
 	}
 
-	public static Stock createStock(final Exchange exchange, final String ticker, final String name,
-			final List<HistoricalQuote> quotes) {
-		final Stock stock = new Stock(ticker);
+	public static Stock createStock(final Instrument instrument, final List<HistoricalQuote> quotes) {
+		final Stock stock = new Stock(instrument);
 
-		stock.setName(name);
 		// stock.setCurrency();
-		stock.setStockExchange(exchange.name());
-		final StockQuote quote = new StockQuote(ticker);
+		final StockQuote quote = new StockQuote(instrument);
 
 		if (!quotes.isEmpty()) {
 			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
@@ -67,31 +64,7 @@ public abstract class StockFeed {
 		return sb;
 	}
 
-	public abstract Optional<Stock> get(Exchange exchange, String ticker, int years) throws IOException;
-
-	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
-		try {
-			return this.get(instrument.getExchange(), instrument.getCode(), years);
-		} catch (final IOException e) {
-			return Optional.empty();
-		}
-	}
-
-	/**
-	 * Bit of a hack - supply one Stock with minimal details in it to get new
-	 * instance fully populated
-	 *
-	 * @param stock
-	 * @return
-	 * @throws IOException
-	 */
-	public Optional<Stock> get(final Stock stock, final int years) {
-		try {
-			return this.get(Exchange.valueOf(stock.getStockExchange()), stock.getSymbol(), years);
-		} catch (final IOException e) {
-			return Optional.empty();
-		}
-	}
+	public abstract Optional<Stock> get(final Instrument instrument, final int years) throws IOException;
 
 	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original) throws IOException {
 		final List<HistoricalQuote> newSeries = stock.getHistory();

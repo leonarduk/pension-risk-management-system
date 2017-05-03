@@ -19,85 +19,84 @@ import yahoofinance.histquotes.HistoricalQuote;
 public class CachedStockFeed extends CsvStockFeed {
 	public static final Logger log = Logger.getLogger(CachedStockFeed.class.getName());
 
-	private String storeLocation;
+	private final String storeLocation;
 
-	public CachedStockFeed(String storeLocation) {
+	public CachedStockFeed(final String storeLocation) {
 		this.storeLocation = storeLocation;
 	}
 
-	@Override
-	protected BufferedReader openReader() throws IOException {
-		File file = new File(this.storeLocation, getQueryName(getExchange(), getSymbol()));
-		log.info("Read file from " + file.getAbsolutePath());
+	private void createSeries(final Stock stock) throws IOException {
 
-		if (!file.exists()) {
-			throw new IOException(file.getAbsolutePath() + " not found");
-		}
-
-		FileReader in = new FileReader(file);
-		BufferedReader br = new BufferedReader(in);
-
-		// Skip first line that contains column names
-		br.readLine();
-		return br;
-	}
-
-
-	public void storeSeries(Stock stock) throws IOException {
-		File seriesFile = getFile(stock);
-		if (seriesFile.exists()) {
-			mergeSeries(stock);
-		} else {
-			createSeries(stock);
-		}
-	}
-
-	private void createSeries(Stock stock) throws IOException {
-
-		File file = getFile(stock);
+		final File file = this.getFile(stock);
 		log.info("Save stock to " + file.getAbsolutePath());
-		List<HistoricalQuote> series = stock.getHistory();
+		final List<HistoricalQuote> series = stock.getHistory();
 
 		/**
 		 * Building header
 		 */
-		StringBuilder sb = seriesToCsv(series);
+		final StringBuilder sb = seriesToCsv(series);
 		writeFile(file.getAbsolutePath(), sb);
 
 	}
 
-	private List<HistoricalQuote> loadSeries(Stock stock) throws IOException {
-		Optional<Stock> optional = get(stock, Integer.MAX_VALUE);
-		if (optional.isPresent()) {
-			return optional.get().getHistory();
-		}
-		return Lists.newArrayList();
+	protected File getFile(final Instrument instrument) {
+		return new File(this.storeLocation, this.getQueryName(instrument));
 	}
 
-	private void mergeSeries(Stock stock) throws IOException {
-		List<HistoricalQuote> original = loadSeries(stock);
-		mergeSeries(stock, original);
-		createSeries(stock);
-	}
-
-	protected File getFile(String stockExchange, String symbol) {
-		return new File(this.storeLocation, getQueryName(Exchange.valueOf(stockExchange), symbol));
-	}
-
-	protected File getFile(Stock stock) throws IOException {
-		File folder = new File(this.storeLocation);
+	protected File getFile(final Stock stock) throws IOException {
+		final File folder = new File(this.storeLocation);
 		if (!folder.exists()) {
 			if (!folder.mkdir()) {
 				throw new IOException("Failed to create " + this.storeLocation);
 			}
 		}
 
-		return getFile(stock.getStockExchange(), stock.getSymbol());
+		return this.getFile(stock.getInstrument());
 	}
 
 	@Override
-	protected String getQueryName(Exchange exchange, String ticker) {
-		return exchange.name() + "_" + ticker + ".csv";
+	protected String getQueryName(final Instrument instrument) {
+		return instrument.getExchange().name() + "_" + instrument.code() + ".csv";
+	}
+
+	private List<HistoricalQuote> loadSeries(final Stock stock) throws IOException {
+		final Optional<Stock> optional = this.get(stock.getInstrument(), Integer.MAX_VALUE);
+		if (optional.isPresent()) {
+			return optional.get().getHistory();
+		}
+		return Lists.newArrayList();
+	}
+
+	private void mergeSeries(final Stock stock) throws IOException {
+		final List<HistoricalQuote> original = this.loadSeries(stock);
+		this.mergeSeries(stock, original);
+		this.createSeries(stock);
+	}
+
+	@Override
+	protected BufferedReader openReader() throws IOException {
+		final File file = new File(this.storeLocation, this.getQueryName(this.getInstrument()));
+		log.info("Read file from " + file.getAbsolutePath());
+
+		if (!file.exists()) {
+			throw new IOException(file.getAbsolutePath() + " not found");
+		}
+
+		final FileReader in = new FileReader(file);
+		final BufferedReader br = new BufferedReader(in);
+
+		// Skip first line that contains column names
+		br.readLine();
+		return br;
+	}
+
+	public void storeSeries(final Stock stock) throws IOException {
+		final File seriesFile = this.getFile(stock);
+		if (seriesFile.exists()) {
+			this.mergeSeries(stock);
+		} else {
+			this.createSeries(stock);
+		}
 	}
 
 }

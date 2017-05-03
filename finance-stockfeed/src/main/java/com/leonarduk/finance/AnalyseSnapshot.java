@@ -110,9 +110,12 @@ public class AnalyseSnapshot {
 		try {
 			Optional<Stock> stock = stock2.getStock();
 			if (!stock.isPresent()) {
-				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), stock2.getSymbol());
+				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument());
 			}
 			series = TimeseriesUtils.getTimeSeries(stock.get());
+			if ((null == series) || (series.getTickCount() < 1)) {
+				throw new IllegalArgumentException("No data");
+			}
 
 			final List<AbstractStrategy> strategies = new ArrayList<>();
 			strategies.add(GlobalExtremaStrategy.buildStrategy(series));
@@ -237,11 +240,11 @@ public class AnalyseSnapshot {
 
 		final List<List<DataField>> records = Lists.newLinkedList();
 
-		for (final Valuation optional : valuations) {
+		for (final Valuation valuation : valuations) {
 			final List<DataField> fields = Lists.newLinkedList();
 			records.add(fields);
-			logger.info(optional.toString());
-			final Instrument instrument = optional.getPosition().getInstrument();
+			logger.info(valuation.toString());
+			final Instrument instrument = valuation.getPosition().getInstrument();
 
 			fields.add(new DataField("Name", instrument.getName()));
 			fields.add(new DataField("ISIN", instrument.getIsin(), true));
@@ -249,21 +252,21 @@ public class AnalyseSnapshot {
 			fields.add(new DataField("Sector", instrument.getCategory()));
 			fields.add(new DataField("Type", instrument.getAssetType().name()));
 
-			fields.add(new DataField("Quantity Owned", optional.getPosition().getAmount(), showPositionsHeld));
-			fields.add(new DataField("Value Owned", optional.getValuation(), showPositionsHeld));
+			fields.add(new DataField("Quantity Owned", valuation.getPosition().getAmount(), showPositionsHeld));
+			fields.add(new DataField("Value Owned", valuation.getValuation(), showPositionsHeld));
 
-			final LocalDate valuationDate = optional.getValuationDate();
+			final LocalDate valuationDate = valuation.getValuationDate();
 
-			fields.add(new DataField("Price", optional.getPrice()));
+			fields.add(new DataField("Price", valuation.getPrice()));
 			fields.add(new DataField("AsOf", valuationDate));
 
 			for (final int day : new Integer[] { 1, 5, 21, 63, 365 }) {
-				fields.add(new DataField(day + "D", optional.getReturn(Period.days(day))));
+				fields.add(new DataField(day + "D", valuation.getReturn(Period.days(day))));
 			}
 
 			for (final String name : new String[] { "SMA (12days)", "SMA (20days)", "SMA (50days)", "Global Extrema",
 					"Moving Momentum", }) {
-				fields.add(new DataField(name, optional.getRecommendation(name).getTradeRecommendation()));
+				fields.add(new DataField(name, valuation.getRecommendation(name).getTradeRecommendation()));
 			}
 		}
 
@@ -315,8 +318,7 @@ public class AnalyseSnapshot {
 		final IntelligentStockFeed feed = new IntelligentStockFeed();
 		emptyInstruments.removeAll(heldInstruments);
 		return emptyInstruments.stream().map(instrument -> {
-			return new Position("", instrument, Decimal.ZERO,
-					feed.get(instrument.getExchange(), instrument.getCode(), years), instrument.getIsin());
+			return new Position("", instrument, Decimal.ZERO, feed.get(instrument, years), instrument.getIsin());
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 

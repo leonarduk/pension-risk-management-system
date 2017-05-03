@@ -29,9 +29,9 @@ import java.util.logging.Logger;
 
 import org.slf4j.LoggerFactory;
 
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -76,7 +76,7 @@ public class StrategyExecutionLogging {
 		// Getting the time series
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "PHGP";
-		final Stock stock = feed.get(Exchange.London, ticker, 20).get();
+		final Stock stock = feed.get(Instrument.fromString(ticker), 20).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
 
 		// Building the trading strategy

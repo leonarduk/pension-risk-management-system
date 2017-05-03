@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 
+import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 
 import eu.verdelhan.ta4j.Tick;
@@ -25,7 +27,16 @@ public class TimeseriesUtils {
 	}
 
 	public static TimeSeries getTimeSeries(final Stock stock) throws IOException {
-		final List<HistoricalQuote> history = stock.getHistory();
+		List<HistoricalQuote> history = stock.getHistory();
+		if ((null == history) || history.isEmpty()) {
+			final Optional<Stock> optional = new IntelligentStockFeed().get(stock.getInstrument(), 10);
+			if (optional.isPresent()) {
+				history = optional.get().getHistory();
+			} else {
+				return null;
+			}
+		}
+
 		Collections.sort(history, (o1, o2) -> {
 			return o2.getDate().compareTo(o1.getDate());
 		});
@@ -45,6 +56,8 @@ public class TimeseriesUtils {
 
 				ticks.add(new Tick(new DateTime(quote.getDate().getTime()), open, high, low, close, volume));
 			} catch (final NullPointerException e) {
+				System.err.println(e);
+				return null;
 			}
 		}
 		return new LinearInterpolator().interpolate(new TimeSeries(stock.getName(), ticks));

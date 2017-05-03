@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.Stock;
@@ -24,42 +23,41 @@ public class CachedStockFeedTest {
 
 	@Test
 	public void testStoreSeries() throws IOException {
-		String storeLocation = Files.createTempDir().getAbsolutePath();
-		CachedStockFeed feed = new CachedStockFeed(storeLocation);
-		String symbol = "test";
-		Stock stock = new Stock(symbol);
-		stock.setStockExchange(Exchange.London.name());
-		List<HistoricalQuote> history = Lists.newArrayList();
-		history.add(new ComparableHistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
+		final String storeLocation = Files.createTempDir().getAbsolutePath();
+		final CachedStockFeed feed = new CachedStockFeed(storeLocation);
+		final Instrument symbol = Instrument.CASH;
+		final Stock stock = new Stock(symbol);
+		final List<HistoricalQuote> history = Lists.newArrayList();
+		history.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
 				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),
 				BigDecimal.valueOf(9), Long.valueOf(23)));
-		history.add(new ComparableHistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-02").toDate()),
+		history.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-02").toDate()),
 				BigDecimal.valueOf(10), BigDecimal.valueOf(9), BigDecimal.valueOf(12), BigDecimal.valueOf(10),
 				BigDecimal.valueOf(10), Long.valueOf(3)));
 		stock.setHistory(history);
 		feed.storeSeries(stock);
 
-		Optional<Stock> fetchedFeed = feed.get(stock, 1);
+		final Optional<Stock> fetchedFeed = feed.get(symbol, 1);
 		assertTrue(fetchedFeed.isPresent());
 
 		assertTrue(fetchedFeed.get().getHistory().containsAll(history));
 		assertTrue(history.containsAll(fetchedFeed.get().getHistory()));
 
-		List<HistoricalQuote> newhistory = Lists.newArrayList();
-		newhistory.add(new ComparableHistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
+		final List<HistoricalQuote> newhistory = Lists.newArrayList();
+		newhistory.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
 				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),
 				BigDecimal.valueOf(9), Long.valueOf(23)));
-		newhistory.add(new ComparableHistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-03").toDate()),
+		newhistory.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-03").toDate()),
 				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),
 				BigDecimal.valueOf(9), Long.valueOf(23)));
 
 		stock.setHistory(newhistory);
 		feed.storeSeries(stock);
 
-		Optional<Stock> newfetchedFeed = feed.get(stock, 1);
+		final Optional<Stock> newfetchedFeed = feed.get(symbol, 1);
 		assertTrue(newfetchedFeed.isPresent());
 		assertTrue(newfetchedFeed.get().getHistory().containsAll(newhistory));
-		assertEquals(new HashSet<>(newfetchedFeed.get().getHistory()).size() , newfetchedFeed.get().getHistory().size());
+		assertEquals(new HashSet<>(newfetchedFeed.get().getHistory()).size(), newfetchedFeed.get().getHistory().size());
 
 	}
 

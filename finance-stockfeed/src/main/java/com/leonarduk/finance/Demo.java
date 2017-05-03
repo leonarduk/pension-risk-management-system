@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.stockfeed.google.GoogleFeed;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
@@ -36,10 +36,10 @@ public class Demo {
 		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
 			try {
 
-				if (showForOneSeries(yahoo, Exchange.valueOf(stock.getStockExchange()), stock.getSymbol())) {
+				if (showForOneSeries(yahoo, stock.getInstrument())) {
 					// sourceMap.put(stock.getSymbol(), "yahoo");
 				} else {
-					if (!showForOneSeries(google, Exchange.valueOf(stock.getStockExchange()), stock.getSymbol())) {
+					if (!showForOneSeries(google, stock.getInstrument())) {
 						sourceMap.put(stock.getSymbol(), "google");
 					} else {
 						sourceMap.put(stock.getSymbol(), "failed");
@@ -52,9 +52,9 @@ public class Demo {
 		System.out.println(sourceMap);
 	}
 
-	public static boolean showForOneSeries(final StockFeed feed, final Exchange exchange, final String ticker) {
+	public static boolean showForOneSeries(final StockFeed feed, final Instrument instrument) {
 		try {
-			final Optional<Stock> stock = feed.get(exchange, ticker, 1);
+			final Optional<Stock> stock = feed.get(instrument, 1);
 
 			if (stock.isPresent()) {
 				TimeSeries series;
