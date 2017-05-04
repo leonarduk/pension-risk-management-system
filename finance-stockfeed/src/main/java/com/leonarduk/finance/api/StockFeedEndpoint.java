@@ -14,10 +14,10 @@ import javax.ws.rs.core.Response;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 
 import jersey.repackaged.com.google.common.collect.Lists;
-import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 
 @Named

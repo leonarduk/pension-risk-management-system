@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import jersey.repackaged.com.google.common.collect.Lists;
-import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 

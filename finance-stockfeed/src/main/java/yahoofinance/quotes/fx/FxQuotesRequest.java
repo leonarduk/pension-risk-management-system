@@ -1,13 +1,14 @@
 
 package yahoofinance.quotes.fx;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 import com.leonarduk.finance.utils.Utils;
 
-import yahoofinance.YahooFinance;
 import yahoofinance.quotes.QuotesProperty;
 import yahoofinance.quotes.QuotesRequest;
 
@@ -28,8 +29,8 @@ public class FxQuotesRequest extends QuotesRequest<FxQuote> {
 	}
 
 	@Override
-	protected FxQuote parseCSVLine(final String line) {
-		final String[] split = Utils.stripOverhead(line).split(YahooFinance.QUOTES_CSV_DELIMITER);
+	protected FxQuote parseCSVLine(final String line) throws IOException {
+		final String[] split = Utils.stripOverhead(line).split(YahooFeed.QUOTES_CSV_DELIMITER);
 		if (split.length >= 2) {
 			return new FxQuote(Instrument.fromString(split[0]), Utils.getBigDecimal(split[1]));
 		}

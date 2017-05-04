@@ -11,11 +11,11 @@ import java.util.Optional;
 import org.joda.time.DateTime;
 
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
-import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class TimeseriesUtils {

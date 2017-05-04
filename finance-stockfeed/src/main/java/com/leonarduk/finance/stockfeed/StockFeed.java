@@ -4,6 +4,7 @@ import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.addValue;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import java.util.stream.Collectors;
 import org.joda.time.LocalDate;
 
 import eu.verdelhan.ta4j.Decimal;
-import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
@@ -76,9 +76,10 @@ public abstract class StockFeed {
 		final Map<LocalDate, HistoricalQuote> dates = original.stream()
 				.collect(Collectors.toMap(quote -> LocalDate.fromCalendarFields(quote.getDate()), Function.identity()));
 		newSeries.stream().forEach(historicalQuote -> {
-			if (!dates.containsKey(LocalDate.fromCalendarFields(historicalQuote.getDate()))
+			final Calendar date = historicalQuote.getDate();
+			if ((date != null) && !dates.containsKey(LocalDate.fromCalendarFields(date))
 					&& !historicalQuote.getClose().equals(Decimal.ZERO)) {
-				dates.put(LocalDate.fromCalendarFields(historicalQuote.getDate()), historicalQuote);
+				dates.put(LocalDate.fromCalendarFields(date), historicalQuote);
 			}
 		});
 

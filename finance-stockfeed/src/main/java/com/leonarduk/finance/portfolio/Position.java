@@ -3,9 +3,9 @@ package com.leonarduk.finance.portfolio;
 import java.util.Optional;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Stock;
 
 import eu.verdelhan.ta4j.Decimal;
-import yahoofinance.Stock;
 
 public class Position {
 	public String getSymbol() {

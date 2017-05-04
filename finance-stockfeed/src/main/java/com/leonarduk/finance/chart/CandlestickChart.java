@@ -38,12 +38,12 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.OHLCDataset;
 
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
-import yahoofinance.Stock;
 
 /**
  * This class builds a traditional candlestick chart.

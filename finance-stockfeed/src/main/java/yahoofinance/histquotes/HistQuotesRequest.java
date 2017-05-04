@@ -12,12 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 import com.leonarduk.finance.utils.Utils;
-
-import yahoofinance.YahooFinance;
 
 /**
  *
@@ -34,10 +33,12 @@ public class HistQuotesRequest {
 
 	public static final Interval DEFAULT_INTERVAL = Interval.MONTHLY;
 
-	private final Instrument instrument;
+	public static final Logger logger = Logger.getLogger(HistQuotesRequest.class.getName());
 
+	private final Instrument instrument;
 	private final Calendar from;
 	private final Calendar to;
+
 	private final Interval interval;
 
 	public HistQuotesRequest(final Instrument instrument) {
@@ -91,7 +92,7 @@ public class HistQuotesRequest {
 		final List<HistoricalQuote> result = new ArrayList<>();
 
 		if (this.from.after(this.to)) {
-			YahooFinance.logger.log(Level.WARNING,
+			YahooFeed.logger.log(Level.WARNING,
 					"Unable to retrieve historical quotes. " + "From-date should not be after to-date. From: "
 							+ this.from.getTime() + ", to: " + this.to.getTime());
 			return result;
@@ -112,22 +113,22 @@ public class HistQuotesRequest {
 
 		params.put("ignore", ".csv");
 
-		final String url = YahooFinance.HISTQUOTES_BASE_URL + "?" + Utils.getURLParameters(params);
+		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?" + Utils.getURLParameters(params);
 
 		// Get CSV from Yahoo
-		YahooFinance.logger.log(Level.INFO, ("Sending request: " + url));
+		YahooFeed.logger.log(Level.INFO, ("Sending request: " + url));
 
 		final URL request = new URL(url);
 		final URLConnection connection = request.openConnection();
-		connection.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
-		connection.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
+		connection.setConnectTimeout(YahooFeed.CONNECTION_TIMEOUT);
+		connection.setReadTimeout(YahooFeed.CONNECTION_TIMEOUT);
 		final InputStreamReader is = new InputStreamReader(connection.getInputStream());
 		final BufferedReader br = new BufferedReader(is);
 		br.readLine(); // skip the first line
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 
-			YahooFinance.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
+			YahooFeed.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
 			final HistoricalQuote quote = this.parseCSVLine(line);
 			result.add(quote);
 		}
@@ -135,7 +136,7 @@ public class HistQuotesRequest {
 	}
 
 	private HistoricalQuote parseCSVLine(final String line) {
-		final String[] data = line.split(YahooFinance.QUOTES_CSV_DELIMITER);
+		final String[] data = line.split(YahooFeed.QUOTES_CSV_DELIMITER);
 		return new HistoricalQuote(this.instrument, Utils.parseHistDate(data[0]), Utils.getBigDecimal(data[1]),
 				Utils.getBigDecimal(data[3]), Utils.getBigDecimal(data[2]), Utils.getBigDecimal(data[4]),
 				Utils.getBigDecimal(data[6]), Utils.getLong(data[5]));

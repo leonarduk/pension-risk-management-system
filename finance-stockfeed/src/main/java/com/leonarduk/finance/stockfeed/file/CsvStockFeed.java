@@ -14,11 +14,11 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.Utils;
 
-import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public abstract class CsvStockFeed extends StockFeed {

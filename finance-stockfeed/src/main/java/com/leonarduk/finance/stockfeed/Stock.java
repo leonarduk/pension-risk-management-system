@@ -1,4 +1,4 @@
-package yahoofinance;
+package com.leonarduk.finance.stockfeed;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.collect.Lists;
-import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 import yahoofinance.histquotes.HistQuotesRequest;
@@ -26,12 +25,14 @@ import yahoofinance.quotes.stock.StockStats;
  */
 public class Stock {
 
+	public static final Logger logger = Logger.getLogger(Stock.class.getName());
+
 	private final Instrument instrument;
 
 	private String currency;
-
 	private StockQuote quote;
 	private StockStats stats;
+
 	private StockDividend dividend;
 
 	private List<HistoricalQuote> history;
@@ -385,9 +386,9 @@ public class Stock {
 			this.setQuote(data.getQuote());
 			this.setStats(data.getStats());
 			this.setDividend(data.getDividend());
-			YahooFinance.logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
+			logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
 		} else {
-			YahooFinance.logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}", this.instrument.isin());
+			logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}", this.instrument.isin());
 		}
 	}
 

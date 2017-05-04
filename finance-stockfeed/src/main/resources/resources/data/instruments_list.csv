@@ -1,4 +1,6 @@
 Name,AssetType,Underlying,Source,isin,code,Exchange,category, currency,googleCode
+USD per GBP,FX,FX,Yahoo,USDGBP,USDGBP,London,Currency,GBP,CURRENCY:USDGBP
+GBP per USD,FX,FX,Yahoo,GBPUSD,GBPUSD,London,Currency,USD,CURRENCY:GBPUSD
 ,FUND,EQUITY,Yahoo,GB00B41YBW71,FUQUIT,London,Global Equity,GBP,MUTF_GB:FUND_EQUI_I_ANRT8N
 M&G Optimal Income Fund Sterling I Inc,FUND,BOND,Yahoo,GB00B1H05601,MGOII,London,UK Bond,GBX,MUTF_GB:MG_OPTI_INCO_SRI2UJ
 ,FUND,BOND,Yahoo,GB00BD050949,RLAAAI,London,Short duration bond,GBX,LON:RLAAAI

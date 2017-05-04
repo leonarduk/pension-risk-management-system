@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
@@ -43,7 +44,6 @@ import eu.verdelhan.ta4j.analysis.criteria.NumberOfTradesCriterion;
 import eu.verdelhan.ta4j.analysis.criteria.RewardRiskRatioCriterion;
 import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
 import eu.verdelhan.ta4j.analysis.criteria.VersusBuyAndHoldCriterion;
-import yahoofinance.Stock;
 
 /**
  * This class diplays analysis criterion values after running a trading strategy

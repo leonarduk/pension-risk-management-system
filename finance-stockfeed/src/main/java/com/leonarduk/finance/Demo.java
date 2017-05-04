@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.stockfeed.google.GoogleFeed;
@@ -14,7 +15,6 @@ import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.TimeSeries;
-import yahoofinance.Stock;
 
 public class Demo {
 	public static void main(final String[] args) throws IOException {

@@ -23,6 +23,7 @@ import com.leonarduk.finance.portfolio.RecommendedTrade;
 import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
@@ -37,7 +38,6 @@ import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
 import jersey.repackaged.com.google.common.collect.Lists;
-import yahoofinance.Stock;
 
 /**
  * This class is an example of a dummy trading bot using ta4j.
@@ -313,7 +313,7 @@ public class AnalyseSnapshot {
 		return colour;
 	}
 
-	public static List<Position> getListedInstruments(final List<Instrument> heldInstruments) {
+	public static List<Position> getListedInstruments(final List<Instrument> heldInstruments) throws IOException {
 		final List<Instrument> emptyInstruments = Lists.newArrayList(Instrument.values());
 		final IntelligentStockFeed feed = new IntelligentStockFeed();
 		emptyInstruments.removeAll(heldInstruments);

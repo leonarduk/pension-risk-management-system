@@ -1,9 +1,11 @@
 package yahoofinance.quotes.stock;
 
+import java.io.IOException;
+
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.utils.Utils;
 
-import yahoofinance.Stock;
 import yahoofinance.exchanges.ExchangeTimeZone;
 import yahoofinance.quotes.QuotesProperty;
 
@@ -32,7 +34,7 @@ public class StockQuotesData {
 		return dividend;
 	}
 
-	public StockQuote getQuote() {
+	public StockQuote getQuote() throws IOException {
 		final String symbol = this.getValue(QuotesProperty.Symbol);
 		final StockQuote quote = new StockQuote(Instrument.fromString(symbol));
 
@@ -94,7 +96,7 @@ public class StockQuotesData {
 		return stats;
 	}
 
-	public Stock getStock() {
+	public Stock getStock() throws IOException {
 		final String symbol = this.getValue(QuotesProperty.Symbol);
 		final Stock stock = new Stock(Instrument.fromString(symbol.substring(0, symbol.indexOf("."))));
 

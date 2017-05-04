@@ -8,25 +8,31 @@ import java.util.stream.Collectors;
 
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.ResourceTools;
 
 import eu.verdelhan.ta4j.Decimal;
-import yahoofinance.Stock;
 
 public class InvestmentsFileReader {
 	private final static Logger logger = Logger.getLogger(InvestmentsFileReader.class.getName());
 
 	private static Position createPosition(final List<String> list) {
 		if (list.size() < 2) {
-			logger.warning("not enough details: " + list);
+			logger.warning("not enough detsails: " + list);
 			return null;
 		}
 		final int portfolioIdx = 0;
 		final int isinIdx = 1;
 		final int amountIndex = 2;
 		final String symbol = list.get(isinIdx);
-		final Instrument instrument = Instrument.fromString(symbol);
+		Instrument instrument;
+		try {
+			instrument = Instrument.fromString(symbol);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			instrument = Instrument.UNKNOWN;
+		}
 		final Optional<Stock> stock = Optional.of(new Stock(instrument));
 		return new Position(list.get(portfolioIdx), instrument, Decimal.valueOf(list.get(amountIndex)), stock, symbol);
 	}
@@ -37,7 +43,15 @@ public class InvestmentsFileReader {
 			return null;
 		}
 		final int isinIdx = 1;
-		return StockFeed.createStock(Instrument.fromString(list.get(isinIdx)));
+		Instrument instrument;
+		try {
+			instrument = Instrument.fromString(list.get(isinIdx));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			instrument = Instrument.UNKNOWN;
+		}
+
+		return StockFeed.createStock(instrument);
 	}
 
 	public static List<Position> getPositionsFromCSVFile(final String filePath) throws IOException {

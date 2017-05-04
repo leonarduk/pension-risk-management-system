@@ -29,6 +29,7 @@ import com.leonarduk.finance.chart.BollingerBars;
 import com.leonarduk.finance.chart.CandlestickChart;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 import com.leonarduk.finance.utils.TimeseriesUtils;
@@ -50,7 +51,6 @@ import eu.verdelhan.ta4j.trading.rules.CrossedDownIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.CrossedUpIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.StopGainRule;
 import eu.verdelhan.ta4j.trading.rules.StopLossRule;
-import yahoofinance.Stock;
 
 /**
  * Quickstart for ta4j.

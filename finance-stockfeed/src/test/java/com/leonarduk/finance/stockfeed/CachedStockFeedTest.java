@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.leonarduk.finance.utils.DateUtils;
 
-import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class CachedStockFeedTest {

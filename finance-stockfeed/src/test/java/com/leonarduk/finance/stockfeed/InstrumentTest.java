@@ -2,6 +2,8 @@ package com.leonarduk.finance.stockfeed;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,7 +18,7 @@ import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 public class InstrumentTest {
 
 	@Test
-	public void testFromString() {
+	public void testFromString() throws IOException {
 		assertEquals(Instrument.CASH, Instrument.fromString("Cash"));
 		assertEquals("IE00BH361H73", Instrument.fromString("IE00BH361H73").isin());
 		assertEquals("XDND", Instrument.fromString("IE00BH361H73").code());

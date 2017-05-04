@@ -41,6 +41,7 @@ import org.jfree.ui.RefineryUtilities;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
@@ -53,7 +54,6 @@ import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
 import eu.verdelhan.ta4j.analysis.CashFlow;
 import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
-import yahoofinance.Stock;
 
 /**
  * This class builds a graphical chart showing the cash flow of a strategy.

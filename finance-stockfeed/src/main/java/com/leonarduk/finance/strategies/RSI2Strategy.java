@@ -27,6 +27,7 @@ import java.io.IOException;
 import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -43,7 +44,6 @@ import eu.verdelhan.ta4j.trading.rules.CrossedDownIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.CrossedUpIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
-import yahoofinance.Stock;
 
 /**
  * 2-Period RSI Strategy

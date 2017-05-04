@@ -29,7 +29,20 @@ public class Instrument {
 	static class InstrumentLoader {
 		private static InstrumentLoader instance;
 
-		private Map<String, Instrument> instruments;
+		public static InstrumentLoader getInstance() throws IOException {
+			if (InstrumentLoader.instance == null) {
+				InstrumentLoader.instance = new InstrumentLoader();
+				try {
+					InstrumentLoader.instance.init();
+				} catch (final IOException | URISyntaxException e) {
+					throw new IOException(e);
+				}
+			}
+
+			return instance;
+		}
+
+		private Map<String, Instrument> instruments = null;
 
 		private Instrument create(final String line) {
 			final Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
@@ -56,30 +69,20 @@ public class Instrument {
 	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL, "Cash",
 			"Cash", Exchange.London, "Cash", "GBP", "");
 
-	public static Instrument fromString(String symbol) {
+	public static Instrument fromString(String symbol) throws IOException {
 		if (symbol.contains(".")) {
 			symbol = symbol.substring(0, symbol.indexOf("."));
 		}
-		if (InstrumentLoader.instance == null) {
-			InstrumentLoader.instance = new InstrumentLoader();
-			try {
-				InstrumentLoader.instance.init();
-			} catch (final IOException | URISyntaxException e) {
-				LOGGER.warning(e.getMessage());
-				LOGGER.warning("Could not map " + symbol);
-				return Instrument.UNKNOWN;
-			}
-		}
-		if (InstrumentLoader.instance.instruments.containsKey(symbol.toUpperCase())) {
-			return InstrumentLoader.instance.instruments.get(symbol.toUpperCase());
+		if (InstrumentLoader.getInstance().instruments.containsKey(symbol.toUpperCase())) {
+			return InstrumentLoader.getInstance().instruments.get(symbol.toUpperCase());
 		}
 
 		LOGGER.warning("Could not map " + symbol);
 		return Instrument.UNKNOWN;
 	}
 
-	public static Collection<Instrument> values() {
-		return InstrumentLoader.instance.instruments.values();
+	public static Collection<Instrument> values() throws IOException {
+		return InstrumentLoader.getInstance().instruments.values();
 	}
 
 	private final AssetType assetType;

@@ -9,10 +9,10 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import com.google.common.collect.Maps;
+import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 
 import eu.verdelhan.ta4j.Decimal;
-import yahoofinance.Stock;
 
 public class Valuation {
 	private final Decimal price;

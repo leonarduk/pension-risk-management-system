@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import yahoofinance.YahooFinance;
+import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 
 /**
  *
@@ -28,6 +29,8 @@ public class Utils {
 	private static Map<String, BigDecimal> bigDecimals;
 
 	private static Object monitor = new Object();
+
+	public static final Logger logger = Logger.getLogger(Utils.class.getName());
 
 	private static BigDecimal calculateBigDecimal(String data) {
 		if (!Utils.isParseable(data)) {
@@ -53,8 +56,8 @@ public class Utils {
 			}
 			return new BigDecimal(data).multiply(multiplier);
 		} catch (final NumberFormatException e) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse: " + data);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			logger.log(Level.WARNING, "Failed to parse: " + data);
+			logger.log(Level.FINEST, "Failed to parse: " + data, e);
 		}
 		return null;
 	}
@@ -119,8 +122,8 @@ public class Utils {
 			}
 			result = Double.parseDouble(data) * multiplier;
 		} catch (final NumberFormatException e) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse: " + data);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			logger.log(Level.WARNING, "Failed to parse: " + data);
+			logger.log(Level.FINEST, "Failed to parse: " + data, e);
 		}
 		return result;
 	}
@@ -134,8 +137,8 @@ public class Utils {
 			data = Utils.cleanNumberString(data);
 			result = Integer.parseInt(data);
 		} catch (final NumberFormatException e) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse: " + data);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			logger.log(Level.WARNING, "Failed to parse: " + data);
+			logger.log(Level.FINEST, "Failed to parse: " + data, e);
 		}
 		return result;
 	}
@@ -149,8 +152,8 @@ public class Utils {
 			data = Utils.cleanNumberString(data);
 			result = Long.parseLong(data);
 		} catch (final NumberFormatException e) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse: " + data);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			logger.log(Level.WARNING, "Failed to parse: " + data);
+			logger.log(Level.FINEST, "Failed to parse: " + data, e);
 		}
 		return result;
 	}
@@ -190,7 +193,7 @@ public class Utils {
 				key = URLEncoder.encode(key, "UTF-8");
 				value = URLEncoder.encode(value, "UTF-8");
 			} catch (final UnsupportedEncodingException ex) {
-				YahooFinance.logger.log(Level.SEVERE, ex.getMessage(), ex);
+				logger.log(Level.SEVERE, ex.getMessage(), ex);
 				// Still try to continue with unencoded values
 			}
 			sb.append(String.format("%s=%s", key, value));
@@ -239,8 +242,8 @@ public class Utils {
 				return c;
 			}
 		} catch (final ParseException ex) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse datetime: " + datetime);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse datetime: " + datetime, ex);
+			logger.log(Level.WARNING, "Failed to parse datetime: " + datetime);
+			logger.log(Level.FINEST, "Failed to parse datetime: " + datetime, ex);
 		}
 		return null;
 	}
@@ -259,10 +262,10 @@ public class Utils {
 		}
 		date = date.trim();
 		final SimpleDateFormat format = new SimpleDateFormat(Utils.getDividendDateFormat(date), Locale.US);
-		format.setTimeZone(TimeZone.getTimeZone(YahooFinance.TIMEZONE));
+		format.setTimeZone(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 		try {
-			final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFinance.TIMEZONE));
-			final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(YahooFinance.TIMEZONE));
+			final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
+			final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			parsedDate.setTime(format.parse(date));
 
 			if (parsedDate.get(Calendar.YEAR) == 1970) {
@@ -280,8 +283,8 @@ public class Utils {
 
 			return parsedDate;
 		} catch (final ParseException ex) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse dividend date: " + date);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse dividend date: " + date, ex);
+			logger.log(Level.WARNING, "Failed to parse dividend date: " + date);
+			logger.log(Level.FINEST, "Failed to parse dividend date: " + date, ex);
 			return null;
 		}
 	}
@@ -295,8 +298,8 @@ public class Utils {
 				return c;
 			}
 		} catch (final ParseException ex) {
-			YahooFinance.logger.log(Level.WARNING, "Failed to parse hist date: " + date);
-			YahooFinance.logger.log(Level.FINEST, "Failed to parse hist date: " + date, ex);
+			logger.log(Level.WARNING, "Failed to parse hist date: " + date);
+			logger.log(Level.FINEST, "Failed to parse hist date: " + date, ex);
 		}
 		return null;
 	}
