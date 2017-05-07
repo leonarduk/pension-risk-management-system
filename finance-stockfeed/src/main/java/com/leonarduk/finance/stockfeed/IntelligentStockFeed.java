@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.joda.time.LocalDate;
 
+import com.leonarduk.finance.stockfeed.interpolation.BadDateRemover;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 import com.leonarduk.finance.utils.DateUtils;
@@ -76,13 +77,13 @@ public class IntelligentStockFeed extends StockFeed {
 
 			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 			final LocalDate fromDate = today.minusYears(years);
-			List<HistoricalQuote> interpolate = new LinearInterpolator().interpolate(history);
-			List<HistoricalQuote> extendToToDate = flatLineInterpolator.extendToToDate(interpolate, today);
-			List<HistoricalQuote> extendToFromDate = flatLineInterpolator.extendToFromDate(
-					extendToToDate,
+
+			final List<HistoricalQuote> interpolate = new LinearInterpolator()
+					.interpolate(new BadDateRemover().clean(history));
+			final List<HistoricalQuote> extendToToDate = flatLineInterpolator.extendToToDate(interpolate, today);
+			final List<HistoricalQuote> extendToFromDate = flatLineInterpolator.extendToFromDate(extendToToDate,
 					fromDate);
-			liveData.get()
-					.setHistory(extendToFromDate);
+			liveData.get().setHistory(extendToFromDate);
 			return liveData;
 		} catch (final Exception e) {
 			log.warning(e.getMessage());

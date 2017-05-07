@@ -22,8 +22,8 @@ import eu.verdelhan.ta4j.Decimal;
 public class HtmlTools {
 	public static final Logger logger = Logger.getLogger(HtmlTools.class.getName());
 
-	public static void addField(final Object value, final StringBuilder sb) {
-		sb.append("<td bgcolor='" + getColour(value) + "'>").append(value).append("</td>");
+	public static void addField(final Object value, final StringBuilder sb, final ValueFormatter formatter) {
+		sb.append("<td bgcolor='" + getColour(value) + "'>").append(formatter.format(value)).append("</td>");
 	}
 
 	public static void addHeader(final String name, final StringBuilder sb) {
@@ -108,7 +108,7 @@ public class HtmlTools {
 				sb.append("<tr>");
 				list.stream().forEach(f -> {
 					if (f.isDisplay()) {
-						addField(f.getValue(), sb);
+						addField(f.getValue(), sb, f.getFormatter());
 					}
 				});
 				sb.append("</tr>");

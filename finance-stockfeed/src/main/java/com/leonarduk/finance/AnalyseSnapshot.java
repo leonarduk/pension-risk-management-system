@@ -30,6 +30,7 @@ import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
 import com.leonarduk.finance.utils.NumberUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
+import com.leonarduk.finance.utils.ValueFormatter;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;
@@ -125,7 +126,7 @@ public class AnalyseSnapshot {
 		return NumberUtils.roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
 	}
 
-	public static StringBuilder createPortfolioReport(final boolean extendedReport)
+	public static StringBuilder createPortfolioReport(final boolean extendedReport, final boolean createSeriesLinks)
 			throws IOException, URISyntaxException {
 
 		final List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile("resources/data/portfolios.csv");
@@ -145,7 +146,7 @@ public class AnalyseSnapshot {
 
 		final List<Valuation> valuations = analayzeAllEtfs(positions);
 
-		createValuationsTable(valuations, sbBody, true);
+		createValuationsTable(valuations, sbBody, true, createSeriesLinks);
 		sbBody.append("<hr/>");
 
 		final Map<String, Double> assetTypeMap = valuations.parallelStream()
@@ -158,7 +159,7 @@ public class AnalyseSnapshot {
 		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type", "Value");
 		HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets", "Type", "Value");
 
-		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, false);
+		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, false, createSeriesLinks);
 
 		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
 
@@ -177,7 +178,7 @@ public class AnalyseSnapshot {
 	}
 
 	protected static void createValuationsTable(final List<Valuation> valuations, final StringBuilder sb,
-			final boolean showPositionsHeld) {
+			final boolean showPositionsHeld, final boolean createSeriesLinks) {
 
 		final List<List<DataField>> records = Lists.newLinkedList();
 
@@ -187,14 +188,22 @@ public class AnalyseSnapshot {
 			logger.info(valuation.toString());
 			final Instrument instrument = valuation.getPosition().getInstrument();
 
-			fields.add(new DataField("Name", instrument.getName()));
-			fields.add(new DataField("ISIN", instrument.getIsin(), true));
-			fields.add(new DataField("Code", instrument.getCode()));
-			fields.add(new DataField("Sector", instrument.getCategory()));
-			fields.add(new DataField("Type", instrument.getAssetType().name()));
+			final String ticker = instrument.code();
 
-			fields.add(new DataField("Quantity Owned", valuation.getPosition().getAmount(), showPositionsHeld));
-			fields.add(new DataField("Value Owned", valuation.getValuation(), showPositionsHeld));
+			final ValueFormatter formatter = (value -> {
+				return new StringBuilder("<a href=\"/stock/display?ticker=").append(ticker).append("&years=")
+						.append(years).append("\">").append(value).append("</a>").toString();
+			});
+
+			fields.add(new DataField("Name", instrument.getName(), formatter));
+			fields.add(new DataField("ISIN", instrument.getIsin(), formatter));
+			fields.add(new DataField("Code", instrument.getCode(), formatter));
+			fields.add(new DataField("Sector", instrument.getCategory(), formatter));
+			fields.add(new DataField("Type", instrument.getAssetType().name(), formatter));
+
+			fields.add(
+					new DataField("Quantity Owned", valuation.getPosition().getAmount(), formatter, showPositionsHeld));
+			fields.add(new DataField("Value Owned", valuation.getValuation(), formatter, showPositionsHeld));
 
 			final LocalDate valuationDate = valuation.getValuationDate();
 
@@ -224,7 +233,7 @@ public class AnalyseSnapshot {
 	}
 
 	public static void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
-		final StringBuilder buf = createPortfolioReport(true);
+		final StringBuilder buf = createPortfolioReport(true, false);
 		IndicatorsToCsv.writeFile("recommendations.html", buf);
 	}
 

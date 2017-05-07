@@ -19,14 +19,14 @@ public class PortfolioFeedEndpoint {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("extended")
 	public String getExtendedAnalysis() throws IOException, URISyntaxException {
-		return AnalyseSnapshot.createPortfolioReport(true).toString();
+		return AnalyseSnapshot.createPortfolioReport(true, true).toString();
 	}
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("analysis")
 	public String getHistory() throws IOException, URISyntaxException {
-		return AnalyseSnapshot.createPortfolioReport(false).toString();
+		return AnalyseSnapshot.createPortfolioReport(false, true).toString();
 	}
 
 }
