@@ -1,6 +1,7 @@
 package com.leonarduk.finance.utils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,17 +50,11 @@ public class NumberUtils {
 	}
 
 	private static String cleanNumberString(final String data) {
-		return NumberUtils.join(data.trim().split(","), "");
+		return StringUtils.join(data.trim().split(","), "");
 	}
 
 	public static BigDecimal getBigDecimal(final String data) {
 		return calculateBigDecimal(data);
-		// if (null == bigDecimals) {
-		// bigDecimals = Maps.newConcurrentMap();
-		// }
-		// final BigDecimal computeIfAbsent = bigDecimals.computeIfAbsent(data,
-		// d -> calculateBigDecimal(d));
-		// return computeIfAbsent;
 	}
 
 	public static BigDecimal getBigDecimal(final String dataMain, final String dataSub) {
@@ -147,24 +142,8 @@ public class NumberUtils {
 		return (numerator / denominator) * 100;
 	}
 
-	public static String getString(final String data) {
-		if (!StringUtils.isParseable(data)) {
-			return null;
-		}
-		return data;
-	}
-
-	public static String join(final String[] data, final String d) {
-		if (data.length == 0) {
-			return "";
-		}
-		final StringBuilder sb = new StringBuilder();
-		int i;
-
-		for (i = 0; i < (data.length - 1); i++) {
-			sb.append(data[i]).append(d);
-		}
-		return sb.append(data[i]).toString();
+	public static BigDecimal roundDecimal(final BigDecimal value) {
+		return value.setScale(2, RoundingMode.HALF_EVEN);
 	}
 
 	public static Decimal roundDecimal(final Decimal decimal) {

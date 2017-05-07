@@ -1,8 +1,28 @@
 package com.leonarduk.finance.utils;
 
 public class StringUtils {
+	public static String getString(final String data) {
+		if (!StringUtils.isParseable(data)) {
+			return null;
+		}
+		return data;
+	}
+
 	static boolean isParseable(final String data) {
 		return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("") || data.equals("nan"));
+	}
+
+	public static String join(final String[] data, final String d) {
+		if (data.length == 0) {
+			return "";
+		}
+		final StringBuilder sb = new StringBuilder();
+		int i;
+
+		for (i = 0; i < (data.length - 1); i++) {
+			sb.append(data[i]).append(d);
+		}
+		return sb.append(data[i]).toString();
 	}
 
 	/**

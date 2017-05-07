@@ -9,6 +9,7 @@ import org.joda.time.Period;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.utils.DateUtils;
+import com.leonarduk.finance.utils.NumberUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Decimal;
@@ -23,7 +24,9 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	protected abstract HistoricalQuote calculatePastValue(final HistoricalQuote firstQuote, final LocalDate fromDate);
 
 	protected HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote, final LocalDate currentDate,
-			final BigDecimal newClosePrice, final BigDecimal newOpenPrice) {
+			BigDecimal newClosePrice, BigDecimal newOpenPrice) {
+		newClosePrice = NumberUtils.roundDecimal(newClosePrice);
+		newOpenPrice = NumberUtils.roundDecimal(newOpenPrice);
 		return new HistoricalQuote(currentQuote.getInstrument(), currentDate, newOpenPrice,
 				newClosePrice.min(newOpenPrice), newClosePrice.max(newOpenPrice), newClosePrice, newClosePrice, 0L,
 				"interpolated");
@@ -32,8 +35,9 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	public abstract HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote,
 			final LocalDate currentDate, HistoricalQuote nextQuote);
 
-	protected Tick createSyntheticTick(final LocalDate currentDate, final Decimal newClosePrice,
-			final Decimal newOpenPrice) {
+	protected Tick createSyntheticTick(final LocalDate currentDate, Decimal newClosePrice, Decimal newOpenPrice) {
+		newClosePrice = NumberUtils.roundDecimal(newClosePrice);
+		newOpenPrice = NumberUtils.roundDecimal(newOpenPrice);
 		return new Tick(currentDate.toDateTimeAtCurrentTime(), newOpenPrice,
 				Decimal.valueOf(Math.max(newOpenPrice.toDouble(), newClosePrice.toDouble())),
 				Decimal.valueOf(Math.min(newOpenPrice.toDouble(), newClosePrice.toDouble())), newClosePrice,

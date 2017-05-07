@@ -6,6 +6,7 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
+import com.leonarduk.finance.utils.StringUtils;
 
 import yahoofinance.exchanges.ExchangeTimeZone;
 import yahoofinance.quotes.QuotesProperty;
@@ -105,7 +106,7 @@ public class StockQuotesData {
 		final String symbol = this.getValue(QuotesProperty.Symbol);
 		final Stock stock = new Stock(Instrument.fromString(symbol.substring(0, symbol.indexOf("."))));
 
-		stock.setCurrency(NumberUtils.getString(this.getValue(QuotesProperty.Currency)));
+		stock.setCurrency(StringUtils.getString(this.getValue(QuotesProperty.Currency)));
 
 		stock.setQuote(this.getQuote());
 		stock.setStats(this.getStats());
