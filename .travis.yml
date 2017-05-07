@@ -14,4 +14,4 @@ script: mvn clean verify --settings travis-settings.xml -Dgpg.passphrase=upwork
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - mvn deploy --settings travis-settings.xml -DskipTests=true -B -Dgpg.passphrase=upwork
-- java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r build/reports/jacoco/test/jacocoTestReport.
+- java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r finance-stockfeed/target/site/jacoco/jacoco.xml
