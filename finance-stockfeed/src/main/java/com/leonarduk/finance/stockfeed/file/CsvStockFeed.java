@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.joda.time.LocalDate;
+
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
-import com.leonarduk.finance.utils.Utils;
+import com.leonarduk.finance.utils.NumberUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
@@ -52,9 +54,9 @@ public abstract class CsvStockFeed extends StockFeed {
 	private Instrument instrument;
 
 	public HistoricalQuote asHistoricalQuote() {
-		return new HistoricalQuote(this.instrument, DateUtils.dateToCalendar(this.date), this.getOpen().orElse(null),
+		return new HistoricalQuote(this.instrument, LocalDate.fromDateFields(this.date), this.getOpen().orElse(null),
 				this.getLow().orElse(null), this.getHigh().orElse(null), this.getClose().orElse(null),
-				this.getClose().orElse(null), this.getVolume().orElse(0L));
+				this.getClose().orElse(null), this.getVolume().orElse(0L), this.getClass().getName());
 	}
 
 	@Override
@@ -195,7 +197,7 @@ public abstract class CsvStockFeed extends StockFeed {
 			if (input.equals("-")) {
 				return Optional.empty();
 			}
-			return Optional.of(Utils.getBigDecimal(input));
+			return Optional.of(NumberUtils.getBigDecimal(input));
 		} catch (final NumberFormatException e) {
 			log.warning("Failed to parse " + input);
 			return Optional.empty();

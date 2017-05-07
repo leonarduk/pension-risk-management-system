@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
@@ -27,12 +26,12 @@ public class CachedStockFeedTest {
 		final Instrument symbol = Instrument.CASH;
 		final Stock stock = new Stock(symbol);
 		final List<HistoricalQuote> history = Lists.newArrayList();
-		history.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
-				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),
-				BigDecimal.valueOf(9), Long.valueOf(23)));
-		history.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-02").toDate()),
-				BigDecimal.valueOf(10), BigDecimal.valueOf(9), BigDecimal.valueOf(12), BigDecimal.valueOf(10),
-				BigDecimal.valueOf(10), Long.valueOf(3)));
+		history.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-01"), BigDecimal.valueOf(10),
+				BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9), BigDecimal.valueOf(9),
+				Long.valueOf(23), "TestCache"));
+		history.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-02"), BigDecimal.valueOf(10),
+				BigDecimal.valueOf(9), BigDecimal.valueOf(12), BigDecimal.valueOf(10), BigDecimal.valueOf(10),
+				Long.valueOf(3), "TestCache"));
 		stock.setHistory(history);
 		feed.storeSeries(stock);
 
@@ -43,12 +42,12 @@ public class CachedStockFeedTest {
 		assertTrue(history.containsAll(fetchedFeed.get().getHistory()));
 
 		final List<HistoricalQuote> newhistory = Lists.newArrayList();
-		newhistory.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-01").toDate()),
-				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),
-				BigDecimal.valueOf(9), Long.valueOf(23)));
-		newhistory.add(new HistoricalQuote(symbol, DateUtils.dateToCalendar(LocalDate.parse("2017-01-03").toDate()),
-				BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9),
-				BigDecimal.valueOf(9), Long.valueOf(23)));
+		newhistory.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-01"), BigDecimal.valueOf(10),
+				BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9), BigDecimal.valueOf(9),
+				Long.valueOf(23), "TestCache"));
+		newhistory.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-03"), BigDecimal.valueOf(10),
+				BigDecimal.valueOf(8), BigDecimal.valueOf(11), BigDecimal.valueOf(9), BigDecimal.valueOf(9),
+				Long.valueOf(23), "TestCache"));
 
 		stock.setHistory(newhistory);
 		feed.storeSeries(stock);

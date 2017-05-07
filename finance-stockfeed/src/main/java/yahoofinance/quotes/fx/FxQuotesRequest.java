@@ -7,7 +7,8 @@ import java.util.List;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
-import com.leonarduk.finance.utils.Utils;
+import com.leonarduk.finance.utils.NumberUtils;
+import com.leonarduk.finance.utils.StringUtils;
 
 import yahoofinance.quotes.QuotesProperty;
 import yahoofinance.quotes.QuotesRequest;
@@ -30,9 +31,9 @@ public class FxQuotesRequest extends QuotesRequest<FxQuote> {
 
 	@Override
 	protected FxQuote parseCSVLine(final String line) throws IOException {
-		final String[] split = Utils.stripOverhead(line).split(YahooFeed.QUOTES_CSV_DELIMITER);
+		final String[] split = StringUtils.stripOverhead(line).split(YahooFeed.QUOTES_CSV_DELIMITER);
 		if (split.length >= 2) {
-			return new FxQuote(Instrument.fromString(split[0]), Utils.getBigDecimal(split[1]));
+			return new FxQuote(Instrument.fromString(split[0]), NumberUtils.getBigDecimal(split[1]));
 		}
 		return null;
 	}

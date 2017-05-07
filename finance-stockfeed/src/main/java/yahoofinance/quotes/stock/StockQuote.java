@@ -6,7 +6,8 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.utils.Utils;
+import com.leonarduk.finance.utils.DateUtils;
+import com.leonarduk.finance.utils.NumberUtils;
 
 /**
  * All getters can return null in case the data is not available from Yahoo
@@ -19,26 +20,27 @@ public class StockQuote {
 	private TimeZone timeZone;
 
 	private BigDecimal ask;
+
 	private Long askSize;
+
 	private BigDecimal bid;
 	private Long bidSize;
 	private BigDecimal price;
-
 	private Long lastTradeSize;
 	private String lastTradeDateStr;
+
 	private String lastTradeTimeStr;
 	private Calendar lastTradeTime;
-
 	private BigDecimal open;
 	private BigDecimal previousClose;
+
 	private BigDecimal dayLow;
 	private BigDecimal dayHigh;
-
 	private BigDecimal yearLow;
 	private BigDecimal yearHigh;
+
 	private BigDecimal priceAvg50;
 	private BigDecimal priceAvg200;
-
 	private Long volume;
 	private Long avgVolume;
 
@@ -46,6 +48,168 @@ public class StockQuote {
 
 	public StockQuote(final Instrument instrument) {
 		this.instrument = instrument;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final StockQuote other = (StockQuote) obj;
+		if (this.ask == null) {
+			if (other.ask != null) {
+				return false;
+			}
+		} else if (!this.ask.equals(other.ask)) {
+			return false;
+		}
+		if (this.askSize == null) {
+			if (other.askSize != null) {
+				return false;
+			}
+		} else if (!this.askSize.equals(other.askSize)) {
+			return false;
+		}
+		if (this.avgVolume == null) {
+			if (other.avgVolume != null) {
+				return false;
+			}
+		} else if (!this.avgVolume.equals(other.avgVolume)) {
+			return false;
+		}
+		if (this.bid == null) {
+			if (other.bid != null) {
+				return false;
+			}
+		} else if (!this.bid.equals(other.bid)) {
+			return false;
+		}
+		if (this.bidSize == null) {
+			if (other.bidSize != null) {
+				return false;
+			}
+		} else if (!this.bidSize.equals(other.bidSize)) {
+			return false;
+		}
+		if (this.dayHigh == null) {
+			if (other.dayHigh != null) {
+				return false;
+			}
+		} else if (!this.dayHigh.equals(other.dayHigh)) {
+			return false;
+		}
+		if (this.dayLow == null) {
+			if (other.dayLow != null) {
+				return false;
+			}
+		} else if (!this.dayLow.equals(other.dayLow)) {
+			return false;
+		}
+		if (this.instrument == null) {
+			if (other.instrument != null) {
+				return false;
+			}
+		} else if (!this.instrument.equals(other.instrument)) {
+			return false;
+		}
+		if (this.lastTradeDateStr == null) {
+			if (other.lastTradeDateStr != null) {
+				return false;
+			}
+		} else if (!this.lastTradeDateStr.equals(other.lastTradeDateStr)) {
+			return false;
+		}
+		if (this.lastTradeSize == null) {
+			if (other.lastTradeSize != null) {
+				return false;
+			}
+		} else if (!this.lastTradeSize.equals(other.lastTradeSize)) {
+			return false;
+		}
+		if (this.lastTradeTime == null) {
+			if (other.lastTradeTime != null) {
+				return false;
+			}
+		} else if (!this.lastTradeTime.equals(other.lastTradeTime)) {
+			return false;
+		}
+		if (this.lastTradeTimeStr == null) {
+			if (other.lastTradeTimeStr != null) {
+				return false;
+			}
+		} else if (!this.lastTradeTimeStr.equals(other.lastTradeTimeStr)) {
+			return false;
+		}
+		if (this.open == null) {
+			if (other.open != null) {
+				return false;
+			}
+		} else if (!this.open.equals(other.open)) {
+			return false;
+		}
+		if (this.previousClose == null) {
+			if (other.previousClose != null) {
+				return false;
+			}
+		} else if (!this.previousClose.equals(other.previousClose)) {
+			return false;
+		}
+		if (this.price == null) {
+			if (other.price != null) {
+				return false;
+			}
+		} else if (!this.price.equals(other.price)) {
+			return false;
+		}
+		if (this.priceAvg200 == null) {
+			if (other.priceAvg200 != null) {
+				return false;
+			}
+		} else if (!this.priceAvg200.equals(other.priceAvg200)) {
+			return false;
+		}
+		if (this.priceAvg50 == null) {
+			if (other.priceAvg50 != null) {
+				return false;
+			}
+		} else if (!this.priceAvg50.equals(other.priceAvg50)) {
+			return false;
+		}
+		if (this.timeZone == null) {
+			if (other.timeZone != null) {
+				return false;
+			}
+		} else if (!this.timeZone.equals(other.timeZone)) {
+			return false;
+		}
+		if (this.volume == null) {
+			if (other.volume != null) {
+				return false;
+			}
+		} else if (!this.volume.equals(other.volume)) {
+			return false;
+		}
+		if (this.yearHigh == null) {
+			if (other.yearHigh != null) {
+				return false;
+			}
+		} else if (!this.yearHigh.equals(other.yearHigh)) {
+			return false;
+		}
+		if (this.yearLow == null) {
+			if (other.yearLow != null) {
+				return false;
+			}
+		} else if (!this.yearLow.equals(other.yearLow)) {
+			return false;
+		}
+		return true;
 	}
 
 	public BigDecimal getAsk() {
@@ -96,7 +260,7 @@ public class StockQuote {
 	 *         average
 	 */
 	public BigDecimal getChangeFromAvg200InPercent() {
-		return Utils.getPercent(this.getChangeFromAvg200(), this.priceAvg200);
+		return NumberUtils.getPercent(this.getChangeFromAvg200(), this.priceAvg200);
 	}
 
 	/**
@@ -116,7 +280,7 @@ public class StockQuote {
 	 *         average
 	 */
 	public BigDecimal getChangeFromAvg50InPercent() {
-		return Utils.getPercent(this.getChangeFromAvg50(), this.priceAvg50);
+		return NumberUtils.getPercent(this.getChangeFromAvg50(), this.priceAvg50);
 	}
 
 	/**
@@ -135,7 +299,7 @@ public class StockQuote {
 	 * @return change from year high relative to year high
 	 */
 	public BigDecimal getChangeFromYearHighInPercent() {
-		return Utils.getPercent(this.getChangeFromYearHigh(), this.yearHigh);
+		return NumberUtils.getPercent(this.getChangeFromYearHigh(), this.yearHigh);
 	}
 
 	/**
@@ -154,7 +318,7 @@ public class StockQuote {
 	 * @return change from year low relative to year low
 	 */
 	public BigDecimal getChangeFromYearLowInPercent() {
-		return Utils.getPercent(this.getChangeFromYearLow(), this.yearLow);
+		return NumberUtils.getPercent(this.getChangeFromYearLow(), this.yearLow);
 	}
 
 	/**
@@ -162,7 +326,7 @@ public class StockQuote {
 	 * @return change relative to previous close
 	 */
 	public BigDecimal getChangeInPercent() {
-		return Utils.getPercent(this.getChange(), this.previousClose);
+		return NumberUtils.getPercent(this.getChange(), this.previousClose);
 	}
 
 	public BigDecimal getDayHigh() {
@@ -205,7 +369,7 @@ public class StockQuote {
 	 * @return last trade date time
 	 */
 	public Calendar getLastTradeTime(final TimeZone timeZone) {
-		return Utils.parseDateTime(this.lastTradeDateStr, this.lastTradeTimeStr, timeZone);
+		return DateUtils.parseDateTime(this.lastTradeDateStr, this.lastTradeTimeStr, timeZone);
 	}
 
 	public String getLastTradeTimeStr() {
@@ -257,6 +421,34 @@ public class StockQuote {
 
 	public BigDecimal getYearLow() {
 		return this.yearLow;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((this.ask == null) ? 0 : this.ask.hashCode());
+		result = (prime * result) + ((this.askSize == null) ? 0 : this.askSize.hashCode());
+		result = (prime * result) + ((this.avgVolume == null) ? 0 : this.avgVolume.hashCode());
+		result = (prime * result) + ((this.bid == null) ? 0 : this.bid.hashCode());
+		result = (prime * result) + ((this.bidSize == null) ? 0 : this.bidSize.hashCode());
+		result = (prime * result) + ((this.dayHigh == null) ? 0 : this.dayHigh.hashCode());
+		result = (prime * result) + ((this.dayLow == null) ? 0 : this.dayLow.hashCode());
+		result = (prime * result) + ((this.instrument == null) ? 0 : this.instrument.hashCode());
+		result = (prime * result) + ((this.lastTradeDateStr == null) ? 0 : this.lastTradeDateStr.hashCode());
+		result = (prime * result) + ((this.lastTradeSize == null) ? 0 : this.lastTradeSize.hashCode());
+		result = (prime * result) + ((this.lastTradeTime == null) ? 0 : this.lastTradeTime.hashCode());
+		result = (prime * result) + ((this.lastTradeTimeStr == null) ? 0 : this.lastTradeTimeStr.hashCode());
+		result = (prime * result) + ((this.open == null) ? 0 : this.open.hashCode());
+		result = (prime * result) + ((this.previousClose == null) ? 0 : this.previousClose.hashCode());
+		result = (prime * result) + ((this.price == null) ? 0 : this.price.hashCode());
+		result = (prime * result) + ((this.priceAvg200 == null) ? 0 : this.priceAvg200.hashCode());
+		result = (prime * result) + ((this.priceAvg50 == null) ? 0 : this.priceAvg50.hashCode());
+		result = (prime * result) + ((this.timeZone == null) ? 0 : this.timeZone.hashCode());
+		result = (prime * result) + ((this.volume == null) ? 0 : this.volume.hashCode());
+		result = (prime * result) + ((this.yearHigh == null) ? 0 : this.yearHigh.hashCode());
+		result = (prime * result) + ((this.yearLow == null) ? 0 : this.yearLow.hashCode());
+		return result;
 	}
 
 	public void setAsk(final BigDecimal ask) {

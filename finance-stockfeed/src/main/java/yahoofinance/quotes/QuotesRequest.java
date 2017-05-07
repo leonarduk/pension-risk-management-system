@@ -14,7 +14,8 @@ import java.util.logging.Logger;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
-import com.leonarduk.finance.utils.Utils;
+import com.leonarduk.finance.utils.HtmlTools;
+import com.leonarduk.finance.utils.StringUtils;
 
 /**
  *
@@ -66,7 +67,7 @@ public abstract class QuotesRequest<T> {
 		params.put("f", this.getFieldsString());
 		params.put("e", ".csv");
 
-		final String url = YahooFeed.QUOTES_BASE_URL + "?" + Utils.getURLParameters(params);
+		final String url = YahooFeed.QUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
 
 		// Get CSV from Yahoo
 		logger.log(Level.INFO, ("Sending request: " + url));
@@ -83,7 +84,7 @@ public abstract class QuotesRequest<T> {
 			if (line.equals("Missing Symbols List.")) {
 				logger.log(Level.SEVERE, "The requested symbol was not recognized by Yahoo Finance");
 			} else {
-				logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
+				logger.log(Level.INFO, ("Parsing CSV line: " + StringUtils.unescape(line)));
 
 				final T data = this.parseCSVLine(line);
 				result.add(data);

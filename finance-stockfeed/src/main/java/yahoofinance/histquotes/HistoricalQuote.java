@@ -2,8 +2,8 @@
 package yahoofinance.histquotes;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+
+import org.joda.time.LocalDate;
 
 import com.google.common.base.Objects;
 import com.leonarduk.finance.stockfeed.Instrument;
@@ -16,25 +16,28 @@ import com.leonarduk.finance.stockfeed.Instrument;
  */
 public class HistoricalQuote {
 
-	private Calendar date;
+	private final LocalDate date;
 
-	private BigDecimal open;
-	private BigDecimal low;
-	private BigDecimal high;
-	private BigDecimal close;
+	private final BigDecimal open;
+	private final BigDecimal low;
+	private final BigDecimal high;
+	private final BigDecimal close;
 
-	private BigDecimal adjClose;
+	private final BigDecimal adjClose;
 
-	private Long volume;
+	private final String comment;
 
-	private Instrument instrument;
+	private final Long volume;
+	private final Instrument instrument;
 
-	public HistoricalQuote() {
+	public HistoricalQuote(final HistoricalQuote that, final LocalDate today, final String comment) {
+		this(that.getInstrument(), today, that.getOpen(), that.getLow(), that.getHigh(), that.getClose(),
+				that.getAdjClose(), that.getVolume(), comment);
 	}
 
-	public HistoricalQuote(final Instrument instrument, final Calendar date, final BigDecimal open,
+	public HistoricalQuote(final Instrument instrument, final LocalDate date, final BigDecimal open,
 			final BigDecimal low, final BigDecimal high, final BigDecimal close, final BigDecimal adjClose,
-			final Long volume) {
+			final Long volume, final String comment) {
 		this.instrument = instrument;
 		this.date = date;
 		this.open = open;
@@ -43,6 +46,7 @@ public class HistoricalQuote {
 		this.close = close;
 		this.adjClose = adjClose;
 		this.volume = volume;
+		this.comment = comment;
 	}
 
 	@Override
@@ -78,7 +82,11 @@ public class HistoricalQuote {
 		return this.close;
 	}
 
-	public Calendar getDate() {
+	public String getComment() {
+		return this.comment;
+	}
+
+	public LocalDate getDate() {
 		return this.date;
 	}
 
@@ -116,39 +124,9 @@ public class HistoricalQuote {
 				this.getInstrument(), this.getVolume());
 	}
 
-	public void setAdjClose(final BigDecimal adjClose) {
-		this.adjClose = adjClose;
-	}
-
-	public void setClose(final BigDecimal close) {
-		this.close = close;
-	}
-
-	public void setDate(final Calendar date) {
-		this.date = date;
-	}
-
-	public void setHigh(final BigDecimal high) {
-		this.high = high;
-	}
-
-	public void setLow(final BigDecimal low) {
-		this.low = low;
-	}
-
-	public void setOpen(final BigDecimal open) {
-		this.open = open;
-	}
-
-	public void setVolume(final Long volume) {
-		this.volume = volume;
-	}
-
 	@Override
 	public String toString() {
-		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		final String dateStr = dateFormat.format(this.date.getTime());
-		return this.instrument + "@" + dateStr + ": " + this.low + "-" + this.high + ", " + this.open + "->"
-				+ this.close + " (" + this.adjClose + ")";
+		return this.instrument + "@" + this.date.toString() + ": " + this.low + "-" + this.high + ", " + this.open
+				+ "->" + this.close + " (" + this.adjClose + ")";
 	}
 }

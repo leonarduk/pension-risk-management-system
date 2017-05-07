@@ -41,6 +41,63 @@ public class Stock {
 		this.instrument = instrument;
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final Stock other = (Stock) obj;
+		if (this.currency == null) {
+			if (other.currency != null) {
+				return false;
+			}
+		} else if (!this.currency.equals(other.currency)) {
+			return false;
+		}
+		if (this.dividend == null) {
+			if (other.dividend != null) {
+				return false;
+			}
+		} else if (!this.dividend.equals(other.dividend)) {
+			return false;
+		}
+		if (this.history == null) {
+			if (other.history != null) {
+				return false;
+			}
+		} else if (!this.history.equals(other.history)) {
+			return false;
+		}
+		if (this.instrument == null) {
+			if (other.instrument != null) {
+				return false;
+			}
+		} else if (!this.instrument.equals(other.instrument)) {
+			return false;
+		}
+		if (this.quote == null) {
+			if (other.quote != null) {
+				return false;
+			}
+		} else if (!this.quote.equals(other.quote)) {
+			return false;
+		}
+		if (this.stats == null) {
+			if (other.stats != null) {
+				return false;
+			}
+		} else if (!this.stats.equals(other.stats)) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Get the currency of the stock
 	 *
@@ -337,6 +394,19 @@ public class Stock {
 
 	public String getSymbol() {
 		return this.instrument.code();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((this.currency == null) ? 0 : this.currency.hashCode());
+		result = (prime * result) + ((this.dividend == null) ? 0 : this.dividend.hashCode());
+		result = (prime * result) + ((this.history == null) ? 0 : this.history.hashCode());
+		result = (prime * result) + ((this.instrument == null) ? 0 : this.instrument.hashCode());
+		result = (prime * result) + ((this.quote == null) ? 0 : this.quote.hashCode());
+		result = (prime * result) + ((this.stats == null) ? 0 : this.stats.hashCode());
+		return result;
 	}
 
 	public void print() {

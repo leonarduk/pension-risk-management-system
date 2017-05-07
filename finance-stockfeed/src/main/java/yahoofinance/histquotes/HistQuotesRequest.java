@@ -14,9 +14,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.joda.time.LocalDate;
+
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
-import com.leonarduk.finance.utils.Utils;
+import com.leonarduk.finance.utils.HtmlTools;
+import com.leonarduk.finance.utils.NumberUtils;
+import com.leonarduk.finance.utils.StringUtils;
 
 /**
  *
@@ -113,7 +117,7 @@ public class HistQuotesRequest {
 
 		params.put("ignore", ".csv");
 
-		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?" + Utils.getURLParameters(params);
+		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
 
 		// Get CSV from Yahoo
 		YahooFeed.logger.log(Level.INFO, ("Sending request: " + url));
@@ -128,7 +132,7 @@ public class HistQuotesRequest {
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 
-			YahooFeed.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
+			YahooFeed.logger.log(Level.INFO, ("Parsing CSV line: " + StringUtils.unescape(line)));
 			final HistoricalQuote quote = this.parseCSVLine(line);
 			result.add(quote);
 		}
@@ -137,9 +141,10 @@ public class HistQuotesRequest {
 
 	private HistoricalQuote parseCSVLine(final String line) {
 		final String[] data = line.split(YahooFeed.QUOTES_CSV_DELIMITER);
-		return new HistoricalQuote(this.instrument, Utils.parseHistDate(data[0]), Utils.getBigDecimal(data[1]),
-				Utils.getBigDecimal(data[3]), Utils.getBigDecimal(data[2]), Utils.getBigDecimal(data[4]),
-				Utils.getBigDecimal(data[6]), Utils.getLong(data[5]));
+		return new HistoricalQuote(this.instrument, LocalDate.parse(data[0]), NumberUtils.getBigDecimal(data[1]),
+				NumberUtils.getBigDecimal(data[3]), NumberUtils.getBigDecimal(data[2]),
+				NumberUtils.getBigDecimal(data[4]), NumberUtils.getBigDecimal(data[6]), NumberUtils.getLong(data[5]),
+				"Yahoo");
 	}
 
 }

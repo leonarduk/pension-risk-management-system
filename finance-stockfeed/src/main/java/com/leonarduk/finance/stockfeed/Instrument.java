@@ -88,10 +88,10 @@ public class Instrument {
 	private final AssetType assetType;
 
 	private final String category;
+
 	private final String code;
 
 	private final String currency;
-
 	private final String googleCode;
 
 	private final String isin;
@@ -139,6 +139,75 @@ public class Instrument {
 		return this.currency;
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final Instrument other = (Instrument) obj;
+		if (this.assetType != other.assetType) {
+			return false;
+		}
+		if (this.category == null) {
+			if (other.category != null) {
+				return false;
+			}
+		} else if (!this.category.equals(other.category)) {
+			return false;
+		}
+		if (this.code == null) {
+			if (other.code != null) {
+				return false;
+			}
+		} else if (!this.code.equals(other.code)) {
+			return false;
+		}
+		if (this.currency == null) {
+			if (other.currency != null) {
+				return false;
+			}
+		} else if (!this.currency.equals(other.currency)) {
+			return false;
+		}
+		if (this.exchange != other.exchange) {
+			return false;
+		}
+		if (this.googleCode == null) {
+			if (other.googleCode != null) {
+				return false;
+			}
+		} else if (!this.googleCode.equals(other.googleCode)) {
+			return false;
+		}
+		if (this.isin == null) {
+			if (other.isin != null) {
+				return false;
+			}
+		} else if (!this.isin.equals(other.isin)) {
+			return false;
+		}
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		if (this.source != other.source) {
+			return false;
+		}
+		if (this.underlyingType != other.underlyingType) {
+			return false;
+		}
+		return true;
+	}
+
 	public AssetType getAssetType() {
 		return this.assetType;
 	}
@@ -173,6 +242,23 @@ public class Instrument {
 
 	public Source getSource() {
 		return this.source;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((this.assetType == null) ? 0 : this.assetType.hashCode());
+		result = (prime * result) + ((this.category == null) ? 0 : this.category.hashCode());
+		result = (prime * result) + ((this.code == null) ? 0 : this.code.hashCode());
+		result = (prime * result) + ((this.currency == null) ? 0 : this.currency.hashCode());
+		result = (prime * result) + ((this.exchange == null) ? 0 : this.exchange.hashCode());
+		result = (prime * result) + ((this.googleCode == null) ? 0 : this.googleCode.hashCode());
+		result = (prime * result) + ((this.isin == null) ? 0 : this.isin.hashCode());
+		result = (prime * result) + ((this.name == null) ? 0 : this.name.hashCode());
+		result = (prime * result) + ((this.source == null) ? 0 : this.source.hashCode());
+		result = (prime * result) + ((this.underlyingType == null) ? 0 : this.underlyingType.hashCode());
+		return result;
 	}
 
 	public String isin() {

@@ -2,7 +2,6 @@ package com.leonarduk.finance;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +10,9 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
-import com.leonarduk.finance.chart.ChartDisplay;
-import com.leonarduk.finance.chart.PieChartFactory;
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.portfolio.Recommendation;
 import com.leonarduk.finance.portfolio.RecommendedTrade;
@@ -30,6 +26,9 @@ import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 import com.leonarduk.finance.strategies.SimpleMovingAverageStrategy;
+import com.leonarduk.finance.utils.DataField;
+import com.leonarduk.finance.utils.HtmlTools;
+import com.leonarduk.finance.utils.NumberUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Decimal;
@@ -44,62 +43,10 @@ import jersey.repackaged.com.google.common.collect.Lists;
  * <p>
  */
 public class AnalyseSnapshot {
-	public static class DataField {
-		private final String name;
-		private final Object value;
-		private boolean display;
-
-		public DataField(final String name, final Object value) {
-			this(name, value, true);
-		}
-
-		public DataField(final String name, final Object value, final boolean display) {
-			this.name = name;
-			this.value = value;
-			this.display = display;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public Object getValue() {
-			return this.value;
-		}
-
-		public void hide() {
-			this.display = false;
-		}
-
-		public boolean isDisplay() {
-			return this.display;
-		}
-
-	}
 
 	private final static Logger logger = Logger.getLogger(AnalyseSnapshot.class.getName());
-	private static DecimalFormat format;
 
 	private static int years = 20;
-
-	public static void addField(final Object value, final StringBuilder sb) {
-		sb.append("<td bgcolor='" + getColour(value) + "'>").append(value).append("</td>");
-	}
-
-	public static void addHeader(final String name, final StringBuilder sb) {
-		sb.append("<th>").append(name).append("</th>");
-	}
-
-	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
-			final List<Valuation> valuations, final String title, final String key, final String value)
-			throws IOException {
-		final PieChartFactory pieChartFactory = new PieChartFactory(title);
-		pieChartFactory.addAll(assetTypeMap);
-		assetTypeMap.put("Total", roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
-		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
-		final String filename = title.replace(" ", "_");
-		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
-	}
 
 	public static List<Valuation> analayzeAllEtfs(final List<Position> stocks) throws IOException {
 		return stocks.parallelStream().map(AnalyseSnapshot::analyseStock).collect(Collectors.toList());
@@ -110,7 +57,7 @@ public class AnalyseSnapshot {
 		try {
 			Optional<Stock> stock = stock2.getStock();
 			if (!stock.isPresent()) {
-				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument());
+				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), 1);
 			}
 			series = TimeseriesUtils.getTimeSeries(stock.get());
 			if ((null == series) || (series.getTickCount() < 1)) {
@@ -175,13 +122,7 @@ public class AnalyseSnapshot {
 		final Decimal initialValue = series.getFirstTick().getClosePrice();
 		final int i = timePeriod;
 		final Decimal diff = i > -1 ? series.getTick(i).getClosePrice().minus(initialValue) : Decimal.ZERO;
-		return roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
-	}
-
-	public static StringBuilder createHtmlText(final StringBuilder sbHead, final StringBuilder sbBody) {
-		final StringBuilder buf = new StringBuilder("<html><head>").append(sbHead).append("</head><body>");
-		buf.append(sbBody).append("</body></html>\n");
-		return buf;
+		return NumberUtils.roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
 	}
 
 	public static StringBuilder createPortfolioReport(final boolean extendedReport)
@@ -214,12 +155,12 @@ public class AnalyseSnapshot {
 				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().underlyingType().name(),
 						Collectors.summingDouble((v -> v.getValuation().toDouble()))));
 
-		addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type", "Value");
-		addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets", "Type", "Value");
+		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type", "Value");
+		HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets", "Type", "Value");
 
 		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, false);
 
-		final StringBuilder buf = createHtmlText(sbHead, sbBody);
+		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
 
 		return buf;
 	}
@@ -230,8 +171,8 @@ public class AnalyseSnapshot {
 			price = price.dividedBy(Decimal.HUNDRED);
 		}
 		final Decimal volume = position.getAmount();
-		final Valuation valuation = new Valuation(position, roundDecimal(price.multipliedBy(volume)),
-				lastTick.getEndTime().toLocalDate(), roundDecimal(price));
+		final Valuation valuation = new Valuation(position, NumberUtils.roundDecimal(price.multipliedBy(volume)),
+				lastTick.getEndTime().toLocalDate(), NumberUtils.roundDecimal(price));
 		return valuation;
 	}
 
@@ -270,47 +211,7 @@ public class AnalyseSnapshot {
 			}
 		}
 
-		if (records.size() > 0) {
-			sb.append("<table><tr>");
-			records.get(0).stream().forEach(f -> {
-				if (f.isDisplay()) {
-					addHeader(f.getName(), sb);
-				}
-			});
-			sb.append("</tr>");
-
-			for (final List<DataField> list : records) {
-				sb.append("<tr>");
-				list.stream().forEach(f -> {
-					if (f.isDisplay()) {
-						addField(f.getValue(), sb);
-					}
-				});
-				sb.append("</tr>");
-
-			}
-			sb.append("</table>");
-		}
-	}
-
-	public static String getColour(final Object value) {
-		String colour = "white";
-		if ((value != null) && (value.equals(RecommendedTrade.BUY) || ((value instanceof LocalDate)
-				&& (Decimal.valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
-						.equals(Decimal.ZERO))
-
-				|| ((value instanceof Decimal) && ((Decimal) value).isGreaterThan(Decimal.ZERO)))) {
-			colour = "green";
-		}
-
-		if (((value != null) && value.equals(RecommendedTrade.SELL))
-				|| ((value instanceof LocalDate)
-						&& (Decimal.valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
-								.isGreaterThan(Decimal.ONE))
-				|| ((value instanceof Decimal) && ((Decimal) value).isLessThan(Decimal.ZERO))) {
-			colour = "red";
-		}
-		return colour;
+		HtmlTools.printTable(sb, records);
 	}
 
 	public static List<Position> getListedInstruments(final List<Instrument> heldInstruments) throws IOException {
@@ -325,14 +226,6 @@ public class AnalyseSnapshot {
 	public static void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
 		final StringBuilder buf = createPortfolioReport(true);
 		IndicatorsToCsv.writeFile("recommendations.html", buf);
-	}
-
-	public static Decimal roundDecimal(final Decimal decimal) {
-		if (Decimal.NaN.equals(decimal)) {
-			return decimal;
-		}
-		format = new DecimalFormat("#.##");
-		return Decimal.valueOf(format.format(decimal.toDouble()));
 	}
 
 }

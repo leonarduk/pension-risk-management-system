@@ -3,8 +3,6 @@ package com.leonarduk.finance.stockfeed;
 import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.addValue;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +31,7 @@ public abstract class StockFeed {
 		// stock.setCurrency();
 		final StockQuote quote = new StockQuote(instrument);
 
-		if (!quotes.isEmpty()) {
+		if ((quotes != null) && !quotes.isEmpty()) {
 			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
 
 			quote.setDayHigh(historicalQuote.getHigh());
@@ -42,9 +40,6 @@ public abstract class StockFeed {
 			quote.setAvgVolume(historicalQuote.getVolume());
 			quote.setPrice(historicalQuote.getClose());
 			stock.setQuote(quote);
-			// stock.setQuote(this.getQuote());
-			// stock.setStats(this.getStats());
-			// stock.setDividend(this.getDividend())
 			stock.setHistory(quotes);
 		}
 		return stock;
@@ -52,9 +47,8 @@ public abstract class StockFeed {
 
 	public static StringBuilder seriesToCsv(final List<HistoricalQuote> series) {
 		final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
-		final SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
 		for (final HistoricalQuote historicalQuote : series) {
-			sb.append(format1.format(historicalQuote.getDate().getTime()));
+			sb.append(historicalQuote.getDate().toString());
 			addValue(sb, historicalQuote.getOpen());
 			addValue(sb, historicalQuote.getHigh());
 			addValue(sb, historicalQuote.getLow());
@@ -74,12 +68,11 @@ public abstract class StockFeed {
 	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original,
 			final List<HistoricalQuote> newSeries) {
 		final Map<LocalDate, HistoricalQuote> dates = original.stream()
-				.collect(Collectors.toMap(quote -> LocalDate.fromCalendarFields(quote.getDate()), Function.identity()));
+				.collect(Collectors.toMap(quote -> quote.getDate(), Function.identity()));
 		newSeries.stream().forEach(historicalQuote -> {
-			final Calendar date = historicalQuote.getDate();
-			if ((date != null) && !dates.containsKey(LocalDate.fromCalendarFields(date))
-					&& !historicalQuote.getClose().equals(Decimal.ZERO)) {
-				dates.put(LocalDate.fromCalendarFields(date), historicalQuote);
+			final LocalDate date = historicalQuote.getDate();
+			if ((date != null) && !dates.containsKey(date) && !historicalQuote.getClose().equals(Decimal.ZERO)) {
+				dates.put(date, historicalQuote);
 			}
 		});
 

@@ -26,6 +26,16 @@ public class TimeseriesUtils {
 		return bigDecimal.doubleValue();
 	}
 
+	public static HistoricalQuote getMostRecentQuote(final List<HistoricalQuote> history) {
+		final HistoricalQuote firstQuote = history.get(0);
+		return firstQuote;
+	}
+
+	public static HistoricalQuote getOldestQuote(final List<HistoricalQuote> history) {
+		final HistoricalQuote lastQuote = history.get(history.size() - 1);
+		return lastQuote;
+	}
+
 	public static TimeSeries getTimeSeries(final Stock stock) throws IOException {
 		List<HistoricalQuote> history = stock.getHistory();
 		if ((null == history) || history.isEmpty()) {
@@ -37,9 +47,7 @@ public class TimeseriesUtils {
 			}
 		}
 
-		Collections.sort(history, (o1, o2) -> {
-			return o2.getDate().compareTo(o1.getDate());
-		});
+		sortQuoteList(history);
 		final Iterator<HistoricalQuote> series = history.iterator();
 
 		final List<Tick> ticks = new LinkedList<>();
@@ -54,7 +62,7 @@ public class TimeseriesUtils {
 				final double close = ensureIsDouble(closeBd);
 				final double volume = ensureIsDouble(ifNull(quote.getVolume(), 0L));
 
-				ticks.add(new Tick(new DateTime(quote.getDate().getTime()), open, high, low, close, volume));
+				ticks.add(new Tick(new DateTime(quote.getDate()), open, high, low, close, volume));
 			} catch (final NullPointerException e) {
 				System.err.println(e);
 				return null;
@@ -85,5 +93,11 @@ public class TimeseriesUtils {
 			return close;
 		}
 		return open;
+	}
+
+	public static void sortQuoteList(final List<HistoricalQuote> history) {
+		Collections.sort(history, (o1, o2) -> {
+			return o2.getDate().compareTo(o1.getDate());
+		});
 	}
 }

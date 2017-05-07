@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.joda.time.LocalDate;
+
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
@@ -79,8 +81,10 @@ public class YahooFeed extends StockFeed {
 
 			stock.getHistory(from, HistQuotesRequest.DEFAULT_TO, Interval.DAILY);
 			final StockQuote quote = stock.getQuote();
-			stock.getHistory().add(new HistoricalQuote(stock.getInstrument(), quote.getLastTradeTime(), quote.getOpen(),
-					quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(), quote.getVolume()));
+			stock.getHistory()
+					.add(new HistoricalQuote(stock.getInstrument(),
+							LocalDate.fromCalendarFields(quote.getLastTradeTime()), quote.getOpen(), quote.getDayLow(),
+							quote.getDayHigh(), quote.getPrice(), quote.getPrice(), quote.getVolume(), "Yahoo"));
 			return Optional.of(stock);
 		} catch (final Exception e) {
 			return Optional.empty();

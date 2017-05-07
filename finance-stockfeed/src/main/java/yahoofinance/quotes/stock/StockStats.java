@@ -3,191 +3,361 @@ package yahoofinance.quotes.stock;
 
 import java.math.BigDecimal;
 
-import com.leonarduk.finance.utils.Utils;
+import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo Finance.
- * 
+ * All getters can return null in case the data is not available from Yahoo
+ * Finance.
+ *
  * @author Stijn Strickx
  */
 public class StockStats {
-    
-    private final String symbol;
-    
-    private BigDecimal marketCap;
-    private Long sharesFloat;
-    private Long sharesOutstanding;
-    private Long sharesOwned;
-    
-    private BigDecimal eps;
-    private BigDecimal pe;
-    private BigDecimal peg;
-    
-    private BigDecimal epsEstimateCurrentYear;
-    private BigDecimal epsEstimateNextQuarter;
-    private BigDecimal epsEstimateNextYear;
-    
-    private BigDecimal priceBook;
-    private BigDecimal priceSales;
-    private BigDecimal bookValuePerShare;
-    
-    private BigDecimal revenue; // ttm
-    private BigDecimal EBITDA; // ttm
-    private BigDecimal oneYearTargetPrice;
-    
-    private BigDecimal shortRatio;
-    
-    public StockStats(String symbol) {
-        this.symbol = symbol;
-    }
-    
-    public BigDecimal getROE() {
-        return Utils.getPercent(this.EBITDA, this.marketCap);
-    }
 
-    public String getSymbol() {
-        return symbol;
-    }
-    
-    public BigDecimal getMarketCap() {
-        return marketCap;
-    }
+	private final String symbol;
 
-    public void setMarketCap(BigDecimal marketCap) {
-        this.marketCap = marketCap;
-    }
+	private BigDecimal marketCap;
 
-    public Long getSharesFloat() {
-        return sharesFloat;
-    }
+	private Long sharesFloat;
 
-    public void setSharesFloat(Long sharesFloat) {
-        this.sharesFloat = sharesFloat;
-    }
+	private Long sharesOutstanding;
+	private Long sharesOwned;
+	private BigDecimal eps;
+	private BigDecimal pe;
 
-    public Long getSharesOutstanding() {
-        return sharesOutstanding;
-    }
+	private BigDecimal peg;
+	private BigDecimal epsEstimateCurrentYear;
+	private BigDecimal epsEstimateNextQuarter;
 
-    public void setSharesOutstanding(Long sharesOutstanding) {
-        this.sharesOutstanding = sharesOutstanding;
-    }
+	private BigDecimal epsEstimateNextYear;
+	private BigDecimal priceBook;
+	private BigDecimal priceSales;
 
-    public Long getSharesOwned() {
-        return sharesOwned;
-    }
+	private BigDecimal bookValuePerShare;
+	private BigDecimal revenue; // ttm
+	private BigDecimal EBITDA; // ttm
 
-    public void setSharesOwned(Long sharesOwned) {
-        this.sharesOwned = sharesOwned;
-    }
+	private BigDecimal oneYearTargetPrice;
+	private BigDecimal shortRatio;
 
-    public BigDecimal getEps() {
-        return eps;
-    }
+	public StockStats(final String symbol) {
+		this.symbol = symbol;
+	}
 
-    public void setEps(BigDecimal eps) {
-        this.eps = eps;
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final StockStats other = (StockStats) obj;
+		if (this.EBITDA == null) {
+			if (other.EBITDA != null) {
+				return false;
+			}
+		} else if (!this.EBITDA.equals(other.EBITDA)) {
+			return false;
+		}
+		if (this.bookValuePerShare == null) {
+			if (other.bookValuePerShare != null) {
+				return false;
+			}
+		} else if (!this.bookValuePerShare.equals(other.bookValuePerShare)) {
+			return false;
+		}
+		if (this.eps == null) {
+			if (other.eps != null) {
+				return false;
+			}
+		} else if (!this.eps.equals(other.eps)) {
+			return false;
+		}
+		if (this.epsEstimateCurrentYear == null) {
+			if (other.epsEstimateCurrentYear != null) {
+				return false;
+			}
+		} else if (!this.epsEstimateCurrentYear.equals(other.epsEstimateCurrentYear)) {
+			return false;
+		}
+		if (this.epsEstimateNextQuarter == null) {
+			if (other.epsEstimateNextQuarter != null) {
+				return false;
+			}
+		} else if (!this.epsEstimateNextQuarter.equals(other.epsEstimateNextQuarter)) {
+			return false;
+		}
+		if (this.epsEstimateNextYear == null) {
+			if (other.epsEstimateNextYear != null) {
+				return false;
+			}
+		} else if (!this.epsEstimateNextYear.equals(other.epsEstimateNextYear)) {
+			return false;
+		}
+		if (this.marketCap == null) {
+			if (other.marketCap != null) {
+				return false;
+			}
+		} else if (!this.marketCap.equals(other.marketCap)) {
+			return false;
+		}
+		if (this.oneYearTargetPrice == null) {
+			if (other.oneYearTargetPrice != null) {
+				return false;
+			}
+		} else if (!this.oneYearTargetPrice.equals(other.oneYearTargetPrice)) {
+			return false;
+		}
+		if (this.pe == null) {
+			if (other.pe != null) {
+				return false;
+			}
+		} else if (!this.pe.equals(other.pe)) {
+			return false;
+		}
+		if (this.peg == null) {
+			if (other.peg != null) {
+				return false;
+			}
+		} else if (!this.peg.equals(other.peg)) {
+			return false;
+		}
+		if (this.priceBook == null) {
+			if (other.priceBook != null) {
+				return false;
+			}
+		} else if (!this.priceBook.equals(other.priceBook)) {
+			return false;
+		}
+		if (this.priceSales == null) {
+			if (other.priceSales != null) {
+				return false;
+			}
+		} else if (!this.priceSales.equals(other.priceSales)) {
+			return false;
+		}
+		if (this.revenue == null) {
+			if (other.revenue != null) {
+				return false;
+			}
+		} else if (!this.revenue.equals(other.revenue)) {
+			return false;
+		}
+		if (this.sharesFloat == null) {
+			if (other.sharesFloat != null) {
+				return false;
+			}
+		} else if (!this.sharesFloat.equals(other.sharesFloat)) {
+			return false;
+		}
+		if (this.sharesOutstanding == null) {
+			if (other.sharesOutstanding != null) {
+				return false;
+			}
+		} else if (!this.sharesOutstanding.equals(other.sharesOutstanding)) {
+			return false;
+		}
+		if (this.sharesOwned == null) {
+			if (other.sharesOwned != null) {
+				return false;
+			}
+		} else if (!this.sharesOwned.equals(other.sharesOwned)) {
+			return false;
+		}
+		if (this.shortRatio == null) {
+			if (other.shortRatio != null) {
+				return false;
+			}
+		} else if (!this.shortRatio.equals(other.shortRatio)) {
+			return false;
+		}
+		if (this.symbol == null) {
+			if (other.symbol != null) {
+				return false;
+			}
+		} else if (!this.symbol.equals(other.symbol)) {
+			return false;
+		}
+		return true;
+	}
 
-    public BigDecimal getPe() {
-        return pe;
-    }
+	public BigDecimal getBookValuePerShare() {
+		return this.bookValuePerShare;
+	}
 
-    public void setPe(BigDecimal pe) {
-        this.pe = pe;
-    }
+	public BigDecimal getEBITDA() {
+		return this.EBITDA;
+	}
 
-    public BigDecimal getPeg() {
-        return peg;
-    }
+	public BigDecimal getEps() {
+		return this.eps;
+	}
 
-    public void setPeg(BigDecimal peg) {
-        this.peg = peg;
-    }
+	public BigDecimal getEpsEstimateCurrentYear() {
+		return this.epsEstimateCurrentYear;
+	}
 
-    public BigDecimal getEpsEstimateCurrentYear() {
-        return epsEstimateCurrentYear;
-    }
+	public BigDecimal getEpsEstimateNextQuarter() {
+		return this.epsEstimateNextQuarter;
+	}
 
-    public void setEpsEstimateCurrentYear(BigDecimal epsEstimateCurrentYear) {
-        this.epsEstimateCurrentYear = epsEstimateCurrentYear;
-    }
+	public BigDecimal getEpsEstimateNextYear() {
+		return this.epsEstimateNextYear;
+	}
 
-    public BigDecimal getEpsEstimateNextQuarter() {
-        return epsEstimateNextQuarter;
-    }
+	public BigDecimal getMarketCap() {
+		return this.marketCap;
+	}
 
-    public void setEpsEstimateNextQuarter(BigDecimal epsEstimateNextQuarter) {
-        this.epsEstimateNextQuarter = epsEstimateNextQuarter;
-    }
+	public BigDecimal getOneYearTargetPrice() {
+		return this.oneYearTargetPrice;
+	}
 
-    public BigDecimal getEpsEstimateNextYear() {
-        return epsEstimateNextYear;
-    }
+	public BigDecimal getPe() {
+		return this.pe;
+	}
 
-    public void setEpsEstimateNextYear(BigDecimal epsEstimateNextYear) {
-        this.epsEstimateNextYear = epsEstimateNextYear;
-    }
+	public BigDecimal getPeg() {
+		return this.peg;
+	}
 
-    public BigDecimal getPriceBook() {
-        return priceBook;
-    }
+	public BigDecimal getPriceBook() {
+		return this.priceBook;
+	}
 
-    public void setPriceBook(BigDecimal priceBook) {
-        this.priceBook = priceBook;
-    }
+	public BigDecimal getPriceSales() {
+		return this.priceSales;
+	}
 
-    public BigDecimal getPriceSales() {
-        return priceSales;
-    }
+	public BigDecimal getRevenue() {
+		return this.revenue;
+	}
 
-    public void setPriceSales(BigDecimal priceSales) {
-        this.priceSales = priceSales;
-    }
+	public BigDecimal getROE() {
+		return NumberUtils.getPercent(this.EBITDA, this.marketCap);
+	}
 
-    public BigDecimal getBookValuePerShare() {
-        return bookValuePerShare;
-    }
+	public Long getSharesFloat() {
+		return this.sharesFloat;
+	}
 
-    public void setBookValuePerShare(BigDecimal bookValuePerShare) {
-        this.bookValuePerShare = bookValuePerShare;
-    }
+	public Long getSharesOutstanding() {
+		return this.sharesOutstanding;
+	}
 
-    public BigDecimal getRevenue() {
-        return revenue;
-    }
+	public Long getSharesOwned() {
+		return this.sharesOwned;
+	}
 
-    public void setRevenue(BigDecimal revenue) {
-        this.revenue = revenue;
-    }
+	public BigDecimal getShortRatio() {
+		return this.shortRatio;
+	}
 
-    public BigDecimal getEBITDA() {
-        return EBITDA;
-    }
+	public String getSymbol() {
+		return this.symbol;
+	}
 
-    public void setEBITDA(BigDecimal EBITDA) {
-        this.EBITDA = EBITDA;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((this.EBITDA == null) ? 0 : this.EBITDA.hashCode());
+		result = (prime * result) + ((this.bookValuePerShare == null) ? 0 : this.bookValuePerShare.hashCode());
+		result = (prime * result) + ((this.eps == null) ? 0 : this.eps.hashCode());
+		result = (prime * result)
+				+ ((this.epsEstimateCurrentYear == null) ? 0 : this.epsEstimateCurrentYear.hashCode());
+		result = (prime * result)
+				+ ((this.epsEstimateNextQuarter == null) ? 0 : this.epsEstimateNextQuarter.hashCode());
+		result = (prime * result) + ((this.epsEstimateNextYear == null) ? 0 : this.epsEstimateNextYear.hashCode());
+		result = (prime * result) + ((this.marketCap == null) ? 0 : this.marketCap.hashCode());
+		result = (prime * result) + ((this.oneYearTargetPrice == null) ? 0 : this.oneYearTargetPrice.hashCode());
+		result = (prime * result) + ((this.pe == null) ? 0 : this.pe.hashCode());
+		result = (prime * result) + ((this.peg == null) ? 0 : this.peg.hashCode());
+		result = (prime * result) + ((this.priceBook == null) ? 0 : this.priceBook.hashCode());
+		result = (prime * result) + ((this.priceSales == null) ? 0 : this.priceSales.hashCode());
+		result = (prime * result) + ((this.revenue == null) ? 0 : this.revenue.hashCode());
+		result = (prime * result) + ((this.sharesFloat == null) ? 0 : this.sharesFloat.hashCode());
+		result = (prime * result) + ((this.sharesOutstanding == null) ? 0 : this.sharesOutstanding.hashCode());
+		result = (prime * result) + ((this.sharesOwned == null) ? 0 : this.sharesOwned.hashCode());
+		result = (prime * result) + ((this.shortRatio == null) ? 0 : this.shortRatio.hashCode());
+		result = (prime * result) + ((this.symbol == null) ? 0 : this.symbol.hashCode());
+		return result;
+	}
 
-    public BigDecimal getOneYearTargetPrice() {
-        return oneYearTargetPrice;
-    }
+	public void setBookValuePerShare(final BigDecimal bookValuePerShare) {
+		this.bookValuePerShare = bookValuePerShare;
+	}
 
-    public void setOneYearTargetPrice(BigDecimal oneYearTargetPrice) {
-        this.oneYearTargetPrice = oneYearTargetPrice;
-    }
+	public void setEBITDA(final BigDecimal EBITDA) {
+		this.EBITDA = EBITDA;
+	}
 
-    public BigDecimal getShortRatio() {
-        return shortRatio;
-    }
+	public void setEps(final BigDecimal eps) {
+		this.eps = eps;
+	}
 
-    public void setShortRatio(BigDecimal shortRatio) {
-        this.shortRatio = shortRatio;
-    }
-    
-    @Override
-    public String toString() {
-        return "EPS: " + this.eps + ", PE: " + this.pe + ", PEG: " + this.peg;
-    }
-    
+	public void setEpsEstimateCurrentYear(final BigDecimal epsEstimateCurrentYear) {
+		this.epsEstimateCurrentYear = epsEstimateCurrentYear;
+	}
+
+	public void setEpsEstimateNextQuarter(final BigDecimal epsEstimateNextQuarter) {
+		this.epsEstimateNextQuarter = epsEstimateNextQuarter;
+	}
+
+	public void setEpsEstimateNextYear(final BigDecimal epsEstimateNextYear) {
+		this.epsEstimateNextYear = epsEstimateNextYear;
+	}
+
+	public void setMarketCap(final BigDecimal marketCap) {
+		this.marketCap = marketCap;
+	}
+
+	public void setOneYearTargetPrice(final BigDecimal oneYearTargetPrice) {
+		this.oneYearTargetPrice = oneYearTargetPrice;
+	}
+
+	public void setPe(final BigDecimal pe) {
+		this.pe = pe;
+	}
+
+	public void setPeg(final BigDecimal peg) {
+		this.peg = peg;
+	}
+
+	public void setPriceBook(final BigDecimal priceBook) {
+		this.priceBook = priceBook;
+	}
+
+	public void setPriceSales(final BigDecimal priceSales) {
+		this.priceSales = priceSales;
+	}
+
+	public void setRevenue(final BigDecimal revenue) {
+		this.revenue = revenue;
+	}
+
+	public void setSharesFloat(final Long sharesFloat) {
+		this.sharesFloat = sharesFloat;
+	}
+
+	public void setSharesOutstanding(final Long sharesOutstanding) {
+		this.sharesOutstanding = sharesOutstanding;
+	}
+
+	public void setSharesOwned(final Long sharesOwned) {
+		this.sharesOwned = sharesOwned;
+	}
+
+	public void setShortRatio(final BigDecimal shortRatio) {
+		this.shortRatio = shortRatio;
+	}
+
+	@Override
+	public String toString() {
+		return "EPS: " + this.eps + ", PE: " + this.pe + ", PEG: " + this.peg;
+	}
+
 }
