@@ -191,8 +191,8 @@ public class AnalyseSnapshot {
 			final String ticker = instrument.code();
 
 			final ValueFormatter formatter = (value -> {
-				return new StringBuilder("<a href=\"/stock/display?ticker=").append(ticker).append("&years=")
-						.append(years).append("\">").append(value).append("</a>").toString();
+				return new StringBuilder("<a href=\"/stock/ticker/").append(ticker).append("?years=").append(years)
+						.append("\">").append(value).append("</a>").toString();
 			});
 
 			fields.add(new DataField("Name", instrument.getName(), formatter));
