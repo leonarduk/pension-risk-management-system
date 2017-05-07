@@ -11,12 +11,22 @@ import org.junit.Test;
 
 import com.leonarduk.finance.AnalyseSnapshot;
 import com.leonarduk.finance.portfolio.Position;
+import com.leonarduk.finance.portfolio.Valuation;
 
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 
 public class AnalyseSnapshotTest {
+	@Test
+	public final void testAnalyseStock() {
+		final Optional<Stock> stock = Optional.empty();
+		final Position position = new Position("test", Instrument.CASH, Decimal.HUNDRED, stock, "Cash");
+		final Valuation actual = AnalyseSnapshot.analyseStock(position);
+
+		assertEquals(Decimal.HUNDRED, actual.getValuation());
+		assertEquals(Decimal.ONE, actual.getPrice());
+	}
 
 	@Test
 	public void testCalculateReturn() {

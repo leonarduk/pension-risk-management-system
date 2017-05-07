@@ -62,7 +62,8 @@ public class TimeseriesUtils {
 				final double close = ensureIsDouble(closeBd);
 				final double volume = ensureIsDouble(ifNull(quote.getVolume(), 0L));
 
-				ticks.add(new Tick(new DateTime(quote.getDate()), open, high, low, close, volume));
+				ticks.add(new Tick(new DateTime(quote.getDate().toDateTimeAtStartOfDay()), open, high, low, close,
+						volume));
 			} catch (final NullPointerException e) {
 				System.err.println(e);
 				return null;
