@@ -22,11 +22,29 @@ import eu.verdelhan.ta4j.Decimal;
 public class HtmlTools {
 	public static final Logger logger = Logger.getLogger(HtmlTools.class.getName());
 
-	public static void addField(final Object value, final StringBuilder sb, final ValueFormatter formatter) {
+	public static void addField(Object value, final StringBuilder sb, ValueFormatter formatter) {
+		if (formatter == null) {
+			formatter = (Object::toString);
+		}
+		if (sb == null) {
+			throw new IllegalArgumentException("Passed in null StringBuilder");
+		}
+		if (null == value) {
+			value = "";
+			logger.warning("Null value supplied - treat as empty string");
+
+		}
 		sb.append("<td bgcolor='" + getColour(value) + "'>").append(formatter.format(value)).append("</td>");
 	}
 
-	public static void addHeader(final String name, final StringBuilder sb) {
+	public static void addHeader(String name, final StringBuilder sb) {
+		if (sb == null) {
+			throw new IllegalArgumentException("Passed in null StringBuilder");
+		}
+		if (null == name) {
+			name = "";
+			logger.warning("Null field name supplied - treat as empty string");
+		}
 		sb.append("<th>").append(name).append("</th>");
 	}
 
