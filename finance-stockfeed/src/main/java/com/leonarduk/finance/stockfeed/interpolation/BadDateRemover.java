@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.joda.time.LocalDate;
 
+import com.leonarduk.finance.utils.TimeseriesUtils;
+
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class BadDateRemover implements TimeSeriesCleaner {
@@ -12,8 +14,8 @@ public class BadDateRemover implements TimeSeriesCleaner {
 	@Override
 	public List<HistoricalQuote> clean(final List<HistoricalQuote> series) {
 		final int thisYear = LocalDate.now().getYear();
-		return series.stream().filter((q) -> q.getDate().getYear() > 1970)
-				.filter((q) -> q.getDate().getYear() < thisYear).collect(Collectors.toList());
+		return TimeseriesUtils.sortQuoteList(series.stream().filter((q) -> q.getDate().getYear() > 1970)
+				.filter((q) -> q.getDate().getYear() <= thisYear).collect(Collectors.toList()));
 	}
 
 }

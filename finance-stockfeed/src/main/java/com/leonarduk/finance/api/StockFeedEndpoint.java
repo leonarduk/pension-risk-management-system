@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -29,14 +30,15 @@ public class StockFeedEndpoint {
 
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
-	@Path("display")
-	public String displayHistory(@QueryParam("ticker") final String ticker, @QueryParam("years") final int years)
-			throws IOException {
+	@Path("/ticker/{ticker}/")
+	public String displayHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
+			@QueryParam("interpolate") final boolean interpolate) throws IOException {
+
 		final Instrument instrument = Instrument.fromString(ticker);
 		final StringBuilder sbBody = new StringBuilder();
 		final List<List<DataField>> records = Lists.newArrayList();
 
-		final List<HistoricalQuote> historyData = this.getHistoryData(instrument, years);
+		final List<HistoricalQuote> historyData = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
 
 		for (final HistoricalQuote historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -56,11 +58,11 @@ public class StockFeedEndpoint {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("history/csv")
-	public Response downloadHistoryCsv(@QueryParam("ticker") final String ticker, @QueryParam("years") final int years)
-			throws IOException {
+	@Path("/download/ticker/{ticker}/")
+	public Response downloadHistoryCsv(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
+			@QueryParam("interpolate") final boolean interpolate) throws IOException {
 		final Instrument instrument = Instrument.fromString(ticker);
-		final List<HistoricalQuote> series = this.getHistoryData(instrument, years);
+		final List<HistoricalQuote> series = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
 		final String fileName = instrument.getExchange().name() + "_" + instrument.code() + ".csv";
 		final String myCsvText = StockFeed.seriesToCsv(series).toString();
 		return Response.ok(myCsvText).header("Content-Disposition", "attachment; filename=" + fileName).build();
@@ -68,15 +70,17 @@ public class StockFeedEndpoint {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("history")
-	public List<HistoricalQuote> getHistory(@QueryParam("ticker") final String ticker,
-			@QueryParam("years") final int years) throws IOException {
+	@Path("/api/ticker/{ticker}/")
+	public List<HistoricalQuote> getHistory(@PathParam("ticker") final String ticker,
+			@QueryParam("years") final int years, @QueryParam("interpolate") final boolean interpolate)
+			throws IOException {
 		final Instrument instrument = Instrument.fromString(ticker);
-		return this.getHistoryData(instrument, years);
+		return this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
 	}
 
-	private List<HistoricalQuote> getHistoryData(final Instrument instrument, final int years) throws IOException {
-		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years);
+	private List<HistoricalQuote> getHistoryData(final Instrument instrument, final int years,
+			final boolean interpolate) throws IOException {
+		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years, interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}

@@ -96,9 +96,11 @@ public class TimeseriesUtils {
 		return open;
 	}
 
-	public static void sortQuoteList(final List<HistoricalQuote> history) {
+	public static List<HistoricalQuote> sortQuoteList(final List<HistoricalQuote> history) {
 		Collections.sort(history, (o1, o2) -> {
 			return o2.getDate().compareTo(o1.getDate());
 		});
+
+		return history;
 	}
 }

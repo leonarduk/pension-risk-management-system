@@ -1,5 +1,6 @@
 package com.leonarduk.finance.stockfeed;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -72,23 +73,32 @@ public class IntelligentStockFeed extends StockFeed {
 			if (!liveData.isPresent()) {
 				return liveData;
 			}
+
+			liveData.get().setHistory(new BadDateRemover().clean(liveData.get().getHistory()));
+			return liveData;
+		} catch (final Exception e) {
+			log.warning(e.getMessage());
+			return Optional.empty();
+		}
+	}
+
+	public Optional<Stock> get(final Instrument instrument, final int years, final boolean interpolate)
+			throws IOException {
+		final Optional<Stock> liveData = this.get(instrument, years);
+		if (liveData.isPresent() && interpolate) {
 			final LocalDate today = DateUtils.skipWeekends(LocalDate.now());
 			final List<HistoricalQuote> history = liveData.get().getHistory();
 
 			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 			final LocalDate fromDate = today.minusYears(years);
 
-			final List<HistoricalQuote> interpolate = new LinearInterpolator()
-					.interpolate(new BadDateRemover().clean(history));
-			final List<HistoricalQuote> extendToToDate = flatLineInterpolator.extendToToDate(interpolate, today);
+			final List<HistoricalQuote> interpolator = new LinearInterpolator().interpolate(history);
+			final List<HistoricalQuote> extendToToDate = flatLineInterpolator.extendToToDate(interpolator, today);
 			final List<HistoricalQuote> extendToFromDate = flatLineInterpolator.extendToFromDate(extendToToDate,
 					fromDate);
 			liveData.get().setHistory(extendToFromDate);
-			return liveData;
-		} catch (final Exception e) {
-			log.warning(e.getMessage());
-			return Optional.empty();
 		}
+		return liveData;
 	}
 
 }
