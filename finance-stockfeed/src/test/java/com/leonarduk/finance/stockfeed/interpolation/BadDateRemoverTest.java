@@ -27,13 +27,13 @@ public class BadDateRemoverTest {
 	public final void testClean() throws IOException {
 		final List<HistoricalQuote> series = IntelligentStockFeed.getFlatCashSeries(Instrument.CASH, 1).get()
 				.getHistory();
-		assertEquals(261, series.size());
+		final int size = series.size();
 
 		series.add(new HistoricalQuote(series.get(0), LocalDate.parse("2023232-01-01"), "bad point"));
 		series.add(new HistoricalQuote(series.get(0), LocalDate.parse("01-01-01"), "bad point"));
-		assertEquals(263, series.size());
+		assertEquals(size + 2, series.size());
 
-		assertEquals(261, this.remover.clean(series).size());
+		assertEquals(size, this.remover.clean(series).size());
 	}
 
 }

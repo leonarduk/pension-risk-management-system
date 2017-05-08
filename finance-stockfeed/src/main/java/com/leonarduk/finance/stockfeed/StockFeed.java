@@ -53,7 +53,8 @@ public abstract class StockFeed {
 			addValue(sb, historicalQuote.getHigh());
 			addValue(sb, historicalQuote.getLow());
 			addValue(sb, historicalQuote.getClose());
-			sb.append(",").append(historicalQuote.getVolume()).append("\n");
+			addValue(sb, historicalQuote.getVolume());
+			sb.append(",").append(historicalQuote.getComment()).append("\n");
 		}
 		return sb;
 	}

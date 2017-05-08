@@ -25,6 +25,7 @@ package com.leonarduk.finance.stockfeed.file;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.logging.Level;
@@ -56,40 +57,72 @@ public class IndicatorsToCsv {
 	private static final int THREE_YEAR = 3 * ONE_YEAR;
 	private static final int HALF_YEAR = ONE_YEAR / 2;
 
-	public static void exportIndicatorsToCsv(TimeSeries series) {
-		String fileName = "target/" + series.getName() + "_indicators.csv";
+	static NumberFormat formatter = new DecimalFormat("#0.00");
+
+	public static void addValue(final StringBuilder buf, BigDecimal value) {
+		if (value == null) {
+			value = BigDecimal.ZERO;
+		}
+		final String format = formatter.format(value);
+		addValue(buf, format);
+	}
+
+	private static void addValue(final StringBuilder buf, final Decimal value) {
+		addValue(buf, (BigDecimal.valueOf(value.toDouble())));
+	}
+
+	public static void addValue(final StringBuilder buf, final long value) {
+		buf.append(',').append(value);
+	}
+
+	public static void addValue(final StringBuilder buf, final String value) {
+		buf.append(',').append(value);
+	}
+
+	private static Decimal calculateReturn(final TimeSeries series, final int timePeriod, final int ticker) {
+		final int index = ticker - timePeriod;
+		if ((index < 0) || (index > series.getEnd())) {
+			return Decimal.NaN;
+		}
+		final Decimal initialValue = series.getTick(index).getClosePrice();
+		final Decimal diff = series.getTick(ticker).getClosePrice().minus(initialValue);
+		return diff.dividedBy(initialValue);
+	}
+
+	public static void exportIndicatorsToCsv(final TimeSeries series) {
+		final String fileName = "target/" + series.getName() + "_indicators.csv";
 		/**
 		 * Creating indicators
 		 */
 		// Close price
-		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+		final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 		// Typical price
-		TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(series);
+		final TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(series);
 		// Price variation
-		PriceVariationIndicator priceVariation = new PriceVariationIndicator(series);
+		final PriceVariationIndicator priceVariation = new PriceVariationIndicator(series);
 		// Simple moving averages
-		SMAIndicator shortSma = new SMAIndicator(closePrice, 8);
-		SMAIndicator longSma = new SMAIndicator(closePrice, 20);
+		final SMAIndicator shortSma = new SMAIndicator(closePrice, 8);
+		final SMAIndicator longSma = new SMAIndicator(closePrice, 20);
 		// Exponential moving averages
-		EMAIndicator shortEma = new EMAIndicator(closePrice, 8);
-		EMAIndicator longEma = new EMAIndicator(closePrice, 20);
+		final EMAIndicator shortEma = new EMAIndicator(closePrice, 8);
+		final EMAIndicator longEma = new EMAIndicator(closePrice, 20);
 		// Percentage price oscillator
-		PPOIndicator ppo = new PPOIndicator(closePrice, 12, 26);
+		final PPOIndicator ppo = new PPOIndicator(closePrice, 12, 26);
 		// Rate of change
-		ROCIndicator roc = new ROCIndicator(closePrice, 100);
+		final ROCIndicator roc = new ROCIndicator(closePrice, 100);
 		// Relative strength index
-		RSIIndicator rsi = new RSIIndicator(closePrice, 14);
+		final RSIIndicator rsi = new RSIIndicator(closePrice, 14);
 		// Williams %R
-		WilliamsRIndicator williamsR = new WilliamsRIndicator(series, 20);
+		final WilliamsRIndicator williamsR = new WilliamsRIndicator(series, 20);
 		// Average true range
-		AverageTrueRangeIndicator atr = new AverageTrueRangeIndicator(series, 20);
+		final AverageTrueRangeIndicator atr = new AverageTrueRangeIndicator(series, 20);
 		// Standard deviation
-		StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, 14);
+		final StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, 14);
 
 		/**
 		 * Building header
 		 */
-		StringBuilder sb = new StringBuilder(
+		final StringBuilder sb = new StringBuilder(
 				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1D,1W,1M,3M,6M1YR,3YR,5YR,10YR\n");
 
 		/**
@@ -127,7 +160,7 @@ public class IndicatorsToCsv {
 		writeFile(fileName, sb);
 	}
 
-	public static void writeFile(String fileName, StringBuilder sb) {
+	public static void writeFile(final String fileName, final StringBuilder sb) {
 		/**
 		 * Writing CSV file
 		 */
@@ -137,44 +170,16 @@ public class IndicatorsToCsv {
 			writer = new BufferedWriter(new FileWriter(fileName));
 			writer.write(sb.toString());
 			LOGGER.info("Saved to " + fileName);
-		} catch (IOException ioe) {
+		} catch (final IOException ioe) {
 			LOGGER.log(Level.SEVERE, "Unable to write CSV file", ioe);
 		} finally {
 			try {
 				if (writer != null) {
 					writer.close();
 				}
-			} catch (IOException ioe) {
+			} catch (final IOException ioe) {
 			}
 		}
-	}
-
-	static NumberFormat formatter = new DecimalFormat("#0.00");
-
-	public static void addValue(StringBuilder buf, Number value) {
-		if (value == null) {
-			value = 0;
-		}
-		String format = formatter.format(value);
-		addValue(buf, format);
-	}
-
-	public static void addValue(StringBuilder buf, String value) {
-		buf.append(',').append(value);
-	}
-
-	private static void addValue(StringBuilder buf, Decimal value) {
-		addValue(buf, (value.toDouble()));
-	}
-
-	private static Decimal calculateReturn(TimeSeries series, int timePeriod, int ticker) {
-		int index = ticker - timePeriod;
-		if (index < 0 || index > series.getEnd()) {
-			return Decimal.NaN;
-		}
-		Decimal initialValue = series.getTick(index).getClosePrice();
-		Decimal diff = series.getTick(ticker).getClosePrice().minus(initialValue);
-		return diff.dividedBy(initialValue);
 	}
 
 }

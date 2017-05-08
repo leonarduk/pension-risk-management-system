@@ -99,7 +99,8 @@ public class StockFeedTest {
 	@Test
 	public final void testSeriesToCsv() {
 		final StringBuilder actual = StockFeed.seriesToCsv(this.getQuotes());
-		assertEquals("date,open,high,low,close,volume\n" + "2017-01-01,12.30,9.30,10.00,12.20,23\n", actual.toString());
+		assertEquals("date,open,high,low,close,volume\n" + "2017-01-01,12.30,9.30,10.00,12.20,23,TestCache\n",
+				actual.toString());
 	}
 
 }

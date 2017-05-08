@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.Instrument;
@@ -49,14 +50,16 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	private Date startDate;
 
-	private Optional<Long> volume;
+	private Optional<BigDecimal> volume;
 
 	private Instrument instrument;
+
+	private String comment;
 
 	public HistoricalQuote asHistoricalQuote() {
 		return new HistoricalQuote(this.instrument, LocalDate.fromDateFields(this.date), this.getOpen().orElse(null),
 				this.getLow().orElse(null), this.getHigh().orElse(null), this.getClose().orElse(null),
-				this.getClose().orElse(null), this.getVolume().orElse(0L), this.getClass().getName());
+				this.getClose().orElse(null), this.getVolume().orElse(BigDecimal.ONE).longValue(), this.getComment());
 	}
 
 	@Override
@@ -93,6 +96,13 @@ public abstract class CsvStockFeed extends StockFeed {
 	 */
 	public Optional<BigDecimal> getClose() {
 		return this.close;
+	}
+
+	public String getComment() {
+		if (StringUtils.isEmpty(this.comment)) {
+			return this.getClass().getName();
+		}
+		return this.comment;
 	}
 
 	/**
@@ -167,7 +177,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 * @see #next()
 	 * @return volume
 	 */
-	public Optional<Long> getVolume() {
+	public Optional<BigDecimal> getVolume() {
 		return this.volume;
 	}
 
@@ -233,6 +243,7 @@ public abstract class CsvStockFeed extends StockFeed {
 			int start = 0;
 			int comma = line.indexOf(',');
 			int column = 0;
+			this.comment = "";
 			while (start < length) {
 				final String fieldValue = line.substring(start, comma);
 				switch (column++) {
@@ -252,7 +263,10 @@ public abstract class CsvStockFeed extends StockFeed {
 					this.close = this.parseBigDecimal(fieldValue);
 					break;
 				case 5:
-					this.volume = this.parseLong(fieldValue);
+					this.volume = this.parseBigDecimal(fieldValue);
+					break;
+				case 6:
+					this.comment = fieldValue;
 					break;
 				}
 				start = comma + 1;
@@ -282,6 +296,10 @@ public abstract class CsvStockFeed extends StockFeed {
 		}
 		this.reader = null;
 		return this;
+	}
+
+	public void setComment(final String comment) {
+		this.comment = comment;
 	}
 
 	/**

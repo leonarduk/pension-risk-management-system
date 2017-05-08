@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 
 import org.joda.time.LocalDate;
 
-import com.google.common.base.Objects;
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.utils.NumberUtils;
 
 /**
  * All getters can return null in case the data is not available from Yahoo
@@ -51,6 +51,9 @@ public class HistoricalQuote {
 
 	@Override
 	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
 		if (obj == null) {
 			return false;
 		}
@@ -58,11 +61,52 @@ public class HistoricalQuote {
 			return false;
 		}
 		final HistoricalQuote other = (HistoricalQuote) obj;
-		return (this.getClose().compareTo(other.getClose()) == 0) && (this.getHigh().compareTo(other.getHigh()) == 0)
-				&& (this.getLow().compareTo(other.getLow()) == 0) && Objects.equal(this.getDate(), other.getDate())
-				&& (this.getInstrument().compareTo(other.getInstrument()) == 0)
-				&& Objects.equal(this.getVolume(), other.getVolume())
-				&& (this.getOpen().compareTo(other.getOpen()) == 0);
+		if (!NumberUtils.areSame(this.adjClose, other.adjClose)) {
+			return false;
+		}
+		if (!NumberUtils.areSame(this.close, other.close)) {
+			return false;
+
+		}
+		if (!NumberUtils.areSame(this.high, other.high)) {
+			return false;
+		}
+		if (!NumberUtils.areSame(this.low, other.low)) {
+			return false;
+		}
+		if (!NumberUtils.areSame(this.open, other.open)) {
+			return false;
+		}
+
+		if (this.comment == null) {
+			if (other.comment != null) {
+				return false;
+			}
+		} else if (!this.comment.equals(other.comment)) {
+			return false;
+		}
+		if (this.date == null) {
+			if (other.date != null) {
+				return false;
+			}
+		} else if (!this.date.equals(other.date)) {
+			return false;
+		}
+		if (this.instrument == null) {
+			if (other.instrument != null) {
+				return false;
+			}
+		} else if (!this.instrument.equals(other.instrument)) {
+			return false;
+		}
+		if (this.volume == null) {
+			if (other.volume != null) {
+				return false;
+			}
+		} else if (!this.volume.equals(other.volume)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -120,13 +164,23 @@ public class HistoricalQuote {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.getClose(), this.getHigh(), this.getDate(), this.getLow(), this.getOpen(),
-				this.getInstrument(), this.getVolume());
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((this.adjClose == null) ? 0 : this.adjClose.hashCode());
+		result = (prime * result) + ((this.close == null) ? 0 : this.close.hashCode());
+		result = (prime * result) + ((this.comment == null) ? 0 : this.comment.hashCode());
+		result = (prime * result) + ((this.date == null) ? 0 : this.date.hashCode());
+		result = (prime * result) + ((this.high == null) ? 0 : this.high.hashCode());
+		result = (prime * result) + ((this.instrument == null) ? 0 : this.instrument.hashCode());
+		result = (prime * result) + ((this.low == null) ? 0 : this.low.hashCode());
+		result = (prime * result) + ((this.open == null) ? 0 : this.open.hashCode());
+		result = (prime * result) + ((this.volume == null) ? 0 : this.volume.hashCode());
+		return result;
 	}
 
 	@Override
 	public String toString() {
 		return this.instrument + "@" + this.date.toString() + ": " + this.low + "-" + this.high + ", " + this.open
-				+ "->" + this.close + " (" + this.adjClose + ")";
+				+ "->" + this.close + " (" + this.adjClose + ") " + this.comment;
 	}
 }

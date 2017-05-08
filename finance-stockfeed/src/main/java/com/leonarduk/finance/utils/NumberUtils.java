@@ -19,6 +19,14 @@ public class NumberUtils {
 
 	private static DecimalFormat format;
 
+	public static boolean areSame(final BigDecimal thisOne, final BigDecimal thatOne) {
+		if (((thisOne == null) && (thatOne != null)) || ((thatOne == null) && (thisOne != null))) {
+			return false;
+		}
+
+		return roundDecimal(thisOne).equals(roundDecimal(thatOne));
+	}
+
 	private static BigDecimal calculateBigDecimal(String data) {
 		if (!StringUtils.isParseable(data)) {
 			return null;
