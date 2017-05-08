@@ -31,7 +31,6 @@ import java.util.List;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -137,7 +136,7 @@ public class BuyAndSellSignalsToChart {
 				false // generate URLs?
 		);
 		final XYPlot plot = (XYPlot) chart.getPlot();
-		final DateAxis axis = (DateAxis) plot.getDomainAxis();
+		// final DateAxis axis = (DateAxis) plot.getDomainAxis();
 		// axis.setDateFormatOverride(new SimpleDateFormat("MM-dd HH:mm"));
 
 		/**

@@ -40,7 +40,6 @@ import eu.verdelhan.ta4j.Rule;
 import eu.verdelhan.ta4j.Strategy;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
-import eu.verdelhan.ta4j.analysis.CashFlow;
 import eu.verdelhan.ta4j.analysis.criteria.AverageProfitableTradesCriterion;
 import eu.verdelhan.ta4j.analysis.criteria.RewardRiskRatioCriterion;
 import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
@@ -114,7 +113,7 @@ public class Quickstart {
 		// Analysis
 
 		// Getting the cash flow of the resulting trades
-		final CashFlow cashFlow = new CashFlow(series, tradingRecord);
+		// final CashFlow cashFlow = new CashFlow(series, tradingRecord);
 
 		// Getting the profitable trades ratio
 		final AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();

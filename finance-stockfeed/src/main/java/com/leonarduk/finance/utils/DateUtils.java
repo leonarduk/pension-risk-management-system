@@ -34,7 +34,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -297,7 +296,7 @@ public class DateUtils {
 	 */
 	public static Calendar parseDateTime(final String date, final String time, final TimeZone timeZone) {
 		final String datetime = date + " " + time;
-		final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", US);
 
 		format.setTimeZone(timeZone);
 		try {
@@ -326,24 +325,24 @@ public class DateUtils {
 			return null;
 		}
 		date = date.trim();
-		final SimpleDateFormat format = new SimpleDateFormat(getDividendDateFormat(date), Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat(getDividendDateFormat(date), US);
 		format.setTimeZone(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 		try {
 			final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			parsedDate.setTime(format.parse(date));
 
-			if (parsedDate.get(Calendar.YEAR) == 1970) {
+			if (parsedDate.get(YEAR) == 1970) {
 				// Not really clear which year the dividend date is... making a
 				// reasonable guess.
 				final int monthDiff = parsedDate.get(Calendar.MONTH) - today.get(Calendar.MONTH);
-				int year = today.get(Calendar.YEAR);
+				int year = today.get(YEAR);
 				if (monthDiff > 6) {
 					year -= 1;
 				} else if (monthDiff < -6) {
 					year += 1;
 				}
-				parsedDate.set(Calendar.YEAR, year);
+				parsedDate.set(YEAR, year);
 			}
 
 			return parsedDate;
@@ -355,7 +354,7 @@ public class DateUtils {
 	}
 
 	public static Calendar parseHistDate(final String date) {
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", US);
 		try {
 			if (StringUtils.isParseable(date)) {
 				final Calendar c = Calendar.getInstance();

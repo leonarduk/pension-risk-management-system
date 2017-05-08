@@ -3,7 +3,6 @@ package com.leonarduk.finance.stockfeed.file;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -27,12 +26,6 @@ import yahoofinance.histquotes.HistoricalQuote;
 public abstract class CsvStockFeed extends StockFeed {
 
 	public static final Logger log = Logger.getLogger(CsvStockFeed.class.getName());
-
-	protected static String formatDate(final DateFormat formatter, final Date date) {
-		synchronized (formatter) {
-			return formatter.format(date);
-		}
-	}
 
 	private Optional<BigDecimal> close;
 
@@ -204,7 +197,7 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	private Optional<BigDecimal> parseBigDecimal(final String input) {
 		try {
-			if (input.equals("-")) {
+			if ("-".equals(input)) {
 				return Optional.empty();
 			}
 			return Optional.of(NumberUtils.getBigDecimal(input));
@@ -218,15 +211,6 @@ public abstract class CsvStockFeed extends StockFeed {
 		return DateUtils.parseDate(fieldValue);
 	}
 
-	private Optional<Long> parseLong(final String input) {
-		try {
-			return Optional.of(Long.parseLong(input));
-		} catch (final NumberFormatException e) {
-			log.warning("Failed to parse " + input);
-			return Optional.empty();
-		}
-	}
-
 	protected boolean parseReader(final BufferedReader reader2) throws IOException {
 		try {
 			String line = reader2.readLine();
@@ -234,9 +218,10 @@ public abstract class CsvStockFeed extends StockFeed {
 				this.release();
 				return false;
 			}
-			if (line.contains("\t")) {
+			final String tab = "\t";
+			if (line.contains(tab)) {
 				log.warning("Messed up Csv - found tabs");
-				line = line.replace("\t", ",");
+				line = line.replace(tab, ",");
 			}
 
 			final int length = line.length();
@@ -268,6 +253,8 @@ public abstract class CsvStockFeed extends StockFeed {
 				case 6:
 					this.comment = fieldValue;
 					break;
+				default:
+					// ignore
 				}
 				start = comma + 1;
 				comma = line.indexOf(',', start);

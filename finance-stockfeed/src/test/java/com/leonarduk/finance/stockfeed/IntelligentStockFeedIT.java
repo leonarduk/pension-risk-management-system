@@ -28,7 +28,6 @@ public class IntelligentStockFeedIT {
 	@Before
 	public void setUp() throws Exception {
 		this.feed = new IntelligentStockFeed();
-		final Instrument cash = Instrument.CASH;
 	}
 
 	@Test

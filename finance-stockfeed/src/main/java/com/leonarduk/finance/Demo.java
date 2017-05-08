@@ -12,9 +12,6 @@ import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.stockfeed.google.GoogleFeed;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
-import com.leonarduk.finance.utils.TimeseriesUtils;
-
-import eu.verdelhan.ta4j.TimeSeries;
 
 public class Demo {
 	public static void main(final String[] args) throws IOException {
@@ -57,9 +54,8 @@ public class Demo {
 			final Optional<Stock> stock = feed.get(instrument, 1);
 
 			if (stock.isPresent()) {
-				TimeSeries series;
-
-				series = TimeseriesUtils.getTimeSeries(stock.get());
+				// final TimeSeries series =
+				// TimeseriesUtils.getTimeSeries(stock.get());
 
 				// System.out.println("Series: " + series.getName() + " (" +
 				// System.out.println("Number of ticks: " +
