@@ -64,7 +64,7 @@ public class Quickstart {
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "ISJP";
 		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Getting the close price of the ticks
 		final Decimal firstClosePrice = series.getTick(0).getClosePrice();

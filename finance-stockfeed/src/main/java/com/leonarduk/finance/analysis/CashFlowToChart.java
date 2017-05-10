@@ -126,7 +126,7 @@ public class CashFlowToChart {
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "IUKD";
 		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Building the trading strategy
 		final AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series, 12, 26, 9);

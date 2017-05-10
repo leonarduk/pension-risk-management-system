@@ -22,7 +22,7 @@ public class AnalyseSnapshotTest {
 	public final void testAnalyseStock() {
 		final Optional<Stock> stock = Optional.empty();
 		final Position position = new Position("test", Instrument.CASH, Decimal.HUNDRED, stock, "Cash");
-		final Valuation actual = AnalyseSnapshot.analyseStock(position);
+		final Valuation actual = AnalyseSnapshot.analyseStock(position, LocalDate.now().minusYears(1), LocalDate.now());
 
 		assertEquals(Decimal.HUNDRED, actual.getValuation());
 		assertEquals(Decimal.ONE, actual.getPrice());

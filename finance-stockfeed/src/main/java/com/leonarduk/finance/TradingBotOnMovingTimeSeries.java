@@ -79,7 +79,7 @@ public class TradingBotOnMovingTimeSeries {
 	private static TimeSeries initMovingTimeSeries(final int maxTickCount) throws IOException {
 		final String ticker = "PHGP";
 		final Stock stock = new IntelligentStockFeed().get(Instrument.fromString(ticker), 1).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 		System.out.print("Initial tick count: " + series.getTickCount());
 		// Limitating the number of ticks to maxTickCount
 		series.setMaximumTickCount(maxTickCount);

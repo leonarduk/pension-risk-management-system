@@ -49,18 +49,19 @@ public class AnalyseSnapshot {
 
 	private static int years = 20;
 
-	public static List<Valuation> analayzeAllEtfs(final List<Position> stocks) throws IOException {
-		return stocks.parallelStream().map(AnalyseSnapshot::analyseStock).collect(Collectors.toList());
+	public static List<Valuation> analayzeAllEtfs(final List<Position> stocks, final LocalDate fromDate,
+			final LocalDate toDate) throws IOException {
+		return stocks.parallelStream().map(s -> analyseStock(s, fromDate, toDate)).collect(Collectors.toList());
 	}
 
-	public static Valuation analyseStock(final Position stock2) {
+	public static Valuation analyseStock(final Position stock2, final LocalDate fromDate, final LocalDate toDate) {
 		TimeSeries series;
 		try {
 			Optional<Stock> stock = stock2.getStock();
 			if (!stock.isPresent()) {
 				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), 1);
 			}
-			series = TimeseriesUtils.getTimeSeries(stock.get());
+			series = TimeseriesUtils.getTimeSeries(stock.get(), fromDate, toDate);
 			if ((null == series) || (series.getTickCount() < 1)) {
 				throw new IllegalArgumentException("No data");
 			}
@@ -126,7 +127,8 @@ public class AnalyseSnapshot {
 		return NumberUtils.roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
 	}
 
-	public static StringBuilder createPortfolioReport(final boolean extendedReport, final boolean createSeriesLinks)
+	public static StringBuilder createPortfolioReport(final LocalDate fromDate, final LocalDate toDate,
+			final boolean interpolate, final boolean extendedReport, final boolean createSeriesLinks)
 			throws IOException, URISyntaxException {
 
 		final List<Position> positions = InvestmentsFileReader.getPositionsFromCSVFile("resources/data/portfolios.csv");
@@ -144,9 +146,9 @@ public class AnalyseSnapshot {
 
 		// IntelligentStockFeed.setRefresh(false);
 
-		final List<Valuation> valuations = analayzeAllEtfs(positions);
+		final List<Valuation> valuations = analayzeAllEtfs(positions, fromDate, toDate);
 
-		createValuationsTable(valuations, sbBody, true, createSeriesLinks);
+		createValuationsTable(valuations, sbBody, true, createSeriesLinks, fromDate, toDate, interpolate);
 		sbBody.append("<hr/>");
 
 		final Map<String, Double> assetTypeMap = valuations.parallelStream()
@@ -159,11 +161,19 @@ public class AnalyseSnapshot {
 		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type", "Value");
 		HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets", "Type", "Value");
 
-		createValuationsTable(analayzeAllEtfs(emptyPositions), sbBody, false, createSeriesLinks);
+		createValuationsTable(analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody, false, createSeriesLinks,
+				fromDate, toDate, interpolate);
 
 		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
 
 		return buf;
+	}
+
+	public static StringBuilder createPortfolioReport(final String fromDate, final String toDate,
+			final boolean interpolate, final boolean extendedReport, final boolean createSeriesLinks)
+			throws IOException, URISyntaxException {
+		return createPortfolioReport(LocalDate.parse(fromDate), LocalDate.parse(toDate), interpolate, extendedReport,
+				createSeriesLinks);
 	}
 
 	public static Valuation createValuation(final Position position, final Tick lastTick) {
@@ -178,7 +188,8 @@ public class AnalyseSnapshot {
 	}
 
 	protected static void createValuationsTable(final List<Valuation> valuations, final StringBuilder sb,
-			final boolean showPositionsHeld, final boolean createSeriesLinks) {
+			final boolean showPositionsHeld, final boolean createSeriesLinks, final LocalDate fromDate,
+			final LocalDate toDate, final boolean interpolate) {
 
 		final List<List<DataField>> records = Lists.newLinkedList();
 
@@ -191,7 +202,8 @@ public class AnalyseSnapshot {
 			final String ticker = instrument.code();
 
 			final ValueFormatter formatter = (value -> {
-				return new StringBuilder("<a href=\"/stock/ticker/").append(ticker).append("?years=").append(years)
+				return new StringBuilder("<a href=\"/stock/ticker/").append(ticker).append("?fromDate=")
+						.append(fromDate).append("&toDate=").append(toDate).append("&interpolate=").append(interpolate)
 						.append("\">").append(value).append("</a>").toString();
 			});
 
@@ -233,7 +245,8 @@ public class AnalyseSnapshot {
 	}
 
 	public static void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
-		final StringBuilder buf = createPortfolioReport(true, false);
+		final StringBuilder buf = createPortfolioReport(LocalDate.now(), LocalDate.now().minusYears(1), true, true,
+				false);
 		IndicatorsToCsv.writeFile("recommendations.html", buf);
 	}
 

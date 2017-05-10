@@ -14,13 +14,15 @@ public class FlatLineInterpolator extends AbstractLineInterpolator {
 
 	@Override
 	protected HistoricalQuote calculatePastValue(final HistoricalQuote currentQuote, final LocalDate fromDate) {
-		return this.createSyntheticQuote(currentQuote, fromDate, currentQuote.getClose(), currentQuote.getOpen());
+		return this.createSyntheticQuote(currentQuote, fromDate, currentQuote.getClose(), currentQuote.getOpen(),
+				"Copied from " + currentQuote.getDate());
 	}
 
 	@Override
 	public HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote, final LocalDate currentDate,
 			final HistoricalQuote nextQuote) {
-		return this.createSyntheticQuote(currentQuote, currentDate, currentQuote.getClose(), currentQuote.getOpen());
+		return this.createSyntheticQuote(currentQuote, currentDate, currentQuote.getClose(), currentQuote.getOpen(),
+				"Copied from " + currentQuote.getDate());
 	}
 
 	@Override

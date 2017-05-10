@@ -24,12 +24,12 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	protected abstract HistoricalQuote calculatePastValue(final HistoricalQuote firstQuote, final LocalDate fromDate);
 
 	protected HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote, final LocalDate currentDate,
-			BigDecimal newClosePrice, BigDecimal newOpenPrice) {
+			BigDecimal newClosePrice, BigDecimal newOpenPrice, final String comment) {
 		newClosePrice = NumberUtils.roundDecimal(newClosePrice);
 		newOpenPrice = NumberUtils.roundDecimal(newOpenPrice);
 		return new HistoricalQuote(currentQuote.getInstrument(), currentDate, newOpenPrice,
 				newClosePrice.min(newOpenPrice), newClosePrice.max(newOpenPrice), newClosePrice, newClosePrice, 0L,
-				"interpolated");
+				comment);
 	}
 
 	public abstract HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote,

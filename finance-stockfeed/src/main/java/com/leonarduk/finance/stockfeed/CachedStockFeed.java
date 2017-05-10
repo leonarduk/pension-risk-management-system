@@ -59,7 +59,7 @@ public class CachedStockFeed extends CsvStockFeed {
 	}
 
 	private List<HistoricalQuote> loadSeries(final Stock stock) throws IOException {
-		final Optional<Stock> optional = this.get(stock.getInstrument(), Integer.MAX_VALUE);
+		final Optional<Stock> optional = this.get(stock.getInstrument(), 1000);
 		if (optional.isPresent()) {
 			return optional.get().getHistory();
 		}

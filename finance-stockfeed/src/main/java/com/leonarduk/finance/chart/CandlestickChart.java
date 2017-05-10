@@ -104,7 +104,7 @@ public class CandlestickChart {
 	}
 
 	public static void displayCandlestickChart(final Stock stock) throws IOException {
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		/**
 		 * Creating the OHLC dataset

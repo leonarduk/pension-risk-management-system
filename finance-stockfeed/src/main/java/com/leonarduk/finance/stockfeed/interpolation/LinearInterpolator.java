@@ -39,7 +39,9 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 		final BigDecimal newOpenPrice = currentQuote.getOpen()
 				.add(changeOpenPrice.multiply(BigDecimal.valueOf(multiplier)));
 
-		return this.createSyntheticQuote(currentQuote, currentDate, newClosePrice, newOpenPrice);
+		return this.createSyntheticQuote(currentQuote, currentDate, newClosePrice, newOpenPrice,
+				"Interpolated from " + currentQuote.getDate() + "(" + currentQuote.getClose() + ") to "
+						+ nextQuote.getDate() + " (" + nextQuote.getClose() + ")");
 	}
 
 	@Override

@@ -45,6 +45,12 @@ public class StockFeedTest {
 			public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
 				return Optional.of(createStock(instrument, StockFeedTest.this.getQuotes()));
 			}
+
+			@Override
+			public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
+					throws IOException {
+				return Optional.of(createStock(instrument, StockFeedTest.this.getQuotes()));
+			}
 		};
 
 	}

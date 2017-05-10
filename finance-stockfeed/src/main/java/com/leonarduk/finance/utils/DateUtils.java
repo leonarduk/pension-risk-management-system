@@ -205,6 +205,10 @@ public class DateUtils {
 		return calendar;
 	}
 
+	public static Calendar dateToCalendar(final LocalDate fromDate) {
+		return dateToCalendar(fromDate.toDate());
+	}
+
 	public static int getDiffInWorkDays(final LocalDate currentDate, final LocalDate nextDate) {
 		final int calendarDaysDiff = Math.abs(Days.daysBetween(nextDate, currentDate).getDays());
 		final int weeks = Math.round(calendarDaysDiff / 7);

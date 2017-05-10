@@ -71,7 +71,7 @@ public class BollingerBars {
 	}
 
 	public static void displayBollingerBars(final Stock stock) throws IOException {
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		/**
 		 * Creating indicators

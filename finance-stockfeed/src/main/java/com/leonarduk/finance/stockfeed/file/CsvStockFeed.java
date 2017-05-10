@@ -3,6 +3,7 @@ package com.leonarduk.finance.stockfeed.file;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -26,6 +27,12 @@ import yahoofinance.histquotes.HistoricalQuote;
 public abstract class CsvStockFeed extends StockFeed {
 
 	public static final Logger log = Logger.getLogger(CsvStockFeed.class.getName());
+
+	protected static String formatDate(final DateFormat formatter, final Date date) {
+		synchronized (formatter) {
+			return formatter.format(date);
+		}
+	}
 
 	private Optional<BigDecimal> close;
 
@@ -57,11 +64,15 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+	}
+
+	@Override
+	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
+			throws IOException {
 		this.setInstrument(instrument);
-		final Calendar from = Calendar.getInstance();
-		from.add(Calendar.YEAR, -1 * years);
-		this.setStartDate(from);
-		this.setEndDate(Calendar.getInstance());
+		this.setStartDate(fromDate.toDate());
+		this.setEndDate(toDate.toDate());
 
 		final List<HistoricalQuote> quotes = new LinkedList<>();
 		try {

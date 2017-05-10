@@ -97,7 +97,7 @@ public class RSI2Strategy {
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "PHGP";
 		final Stock stock = feed.get(Instrument.fromString(ticker), 20).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Building the trading strategy
 		final Strategy strategy = buildStrategy(series);

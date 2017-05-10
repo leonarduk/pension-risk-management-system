@@ -14,6 +14,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDate;
+
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.Stock;
@@ -32,14 +35,27 @@ public class StockFeedEndpoint {
 	@Produces({ MediaType.TEXT_HTML })
 	@Path("/ticker/{ticker}/")
 	public String displayHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
+			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
 			@QueryParam("interpolate") final boolean interpolate) throws IOException {
 
 		final Instrument instrument = Instrument.fromString(ticker);
 		final StringBuilder sbBody = new StringBuilder();
 		final List<List<DataField>> records = Lists.newArrayList();
 
-		final List<HistoricalQuote> historyData = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
+		final List<HistoricalQuote> historyData;
+		if (!StringUtils.isEmpty(fromDate)) {
+			final LocalDate fromLocalDate = LocalDate.parse(fromDate);
+			LocalDate toLocalDate;
+			if (StringUtils.isEmpty(fromDate)) {
+				toLocalDate = LocalDate.now();
+			} else {
+				toLocalDate = LocalDate.parse(toDate);
+			}
+			historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate);
 
+		} else {
+			historyData = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
+		}
 		for (final HistoricalQuote historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);
@@ -81,6 +97,16 @@ public class StockFeedEndpoint {
 	private List<HistoricalQuote> getHistoryData(final Instrument instrument, final int years,
 			final boolean interpolate) throws IOException {
 		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years, interpolate);
+		if (stock.isPresent()) {
+			return stock.get().getHistory();
+		}
+		return Lists.newArrayList();
+	}
+
+	private List<HistoricalQuote> getHistoryData(final Instrument instrument, final LocalDate fromLocalDate,
+			final LocalDate toLocalDate, final boolean interpolate) throws IOException {
+		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, fromLocalDate, toLocalDate,
+				interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}

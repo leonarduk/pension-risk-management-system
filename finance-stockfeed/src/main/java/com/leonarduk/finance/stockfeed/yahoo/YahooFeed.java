@@ -1,7 +1,6 @@
 package com.leonarduk.finance.stockfeed.yahoo;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -10,8 +9,8 @@ import org.joda.time.LocalDate;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
+import com.leonarduk.finance.utils.DateUtils;
 
-import yahoofinance.histquotes.HistQuotesRequest;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.fx.FxQuote;
@@ -73,13 +72,16 @@ public class YahooFeed extends StockFeed {
 
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) {
-		try {
-			final Calendar from = Calendar.getInstance();
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+	}
 
-			from.add(Calendar.YEAR, -1 * years);
+	@Override
+	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
+		try {
 			final Stock stock = new Stock(instrument);
 
-			stock.getHistory(from, HistQuotesRequest.DEFAULT_TO, Interval.DAILY);
+			stock.getHistory(DateUtils.dateToCalendar(fromDate), DateUtils.dateToCalendar(toDate.toDate()),
+					Interval.DAILY);
 			final StockQuote quote = stock.getQuote();
 			stock.getHistory()
 					.add(new HistoricalQuote(stock.getInstrument(),

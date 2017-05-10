@@ -178,7 +178,7 @@ public class BuyAndSellSignalsToChart {
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "ISXF";
 		final Stock stock = feed.get(Instrument.fromString(ticker), 1).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Building the trading strategy
 		final List<AbstractStrategy> strategies = new ArrayList<>();

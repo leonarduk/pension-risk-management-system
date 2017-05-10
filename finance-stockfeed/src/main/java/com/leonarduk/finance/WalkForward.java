@@ -117,7 +117,7 @@ public class WalkForward {
 	private static void computeForStrategies(final Map<String, AtomicInteger> totalscores, final StockFeed feed,
 			final String ticker) throws IOException {
 		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
 
 		// Building the map of strategies
