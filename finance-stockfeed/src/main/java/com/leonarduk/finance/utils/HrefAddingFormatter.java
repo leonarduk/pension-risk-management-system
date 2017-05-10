@@ -1,8 +1,8 @@
 package com.leonarduk.finance.utils;
 
 public class HrefAddingFormatter implements ValueFormatter {
-	final String	ticker;
-	final int		years;
+	final private String	ticker;
+	final private int		years;
 
 	public HrefAddingFormatter(final String ticker, final int years) {
 		this.years = years;
