@@ -15,26 +15,27 @@ import com.leonarduk.finance.strategies.AbstractStrategy;
 import eu.verdelhan.ta4j.Decimal;
 
 public class Valuation {
-	private final Decimal price;
+	private final Position						position;
 
-	private final Position position;
+	private final Decimal						price;
 
-	private final Decimal valuation;
+	private final Map<String, Recommendation>	recommendation;
 
-	LocalDate valuationDate;
+	private final Map<Period, Decimal>			returns;
 
-	final Map<String, Recommendation> recommendation;
+	private final Decimal						valuation;
 
-	private final Map<Period, Decimal> returns;
+	private final LocalDate						valuationDate;
 
-	public Valuation(final Position position, final Decimal valuation, final LocalDate valuationDate,
-			final Decimal price) {
+	public Valuation(final Position position, final Decimal valuation,
+	        final LocalDate valuationDate, final Decimal price) {
 		this.position = position;
 		final Optional<Stock> stock = this.position.getStock();
 		if (stock.isPresent()) {
 			try {
 				stock.get().getHistory().clear();
-			} catch (final IOException e) {
+			}
+			catch (final IOException e) {
 				// ignore
 			}
 		}
@@ -45,7 +46,8 @@ public class Valuation {
 		this.price = price;
 	}
 
-	public void addRecommendation(final AbstractStrategy strategy, final Recommendation recommendation2) {
+	public void addRecommendation(final AbstractStrategy strategy,
+	        final Recommendation recommendation2) {
 		this.recommendation.put(strategy.getName(), recommendation2);
 	}
 
@@ -62,7 +64,8 @@ public class Valuation {
 	}
 
 	public Recommendation getRecommendation(final String name) {
-		return this.recommendation.getOrDefault(name, new Recommendation(RecommendedTrade.HOLD, null, null));
+		return this.recommendation.getOrDefault(name,
+		        new Recommendation(RecommendedTrade.HOLD, null, null));
 	}
 
 	public Decimal getReturn(final Period days) {
@@ -79,8 +82,9 @@ public class Valuation {
 
 	@Override
 	public String toString() {
-		return "Valuation [position=" + this.position + ", valuation=" + this.valuation + ", valuationDate="
-				+ this.valuationDate + ", recommendation=" + this.recommendation + ", returns=" + this.returns + "]";
+		return "Valuation [position=" + this.position + ", valuation=" + this.valuation
+		        + ", valuationDate=" + this.valuationDate + ", recommendation="
+		        + this.recommendation + ", returns=" + this.returns + "]";
 	}
 
 }
