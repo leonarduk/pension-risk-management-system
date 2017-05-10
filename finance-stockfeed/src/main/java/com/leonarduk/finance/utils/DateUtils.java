@@ -339,7 +339,7 @@ public class DateUtils {
 			if (parsedDate.get(YEAR) == 1970) {
 				// Not really clear which year the dividend date is... making a
 				// reasonable guess.
-				final int monthDiff = parsedDate.get(Calendar.MONTH) - today.get(Calendar.MONTH);
+				final int monthDiff = parsedDate.get(MONTH) - today.get(MONTH);
 				int year = today.get(YEAR);
 				if (monthDiff > 6) {
 					year -= 1;
