@@ -5,6 +5,10 @@ import java.util.Set;
 public class Portfolio {
 	private Set<Position> holdings;
 
+	public Portfolio(final Set<Position> positions) {
+		this.holdings = positions;
+	}
+
 	public Set<Position> getHoldings() {
 		return this.holdings;
 	}

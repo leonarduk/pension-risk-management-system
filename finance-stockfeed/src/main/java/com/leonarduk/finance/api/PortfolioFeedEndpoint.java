@@ -2,7 +2,6 @@ package com.leonarduk.finance.api;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import javax.inject.Named;
 import javax.ws.rs.GET;
@@ -12,7 +11,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.leonarduk.finance.AnalyseSnapshot;
-import com.leonarduk.finance.portfolio.Position;
+import com.leonarduk.finance.portfolio.Portfolio;
+
+import jersey.repackaged.com.google.common.collect.Sets;
 
 @Named
 @Path("/portfolio")
@@ -30,13 +31,6 @@ public class PortfolioFeedEndpoint {
 	}
 
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/api/display/")
-	public List<Position> getHistory() throws IOException {
-		return AnalyseSnapshot.getPositions();
-	}
-
-	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("analysis")
 	public String getHistory(@QueryParam("fromDate") final String fromDate,
@@ -45,6 +39,14 @@ public class PortfolioFeedEndpoint {
 	        throws IOException, URISyntaxException {
 		return AnalyseSnapshot.createPortfolioReport(fromDate, toDate, interpolate, false, true)
 		        .toString();
+	}
+
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/api/display/")
+	public Portfolio getPositions() throws IOException {
+
+		return new Portfolio(Sets.newHashSet(AnalyseSnapshot.getPositions()));
 	}
 
 }
