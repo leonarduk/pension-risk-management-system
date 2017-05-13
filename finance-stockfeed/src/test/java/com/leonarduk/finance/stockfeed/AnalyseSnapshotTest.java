@@ -12,8 +12,8 @@ import org.junit.Test;
 import com.leonarduk.finance.AnalyseSnapshot;
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.portfolio.Valuation;
+import com.leonarduk.finance.utils.NumberUtils;
 
-import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 
@@ -26,8 +26,8 @@ public class AnalyseSnapshotTest {
 		final Valuation actual = AnalyseSnapshot.analyseStock(position,
 		        LocalDate.now().minusYears(1), LocalDate.now());
 
-		Assert.assertEquals(BigDecimal.valueOf(100), actual.getValuation());
-		Assert.assertEquals(BigDecimal.ONE, actual.getPrice());
+		Assert.assertTrue(NumberUtils.areSame(BigDecimal.valueOf(100d), actual.getValuation()));
+		Assert.assertTrue(NumberUtils.areSame(BigDecimal.ONE, actual.getPrice()));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class AnalyseSnapshotTest {
 		        Optional.empty(), null);
 		final Tick lastTick = new Tick(LocalDate.parse("2017-04-13").toDateTimeAtCurrentTime(),
 		        105.0, 115.0, 95.0, 110.0, 20.0);
-		Assert.assertEquals(Decimal.valueOf(11000),
-		        AnalyseSnapshot.createValuation(position, lastTick).getValuation());
+		Assert.assertTrue(NumberUtils.areSame(BigDecimal.valueOf(11000),
+		        AnalyseSnapshot.createValuation(position, lastTick).getValuation()));
 	}
 }
