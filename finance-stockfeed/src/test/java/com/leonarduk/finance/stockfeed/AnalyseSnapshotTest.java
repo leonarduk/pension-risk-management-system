@@ -26,8 +26,8 @@ public class AnalyseSnapshotTest {
 		final Valuation actual = AnalyseSnapshot.analyseStock(position,
 		        LocalDate.now().minusYears(1), LocalDate.now());
 
-		Assert.assertEquals(Decimal.HUNDRED, actual.getValuation());
-		Assert.assertEquals(Decimal.ONE, actual.getPrice());
+		Assert.assertEquals(BigDecimal.valueOf(100), actual.getValuation());
+		Assert.assertEquals(BigDecimal.ONE, actual.getPrice());
 	}
 
 	@Test
