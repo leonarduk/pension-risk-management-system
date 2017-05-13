@@ -32,5 +32,9 @@
 	</dependencies>
   <modules>
     <module>finance-stockfeed</module>
+    
+    
+    
+    
   </modules>
 </project>
