@@ -1,14 +1,13 @@
 package com.leonarduk.finance.portfolio;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 
-import eu.verdelhan.ta4j.Decimal;
-
 public class Position {
-	final private Decimal			amount;
+	final private BigDecimal		amount;
 
 	final private Instrument		instrument;
 
@@ -16,7 +15,7 @@ public class Position {
 	final private Optional<Stock>	stock;
 	private final String			symbol;
 
-	public Position(final String portfolio, final Instrument instrument, final Decimal amount,
+	public Position(final String portfolio, final Instrument instrument, final BigDecimal amount,
 	        final Optional<Stock> stock2, final String symbol) {
 		this.portfolio = portfolio;
 		this.instrument = instrument;
@@ -25,7 +24,7 @@ public class Position {
 		this.symbol = symbol;
 	}
 
-	public Decimal getAmount() {
+	public BigDecimal getAmount() {
 		return this.amount;
 	}
 

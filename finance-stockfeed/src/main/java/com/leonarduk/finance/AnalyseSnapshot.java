@@ -1,6 +1,7 @@
 package com.leonarduk.finance;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class AnalyseSnapshot {
 
 	public static List<Valuation> analayzeAllEtfs(final List<Position> stocks,
 	        final LocalDate fromDate, final LocalDate toDate) throws IOException {
-		return stocks.parallelStream().map(s -> analyseStock(s, fromDate, toDate))
+		return stocks.parallelStream().map(s -> AnalyseSnapshot.analyseStock(s, fromDate, toDate))
 		        .collect(Collectors.toList());
 	}
 
@@ -80,7 +81,7 @@ public class AnalyseSnapshot {
 			final TradingRecord tradingRecord = new TradingRecord();
 
 			final Tick mostRecentTick = series.getLastTick();
-			final Valuation valuation = createValuation(stock2, mostRecentTick);
+			final Valuation valuation = AnalyseSnapshot.createValuation(stock2, mostRecentTick);
 			for (final AbstractStrategy strategy : strategies) {
 
 				final int endIndex = series.getEnd();
@@ -112,17 +113,17 @@ public class AnalyseSnapshot {
 				}
 			}
 
-			valuation.addReturn(Period.days(1), calculateReturn(series, 1));
-			valuation.addReturn(Period.days(5), calculateReturn(series, 5));
-			valuation.addReturn(Period.days(21), calculateReturn(series, 21));
-			valuation.addReturn(Period.days(63), calculateReturn(series, 63));
-			valuation.addReturn(Period.days(365), calculateReturn(series, 365));
+			valuation.addReturn(Period.days(1), AnalyseSnapshot.calculateReturn(series, 1));
+			valuation.addReturn(Period.days(5), AnalyseSnapshot.calculateReturn(series, 5));
+			valuation.addReturn(Period.days(21), AnalyseSnapshot.calculateReturn(series, 21));
+			valuation.addReturn(Period.days(63), AnalyseSnapshot.calculateReturn(series, 63));
+			valuation.addReturn(Period.days(365), AnalyseSnapshot.calculateReturn(series, 365));
 
 			return valuation;
 		}
 		catch (final Exception e) {
-			logger.warning("Failed:" + e.getMessage());
-			return new Valuation(stock2, Decimal.NaN, LocalDate.now(), Decimal.ONE);
+			AnalyseSnapshot.logger.warning("Failed:" + e.getMessage());
+			return new Valuation(stock2, BigDecimal.ZERO, LocalDate.now(), BigDecimal.ONE);
 		}
 	}
 
@@ -141,8 +142,7 @@ public class AnalyseSnapshot {
 	        final LocalDate toDate, final boolean interpolate, final boolean extendedReport,
 	        final boolean createSeriesLinks) throws IOException, URISyntaxException {
 
-		final List<Position> positions = InvestmentsFileReader
-		        .getPositionsFromCSVFile("resources/data/portfolios.csv");
+		final List<Position> positions = AnalyseSnapshot.getPositions();
 		final List<Instrument> heldInstruments = positions.stream()
 		        .filter(p -> p.getInstrument().equals(Instrument.UNKNOWN))
 		        .map(p -> p.getInstrument()).collect(Collectors.toList());
@@ -150,34 +150,36 @@ public class AnalyseSnapshot {
 		List<Position> emptyPositions = Lists.newArrayList();
 
 		if (extendedReport) {
-			emptyPositions = getListedInstruments(heldInstruments);
+			emptyPositions = AnalyseSnapshot.getListedInstruments(heldInstruments);
 		}
 		final StringBuilder sbBody = new StringBuilder();
 		final StringBuilder sbHead = new StringBuilder();
 
 		// IntelligentStockFeed.setRefresh(false);
 
-		final List<Valuation> valuations = analayzeAllEtfs(positions, fromDate, toDate);
+		final List<Valuation> valuations = AnalyseSnapshot.analayzeAllEtfs(positions, fromDate,
+		        toDate);
 
-		createValuationsTable(valuations, sbBody, true, createSeriesLinks, fromDate, toDate,
-		        interpolate);
+		AnalyseSnapshot.createValuationsTable(valuations, sbBody, true, createSeriesLinks, fromDate,
+		        toDate, interpolate);
 		sbBody.append("<hr/>");
 
 		final Map<String, Double> assetTypeMap = valuations.parallelStream()
 		        .collect(Collectors.groupingByConcurrent(
 		                v -> v.getPosition().getInstrument().assetType().name(), Collectors
-		                        .summingDouble((v -> v.getValuation().toDouble()))));
+		                        .summingDouble((v -> v.getValuation().doubleValue()))));
 		final Map<String, Double> underlyingTypeMap = valuations.parallelStream()
 		        .collect(Collectors.groupingByConcurrent(
 		                v -> v.getPosition().getInstrument().underlyingType().name(), Collectors
-		                        .summingDouble((v -> v.getValuation().toDouble()))));
+		                        .summingDouble((v -> v.getValuation().doubleValue()))));
 
 		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type",
 		        "Value");
 		HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
 		        "Type", "Value");
 
-		createValuationsTable(analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody, false,
+		AnalyseSnapshot.createValuationsTable(
+		        AnalyseSnapshot.analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody, false,
 		        createSeriesLinks, fromDate, toDate, interpolate);
 
 		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
@@ -192,19 +194,19 @@ public class AnalyseSnapshot {
 		        ? LocalDate.now().minusYears(1) : LocalDate.parse(fromDate);
 		final LocalDate toLocalDate = StringUtils.isEmpty(toDate) ? LocalDate.now()
 		        : LocalDate.parse(toDate);
-		return createPortfolioReport(fromLocalDate, toLocalDate, interpolate, extendedReport,
-		        createSeriesLinks);
+		return AnalyseSnapshot.createPortfolioReport(fromLocalDate, toLocalDate, interpolate,
+		        extendedReport, createSeriesLinks);
 
 	}
 
 	public static Valuation createValuation(final Position position, final Tick lastTick) {
-		Decimal price = lastTick.getClosePrice();
+		BigDecimal price = BigDecimal.valueOf(lastTick.getClosePrice().toDouble());
 		if (position.getInstrument().currency().equals("GBX")) {
-			price = price.dividedBy(Decimal.HUNDRED);
+			price = price.divide(BigDecimal.valueOf(100));
 		}
-		final Decimal volume = position.getAmount();
+		final BigDecimal volume = position.getAmount();
 		final Valuation valuation = new Valuation(position,
-		        NumberUtils.roundDecimal(price.multipliedBy(volume)),
+		        NumberUtils.roundDecimal(price.multiply(volume)),
 		        lastTick.getEndTime().toLocalDate(), NumberUtils.roundDecimal(price));
 		return valuation;
 	}
@@ -219,7 +221,7 @@ public class AnalyseSnapshot {
 		for (final Valuation valuation : valuations) {
 			final List<DataField> fields = Lists.newLinkedList();
 			records.add(fields);
-			logger.info(valuation.toString());
+			AnalyseSnapshot.logger.info(valuation.toString());
 			final Instrument instrument = valuation.getPosition().getInstrument();
 
 			final String ticker = instrument.code();
@@ -267,14 +269,20 @@ public class AnalyseSnapshot {
 		final IntelligentStockFeed feed = new IntelligentStockFeed();
 		emptyInstruments.removeAll(heldInstruments);
 		return emptyInstruments.stream().map(instrument -> {
-			return new Position("", instrument, Decimal.ZERO, feed.get(instrument, years),
-			        instrument.getIsin());
+			return new Position("", instrument, BigDecimal.ZERO,
+			        feed.get(instrument, AnalyseSnapshot.years), instrument.getIsin());
 		}).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	public static List<Position> getPositions() throws IOException {
+		final List<Position> positions = InvestmentsFileReader
+		        .getPositionsFromCSVFile("resources/data/portfolios.csv");
+		return positions;
 	}
 
 	public static void main(final String[] args)
 	        throws InterruptedException, IOException, URISyntaxException {
-		final StringBuilder buf = createPortfolioReport(LocalDate.now(),
+		final StringBuilder buf = AnalyseSnapshot.createPortfolioReport(LocalDate.now(),
 		        LocalDate.now().minusYears(1), true, true, false);
 		IndicatorsToCsv.writeFile("recommendations.html", buf);
 	}

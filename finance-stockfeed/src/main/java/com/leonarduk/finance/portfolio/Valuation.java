@@ -1,6 +1,7 @@
 package com.leonarduk.finance.portfolio;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,18 +18,18 @@ import eu.verdelhan.ta4j.Decimal;
 public class Valuation {
 	private final Position						position;
 
-	private final Decimal						price;
+	private final BigDecimal					price;
 
 	private final Map<String, Recommendation>	recommendation;
 
 	private final Map<Period, Decimal>			returns;
 
-	private final Decimal						valuation;
+	private final BigDecimal					valuation;
 
 	private final LocalDate						valuationDate;
 
-	public Valuation(final Position position, final Decimal valuation,
-	        final LocalDate valuationDate, final Decimal price) {
+	public Valuation(final Position position, final BigDecimal valuation,
+	        final LocalDate valuationDate, final BigDecimal price) {
 		this.position = position;
 		final Optional<Stock> stock = this.position.getStock();
 		if (stock.isPresent()) {
@@ -59,7 +60,7 @@ public class Valuation {
 		return this.position;
 	}
 
-	public Decimal getPrice() {
+	public BigDecimal getPrice() {
 		return this.price;
 	}
 
@@ -72,7 +73,7 @@ public class Valuation {
 		return this.returns.get(days);
 	}
 
-	public Decimal getValuation() {
+	public BigDecimal getValuation() {
 		return this.valuation;
 	}
 
