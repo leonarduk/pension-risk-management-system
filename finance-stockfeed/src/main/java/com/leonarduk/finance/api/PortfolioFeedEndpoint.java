@@ -2,6 +2,7 @@ package com.leonarduk.finance.api;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 import javax.ws.rs.GET;
@@ -18,6 +19,7 @@ import jersey.repackaged.com.google.common.collect.Sets;
 @Named
 @Path("/portfolio")
 public class PortfolioFeedEndpoint {
+	private final static Logger logger = Logger.getLogger(PortfolioFeedEndpoint.class.getName());
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -45,7 +47,7 @@ public class PortfolioFeedEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/api/display/")
 	public Portfolio getPositions() throws IOException {
-
+		PortfolioFeedEndpoint.logger.info("JSON query of positions");
 		return new Portfolio(Sets.newHashSet(AnalyseSnapshot.getPositions()));
 	}
 
