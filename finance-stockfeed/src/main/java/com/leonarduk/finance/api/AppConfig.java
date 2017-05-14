@@ -10,6 +10,9 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.datatype.joda.JodaMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+
 import net.sf.log4jdbc.sql.jdbcapi.DataSourceSpy;
 
 @Configuration
@@ -22,6 +25,10 @@ public class AppConfig {
 		public JerseyConfig() {
 			this.packages("com.leonarduk.finance.api");
 
+			final JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
+			provider.setMapper(new JodaMapper());
+
+			this.register(provider);
 			this.register(CORSResponseFilter.class);
 		}
 	}

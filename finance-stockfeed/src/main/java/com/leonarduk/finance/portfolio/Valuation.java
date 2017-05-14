@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.collect.Maps;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.strategies.AbstractStrategy;
@@ -26,6 +27,7 @@ public class Valuation {
 
 	private final BigDecimal					valuation;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private final LocalDate						valuationDate;
 
 	public Valuation(final Position position, final BigDecimal valuation,
