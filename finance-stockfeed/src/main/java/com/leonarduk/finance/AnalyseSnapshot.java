@@ -244,7 +244,7 @@ public class AnalyseSnapshot {
 			fields.add(new DataField("Value Owned", valuation.getValuation(), formatter,
 			        showPositionsHeld));
 
-			final LocalDate valuationDate = valuation.getValuationDate();
+			final String valuationDate = valuation.getValuationDate();
 
 			fields.add(new DataField("Price", valuation.getPrice()));
 			fields.add(new DataField("AsOf", valuationDate));
