@@ -46,8 +46,8 @@ public class AnalyseSnapshotTest {
 		        95.0, 110.0, 20.0));
 
 		final TimeSeries series = new TimeSeries(ticks);
-		Assert.assertEquals(5.88, AnalyseSnapshot.calculateReturn(series, 1).toDouble(), 0);
-		Assert.assertEquals(29.41, AnalyseSnapshot.calculateReturn(series, 4).toDouble(), 0);
+		Assert.assertEquals(5.88, AnalyseSnapshot.calculateReturn(series, 1).doubleValue(), 0);
+		Assert.assertEquals(29.41, AnalyseSnapshot.calculateReturn(series, 4).doubleValue(), 0);
 	}
 
 	@Test

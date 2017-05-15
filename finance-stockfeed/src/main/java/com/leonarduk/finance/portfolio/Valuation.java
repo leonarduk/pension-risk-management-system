@@ -11,22 +11,20 @@ import org.joda.time.Period;
 
 import com.google.common.collect.Maps;
 import com.leonarduk.finance.stockfeed.Stock;
-import com.leonarduk.finance.strategies.AbstractStrategy;
-
-import eu.verdelhan.ta4j.Decimal;
+// import com.leonarduk.finance.strategies.AbstractStrategy;
 
 public class Valuation {
-	private final Position						position;
+	private final Position					position;
 
-	private final BigDecimal					price;
+	private final BigDecimal				price;
 
-	private final Map<String, Recommendation>	recommendation;
+	private final Map<String, String>		recommendation;
 
-	private final Map<Period, Decimal>			returns;
+	private final Map<Period, BigDecimal>	returns;
 
-	private final BigDecimal					valuation;
+	private final BigDecimal				valuation;
 
-	private final String						valuationDate;
+	private final String					valuationDate;
 
 	public Valuation(final Position position, final BigDecimal valuation,
 	        final LocalDate valuationDate, final BigDecimal price) {
@@ -47,12 +45,11 @@ public class Valuation {
 		this.price = price;
 	}
 
-	public void addRecommendation(final AbstractStrategy strategy,
-	        final Recommendation recommendation2) {
-		this.recommendation.put(strategy.getName(), recommendation2);
+	public void addRecommendation(final String strategyName, final Recommendation recommendation2) {
+		this.recommendation.put(strategyName, recommendation2.getTradeRecommendation().name());
 	}
 
-	public void addReturn(final Period days, final Decimal change) {
+	public void addReturn(final Period days, final BigDecimal change) {
 		this.returns.put(days, change);
 	}
 
@@ -64,13 +61,20 @@ public class Valuation {
 		return this.price;
 	}
 
-	public Recommendation getRecommendation(final String name) {
-		return this.recommendation.getOrDefault(name,
-		        new Recommendation(RecommendedTrade.HOLD, null, null));
+	public Map<String, String> getRecommendation() {
+		return this.recommendation;
 	}
 
-	public Decimal getReturn(final Period days) {
+	public String getRecommendation(final String name) {
+		return this.recommendation.getOrDefault(name, RecommendedTrade.HOLD.name());
+	}
+
+	public BigDecimal getReturn(final Period days) {
 		return this.returns.get(days);
+	}
+
+	public Map<Period, BigDecimal> getReturns() {
+		return this.returns;
 	}
 
 	public BigDecimal getValuation() {

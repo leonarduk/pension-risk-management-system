@@ -2,6 +2,7 @@ package com.leonarduk.finance;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +88,8 @@ public class AnalyseSnapshot {
 				final int endIndex = series.getEnd();
 				if (strategy.getStrategy().shouldEnter(endIndex)) {
 					// Our strategy should enter
-					valuation.addRecommendation(strategy, new Recommendation(RecommendedTrade.BUY,
-					        strategy, stock2.getInstrument()));
+					valuation.addRecommendation(strategy.getName(), new Recommendation(
+					        RecommendedTrade.BUY, strategy, stock2.getInstrument()));
 					final boolean entered = tradingRecord.enter(endIndex,
 					        mostRecentTick.getAmount(), Decimal.TEN);
 					if (entered) {
@@ -100,8 +101,8 @@ public class AnalyseSnapshot {
 				}
 				else if (strategy.getStrategy().shouldExit(endIndex)) {
 					// Our strategy should exit
-					valuation.addRecommendation(strategy, new Recommendation(RecommendedTrade.SELL,
-					        strategy, stock2.getInstrument()));
+					valuation.addRecommendation(strategy.getName(), new Recommendation(
+					        RecommendedTrade.SELL, strategy, stock2.getInstrument()));
 					final boolean exited = tradingRecord.exit(endIndex,
 					        mostRecentTick.getClosePrice(), Decimal.TEN);
 					if (exited) {
@@ -127,15 +128,19 @@ public class AnalyseSnapshot {
 		}
 	}
 
-	public static Decimal calculateReturn(final TimeSeries series, final int timePeriod) {
+	public static BigDecimal calculateReturn(final TimeSeries series, final int timePeriod) {
 		if (timePeriod > series.getEnd()) {
-			return Decimal.NaN;
+			return BigDecimal.valueOf(Decimal.NaN.toDouble());
 		}
-		final Decimal initialValue = series.getFirstTick().getClosePrice();
+		final BigDecimal initialValue = BigDecimal
+		        .valueOf(series.getFirstTick().getClosePrice().toDouble());
 		final int i = timePeriod;
-		final Decimal diff = i > -1 ? series.getTick(i).getClosePrice().minus(initialValue)
-		        : Decimal.ZERO;
-		return NumberUtils.roundDecimal(diff.dividedBy(initialValue).multipliedBy(Decimal.HUNDRED));
+
+		final BigDecimal closePrice = BigDecimal
+		        .valueOf(series.getTick(i).getClosePrice().toDouble());
+		final BigDecimal diff = i > -1 ? closePrice.subtract(initialValue) : BigDecimal.ZERO;
+		return NumberUtils.roundDecimal(diff.divide(initialValue, 2, RoundingMode.HALF_UP)
+		        .multiply(BigDecimal.valueOf(100)));
 	}
 
 	public static StringBuilder createPortfolioReport(final LocalDate fromDate,
@@ -255,8 +260,7 @@ public class AnalyseSnapshot {
 
 			for (final String name : new String[] { "SMA (12days)", "SMA (20days)", "SMA (50days)",
 			        "Global Extrema", "Moving Momentum", }) {
-				fields.add(new DataField(name,
-				        valuation.getRecommendation(name).getTradeRecommendation()));
+				fields.add(new DataField(name, valuation.getRecommendation(name)));
 			}
 		}
 
