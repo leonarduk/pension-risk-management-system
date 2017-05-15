@@ -10,8 +10,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-
 import net.sf.log4jdbc.sql.jdbcapi.DataSourceSpy;
 
 @Configuration
@@ -23,7 +21,6 @@ public class AppConfig {
 	static class JerseyConfig extends ResourceConfig {
 		public JerseyConfig() {
 			this.packages("com.leonarduk.finance.api");
-			this.register(new JodaModule());
 			this.register(CORSResponseFilter.class);
 		}
 	}
