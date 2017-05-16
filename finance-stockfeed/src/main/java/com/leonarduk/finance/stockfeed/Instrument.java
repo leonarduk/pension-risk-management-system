@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.ResourceTools;
 
@@ -106,8 +110,9 @@ public class Instrument {
 
 	public static Instrument fromString(final String symbol) throws IOException {
 		String localSymbol = symbol;
-		if (localSymbol.contains(".")) {
-			localSymbol = localSymbol.substring(0, localSymbol.indexOf("."));
+		final String fullStop = ".";
+		if (localSymbol.contains(fullStop)) {
+			localSymbol = localSymbol.substring(0, localSymbol.indexOf(fullStop));
 		}
 		if (InstrumentLoader.getInstance().instruments.containsKey(localSymbol.toUpperCase())) {
 			return InstrumentLoader.getInstance().instruments.get(localSymbol.toUpperCase());
@@ -157,78 +162,17 @@ public class Instrument {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+	public boolean equals(final Object other) {
+		if (!(other instanceof Instrument)) {
 			return false;
 		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
-		final Instrument other = (Instrument) obj;
-		if (this.assetType != other.assetType) {
-			return false;
-		}
-		if (this.category == null) {
-			if (other.category != null) {
-				return false;
-			}
-		}
-		else if (!this.category.equals(other.category)) {
-			return false;
-		}
-		if (this.code == null) {
-			if (other.code != null) {
-				return false;
-			}
-		}
-		else if (!this.code.equals(other.code)) {
-			return false;
-		}
-		if (this.currency == null) {
-			if (other.currency != null) {
-				return false;
-			}
-		}
-		else if (!this.currency.equals(other.currency)) {
-			return false;
-		}
-		if (this.exchange != other.exchange) {
-			return false;
-		}
-		if (this.googleCode == null) {
-			if (other.googleCode != null) {
-				return false;
-			}
-		}
-		else if (!this.googleCode.equals(other.googleCode)) {
-			return false;
-		}
-		if (this.isin == null) {
-			if (other.isin != null) {
-				return false;
-			}
-		}
-		else if (!this.isin.equals(other.isin)) {
-			return false;
-		}
-		if (this.name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		}
-		else if (!this.name.equals(other.name)) {
-			return false;
-		}
-		if (this.source != other.source) {
-			return false;
-		}
-		if (this.underlyingType != other.underlyingType) {
-			return false;
-		}
-		return true;
+		final Instrument castOther = (Instrument) other;
+		return new EqualsBuilder().append(this.assetType, castOther.assetType)
+		        .append(this.category, castOther.category).append(this.code, castOther.code)
+		        .append(this.currency, castOther.currency).append(this.exchange, castOther.exchange)
+		        .append(this.googleCode, castOther.googleCode).append(this.isin, castOther.isin)
+		        .append(this.name, castOther.name).append(this.source, castOther.source)
+		        .append(this.underlyingType, castOther.underlyingType).isEquals();
 	}
 
 	public AssetType getAssetType() {
@@ -269,20 +213,10 @@ public class Instrument {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((this.assetType == null) ? 0 : this.assetType.hashCode());
-		result = (prime * result) + ((this.category == null) ? 0 : this.category.hashCode());
-		result = (prime * result) + ((this.code == null) ? 0 : this.code.hashCode());
-		result = (prime * result) + ((this.currency == null) ? 0 : this.currency.hashCode());
-		result = (prime * result) + ((this.exchange == null) ? 0 : this.exchange.hashCode());
-		result = (prime * result) + ((this.googleCode == null) ? 0 : this.googleCode.hashCode());
-		result = (prime * result) + ((this.isin == null) ? 0 : this.isin.hashCode());
-		result = (prime * result) + ((this.name == null) ? 0 : this.name.hashCode());
-		result = (prime * result) + ((this.source == null) ? 0 : this.source.hashCode());
-		result = (prime * result)
-		        + ((this.underlyingType == null) ? 0 : this.underlyingType.hashCode());
-		return result;
+		return new HashCodeBuilder().append(this.assetType).append(this.category).append(this.code)
+		        .append(this.currency).append(this.exchange).append(this.googleCode)
+		        .append(this.isin).append(this.name).append(this.source).append(this.underlyingType)
+		        .toHashCode();
 	}
 
 	public String isin() {
@@ -295,10 +229,12 @@ public class Instrument {
 
 	@Override
 	public String toString() {
-		return "Instrument [assetType=" + this.assetType + ", category=" + this.category + ", code="
-		        + this.code + ", currency=" + this.currency + ", googleCode=" + this.googleCode
-		        + ", isin=" + this.isin + ", name=" + this.name + ", source=" + this.source
-		        + ", underlyingType=" + this.underlyingType + ", exchange=" + this.exchange + "]";
+		return new ToStringBuilder(this).append("assetType", this.assetType)
+		        .append("category", this.category).append("code", this.code)
+		        .append("currency", this.currency).append("exchange", this.exchange)
+		        .append("googleCode", this.googleCode).append("isin", this.isin)
+		        .append("name", this.name).append("source", this.source)
+		        .append("underlyingType", this.underlyingType).toString();
 	}
 
 	public AssetType underlyingType() {
