@@ -20,11 +20,12 @@ public class YahooFeedIT {
 	private YahooFeed	feed;
 	private Instrument	gold;
 
-	private void getInstrument(final Instrument instrument) throws IOException {
+	private boolean getInstrument(final Instrument instrument) throws IOException {
 		final Optional<Stock> stock = this.feed.get(instrument, 1);
 		Assert.assertTrue(stock.isPresent());
 		final List<HistoricalQuote> history = stock.get().getHistory();
 		Assert.assertTrue(history.size() > 0);
+		return true;
 	}
 
 	@Before
@@ -38,19 +39,19 @@ public class YahooFeedIT {
 	@Ignore
 	@Test
 	public final void testGetFx() throws IOException {
-		YahooFeed.getFx(Instrument.fromString("USDGBP"));
+		Assert.assertNotNull(YahooFeed.getFx(Instrument.fromString("USDGBP")));
 	}
 
 	@Test
 	public final void testGetInstrumentBonds() throws IOException {
 		final Instrument instrument = this.bonds;
-		this.getInstrument(instrument);
+		Assert.assertTrue(this.getInstrument(instrument));
 	}
 
 	@Test
 	public final void testGetInstrumentGold() throws IOException {
 		final Instrument instrument = this.gold;
-		this.getInstrument(instrument);
+		Assert.assertTrue(this.getInstrument(instrument));
 	}
 
 	@Test
