@@ -49,7 +49,7 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
 public class IndicatorsToCsv {
 
 	private static final int	FIVE_YEAR	= 5 * IndicatorsToCsv.ONE_YEAR;
-	static NumberFormat			formatter	= new DecimalFormat("#0.00");
+	private static NumberFormat	formatter	= new DecimalFormat("#0.00");
 	private static final int	HALF_YEAR	= IndicatorsToCsv.ONE_YEAR / 2;
 	private static final Logger	LOGGER		= Logger.getLogger(IndicatorsToCsv.class.getName());
 	private static final int	ONE_YEAR	= 251;
@@ -57,11 +57,9 @@ public class IndicatorsToCsv {
 
 	private static final int	THREE_YEAR	= 3 * IndicatorsToCsv.ONE_YEAR;
 
-	public static void addValue(final StringBuilder buf, BigDecimal value) {
-		if (value == null) {
-			value = BigDecimal.ZERO;
-		}
-		final String format = IndicatorsToCsv.formatter.format(value);
+	public static void addValue(final StringBuilder buf, final BigDecimal value) {
+		final String format = IndicatorsToCsv.formatter
+		        .format(value == null ? BigDecimal.ZERO : value);
 		IndicatorsToCsv.addValue(buf, format);
 	}
 

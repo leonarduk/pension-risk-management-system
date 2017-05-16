@@ -26,10 +26,10 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	        final LocalDate fromDate);
 
 	protected HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote,
-	        final LocalDate currentDate, BigDecimal newClosePrice, BigDecimal newOpenPrice,
-	        final String comment) {
-		newClosePrice = NumberUtils.roundDecimal(newClosePrice);
-		newOpenPrice = NumberUtils.roundDecimal(newOpenPrice);
+	        final LocalDate currentDate, final BigDecimal newClosePriceRaw,
+	        final BigDecimal newOpenPriceRaw, final String comment) {
+		final BigDecimal newClosePrice = NumberUtils.roundDecimal(newClosePriceRaw);
+		final BigDecimal newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
 		return new HistoricalQuote(currentQuote.getInstrument(), currentDate, newOpenPrice,
 		        newClosePrice.min(newOpenPrice), newClosePrice.max(newOpenPrice), newClosePrice,
 		        newClosePrice, 0L, comment);
@@ -38,10 +38,10 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	public abstract HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote,
 	        final LocalDate currentDate, HistoricalQuote nextQuote);
 
-	protected Tick createSyntheticTick(final LocalDate currentDate, Decimal newClosePrice,
-	        Decimal newOpenPrice) {
-		newClosePrice = NumberUtils.roundDecimal(newClosePrice);
-		newOpenPrice = NumberUtils.roundDecimal(newOpenPrice);
+	protected Tick createSyntheticTick(final LocalDate currentDate, final Decimal newClosePriceRaw,
+	        final Decimal newOpenPriceRaw) {
+		final Decimal newClosePrice = NumberUtils.roundDecimal(newClosePriceRaw);
+		final Decimal newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
 		return new Tick(currentDate.toDateTimeAtCurrentTime(), newOpenPrice,
 		        Decimal.valueOf(Math.max(newOpenPrice.toDouble(), newClosePrice.toDouble())),
 		        Decimal.valueOf(Math.min(newOpenPrice.toDouble(), newClosePrice.toDouble())),

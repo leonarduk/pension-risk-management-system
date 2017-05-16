@@ -67,8 +67,10 @@ public class YahooFeed extends StockFeed {
 		switch (instrument.getExchange()) {
 			case London:
 				return YahooFeed.getCode(instrument) + ".L";
+			default:
+				throw new IllegalArgumentException(
+				        "Don't know how to handle " + instrument.getExchange());
 		}
-		throw new IllegalArgumentException("Don't know how to handle " + instrument.getExchange());
 	}
 
 	@Override

@@ -43,10 +43,8 @@ public class CachedStockFeed extends CsvStockFeed {
 
 	protected File getFile(final Stock stock) throws IOException {
 		final File folder = new File(this.storeLocation);
-		if (!folder.exists()) {
-			if (!folder.mkdir()) {
-				throw new IOException("Failed to create " + this.storeLocation);
-			}
+		if (!folder.exists() && !folder.mkdir()) {
+			throw new IOException("Failed to create " + this.storeLocation);
 		}
 
 		return this.getFile(stock.getInstrument());

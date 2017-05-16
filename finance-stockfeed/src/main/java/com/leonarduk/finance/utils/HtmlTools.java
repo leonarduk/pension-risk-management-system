@@ -22,10 +22,9 @@ import eu.verdelhan.ta4j.Decimal;
 public class HtmlTools {
 	public static final Logger logger = Logger.getLogger(HtmlTools.class.getName());
 
-	public static void addField(Object value, final StringBuilder sb, ValueFormatter formatter) {
-		if (formatter == null) {
-			formatter = (Object::toString);
-		}
+	public static void addField(Object value, final StringBuilder sb,
+	        final ValueFormatter formatterRaw) {
+		final ValueFormatter formatter = formatterRaw == null ? (Object::toString) : formatterRaw;
 		if (sb == null) {
 			throw new IllegalArgumentException("Passed in null StringBuilder");
 		}
@@ -38,10 +37,11 @@ public class HtmlTools {
 		        .append(formatter.format(value)).append("</td>");
 	}
 
-	public static void addHeader(String name, final StringBuilder sb) {
+	public static void addHeader(final String nameRaw, final StringBuilder sb) {
 		if (sb == null) {
 			throw new IllegalArgumentException("Passed in null StringBuilder");
 		}
+		String name = nameRaw;
 		if (null == name) {
 			name = "";
 			HtmlTools.logger.warning("Null field name supplied - treat as empty string");
@@ -62,16 +62,11 @@ public class HtmlTools {
 		        pieChartFactory.buildChart()));
 	}
 
-	public static StringBuilder createHtmlText(StringBuilder sbHead, StringBuilder sbBody) {
-		if (sbHead == null) {
-			sbHead = new StringBuilder();
-		}
-		if (sbBody == null) {
-			sbBody = new StringBuilder();
-		}
-		final StringBuilder buf = new StringBuilder("<html><head>").append(sbHead)
-		        .append("</head><body>");
-		buf.append(sbBody).append("</body></html>\n");
+	public static StringBuilder createHtmlText(final StringBuilder sbHead,
+	        final StringBuilder sbBody) {
+		final StringBuilder buf = new StringBuilder("<html><head>")
+		        .append(sbHead == null ? new StringBuilder() : sbHead).append("</head><body>");
+		buf.append(sbBody == null ? new StringBuilder() : sbBody).append("</body></html>\n");
 		return buf;
 	}
 

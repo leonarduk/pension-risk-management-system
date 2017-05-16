@@ -4,6 +4,9 @@ package yahoofinance.quotes.stock;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * All getters can return null in case the data is not available from Yahoo Finance.
  *
@@ -34,58 +37,15 @@ public class StockDividend {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+	public boolean equals(final Object other) {
+		if (!(other instanceof StockDividend)) {
 			return false;
 		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
-		final StockDividend other = (StockDividend) obj;
-		if (this.annualYield == null) {
-			if (other.annualYield != null) {
-				return false;
-			}
-		}
-		else if (!this.annualYield.equals(other.annualYield)) {
-			return false;
-		}
-		if (this.annualYieldPercent == null) {
-			if (other.annualYieldPercent != null) {
-				return false;
-			}
-		}
-		else if (!this.annualYieldPercent.equals(other.annualYieldPercent)) {
-			return false;
-		}
-		if (this.exDate == null) {
-			if (other.exDate != null) {
-				return false;
-			}
-		}
-		else if (!this.exDate.equals(other.exDate)) {
-			return false;
-		}
-		if (this.payDate == null) {
-			if (other.payDate != null) {
-				return false;
-			}
-		}
-		else if (!this.payDate.equals(other.payDate)) {
-			return false;
-		}
-		if (this.symbol == null) {
-			if (other.symbol != null) {
-				return false;
-			}
-		}
-		else if (!this.symbol.equals(other.symbol)) {
-			return false;
-		}
-		return true;
+		final StockDividend castOther = (StockDividend) other;
+		return new EqualsBuilder().append(this.annualYield, castOther.annualYield)
+		        .append(this.annualYieldPercent, castOther.annualYieldPercent)
+		        .append(this.exDate, castOther.exDate).append(this.payDate, castOther.payDate)
+		        .append(this.symbol, castOther.symbol).isEquals();
 	}
 
 	public BigDecimal getAnnualYield() {
@@ -110,15 +70,8 @@ public class StockDividend {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((this.annualYield == null) ? 0 : this.annualYield.hashCode());
-		result = (prime * result)
-		        + ((this.annualYieldPercent == null) ? 0 : this.annualYieldPercent.hashCode());
-		result = (prime * result) + ((this.exDate == null) ? 0 : this.exDate.hashCode());
-		result = (prime * result) + ((this.payDate == null) ? 0 : this.payDate.hashCode());
-		result = (prime * result) + ((this.symbol == null) ? 0 : this.symbol.hashCode());
-		return result;
+		return new HashCodeBuilder().append(this.annualYield).append(this.annualYieldPercent)
+		        .append(this.exDate).append(this.payDate).append(this.symbol).toHashCode();
 	}
 
 	public void setAnnualYield(final BigDecimal annualYield) {

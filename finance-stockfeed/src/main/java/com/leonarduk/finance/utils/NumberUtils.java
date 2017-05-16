@@ -27,12 +27,13 @@ public class NumberUtils {
 		return NumberUtils.roundDecimal(thisOne).equals(NumberUtils.roundDecimal(thatOne));
 	}
 
-	private static BigDecimal calculateBigDecimal(String data) {
-		if (!StringUtils.isParseable(data)) {
+	private static BigDecimal calculateBigDecimal(final String dataRaw) {
+		if (!StringUtils.isParseable(dataRaw)) {
 			return null;
 		}
+		String data;
 		try {
-			data = NumberUtils.cleanNumberString(data);
+			data = NumberUtils.cleanNumberString(dataRaw);
 			final char lastChar = data.charAt(data.length() - 1);
 			BigDecimal multiplier = BigDecimal.ONE;
 			switch (lastChar) {
@@ -52,8 +53,8 @@ public class NumberUtils {
 			return new BigDecimal(data).multiply(multiplier);
 		}
 		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + data);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + dataRaw);
+			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw, e);
 		}
 		return null;
 	}
@@ -75,13 +76,14 @@ public class NumberUtils {
 		return main;
 	}
 
-	public static double getDouble(String data) {
+	public static double getDouble(final String dataRaw) {
 		double result = Double.NaN;
-		if (!StringUtils.isParseable(data)) {
+		if (!StringUtils.isParseable(dataRaw)) {
 			return result;
 		}
+		String data;
 		try {
-			data = NumberUtils.cleanNumberString(data);
+			data = NumberUtils.cleanNumberString(dataRaw);
 			final char lastChar = data.charAt(data.length() - 1);
 			int multiplier = 1;
 			switch (lastChar) {
@@ -101,20 +103,19 @@ public class NumberUtils {
 			result = Double.parseDouble(data) * multiplier;
 		}
 		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + data);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + dataRaw);
+			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw, e);
 		}
 		return result;
 	}
 
-	public static Integer getInt(String data) {
+	public static Integer getInt(final String data) {
 		Integer result = null;
 		if (!StringUtils.isParseable(data)) {
 			return result;
 		}
 		try {
-			data = NumberUtils.cleanNumberString(data);
-			result = Integer.parseInt(data);
+			result = Integer.parseInt(NumberUtils.cleanNumberString(data));
 		}
 		catch (final NumberFormatException e) {
 			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + data);

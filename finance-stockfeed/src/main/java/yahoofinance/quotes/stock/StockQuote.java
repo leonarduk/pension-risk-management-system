@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
@@ -50,186 +53,27 @@ public class StockQuote {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+	public boolean equals(final Object other) {
+		if (!(other instanceof StockQuote)) {
 			return false;
 		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
-		final StockQuote other = (StockQuote) obj;
-		if (this.ask == null) {
-			if (other.ask != null) {
-				return false;
-			}
-		}
-		else if (!this.ask.equals(other.ask)) {
-			return false;
-		}
-		if (this.askSize == null) {
-			if (other.askSize != null) {
-				return false;
-			}
-		}
-		else if (!this.askSize.equals(other.askSize)) {
-			return false;
-		}
-		if (this.avgVolume == null) {
-			if (other.avgVolume != null) {
-				return false;
-			}
-		}
-		else if (!this.avgVolume.equals(other.avgVolume)) {
-			return false;
-		}
-		if (this.bid == null) {
-			if (other.bid != null) {
-				return false;
-			}
-		}
-		else if (!this.bid.equals(other.bid)) {
-			return false;
-		}
-		if (this.bidSize == null) {
-			if (other.bidSize != null) {
-				return false;
-			}
-		}
-		else if (!this.bidSize.equals(other.bidSize)) {
-			return false;
-		}
-		if (this.dayHigh == null) {
-			if (other.dayHigh != null) {
-				return false;
-			}
-		}
-		else if (!this.dayHigh.equals(other.dayHigh)) {
-			return false;
-		}
-		if (this.dayLow == null) {
-			if (other.dayLow != null) {
-				return false;
-			}
-		}
-		else if (!this.dayLow.equals(other.dayLow)) {
-			return false;
-		}
-		if (this.instrument == null) {
-			if (other.instrument != null) {
-				return false;
-			}
-		}
-		else if (!this.instrument.equals(other.instrument)) {
-			return false;
-		}
-		if (this.lastTradeDateStr == null) {
-			if (other.lastTradeDateStr != null) {
-				return false;
-			}
-		}
-		else if (!this.lastTradeDateStr.equals(other.lastTradeDateStr)) {
-			return false;
-		}
-		if (this.lastTradeSize == null) {
-			if (other.lastTradeSize != null) {
-				return false;
-			}
-		}
-		else if (!this.lastTradeSize.equals(other.lastTradeSize)) {
-			return false;
-		}
-		if (this.lastTradeTime == null) {
-			if (other.lastTradeTime != null) {
-				return false;
-			}
-		}
-		else if (!this.lastTradeTime.equals(other.lastTradeTime)) {
-			return false;
-		}
-		if (this.lastTradeTimeStr == null) {
-			if (other.lastTradeTimeStr != null) {
-				return false;
-			}
-		}
-		else if (!this.lastTradeTimeStr.equals(other.lastTradeTimeStr)) {
-			return false;
-		}
-		if (this.open == null) {
-			if (other.open != null) {
-				return false;
-			}
-		}
-		else if (!this.open.equals(other.open)) {
-			return false;
-		}
-		if (this.previousClose == null) {
-			if (other.previousClose != null) {
-				return false;
-			}
-		}
-		else if (!this.previousClose.equals(other.previousClose)) {
-			return false;
-		}
-		if (this.price == null) {
-			if (other.price != null) {
-				return false;
-			}
-		}
-		else if (!this.price.equals(other.price)) {
-			return false;
-		}
-		if (this.priceAvg200 == null) {
-			if (other.priceAvg200 != null) {
-				return false;
-			}
-		}
-		else if (!this.priceAvg200.equals(other.priceAvg200)) {
-			return false;
-		}
-		if (this.priceAvg50 == null) {
-			if (other.priceAvg50 != null) {
-				return false;
-			}
-		}
-		else if (!this.priceAvg50.equals(other.priceAvg50)) {
-			return false;
-		}
-		if (this.timeZone == null) {
-			if (other.timeZone != null) {
-				return false;
-			}
-		}
-		else if (!this.timeZone.equals(other.timeZone)) {
-			return false;
-		}
-		if (this.volume == null) {
-			if (other.volume != null) {
-				return false;
-			}
-		}
-		else if (!this.volume.equals(other.volume)) {
-			return false;
-		}
-		if (this.yearHigh == null) {
-			if (other.yearHigh != null) {
-				return false;
-			}
-		}
-		else if (!this.yearHigh.equals(other.yearHigh)) {
-			return false;
-		}
-		if (this.yearLow == null) {
-			if (other.yearLow != null) {
-				return false;
-			}
-		}
-		else if (!this.yearLow.equals(other.yearLow)) {
-			return false;
-		}
-		return true;
+		final StockQuote castOther = (StockQuote) other;
+		return new EqualsBuilder().append(this.ask, castOther.ask)
+		        .append(this.askSize, castOther.askSize).append(this.avgVolume, castOther.avgVolume)
+		        .append(this.bid, castOther.bid).append(this.bidSize, castOther.bidSize)
+		        .append(this.dayHigh, castOther.dayHigh).append(this.dayLow, castOther.dayLow)
+		        .append(this.instrument, castOther.instrument)
+		        .append(this.lastTradeDateStr, castOther.lastTradeDateStr)
+		        .append(this.lastTradeSize, castOther.lastTradeSize)
+		        .append(this.lastTradeTime, castOther.lastTradeTime)
+		        .append(this.lastTradeTimeStr, castOther.lastTradeTimeStr)
+		        .append(this.open, castOther.open)
+		        .append(this.previousClose, castOther.previousClose)
+		        .append(this.price, castOther.price).append(this.priceAvg200, castOther.priceAvg200)
+		        .append(this.priceAvg50, castOther.priceAvg50)
+		        .append(this.timeZone, castOther.timeZone).append(this.volume, castOther.volume)
+		        .append(this.yearHigh, castOther.yearHigh).append(this.yearLow, castOther.yearLow)
+		        .isEquals();
 	}
 
 	public BigDecimal getAsk() {
@@ -442,35 +286,13 @@ public class StockQuote {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((this.ask == null) ? 0 : this.ask.hashCode());
-		result = (prime * result) + ((this.askSize == null) ? 0 : this.askSize.hashCode());
-		result = (prime * result) + ((this.avgVolume == null) ? 0 : this.avgVolume.hashCode());
-		result = (prime * result) + ((this.bid == null) ? 0 : this.bid.hashCode());
-		result = (prime * result) + ((this.bidSize == null) ? 0 : this.bidSize.hashCode());
-		result = (prime * result) + ((this.dayHigh == null) ? 0 : this.dayHigh.hashCode());
-		result = (prime * result) + ((this.dayLow == null) ? 0 : this.dayLow.hashCode());
-		result = (prime * result) + ((this.instrument == null) ? 0 : this.instrument.hashCode());
-		result = (prime * result)
-		        + ((this.lastTradeDateStr == null) ? 0 : this.lastTradeDateStr.hashCode());
-		result = (prime * result)
-		        + ((this.lastTradeSize == null) ? 0 : this.lastTradeSize.hashCode());
-		result = (prime * result)
-		        + ((this.lastTradeTime == null) ? 0 : this.lastTradeTime.hashCode());
-		result = (prime * result)
-		        + ((this.lastTradeTimeStr == null) ? 0 : this.lastTradeTimeStr.hashCode());
-		result = (prime * result) + ((this.open == null) ? 0 : this.open.hashCode());
-		result = (prime * result)
-		        + ((this.previousClose == null) ? 0 : this.previousClose.hashCode());
-		result = (prime * result) + ((this.price == null) ? 0 : this.price.hashCode());
-		result = (prime * result) + ((this.priceAvg200 == null) ? 0 : this.priceAvg200.hashCode());
-		result = (prime * result) + ((this.priceAvg50 == null) ? 0 : this.priceAvg50.hashCode());
-		result = (prime * result) + ((this.timeZone == null) ? 0 : this.timeZone.hashCode());
-		result = (prime * result) + ((this.volume == null) ? 0 : this.volume.hashCode());
-		result = (prime * result) + ((this.yearHigh == null) ? 0 : this.yearHigh.hashCode());
-		result = (prime * result) + ((this.yearLow == null) ? 0 : this.yearLow.hashCode());
-		return result;
+		return new HashCodeBuilder().append(this.ask).append(this.askSize).append(this.avgVolume)
+		        .append(this.bid).append(this.bidSize).append(this.dayHigh).append(this.dayLow)
+		        .append(this.instrument).append(this.lastTradeDateStr).append(this.lastTradeSize)
+		        .append(this.lastTradeTime).append(this.lastTradeTimeStr).append(this.open)
+		        .append(this.previousClose).append(this.price).append(this.priceAvg200)
+		        .append(this.priceAvg50).append(this.timeZone).append(this.volume)
+		        .append(this.yearHigh).append(this.yearLow).toHashCode();
 	}
 
 	public void setAsk(final BigDecimal ask) {
