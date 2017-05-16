@@ -6,38 +6,37 @@ import java.math.BigDecimal;
 import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo
- * Finance.
+ * All getters can return null in case the data is not available from Yahoo Finance.
  *
  * @author Stijn Strickx
  */
 public class StockStats {
 
-	private final String symbol;
+	private BigDecimal		bookValuePerShare;
 
-	private BigDecimal marketCap;
+	private BigDecimal		EBITDA;										 // ttm
 
-	private Long sharesFloat;
+	private BigDecimal		eps;
 
-	private Long sharesOutstanding;
-	private Long sharesOwned;
-	private BigDecimal eps;
-	private BigDecimal pe;
+	private BigDecimal		epsEstimateCurrentYear;
+	private BigDecimal		epsEstimateNextQuarter;
+	private BigDecimal		epsEstimateNextYear;
+	private BigDecimal		marketCap;
 
-	private BigDecimal peg;
-	private BigDecimal epsEstimateCurrentYear;
-	private BigDecimal epsEstimateNextQuarter;
+	private BigDecimal		oneYearTargetPrice;
+	private BigDecimal		pe;
+	private BigDecimal		peg;
 
-	private BigDecimal epsEstimateNextYear;
-	private BigDecimal priceBook;
-	private BigDecimal priceSales;
+	private BigDecimal		priceBook;
+	private BigDecimal		priceSales;
+	private BigDecimal		revenue;								 // ttm
 
-	private BigDecimal bookValuePerShare;
-	private BigDecimal revenue; // ttm
-	private BigDecimal EBITDA; // ttm
+	private Long			sharesFloat;
+	private Long			sharesOutstanding;
+	private Long			sharesOwned;
 
-	private BigDecimal oneYearTargetPrice;
-	private BigDecimal shortRatio;
+	private BigDecimal		shortRatio;
+	private final String	symbol;
 
 	public StockStats(final String symbol) {
 		this.symbol = symbol;
@@ -59,126 +58,144 @@ public class StockStats {
 			if (other.EBITDA != null) {
 				return false;
 			}
-		} else if (!this.EBITDA.equals(other.EBITDA)) {
+		}
+		else if (!this.EBITDA.equals(other.EBITDA)) {
 			return false;
 		}
 		if (this.bookValuePerShare == null) {
 			if (other.bookValuePerShare != null) {
 				return false;
 			}
-		} else if (!this.bookValuePerShare.equals(other.bookValuePerShare)) {
+		}
+		else if (!this.bookValuePerShare.equals(other.bookValuePerShare)) {
 			return false;
 		}
 		if (this.eps == null) {
 			if (other.eps != null) {
 				return false;
 			}
-		} else if (!this.eps.equals(other.eps)) {
+		}
+		else if (!this.eps.equals(other.eps)) {
 			return false;
 		}
 		if (this.epsEstimateCurrentYear == null) {
 			if (other.epsEstimateCurrentYear != null) {
 				return false;
 			}
-		} else if (!this.epsEstimateCurrentYear.equals(other.epsEstimateCurrentYear)) {
+		}
+		else if (!this.epsEstimateCurrentYear.equals(other.epsEstimateCurrentYear)) {
 			return false;
 		}
 		if (this.epsEstimateNextQuarter == null) {
 			if (other.epsEstimateNextQuarter != null) {
 				return false;
 			}
-		} else if (!this.epsEstimateNextQuarter.equals(other.epsEstimateNextQuarter)) {
+		}
+		else if (!this.epsEstimateNextQuarter.equals(other.epsEstimateNextQuarter)) {
 			return false;
 		}
 		if (this.epsEstimateNextYear == null) {
 			if (other.epsEstimateNextYear != null) {
 				return false;
 			}
-		} else if (!this.epsEstimateNextYear.equals(other.epsEstimateNextYear)) {
+		}
+		else if (!this.epsEstimateNextYear.equals(other.epsEstimateNextYear)) {
 			return false;
 		}
 		if (this.marketCap == null) {
 			if (other.marketCap != null) {
 				return false;
 			}
-		} else if (!this.marketCap.equals(other.marketCap)) {
+		}
+		else if (!this.marketCap.equals(other.marketCap)) {
 			return false;
 		}
 		if (this.oneYearTargetPrice == null) {
 			if (other.oneYearTargetPrice != null) {
 				return false;
 			}
-		} else if (!this.oneYearTargetPrice.equals(other.oneYearTargetPrice)) {
+		}
+		else if (!this.oneYearTargetPrice.equals(other.oneYearTargetPrice)) {
 			return false;
 		}
 		if (this.pe == null) {
 			if (other.pe != null) {
 				return false;
 			}
-		} else if (!this.pe.equals(other.pe)) {
+		}
+		else if (!this.pe.equals(other.pe)) {
 			return false;
 		}
 		if (this.peg == null) {
 			if (other.peg != null) {
 				return false;
 			}
-		} else if (!this.peg.equals(other.peg)) {
+		}
+		else if (!this.peg.equals(other.peg)) {
 			return false;
 		}
 		if (this.priceBook == null) {
 			if (other.priceBook != null) {
 				return false;
 			}
-		} else if (!this.priceBook.equals(other.priceBook)) {
+		}
+		else if (!this.priceBook.equals(other.priceBook)) {
 			return false;
 		}
 		if (this.priceSales == null) {
 			if (other.priceSales != null) {
 				return false;
 			}
-		} else if (!this.priceSales.equals(other.priceSales)) {
+		}
+		else if (!this.priceSales.equals(other.priceSales)) {
 			return false;
 		}
 		if (this.revenue == null) {
 			if (other.revenue != null) {
 				return false;
 			}
-		} else if (!this.revenue.equals(other.revenue)) {
+		}
+		else if (!this.revenue.equals(other.revenue)) {
 			return false;
 		}
 		if (this.sharesFloat == null) {
 			if (other.sharesFloat != null) {
 				return false;
 			}
-		} else if (!this.sharesFloat.equals(other.sharesFloat)) {
+		}
+		else if (!this.sharesFloat.equals(other.sharesFloat)) {
 			return false;
 		}
 		if (this.sharesOutstanding == null) {
 			if (other.sharesOutstanding != null) {
 				return false;
 			}
-		} else if (!this.sharesOutstanding.equals(other.sharesOutstanding)) {
+		}
+		else if (!this.sharesOutstanding.equals(other.sharesOutstanding)) {
 			return false;
 		}
 		if (this.sharesOwned == null) {
 			if (other.sharesOwned != null) {
 				return false;
 			}
-		} else if (!this.sharesOwned.equals(other.sharesOwned)) {
+		}
+		else if (!this.sharesOwned.equals(other.sharesOwned)) {
 			return false;
 		}
 		if (this.shortRatio == null) {
 			if (other.shortRatio != null) {
 				return false;
 			}
-		} else if (!this.shortRatio.equals(other.shortRatio)) {
+		}
+		else if (!this.shortRatio.equals(other.shortRatio)) {
 			return false;
 		}
 		if (this.symbol == null) {
 			if (other.symbol != null) {
 				return false;
 			}
-		} else if (!this.symbol.equals(other.symbol)) {
+		}
+		else if (!this.symbol.equals(other.symbol)) {
 			return false;
 		}
 		return true;
@@ -265,22 +282,26 @@ public class StockStats {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + ((this.EBITDA == null) ? 0 : this.EBITDA.hashCode());
-		result = (prime * result) + ((this.bookValuePerShare == null) ? 0 : this.bookValuePerShare.hashCode());
+		result = (prime * result)
+		        + ((this.bookValuePerShare == null) ? 0 : this.bookValuePerShare.hashCode());
 		result = (prime * result) + ((this.eps == null) ? 0 : this.eps.hashCode());
+		result = (prime * result) + ((this.epsEstimateCurrentYear == null) ? 0
+		        : this.epsEstimateCurrentYear.hashCode());
+		result = (prime * result) + ((this.epsEstimateNextQuarter == null) ? 0
+		        : this.epsEstimateNextQuarter.hashCode());
 		result = (prime * result)
-				+ ((this.epsEstimateCurrentYear == null) ? 0 : this.epsEstimateCurrentYear.hashCode());
-		result = (prime * result)
-				+ ((this.epsEstimateNextQuarter == null) ? 0 : this.epsEstimateNextQuarter.hashCode());
-		result = (prime * result) + ((this.epsEstimateNextYear == null) ? 0 : this.epsEstimateNextYear.hashCode());
+		        + ((this.epsEstimateNextYear == null) ? 0 : this.epsEstimateNextYear.hashCode());
 		result = (prime * result) + ((this.marketCap == null) ? 0 : this.marketCap.hashCode());
-		result = (prime * result) + ((this.oneYearTargetPrice == null) ? 0 : this.oneYearTargetPrice.hashCode());
+		result = (prime * result)
+		        + ((this.oneYearTargetPrice == null) ? 0 : this.oneYearTargetPrice.hashCode());
 		result = (prime * result) + ((this.pe == null) ? 0 : this.pe.hashCode());
 		result = (prime * result) + ((this.peg == null) ? 0 : this.peg.hashCode());
 		result = (prime * result) + ((this.priceBook == null) ? 0 : this.priceBook.hashCode());
 		result = (prime * result) + ((this.priceSales == null) ? 0 : this.priceSales.hashCode());
 		result = (prime * result) + ((this.revenue == null) ? 0 : this.revenue.hashCode());
 		result = (prime * result) + ((this.sharesFloat == null) ? 0 : this.sharesFloat.hashCode());
-		result = (prime * result) + ((this.sharesOutstanding == null) ? 0 : this.sharesOutstanding.hashCode());
+		result = (prime * result)
+		        + ((this.sharesOutstanding == null) ? 0 : this.sharesOutstanding.hashCode());
 		result = (prime * result) + ((this.sharesOwned == null) ? 0 : this.sharesOwned.hashCode());
 		result = (prime * result) + ((this.shortRatio == null) ? 0 : this.shortRatio.hashCode());
 		result = (prime * result) + ((this.symbol == null) ? 0 : this.symbol.hashCode());

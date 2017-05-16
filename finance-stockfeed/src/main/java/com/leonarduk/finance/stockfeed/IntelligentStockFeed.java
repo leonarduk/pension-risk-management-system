@@ -19,20 +19,21 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
 public class IntelligentStockFeed extends StockFeed {
-	public static final Logger log = Logger.getLogger(IntelligentStockFeed.class.getName());
+	public static final Logger	log		= Logger.getLogger(IntelligentStockFeed.class.getName());
 
-	private static boolean refresh = true;
+	private static boolean		refresh	= true;
 
 	public static Optional<Stock> getFlatCashSeries(final Instrument instrument, final int years) {
-		return getFlatCashSeries(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+		return IntelligentStockFeed.getFlatCashSeries(instrument, LocalDate.now().minusYears(years),
+		        LocalDate.now());
 	}
 
-	public static Optional<Stock> getFlatCashSeries(final Instrument instrument, final LocalDate fromDate,
-			final LocalDate toDate) {
+	public static Optional<Stock> getFlatCashSeries(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate) {
 		final Stock cash = new Stock(instrument);
 		final List<HistoricalQuote> history = Lists.newArrayList();
-		history.add(new HistoricalQuote(instrument, toDate, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-				BigDecimal.ONE, BigDecimal.ONE, 0l, "Manually created"));
+		history.add(new HistoricalQuote(instrument, toDate, BigDecimal.ONE, BigDecimal.ONE,
+		        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 0l, "Manually created"));
 
 		final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 		cash.setHistory(flatLineInterpolator.extendToFromDate(history, fromDate));
@@ -51,9 +52,10 @@ public class IntelligentStockFeed extends StockFeed {
 		try {
 
 			if (instrument.equals(Instrument.CASH)) {
-				return getFlatCashSeries(instrument, years);
+				return IntelligentStockFeed.getFlatCashSeries(instrument, years);
 			}
-			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
+			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory
+			        .getDataFeed(Source.MANUAL);
 
 			final Optional<Stock> cachedData = dataFeed.get(instrument, years);
 
@@ -61,17 +63,21 @@ public class IntelligentStockFeed extends StockFeed {
 
 			Optional<Stock> liveData;
 			try {
-				liveData = refresh ? feed.get(instrument, years) : Optional.empty();
-			} catch (final Throwable e) {
-				log.warning(e.getMessage());
+				liveData = IntelligentStockFeed.refresh ? feed.get(instrument, years)
+				        : Optional.empty();
+			}
+			catch (final Throwable e) {
+				IntelligentStockFeed.log.warning(e.getMessage());
 				liveData = Optional.empty();
 			}
 			if (liveData.isPresent()) {
 				if (cachedData.isPresent()) {
-					this.mergeSeries(cachedData.get(), liveData.get().getHistory(), cachedData.get().getHistory());
+					this.mergeSeries(cachedData.get(), liveData.get().getHistory(),
+					        cachedData.get().getHistory());
 				}
 				dataFeed.storeSeries(liveData.get());
-			} else {
+			}
+			else {
 				liveData = cachedData;
 			}
 
@@ -81,31 +87,34 @@ public class IntelligentStockFeed extends StockFeed {
 
 			liveData.get().setHistory(new BadDateRemover().clean(liveData.get().getHistory()));
 			return liveData;
-		} catch (final Exception e) {
-			log.warning(e.getMessage());
+		}
+		catch (final Exception e) {
+			IntelligentStockFeed.log.warning(e.getMessage());
 			return Optional.empty();
 		}
 	}
 
-	public Optional<Stock> get(final Instrument instrument, final int years, final boolean interpolate)
-			throws IOException {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), interpolate);
+	public Optional<Stock> get(final Instrument instrument, final int years,
+	        final boolean interpolate) throws IOException {
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(),
+		        interpolate);
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
-			throws IOException {
+	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
+	        final LocalDate toDate) throws IOException {
 		return this.get(instrument, fromDate, toDate, false);
 	}
 
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate,
-			final boolean interpolate) {
+	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
+	        final LocalDate toDate, final boolean interpolate) {
 		try {
 
 			if (instrument.equals(Instrument.CASH)) {
-				return getFlatCashSeries(instrument, fromDate, toDate);
+				return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
 			}
-			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
+			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory
+			        .getDataFeed(Source.MANUAL);
 
 			final Optional<Stock> cachedData = dataFeed.get(instrument, fromDate, toDate);
 
@@ -113,17 +122,21 @@ public class IntelligentStockFeed extends StockFeed {
 
 			Optional<Stock> liveData;
 			try {
-				liveData = refresh ? feed.get(instrument, fromDate, toDate) : Optional.empty();
-			} catch (final Throwable e) {
-				log.warning(e.getMessage());
+				liveData = IntelligentStockFeed.refresh ? feed.get(instrument, fromDate, toDate)
+				        : Optional.empty();
+			}
+			catch (final Throwable e) {
+				IntelligentStockFeed.log.warning(e.getMessage());
 				liveData = Optional.empty();
 			}
 			if (liveData.isPresent()) {
 				if (cachedData.isPresent()) {
-					this.mergeSeries(cachedData.get(), liveData.get().getHistory(), cachedData.get().getHistory());
+					this.mergeSeries(cachedData.get(), liveData.get().getHistory(),
+					        cachedData.get().getHistory());
 				}
 				dataFeed.storeSeries(liveData.get());
-			} else {
+			}
+			else {
 				liveData = cachedData;
 			}
 			List<HistoricalQuote> history = liveData.get().getHistory();
@@ -136,26 +149,28 @@ public class IntelligentStockFeed extends StockFeed {
 				final LinearInterpolator linearInterpolator = new LinearInterpolator();
 				final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 
-				history = linearInterpolator.interpolate(flatLineInterpolator
-						.extendToToDate(flatLineInterpolator.extendToFromDate(history, fromDate), toDate));
+				history = linearInterpolator.interpolate(flatLineInterpolator.extendToToDate(
+				        flatLineInterpolator.extendToFromDate(history, fromDate), toDate));
 			}
 			final List<HistoricalQuote> subSeries = history.stream()
-					.filter(q -> (q.getDate().isAfter(fromDate) && q.getDate().isBefore(toDate))
-							|| q.getDate().isEqual(fromDate) || q.getDate().isEqual(toDate))
-					.collect(Collectors.toList());
+			        .filter(q -> (q.getDate().isAfter(fromDate) && q.getDate().isBefore(toDate))
+			                || q.getDate().isEqual(fromDate) || q.getDate().isEqual(toDate))
+			        .collect(Collectors.toList());
 			TimeseriesUtils.sortQuoteList(subSeries);
 			liveData.get().setHistory(subSeries);
 			return liveData;
-		} catch (final Exception e) {
-			log.warning(e.getMessage());
+		}
+		catch (final Exception e) {
+			IntelligentStockFeed.log.warning(e.getMessage());
 			return Optional.empty();
 		}
 
 	}
 
-	public Optional<Stock> get(final Instrument instrument, final String fromDate, final String toDate,
-			final boolean interpolate) {
-		return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate), interpolate);
+	public Optional<Stock> get(final Instrument instrument, final String fromDate,
+	        final String toDate, final boolean interpolate) {
+		return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate),
+		        interpolate);
 	}
 
 }

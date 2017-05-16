@@ -3,22 +3,20 @@
  *
  * Copyright (c) 2014-2016 Marc de Verdelhan & respective authors (see AUTHORS)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.leonarduk.finance.strategies;
 
@@ -75,17 +73,17 @@ public class RSI2Strategy {
 		// The long-term trend is up when a security is above its 200-period
 		// SMA.
 		final Rule entryRule = new OverIndicatorRule(shortSma, longSma) // Trend
-				.and(new CrossedDownIndicatorRule(rsi, Decimal.valueOf(5))) // Signal
-																			// 1
-				.and(new OverIndicatorRule(shortSma, closePrice)); // Signal 2
+		        .and(new CrossedDownIndicatorRule(rsi, Decimal.valueOf(5))) // Signal
+		                                                                    // 1
+		        .and(new OverIndicatorRule(shortSma, closePrice)); // Signal 2
 
 		// Exit rule
 		// The long-term trend is down when a security is below its 200-period
 		// SMA.
 		final Rule exitRule = new UnderIndicatorRule(shortSma, longSma) // Trend
-				.and(new CrossedUpIndicatorRule(rsi, Decimal.valueOf(95))) // Signal
-																			// 1
-				.and(new UnderIndicatorRule(shortSma, closePrice)); // Signal 2
+		        .and(new CrossedUpIndicatorRule(rsi, Decimal.valueOf(95))) // Signal
+		                                                                   // 1
+		        .and(new UnderIndicatorRule(shortSma, closePrice)); // Signal 2
 
 		// TODO: Finalize the strategy
 
@@ -100,17 +98,17 @@ public class RSI2Strategy {
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Building the trading strategy
-		final Strategy strategy = buildStrategy(series);
+		final Strategy strategy = RSI2Strategy.buildStrategy(series);
 
 		// Running the strategy
 		final TradingRecord tradingRecord = series.run(strategy);
 		System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series, strategy,
-				RSI2Strategy.class.getName()));
+		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series,
+		        strategy, RSI2Strategy.class.getName()));
 
 		// Analysis
-		System.out.println(
-				"Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
+		System.out.println("Total profit for the strategy: "
+		        + new TotalProfitCriterion().calculate(series, tradingRecord));
 	}
 
 }

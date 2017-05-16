@@ -1,10 +1,9 @@
 package com.leonarduk.finance.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -19,7 +18,7 @@ public class HtmlToolsTest {
 		final StringBuilder sb = new StringBuilder();
 		final ValueFormatter formatter = (Object::toString);
 		HtmlTools.addField("testvalue", sb, formatter);
-		assertEquals("<td bgcolor='white'>testvalue</td>", sb.toString());
+		Assert.assertEquals("<td bgcolor='white'>testvalue</td>", sb.toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -34,14 +33,14 @@ public class HtmlToolsTest {
 		final StringBuilder sb = new StringBuilder();
 		final ValueFormatter formatter = null;
 		HtmlTools.addField(null, sb, formatter);
-		assertEquals("<td bgcolor='white'></td>", sb.toString());
+		Assert.assertEquals("<td bgcolor='white'></td>", sb.toString());
 	}
 
 	@Test
 	public final void testAddHeader() {
 		final StringBuilder sb = new StringBuilder();
 		HtmlTools.addHeader("test", sb);
-		assertEquals("<th>test</th>", sb.toString());
+		Assert.assertEquals("<th>test</th>", sb.toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -54,7 +53,7 @@ public class HtmlToolsTest {
 	public final void testAddHeaderWithNullValue() {
 		final StringBuilder sb = new StringBuilder();
 		HtmlTools.addHeader(null, sb);
-		assertEquals("<th></th>", sb.toString());
+		Assert.assertEquals("<th></th>", sb.toString());
 	}
 
 	// TODO
@@ -69,23 +68,23 @@ public class HtmlToolsTest {
 		final StringBuilder sbHead = new StringBuilder("head");
 		final StringBuilder sbBody = new StringBuilder("body");
 		final StringBuilder actual = HtmlTools.createHtmlText(sbHead, sbBody);
-		assertEquals("<html><head>head</head><body>body</body></html>\n", actual.toString());
+		Assert.assertEquals("<html><head>head</head><body>body</body></html>\n", actual.toString());
 	}
 
 	@Test
 	public final void testGetColour() {
-		assertEquals("red", HtmlTools.getColour(Decimal.valueOf(-123)));
+		Assert.assertEquals("red", HtmlTools.getColour(Decimal.valueOf(-123)));
 	}
 
 	@Test
 	public final void testGetColourWithNull() {
-		assertEquals("white", HtmlTools.getColour(null));
+		Assert.assertEquals("white", HtmlTools.getColour(null));
 	}
 
 	@Test
 	public final void testGetURLParameters() {
 		final Map<String, String> params = Maps.newHashMap();
-		assertEquals("", HtmlTools.getURLParameters(params));
+		Assert.assertEquals("", HtmlTools.getURLParameters(params));
 	}
 
 	@Test
@@ -93,7 +92,7 @@ public class HtmlToolsTest {
 		final StringBuilder sb = new StringBuilder();
 		final List<List<DataField>> records = Lists.newLinkedList();
 		HtmlTools.printTable(sb, records);
-		assertEquals("", sb.toString());
+		Assert.assertEquals("", sb.toString());
 	}
 
 }

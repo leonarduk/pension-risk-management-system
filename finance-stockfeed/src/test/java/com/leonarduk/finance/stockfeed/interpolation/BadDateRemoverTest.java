@@ -1,11 +1,10 @@
 package com.leonarduk.finance.stockfeed.interpolation;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,15 +24,16 @@ public class BadDateRemoverTest {
 
 	@Test
 	public final void testClean() throws IOException {
-		final List<HistoricalQuote> series = IntelligentStockFeed.getFlatCashSeries(Instrument.CASH, 1).get()
-				.getHistory();
+		final List<HistoricalQuote> series = IntelligentStockFeed
+		        .getFlatCashSeries(Instrument.CASH, 1).get().getHistory();
 		final int size = series.size();
 
-		series.add(new HistoricalQuote(series.get(0), LocalDate.parse("2023232-01-01"), "bad point"));
+		series.add(
+		        new HistoricalQuote(series.get(0), LocalDate.parse("2023232-01-01"), "bad point"));
 		series.add(new HistoricalQuote(series.get(0), LocalDate.parse("01-01-01"), "bad point"));
-		assertEquals(size + 2, series.size());
+		Assert.assertEquals(size + 2, series.size());
 
-		assertEquals(size, this.remover.clean(series).size());
+		Assert.assertEquals(size, this.remover.clean(series).size());
 	}
 
 }

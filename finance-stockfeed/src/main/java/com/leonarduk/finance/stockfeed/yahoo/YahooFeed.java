@@ -19,30 +19,31 @@ import yahoofinance.quotes.stock.StockQuote;
 
 public class YahooFeed extends StockFeed {
 
-	public static final String QUOTES_BASE_URL = System.getProperty("baseurl.quotes",
-			"http://finance.yahoo.com/d/quotes.csv");
+	public static final int		CONNECTION_TIMEOUT		= Integer
+	        .parseInt(System.getProperty("connection.timeout", "10000"));
 
-	public static final String HISTQUOTES_BASE_URL = System.getProperty("baseurl.histquotes",
-			"http://ichart.yahoo.com/table.csv");
+	public static final String	HISTQUOTES_BASE_URL		= System.getProperty("baseurl.histquotes",
+	        "http://ichart.yahoo.com/table.csv");
 
-	public static final String QUOTES_CSV_DELIMITER = ",";
-	public static final String TIMEZONE = "America/New_York";
-	public static final int CONNECTION_TIMEOUT = Integer.parseInt(System.getProperty("connection.timeout", "10000"));
-	public static final Logger logger = Logger.getLogger(YahooFeed.class.getName());
+	public static final Logger	logger					= Logger
+	        .getLogger(YahooFeed.class.getName());
+	public static final String	QUOTES_BASE_URL			= System.getProperty("baseurl.quotes",
+	        "http://finance.yahoo.com/d/quotes.csv");
+	public static final String	QUOTES_CSV_DELIMITER	= ",";
+	public static final String	TIMEZONE				= "America/New_York";
 
 	private static String getCode(final Instrument instrument) {
 		switch (instrument.getAssetType()) {
-		case FUND:
-			return instrument.getIsin();
-		default:
-			return instrument.code();
+			case FUND:
+				return instrument.getIsin();
+			default:
+				return instrument.code();
 		}
 	}
 
 	/**
-	 * Sends a request for a single FX rate. Some common symbols can easily be
-	 * found in the ENUM {@link quotes.fx.FxSymbols} Some examples of accepted
-	 * symbols:
+	 * Sends a request for a single FX rate. Some common symbols can easily be found in the ENUM
+	 * {@link quotes.fx.FxSymbols} Some examples of accepted symbols:
 	 * <ul>
 	 * <li>EURUSD=X
 	 * <li>USDEUR=X
@@ -64,8 +65,8 @@ public class YahooFeed extends StockFeed {
 
 	public static String getQueryName(final Instrument instrument) {
 		switch (instrument.getExchange()) {
-		case London:
-			return getCode(instrument) + ".L";
+			case London:
+				return YahooFeed.getCode(instrument) + ".L";
 		}
 		throw new IllegalArgumentException("Don't know how to handle " + instrument.getExchange());
 	}
@@ -76,19 +77,22 @@ public class YahooFeed extends StockFeed {
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
+	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
+	        final LocalDate toDate) {
 		try {
 			final Stock stock = new Stock(instrument);
 
-			stock.getHistory(DateUtils.dateToCalendar(fromDate), DateUtils.dateToCalendar(toDate.toDate()),
-					Interval.DAILY);
+			stock.getHistory(DateUtils.dateToCalendar(fromDate),
+			        DateUtils.dateToCalendar(toDate.toDate()), Interval.DAILY);
 			final StockQuote quote = stock.getQuote();
 			stock.getHistory()
-					.add(new HistoricalQuote(stock.getInstrument(),
-							LocalDate.fromCalendarFields(quote.getLastTradeTime()), quote.getOpen(), quote.getDayLow(),
-							quote.getDayHigh(), quote.getPrice(), quote.getPrice(), quote.getVolume(), "Yahoo"));
+			        .add(new HistoricalQuote(stock.getInstrument(),
+			                LocalDate.fromCalendarFields(quote.getLastTradeTime()), quote.getOpen(),
+			                quote.getDayLow(), quote.getDayHigh(), quote.getPrice(),
+			                quote.getPrice(), quote.getVolume(), "Yahoo"));
 			return Optional.of(stock);
-		} catch (final Exception e) {
+		}
+		catch (final Exception e) {
 			return Optional.empty();
 		}
 	}

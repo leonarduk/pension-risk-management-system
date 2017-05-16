@@ -47,22 +47,24 @@ public class TimeseriesUtils {
 
 	public static TimeSeries getTimeSeries(final Stock stock, final int i) throws IOException {
 		// TODO Auto-generated method stub
-		return getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now());
+		return TimeseriesUtils.getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now());
 	}
 
-	public static TimeSeries getTimeSeries(final Stock stock, final LocalDate fromDate, final LocalDate toDate)
-			throws IOException {
+	public static TimeSeries getTimeSeries(final Stock stock, final LocalDate fromDate,
+	        final LocalDate toDate) throws IOException {
 		List<HistoricalQuote> history = stock.getHistory();
 		if ((null == history) || history.isEmpty()) {
-			final Optional<Stock> optional = new IntelligentStockFeed().get(stock.getInstrument(), fromDate, toDate);
+			final Optional<Stock> optional = new IntelligentStockFeed().get(stock.getInstrument(),
+			        fromDate, toDate);
 			if (optional.isPresent()) {
 				history = optional.get().getHistory();
-			} else {
+			}
+			else {
 				return null;
 			}
 		}
 
-		sortQuoteList(history);
+		TimeseriesUtils.sortQuoteList(history);
 		final Iterator<HistoricalQuote> series = history.iterator();
 
 		final List<Tick> ticks = new LinkedList<>();
@@ -71,15 +73,20 @@ public class TimeseriesUtils {
 				final HistoricalQuote quote = series.next();
 
 				final BigDecimal closeBd = quote.getClose();
-				final double open = ensureIsDouble(ifNull(quote.getOpen(), closeBd));
-				final double high = ensureIsDouble(ifNull(quote.getHigh(), closeBd));
-				final double low = ensureIsDouble(ifNull(quote.getLow(), closeBd));
-				final double close = ensureIsDouble(closeBd);
-				final double volume = ensureIsDouble(ifNull(quote.getVolume(), 0L));
+				final double open = TimeseriesUtils
+				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getOpen(), closeBd));
+				final double high = TimeseriesUtils
+				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getHigh(), closeBd));
+				final double low = TimeseriesUtils
+				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getLow(), closeBd));
+				final double close = TimeseriesUtils.ensureIsDouble(closeBd);
+				final double volume = TimeseriesUtils
+				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getVolume(), 0L));
 
-				ticks.add(new Tick(new DateTime(quote.getDate().toDateTimeAtStartOfDay()), open, high, low, close,
-						volume));
-			} catch (final NullPointerException e) {
+				ticks.add(new Tick(new DateTime(quote.getDate().toDateTimeAtStartOfDay()), open,
+				        high, low, close, volume));
+			}
+			catch (final NullPointerException e) {
 				System.err.println(e);
 				return null;
 			}
@@ -112,7 +119,7 @@ public class TimeseriesUtils {
 	}
 
 	public static List<HistoricalQuote> sortQuoteList(final List<HistoricalQuote> history) {
-		Collections.sort(history, getComparator());
+		Collections.sort(history, TimeseriesUtils.getComparator());
 		return history;
 	}
 }

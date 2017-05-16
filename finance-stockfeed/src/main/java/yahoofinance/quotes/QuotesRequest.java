@@ -21,15 +21,14 @@ import com.leonarduk.finance.utils.StringUtils;
  *
  * @author Stijn Strickx
  * @param <T>
- *            Type of object that can contain the retrieved information from a
- *            quotes request
+ *            Type of object that can contain the retrieved information from a quotes request
  */
 public abstract class QuotesRequest<T> {
 
-	public static final Logger logger = Logger.getLogger(QuotesRequest.class.getName());
-	protected final Instrument instrument;
+	protected final Instrument		instrument;
+	protected List<QuotesProperty>	properties;
 
-	protected List<QuotesProperty> properties;
+	public static final Logger		logger	= Logger.getLogger(QuotesRequest.class.getName());
 
 	public QuotesRequest(final Instrument instrument, final List<QuotesProperty> properties) {
 		this.instrument = instrument;
@@ -70,7 +69,7 @@ public abstract class QuotesRequest<T> {
 		final String url = YahooFeed.QUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
 
 		// Get CSV from Yahoo
-		logger.log(Level.INFO, ("Sending request: " + url));
+		QuotesRequest.logger.log(Level.INFO, ("Sending request: " + url));
 
 		final URL request = new URL(url);
 		final URLConnection connection = request.openConnection();
@@ -82,9 +81,12 @@ public abstract class QuotesRequest<T> {
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 			if (line.equals("Missing Symbols List.")) {
-				logger.log(Level.SEVERE, "The requested symbol was not recognized by Yahoo Finance");
-			} else {
-				logger.log(Level.INFO, ("Parsing CSV line: " + StringUtils.unescape(line)));
+				QuotesRequest.logger.log(Level.SEVERE,
+				        "The requested symbol was not recognized by Yahoo Finance");
+			}
+			else {
+				QuotesRequest.logger.log(Level.INFO,
+				        ("Parsing CSV line: " + StringUtils.unescape(line)));
 
 				final T data = this.parseCSVLine(line);
 				result.add(data);

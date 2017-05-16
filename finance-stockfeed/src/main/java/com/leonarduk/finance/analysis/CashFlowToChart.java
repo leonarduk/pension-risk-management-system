@@ -3,22 +3,20 @@
  *
  * Copyright (c) 2014-2016 Marc de Verdelhan & respective authors (see AUTHORS)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.leonarduk.finance.analysis;
 
@@ -91,11 +89,13 @@ public class CashFlowToChart {
 	 * @return the JFreeChart time series
 	 */
 	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(final TimeSeries tickSeries,
-			final Indicator<Decimal> indicator, final String name) {
-		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(name);
+	        final Indicator<Decimal> indicator, final String name) {
+		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(
+		        name);
 		for (int i = 0; i < tickSeries.getTickCount(); i++) {
 			final Tick tick = tickSeries.getTick(i);
-			chartTimeSeries.add(new Minute(tick.getEndTime().toDate()), indicator.getValue(i).toDouble());
+			chartTimeSeries.add(new Minute(tick.getEndTime().toDate()),
+			        indicator.getValue(i).toDouble());
 		}
 		return chartTimeSeries;
 	}
@@ -140,20 +140,21 @@ public class CashFlowToChart {
 		 * Building chart datasets
 		 */
 		final TimeSeriesCollection datasetAxis1 = new TimeSeriesCollection();
-		datasetAxis1.addSeries(buildChartTimeSeries(series, new ClosePriceIndicator(series), "Bitstamp Bitcoin (BTC)"));
+		datasetAxis1.addSeries(CashFlowToChart.buildChartTimeSeries(series,
+		        new ClosePriceIndicator(series), "Bitstamp Bitcoin (BTC)"));
 		final TimeSeriesCollection datasetAxis2 = new TimeSeriesCollection();
-		datasetAxis2.addSeries(buildChartTimeSeries(series, cashFlow, "Cash Flow"));
+		datasetAxis2.addSeries(CashFlowToChart.buildChartTimeSeries(series, cashFlow, "Cash Flow"));
 
 		/**
 		 * Creating the chart
 		 */
 		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Bitstamp BTC", // title
-				"Date", // x-axis label
-				"Price", // y-axis label
-				datasetAxis1, // data
-				true, // create legend?
-				true, // generate tooltips?
-				false // generate URLs?
+		        "Date", // x-axis label
+		        "Price", // y-axis label
+		        datasetAxis1, // data
+		        true, // create legend?
+		        true, // generate tooltips?
+		        false // generate URLs?
 		);
 		final XYPlot plot = (XYPlot) chart.getPlot();
 		final DateAxis axis = (DateAxis) plot.getDomainAxis();
@@ -162,11 +163,11 @@ public class CashFlowToChart {
 		/**
 		 * Adding the cash flow axis (on the right)
 		 */
-		addCashFlowAxis(plot, datasetAxis2);
+		CashFlowToChart.addCashFlowAxis(plot, datasetAxis2);
 
 		/**
 		 * Displaying the chart
 		 */
-		displayChart(chart);
+		CashFlowToChart.displayChart(chart);
 	}
 }

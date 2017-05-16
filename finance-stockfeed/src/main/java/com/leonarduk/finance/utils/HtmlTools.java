@@ -31,10 +31,11 @@ public class HtmlTools {
 		}
 		if (null == value) {
 			value = "";
-			logger.warning("Null value supplied - treat as empty string");
+			HtmlTools.logger.warning("Null value supplied - treat as empty string");
 
 		}
-		sb.append("<td bgcolor='" + getColour(value) + "'>").append(formatter.format(value)).append("</td>");
+		sb.append("<td bgcolor='" + HtmlTools.getColour(value) + "'>")
+		        .append(formatter.format(value)).append("</td>");
 	}
 
 	public static void addHeader(String name, final StringBuilder sb) {
@@ -43,20 +44,22 @@ public class HtmlTools {
 		}
 		if (null == name) {
 			name = "";
-			logger.warning("Null field name supplied - treat as empty string");
+			HtmlTools.logger.warning("Null field name supplied - treat as empty string");
 		}
 		sb.append("<th>").append(name).append("</th>");
 	}
 
-	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
-			final List<Valuation> valuations, final String title, final String key, final String value)
-			throws IOException {
+	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap,
+	        final StringBuilder sbBody, final List<Valuation> valuations, final String title,
+	        final String key, final String value) throws IOException {
 		final PieChartFactory pieChartFactory = new PieChartFactory(title);
 		pieChartFactory.addAll(assetTypeMap);
-		assetTypeMap.put("Total", NumberUtils.roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
+		assetTypeMap.put("Total",
+		        NumberUtils.roundDecimal(Decimal.valueOf(pieChartFactory.getTotal())).toDouble());
 		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
 		final String filename = title.replace(" ", "_");
-		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
+		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400,
+		        pieChartFactory.buildChart()));
 	}
 
 	public static StringBuilder createHtmlText(StringBuilder sbHead, StringBuilder sbBody) {
@@ -66,26 +69,29 @@ public class HtmlTools {
 		if (sbBody == null) {
 			sbBody = new StringBuilder();
 		}
-		final StringBuilder buf = new StringBuilder("<html><head>").append(sbHead).append("</head><body>");
+		final StringBuilder buf = new StringBuilder("<html><head>").append(sbHead)
+		        .append("</head><body>");
 		buf.append(sbBody).append("</body></html>\n");
 		return buf;
 	}
 
 	public static String getColour(final Object value) {
 		String colour = "white";
-		if ((value != null) && (value.equals(RecommendedTrade.BUY) || ((value instanceof LocalDate)
-				&& (Decimal.valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
-						.equals(Decimal.ZERO))
+		if ((value != null)
+		        && (value.equals(RecommendedTrade.BUY) || ((value instanceof LocalDate) && (Decimal
+		                .valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
+		                        .equals(Decimal.ZERO))
 
-				|| ((value instanceof Decimal) && ((Decimal) value).isGreaterThan(Decimal.ZERO)))) {
+		                || ((value instanceof Decimal)
+		                        && ((Decimal) value).isGreaterThan(Decimal.ZERO)))) {
 			colour = "green";
 		}
 
 		if (((value != null) && value.equals(RecommendedTrade.SELL))
-				|| ((value instanceof LocalDate)
-						&& (Decimal.valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
-								.isGreaterThan(Decimal.ONE))
-				|| ((value instanceof Decimal) && ((Decimal) value).isLessThan(Decimal.ZERO))) {
+		        || ((value instanceof LocalDate) && (Decimal
+		                .valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
+		                        .isGreaterThan(Decimal.ONE))
+		        || ((value instanceof Decimal) && ((Decimal) value).isLessThan(Decimal.ZERO))) {
 			colour = "red";
 		}
 		return colour;
@@ -103,8 +109,9 @@ public class HtmlTools {
 			try {
 				key = URLEncoder.encode(key, "UTF-8");
 				value = URLEncoder.encode(value, "UTF-8");
-			} catch (final UnsupportedEncodingException ex) {
-				logger.log(Level.SEVERE, ex.getMessage(), ex);
+			}
+			catch (final UnsupportedEncodingException ex) {
+				HtmlTools.logger.log(Level.SEVERE, ex.getMessage(), ex);
 				// Still try to continue with unencoded values
 			}
 			sb.append(String.format("%s=%s", key, value));
@@ -117,7 +124,7 @@ public class HtmlTools {
 			sb.append("<table><tr>");
 			records.get(0).stream().forEach(f -> {
 				if (f.isDisplay()) {
-					addHeader(f.getName(), sb);
+					HtmlTools.addHeader(f.getName(), sb);
 				}
 			});
 			sb.append("</tr>");
@@ -126,7 +133,7 @@ public class HtmlTools {
 				sb.append("<tr>");
 				list.stream().forEach(f -> {
 					if (f.isDisplay()) {
-						addField(f.getValue(), sb, f.getFormatter());
+						HtmlTools.addField(f.getValue(), sb, f.getFormatter());
 					}
 				});
 				sb.append("</tr>");

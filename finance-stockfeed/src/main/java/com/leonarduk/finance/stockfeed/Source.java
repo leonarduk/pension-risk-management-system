@@ -1,4 +1,5 @@
 package com.leonarduk.finance.stockfeed;
+
 enum Source {
-	Google, Yahoo, FT, MANUAL
+	FT, Google, MANUAL, Yahoo
 }

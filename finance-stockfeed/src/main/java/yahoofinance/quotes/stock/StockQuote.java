@@ -10,41 +10,40 @@ import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo
- * Finance.
+ * All getters can return null in case the data is not available from Yahoo Finance.
  *
  * @author Stijn Strickx
  */
 public class StockQuote {
 
-	private TimeZone timeZone;
+	private BigDecimal			ask;
 
-	private BigDecimal ask;
+	private Long				askSize;
 
-	private Long askSize;
+	private Long				avgVolume;
 
-	private BigDecimal bid;
-	private Long bidSize;
-	private BigDecimal price;
-	private Long lastTradeSize;
-	private String lastTradeDateStr;
+	private BigDecimal			bid;
+	private Long				bidSize;
+	private BigDecimal			dayHigh;
+	private BigDecimal			dayLow;
+	private final Instrument	instrument;
 
-	private String lastTradeTimeStr;
-	private Calendar lastTradeTime;
-	private BigDecimal open;
-	private BigDecimal previousClose;
+	private String				lastTradeDateStr;
+	private Long				lastTradeSize;
+	private Calendar			lastTradeTime;
+	private String				lastTradeTimeStr;
 
-	private BigDecimal dayLow;
-	private BigDecimal dayHigh;
-	private BigDecimal yearLow;
-	private BigDecimal yearHigh;
+	private BigDecimal			open;
+	private BigDecimal			previousClose;
+	private BigDecimal			price;
+	private BigDecimal			priceAvg200;
 
-	private BigDecimal priceAvg50;
-	private BigDecimal priceAvg200;
-	private Long volume;
-	private Long avgVolume;
+	private BigDecimal			priceAvg50;
+	private TimeZone			timeZone;
+	private Long				volume;
+	private BigDecimal			yearHigh;
 
-	private final Instrument instrument;
+	private BigDecimal			yearLow;
 
 	public StockQuote(final Instrument instrument) {
 		this.instrument = instrument;
@@ -66,147 +65,168 @@ public class StockQuote {
 			if (other.ask != null) {
 				return false;
 			}
-		} else if (!this.ask.equals(other.ask)) {
+		}
+		else if (!this.ask.equals(other.ask)) {
 			return false;
 		}
 		if (this.askSize == null) {
 			if (other.askSize != null) {
 				return false;
 			}
-		} else if (!this.askSize.equals(other.askSize)) {
+		}
+		else if (!this.askSize.equals(other.askSize)) {
 			return false;
 		}
 		if (this.avgVolume == null) {
 			if (other.avgVolume != null) {
 				return false;
 			}
-		} else if (!this.avgVolume.equals(other.avgVolume)) {
+		}
+		else if (!this.avgVolume.equals(other.avgVolume)) {
 			return false;
 		}
 		if (this.bid == null) {
 			if (other.bid != null) {
 				return false;
 			}
-		} else if (!this.bid.equals(other.bid)) {
+		}
+		else if (!this.bid.equals(other.bid)) {
 			return false;
 		}
 		if (this.bidSize == null) {
 			if (other.bidSize != null) {
 				return false;
 			}
-		} else if (!this.bidSize.equals(other.bidSize)) {
+		}
+		else if (!this.bidSize.equals(other.bidSize)) {
 			return false;
 		}
 		if (this.dayHigh == null) {
 			if (other.dayHigh != null) {
 				return false;
 			}
-		} else if (!this.dayHigh.equals(other.dayHigh)) {
+		}
+		else if (!this.dayHigh.equals(other.dayHigh)) {
 			return false;
 		}
 		if (this.dayLow == null) {
 			if (other.dayLow != null) {
 				return false;
 			}
-		} else if (!this.dayLow.equals(other.dayLow)) {
+		}
+		else if (!this.dayLow.equals(other.dayLow)) {
 			return false;
 		}
 		if (this.instrument == null) {
 			if (other.instrument != null) {
 				return false;
 			}
-		} else if (!this.instrument.equals(other.instrument)) {
+		}
+		else if (!this.instrument.equals(other.instrument)) {
 			return false;
 		}
 		if (this.lastTradeDateStr == null) {
 			if (other.lastTradeDateStr != null) {
 				return false;
 			}
-		} else if (!this.lastTradeDateStr.equals(other.lastTradeDateStr)) {
+		}
+		else if (!this.lastTradeDateStr.equals(other.lastTradeDateStr)) {
 			return false;
 		}
 		if (this.lastTradeSize == null) {
 			if (other.lastTradeSize != null) {
 				return false;
 			}
-		} else if (!this.lastTradeSize.equals(other.lastTradeSize)) {
+		}
+		else if (!this.lastTradeSize.equals(other.lastTradeSize)) {
 			return false;
 		}
 		if (this.lastTradeTime == null) {
 			if (other.lastTradeTime != null) {
 				return false;
 			}
-		} else if (!this.lastTradeTime.equals(other.lastTradeTime)) {
+		}
+		else if (!this.lastTradeTime.equals(other.lastTradeTime)) {
 			return false;
 		}
 		if (this.lastTradeTimeStr == null) {
 			if (other.lastTradeTimeStr != null) {
 				return false;
 			}
-		} else if (!this.lastTradeTimeStr.equals(other.lastTradeTimeStr)) {
+		}
+		else if (!this.lastTradeTimeStr.equals(other.lastTradeTimeStr)) {
 			return false;
 		}
 		if (this.open == null) {
 			if (other.open != null) {
 				return false;
 			}
-		} else if (!this.open.equals(other.open)) {
+		}
+		else if (!this.open.equals(other.open)) {
 			return false;
 		}
 		if (this.previousClose == null) {
 			if (other.previousClose != null) {
 				return false;
 			}
-		} else if (!this.previousClose.equals(other.previousClose)) {
+		}
+		else if (!this.previousClose.equals(other.previousClose)) {
 			return false;
 		}
 		if (this.price == null) {
 			if (other.price != null) {
 				return false;
 			}
-		} else if (!this.price.equals(other.price)) {
+		}
+		else if (!this.price.equals(other.price)) {
 			return false;
 		}
 		if (this.priceAvg200 == null) {
 			if (other.priceAvg200 != null) {
 				return false;
 			}
-		} else if (!this.priceAvg200.equals(other.priceAvg200)) {
+		}
+		else if (!this.priceAvg200.equals(other.priceAvg200)) {
 			return false;
 		}
 		if (this.priceAvg50 == null) {
 			if (other.priceAvg50 != null) {
 				return false;
 			}
-		} else if (!this.priceAvg50.equals(other.priceAvg50)) {
+		}
+		else if (!this.priceAvg50.equals(other.priceAvg50)) {
 			return false;
 		}
 		if (this.timeZone == null) {
 			if (other.timeZone != null) {
 				return false;
 			}
-		} else if (!this.timeZone.equals(other.timeZone)) {
+		}
+		else if (!this.timeZone.equals(other.timeZone)) {
 			return false;
 		}
 		if (this.volume == null) {
 			if (other.volume != null) {
 				return false;
 			}
-		} else if (!this.volume.equals(other.volume)) {
+		}
+		else if (!this.volume.equals(other.volume)) {
 			return false;
 		}
 		if (this.yearHigh == null) {
 			if (other.yearHigh != null) {
 				return false;
 			}
-		} else if (!this.yearHigh.equals(other.yearHigh)) {
+		}
+		else if (!this.yearHigh.equals(other.yearHigh)) {
 			return false;
 		}
 		if (this.yearLow == null) {
 			if (other.yearLow != null) {
 				return false;
 			}
-		} else if (!this.yearLow.equals(other.yearLow)) {
+		}
+		else if (!this.yearLow.equals(other.yearLow)) {
 			return false;
 		}
 		return true;
@@ -256,8 +276,7 @@ public class StockQuote {
 
 	/**
 	 *
-	 * @return change from 200 day moving average relative to 200 day moving
-	 *         average
+	 * @return change from 200 day moving average relative to 200 day moving average
 	 */
 	public BigDecimal getChangeFromAvg200InPercent() {
 		return NumberUtils.getPercent(this.getChangeFromAvg200(), this.priceAvg200);
@@ -276,8 +295,7 @@ public class StockQuote {
 
 	/**
 	 *
-	 * @return change from 50 day moving average relative to 50 day moving
-	 *         average
+	 * @return change from 50 day moving average relative to 50 day moving average
 	 */
 	public BigDecimal getChangeFromAvg50InPercent() {
 		return NumberUtils.getPercent(this.getChangeFromAvg50(), this.priceAvg50);
@@ -350,9 +368,8 @@ public class StockQuote {
 	}
 
 	/**
-	 * Will derive the time zone from the exchange to parse the date time into a
-	 * Calendar object. This will not react to changes in the lastTradeDateStr
-	 * and lastTradeTimeStr
+	 * Will derive the time zone from the exchange to parse the date time into a Calendar object.
+	 * This will not react to changes in the lastTradeDateStr and lastTradeTimeStr
 	 *
 	 * @return last trade date time
 	 */
@@ -361,8 +378,8 @@ public class StockQuote {
 	}
 
 	/**
-	 * Will use the provided time zone to parse the date time into a Calendar
-	 * object Reacts to changes in the lastTradeDateStr and lastTradeTimeStr
+	 * Will use the provided time zone to parse the date time into a Calendar object Reacts to
+	 * changes in the lastTradeDateStr and lastTradeTimeStr
 	 *
 	 * @param timeZone
 	 *            time zone where the stock is traded
@@ -435,12 +452,17 @@ public class StockQuote {
 		result = (prime * result) + ((this.dayHigh == null) ? 0 : this.dayHigh.hashCode());
 		result = (prime * result) + ((this.dayLow == null) ? 0 : this.dayLow.hashCode());
 		result = (prime * result) + ((this.instrument == null) ? 0 : this.instrument.hashCode());
-		result = (prime * result) + ((this.lastTradeDateStr == null) ? 0 : this.lastTradeDateStr.hashCode());
-		result = (prime * result) + ((this.lastTradeSize == null) ? 0 : this.lastTradeSize.hashCode());
-		result = (prime * result) + ((this.lastTradeTime == null) ? 0 : this.lastTradeTime.hashCode());
-		result = (prime * result) + ((this.lastTradeTimeStr == null) ? 0 : this.lastTradeTimeStr.hashCode());
+		result = (prime * result)
+		        + ((this.lastTradeDateStr == null) ? 0 : this.lastTradeDateStr.hashCode());
+		result = (prime * result)
+		        + ((this.lastTradeSize == null) ? 0 : this.lastTradeSize.hashCode());
+		result = (prime * result)
+		        + ((this.lastTradeTime == null) ? 0 : this.lastTradeTime.hashCode());
+		result = (prime * result)
+		        + ((this.lastTradeTimeStr == null) ? 0 : this.lastTradeTimeStr.hashCode());
 		result = (prime * result) + ((this.open == null) ? 0 : this.open.hashCode());
-		result = (prime * result) + ((this.previousClose == null) ? 0 : this.previousClose.hashCode());
+		result = (prime * result)
+		        + ((this.previousClose == null) ? 0 : this.previousClose.hashCode());
 		result = (prime * result) + ((this.price == null) ? 0 : this.price.hashCode());
 		result = (prime * result) + ((this.priceAvg200 == null) ? 0 : this.priceAvg200.hashCode());
 		result = (prime * result) + ((this.priceAvg50 == null) ? 0 : this.priceAvg50.hashCode());
@@ -533,8 +555,8 @@ public class StockQuote {
 
 	@Override
 	public String toString() {
-		return "Ask: " + this.ask + ", Bid: " + this.bid + ", Price: " + this.price + ", Prev close: "
-				+ this.previousClose;
+		return "Ask: " + this.ask + ", Bid: " + this.bid + ", Price: " + this.price
+		        + ", Prev close: " + this.previousClose;
 	}
 
 }

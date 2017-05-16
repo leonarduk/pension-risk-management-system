@@ -18,13 +18,14 @@ public class ResourceTools {
 	}
 
 	public static List<String> getResourceAsLines(final String filePath) throws IOException {
-		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(getResourceAsInputStream(filePath)))) {
+		try (BufferedReader buffer = new BufferedReader(
+		        new InputStreamReader(ResourceTools.getResourceAsInputStream(filePath)))) {
 			return buffer.lines().collect(Collectors.toList());
 		}
 	}
 
 	public static List<List<String>> readCsvRecords(final String fileName) throws IOException {
-		try (Stream<String> lines = getResourceAsLines(fileName).stream()) {
+		try (Stream<String> lines = ResourceTools.getResourceAsLines(fileName).stream()) {
 			return lines.map(line -> Arrays.asList(line.split(","))).collect(Collectors.toList());
 		}
 	}

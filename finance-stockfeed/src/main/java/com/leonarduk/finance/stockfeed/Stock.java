@@ -25,17 +25,17 @@ import yahoofinance.quotes.stock.StockStats;
  */
 public class Stock {
 
-	public static final Logger logger = Logger.getLogger(Stock.class.getName());
+	private String					currency;
 
-	private final Instrument instrument;
+	private StockDividend			dividend;
 
-	private String currency;
-	private StockQuote quote;
-	private StockStats stats;
+	private List<HistoricalQuote>	history;
+	private final Instrument		instrument;
+	private StockQuote				quote;
 
-	private StockDividend dividend;
+	private StockStats				stats;
 
-	private List<HistoricalQuote> history;
+	public static final Logger		logger	= Logger.getLogger(Stock.class.getName());
 
 	public Stock(final Instrument instrument) {
 		this.instrument = instrument;
@@ -57,42 +57,48 @@ public class Stock {
 			if (other.currency != null) {
 				return false;
 			}
-		} else if (!this.currency.equals(other.currency)) {
+		}
+		else if (!this.currency.equals(other.currency)) {
 			return false;
 		}
 		if (this.dividend == null) {
 			if (other.dividend != null) {
 				return false;
 			}
-		} else if (!this.dividend.equals(other.dividend)) {
+		}
+		else if (!this.dividend.equals(other.dividend)) {
 			return false;
 		}
 		if (this.history == null) {
 			if (other.history != null) {
 				return false;
 			}
-		} else if (!this.history.equals(other.history)) {
+		}
+		else if (!this.history.equals(other.history)) {
 			return false;
 		}
 		if (this.instrument == null) {
 			if (other.instrument != null) {
 				return false;
 			}
-		} else if (!this.instrument.equals(other.instrument)) {
+		}
+		else if (!this.instrument.equals(other.instrument)) {
 			return false;
 		}
 		if (this.quote == null) {
 			if (other.quote != null) {
 				return false;
 			}
-		} else if (!this.quote.equals(other.quote)) {
+		}
+		else if (!this.quote.equals(other.quote)) {
 			return false;
 		}
 		if (this.stats == null) {
 			if (other.stats != null) {
 				return false;
 			}
-		} else if (!this.stats.equals(other.stats)) {
+		}
+		else if (!this.stats.equals(other.stats)) {
 			return false;
 		}
 		return true;
@@ -122,19 +128,16 @@ public class Stock {
 	 *
 	 * This method will return null in the following situations:
 	 * <ul>
-	 * <li>the data hasn't been loaded yet in a previous request and refresh is
-	 * set to false.
-	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance
-	 * for whatever reason (symbol not recognized, no network connection, ...)
+	 * <li>the data hasn't been loaded yet in a previous request and refresh is set to false.
+	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance for whatever reason
+	 * (symbol not recognized, no network connection, ...)
 	 * </ul>
 	 * <p>
-	 * When the dividend data get refreshed, it will automatically also refresh
-	 * the quote and statistics data of the stock from Yahoo Finance in the same
-	 * request.
+	 * When the dividend data get refreshed, it will automatically also refresh the quote and
+	 * statistics data of the stock from Yahoo Finance in the same request.
 	 *
 	 * @param refresh
-	 *            indicates whether the data should be requested again to Yahoo
-	 *            Finance
+	 *            indicates whether the data should be requested again to Yahoo Finance
 	 * @return dividend data available for this stock
 	 * @throws java.io.IOException
 	 *             when there's a connection problem
@@ -147,21 +150,20 @@ public class Stock {
 	}
 
 	/**
-	 * This method will return historical quotes from this stock. If the
-	 * historical quotes are not available yet, they will be requested first
-	 * from Yahoo Finance.
+	 * This method will return historical quotes from this stock. If the historical quotes are not
+	 * available yet, they will be requested first from Yahoo Finance.
 	 * <p>
-	 * If the historical quotes are not available yet, the following
-	 * characteristics will be used for the request:
+	 * If the historical quotes are not available yet, the following characteristics will be used
+	 * for the request:
 	 * <ul>
 	 * <li>from: 1 year ago (default)
 	 * <li>to: today (default)
 	 * <li>interval: MONTHLY (default)
 	 * </ul>
 	 * <p>
-	 * There are several more methods available that allow you to define some
-	 * characteristics of the historical data. Calling one of those methods will
-	 * result in a new request being sent to Yahoo Finance.
+	 * There are several more methods available that allow you to define some characteristics of the
+	 * historical data. Calling one of those methods will result in a new request being sent to
+	 * Yahoo Finance.
 	 *
 	 * @return a list of historical quotes from this stock
 	 * @throws java.io.IOException
@@ -170,8 +172,7 @@ public class Stock {
 	 * @see #getHistory(java.util.Calendar)
 	 * @see #getHistory(java.util.Calendar, java.util.Calendar)
 	 * @see #getHistory(java.util.Calendar, yahoofinance.histquotes.Interval)
-	 * @see #getHistory(java.util.Calendar, java.util.Calendar,
-	 *      yahoofinance.histquotes.Interval)
+	 * @see #getHistory(java.util.Calendar, java.util.Calendar, yahoofinance.histquotes.Interval)
 	 */
 	public List<HistoricalQuote> getHistory() throws IOException {
 		if (this.history == null) {
@@ -181,8 +182,7 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following
-	 * characteristics.
+	 * Requests the historical quotes for this stock with the following characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: today (default)
@@ -201,8 +201,7 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following
-	 * characteristics.
+	 * Requests the historical quotes for this stock with the following characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: specified value
@@ -218,13 +217,13 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from, final Calendar to) throws IOException {
+	public List<HistoricalQuote> getHistory(final Calendar from, final Calendar to)
+	        throws IOException {
 		return this.getHistory(from, to, Interval.MONTHLY);
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following
-	 * characteristics.
+	 * Requests the historical quotes for this stock with the following characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: specified value
@@ -242,16 +241,15 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from, final Calendar to, final Interval interval)
-			throws IOException {
+	public List<HistoricalQuote> getHistory(final Calendar from, final Calendar to,
+	        final Interval interval) throws IOException {
 		final HistQuotesRequest hist = new HistQuotesRequest(this.instrument, from, to, interval);
 		this.setHistory(hist.getResult());
 		return this.history;
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following
-	 * characteristics.
+	 * Requests the historical quotes for this stock with the following characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: today (default)
@@ -267,13 +265,13 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from, final Interval interval) throws IOException {
+	public List<HistoricalQuote> getHistory(final Calendar from, final Interval interval)
+	        throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO, interval);
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following
-	 * characteristics.
+	 * Requests the historical quotes for this stock with the following characteristics.
 	 * <ul>
 	 * <li>from: 1 year ago (default)
 	 * <li>to: today (default)
@@ -318,22 +316,19 @@ public class Stock {
 	}
 
 	/**
-	 * Returns the basic quotes data available for this stock. This method will
-	 * return null in the following situations:
+	 * Returns the basic quotes data available for this stock. This method will return null in the
+	 * following situations:
 	 * <ul>
-	 * <li>the data hasn't been loaded yet in a previous request and refresh is
-	 * set to false.
-	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance
-	 * for whatever reason (symbol not recognized, no network connection, ...)
+	 * <li>the data hasn't been loaded yet in a previous request and refresh is set to false.
+	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance for whatever reason
+	 * (symbol not recognized, no network connection, ...)
 	 * </ul>
 	 * <p>
-	 * When the quote data gets refreshed, it will automatically also refresh
-	 * the statistics and dividend data of the stock from Yahoo Finance in the
-	 * same request.
+	 * When the quote data gets refreshed, it will automatically also refresh the statistics and
+	 * dividend data of the stock from Yahoo Finance in the same request.
 	 *
 	 * @param refresh
-	 *            indicates whether the data should be requested again to Yahoo
-	 *            Finance
+	 *            indicates whether the data should be requested again to Yahoo Finance
 	 * @return basic quotes data available for this stock
 	 * @throws java.io.IOException
 	 *             when there's a connection problem
@@ -356,22 +351,19 @@ public class Stock {
 	}
 
 	/**
-	 * Returns the statistics available for this stock. This method will return
-	 * null in the following situations:
+	 * Returns the statistics available for this stock. This method will return null in the
+	 * following situations:
 	 * <ul>
-	 * <li>the data hasn't been loaded yet in a previous request and refresh is
-	 * set to false.
-	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance
-	 * for whatever reason (symbol not recognized, no network connection, ...)
+	 * <li>the data hasn't been loaded yet in a previous request and refresh is set to false.
+	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance for whatever reason
+	 * (symbol not recognized, no network connection, ...)
 	 * </ul>
 	 * <p>
-	 * When the statistics get refreshed, it will automatically also refresh the
-	 * quote and dividend data of the stock from Yahoo Finance in the same
-	 * request.
+	 * When the statistics get refreshed, it will automatically also refresh the quote and dividend
+	 * data of the stock from Yahoo Finance in the same request.
 	 *
 	 * @param refresh
-	 *            indicates whether the data should be requested again to Yahoo
-	 *            Finance
+	 *            indicates whether the data should be requested again to Yahoo Finance
 	 * @return statistics available for this stock
 	 * @throws java.io.IOException
 	 *             when there's a connection problem
@@ -415,9 +407,11 @@ public class Stock {
 		for (final Field f : this.getClass().getDeclaredFields()) {
 			try {
 				System.out.println(f.getName() + ": " + f.get(this));
-			} catch (final IllegalArgumentException ex) {
+			}
+			catch (final IllegalArgumentException ex) {
 				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (final IllegalAccessException ex) {
+			}
+			catch (final IllegalAccessException ex) {
 				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -456,9 +450,11 @@ public class Stock {
 			this.setQuote(data.getQuote());
 			this.setStats(data.getStats());
 			this.setDividend(data.getDividend());
-			logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
-		} else {
-			logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}", this.instrument.isin());
+			Stock.logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
+		}
+		else {
+			Stock.logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}",
+			        this.instrument.isin());
 		}
 	}
 

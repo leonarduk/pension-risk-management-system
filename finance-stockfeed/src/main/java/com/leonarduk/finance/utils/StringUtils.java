@@ -9,7 +9,8 @@ public class StringUtils {
 	}
 
 	static boolean isParseable(final String data) {
-		return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("") || data.equals("nan"));
+		return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("")
+		        || data.equals("nan"));
 	}
 
 	public static String join(final String[] data, final String d) {
@@ -26,8 +27,7 @@ public class StringUtils {
 	}
 
 	/**
-	 * Strips the unwanted chars from a line returned in the CSV Used for
-	 * parsing the FX CSV lines
+	 * Strips the unwanted chars from a line returned in the CSV Used for parsing the FX CSV lines
 	 *
 	 * @param line
 	 *            the original CSV line
@@ -42,24 +42,33 @@ public class StringUtils {
 		for (int i = 0; i < data.length(); i++) {
 			if (data.charAt(i) > 256) {
 				buffer.append("\\u").append(Integer.toHexString(data.charAt(i)));
-			} else {
+			}
+			else {
 				if (data.charAt(i) == '\n') {
 					buffer.append("\\n");
-				} else if (data.charAt(i) == '\t') {
+				}
+				else if (data.charAt(i) == '\t') {
 					buffer.append("\\t");
-				} else if (data.charAt(i) == '\r') {
+				}
+				else if (data.charAt(i) == '\r') {
 					buffer.append("\\r");
-				} else if (data.charAt(i) == '\b') {
+				}
+				else if (data.charAt(i) == '\b') {
 					buffer.append("\\b");
-				} else if (data.charAt(i) == '\f') {
+				}
+				else if (data.charAt(i) == '\f') {
 					buffer.append("\\f");
-				} else if (data.charAt(i) == '\'') {
+				}
+				else if (data.charAt(i) == '\'') {
 					buffer.append("\\'");
-				} else if (data.charAt(i) == '\"') {
+				}
+				else if (data.charAt(i) == '\"') {
 					buffer.append("\\\"");
-				} else if (data.charAt(i) == '\\') {
+				}
+				else if (data.charAt(i) == '\\') {
 					buffer.append("\\\\");
-				} else {
+				}
+				else {
 					buffer.append(data.charAt(i));
 				}
 			}

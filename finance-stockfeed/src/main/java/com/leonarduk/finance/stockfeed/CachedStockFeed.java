@@ -1,7 +1,5 @@
 package com.leonarduk.finance.stockfeed;
 
-import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.writeFile;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,14 +9,15 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
+import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class CachedStockFeed extends CsvStockFeed {
-	public static final Logger log = Logger.getLogger(CachedStockFeed.class.getName());
+	private final String		storeLocation;
 
-	private final String storeLocation;
+	public static final Logger	log	= Logger.getLogger(CachedStockFeed.class.getName());
 
 	public CachedStockFeed(final String storeLocation) {
 		this.storeLocation = storeLocation;
@@ -27,14 +26,14 @@ public class CachedStockFeed extends CsvStockFeed {
 	private void createSeries(final Stock stock) throws IOException {
 
 		final File file = this.getFile(stock);
-		log.info("Save stock to " + file.getAbsolutePath());
+		CachedStockFeed.log.info("Save stock to " + file.getAbsolutePath());
 		final List<HistoricalQuote> series = stock.getHistory();
 
 		/**
 		 * Building header
 		 */
-		final StringBuilder sb = seriesToCsv(series);
-		writeFile(file.getAbsolutePath(), sb);
+		final StringBuilder sb = StockFeed.seriesToCsv(series);
+		IndicatorsToCsv.writeFile(file.getAbsolutePath(), sb);
 
 	}
 
@@ -75,7 +74,7 @@ public class CachedStockFeed extends CsvStockFeed {
 	@Override
 	protected BufferedReader openReader() throws IOException {
 		final File file = new File(this.storeLocation, this.getQueryName(this.getInstrument()));
-		log.info("Read file from " + file.getAbsolutePath());
+		CachedStockFeed.log.info("Read file from " + file.getAbsolutePath());
 
 		if (!file.exists()) {
 			throw new IOException(file.getAbsolutePath() + " not found");
@@ -93,7 +92,8 @@ public class CachedStockFeed extends CsvStockFeed {
 		final File seriesFile = this.getFile(stock);
 		if (seriesFile.exists()) {
 			this.mergeSeries(stock);
-		} else {
+		}
+		else {
 			this.createSeries(stock);
 		}
 	}

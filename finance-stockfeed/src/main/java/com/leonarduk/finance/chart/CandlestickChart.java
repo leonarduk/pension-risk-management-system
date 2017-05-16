@@ -3,22 +3,20 @@
  *
  * Copyright (c) 2014-2016 Marc de Verdelhan & respective authors (see AUTHORS)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.leonarduk.finance.chart;
 
@@ -61,10 +59,11 @@ public class CandlestickChart {
 		final ClosePriceIndicator indicator = new ClosePriceIndicator(series);
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
 		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(
-				series.getName() + " price");
+		        series.getName() + " price");
 		for (int i = 0; i < series.getTickCount(); i++) {
 			final Tick tick = series.getTick(i);
-			chartTimeSeries.add(new Second(tick.getEndTime().toDate()), indicator.getValue(i).toDouble());
+			chartTimeSeries.add(new Second(tick.getEndTime().toDate()),
+			        indicator.getValue(i).toDouble());
 		}
 		dataset.addSeries(chartTimeSeries);
 		return dataset;
@@ -97,8 +96,8 @@ public class CandlestickChart {
 			volumes[i] = tick.getVolume().toDouble();
 		}
 
-		final OHLCDataset dataset = new DefaultHighLowDataset(series.getName(), dates, highs, lows, opens, closes,
-				volumes);
+		final OHLCDataset dataset = new DefaultHighLowDataset(series.getName(), dates, highs, lows,
+		        opens, closes, volumes);
 
 		return dataset;
 	}
@@ -109,18 +108,18 @@ public class CandlestickChart {
 		/**
 		 * Creating the OHLC dataset
 		 */
-		final OHLCDataset ohlcDataset = createOHLCDataset(series);
+		final OHLCDataset ohlcDataset = CandlestickChart.createOHLCDataset(series);
 
 		/**
 		 * Creating the additional dataset
 		 */
-		final TimeSeriesCollection xyDataset = createAdditionalDataset(series);
+		final TimeSeriesCollection xyDataset = CandlestickChart.createAdditionalDataset(series);
 
 		/**
 		 * Creating the chart
 		 */
-		final JFreeChart chart = ChartFactory.createCandlestickChart(stock.getName() + " price", "Time",
-				stock.getCurrency(), ohlcDataset, true);
+		final JFreeChart chart = ChartFactory.createCandlestickChart(stock.getName() + " price",
+		        "Time", stock.getCurrency(), ohlcDataset, true);
 		// Candlestick rendering
 		final CandlestickRenderer renderer = new CandlestickRenderer();
 		renderer.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_SMALLEST);

@@ -26,7 +26,29 @@ import yahoofinance.histquotes.HistoricalQuote;
 
 public abstract class CsvStockFeed extends StockFeed {
 
-	public static final Logger log = Logger.getLogger(CsvStockFeed.class.getName());
+	private Optional<BigDecimal>	close;
+
+	private String					comment;
+
+	private Date					date;
+
+	private Date					endDate;
+
+	private Optional<BigDecimal>	high;
+
+	private Instrument				instrument;
+
+	private Optional<BigDecimal>	low;
+
+	private Optional<BigDecimal>	open;
+
+	private BufferedReader			reader;
+
+	private Date					startDate;
+
+	private Optional<BigDecimal>	volume;
+
+	public static final Logger		log	= Logger.getLogger(CsvStockFeed.class.getName());
 
 	protected static String formatDate(final DateFormat formatter, final Date date) {
 		synchronized (formatter) {
@@ -34,32 +56,12 @@ public abstract class CsvStockFeed extends StockFeed {
 		}
 	}
 
-	private Optional<BigDecimal> close;
-
-	private Date date;
-
-	private Date endDate;
-
-	private Optional<BigDecimal> high;
-
-	private Optional<BigDecimal> low;
-
-	private Optional<BigDecimal> open;
-
-	private BufferedReader reader;
-
-	private Date startDate;
-
-	private Optional<BigDecimal> volume;
-
-	private Instrument instrument;
-
-	private String comment;
-
 	public HistoricalQuote asHistoricalQuote() {
-		return new HistoricalQuote(this.instrument, LocalDate.fromDateFields(this.date), this.getOpen().orElse(null),
-				this.getLow().orElse(null), this.getHigh().orElse(null), this.getClose().orElse(null),
-				this.getClose().orElse(null), this.getVolume().orElse(BigDecimal.ONE).longValue(), this.getComment());
+		return new HistoricalQuote(this.instrument, LocalDate.fromDateFields(this.date),
+		        this.getOpen().orElse(null), this.getLow().orElse(null),
+		        this.getHigh().orElse(null), this.getClose().orElse(null),
+		        this.getClose().orElse(null), this.getVolume().orElse(BigDecimal.ONE).longValue(),
+		        this.getComment());
 	}
 
 	@Override
@@ -68,8 +70,8 @@ public abstract class CsvStockFeed extends StockFeed {
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
-			throws IOException {
+	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
+	        final LocalDate toDate) throws IOException {
 		this.setInstrument(instrument);
 		this.setStartDate(fromDate.toDate());
 		this.setEndDate(toDate.toDate());
@@ -84,12 +86,13 @@ public abstract class CsvStockFeed extends StockFeed {
 				return o2.getDate().compareTo(o1.getDate());
 			});
 
-		} catch (final IOException e) {
-			log.warning("Failed:" + e.getMessage());
+		}
+		catch (final IOException e) {
+			CsvStockFeed.log.warning("Failed:" + e.getMessage());
 			return Optional.empty();
 		}
 
-		return Optional.of(createStock(instrument, quotes));
+		return Optional.of(StockFeed.createStock(instrument, quotes));
 	}
 
 	/**
@@ -188,11 +191,10 @@ public abstract class CsvStockFeed extends StockFeed {
 	/**
 	 * Advance to next stock quote in response
 	 * <p>
-	 * This method will open a new request on the first call and will update the
-	 * fields for open, close, high, low, and volume each time it is called.
+	 * This method will open a new request on the first call and will update the fields for open,
+	 * close, high, low, and volume each time it is called.
 	 *
-	 * @return true if another quote was parsed, false if no more quotes exist
-	 *         to read
+	 * @return true if another quote was parsed, false if no more quotes exist to read
 	 * @throws IOException
 	 * @
 	 */
@@ -212,8 +214,9 @@ public abstract class CsvStockFeed extends StockFeed {
 				return Optional.empty();
 			}
 			return Optional.of(NumberUtils.getBigDecimal(input));
-		} catch (final NumberFormatException e) {
-			log.warning("Failed to parse " + input);
+		}
+		catch (final NumberFormatException e) {
+			CsvStockFeed.log.warning("Failed to parse " + input);
 			return Optional.empty();
 		}
 	}
@@ -231,7 +234,7 @@ public abstract class CsvStockFeed extends StockFeed {
 			}
 			final String tab = "\t";
 			if (line.contains(tab)) {
-				log.warning("Messed up Csv - found tabs");
+				CsvStockFeed.log.warning("Messed up Csv - found tabs");
 				line = line.replace(tab, ",");
 			}
 
@@ -243,29 +246,29 @@ public abstract class CsvStockFeed extends StockFeed {
 			while (start < length) {
 				final String fieldValue = line.substring(start, comma);
 				switch (column++) {
-				case 0:
-					this.date = this.parseDate(fieldValue);
-					break;
-				case 1:
-					this.open = this.parseBigDecimal(fieldValue);
-					break;
-				case 2:
-					this.high = this.parseBigDecimal(fieldValue);
-					break;
-				case 3:
-					this.low = this.parseBigDecimal(fieldValue);
-					break;
-				case 4:
-					this.close = this.parseBigDecimal(fieldValue);
-					break;
-				case 5:
-					this.volume = this.parseBigDecimal(fieldValue);
-					break;
-				case 6:
-					this.comment = fieldValue;
-					break;
-				default:
-					// ignore
+					case 0:
+						this.date = this.parseDate(fieldValue);
+						break;
+					case 1:
+						this.open = this.parseBigDecimal(fieldValue);
+						break;
+					case 2:
+						this.high = this.parseBigDecimal(fieldValue);
+						break;
+					case 3:
+						this.low = this.parseBigDecimal(fieldValue);
+						break;
+					case 4:
+						this.close = this.parseBigDecimal(fieldValue);
+						break;
+					case 5:
+						this.volume = this.parseBigDecimal(fieldValue);
+						break;
+					case 6:
+						this.comment = fieldValue;
+						break;
+					default:
+						// ignore
 				}
 				start = comma + 1;
 				comma = line.indexOf(',', start);
@@ -274,7 +277,8 @@ public abstract class CsvStockFeed extends StockFeed {
 				}
 			}
 			return true;
-		} catch (final Exception e) {
+		}
+		catch (final Exception e) {
 			throw new IOException(e);
 		}
 	}
@@ -288,7 +292,8 @@ public abstract class CsvStockFeed extends StockFeed {
 		if (this.reader != null) {
 			try {
 				this.reader.close();
-			} catch (final IOException ignored) {
+			}
+			catch (final IOException ignored) {
 				// Ignored
 			}
 		}

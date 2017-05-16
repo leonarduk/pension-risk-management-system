@@ -21,8 +21,8 @@ public class FxQuotesRequest extends QuotesRequest<FxQuote> {
 
 	public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<>();
 	static {
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.LastTradePriceOnly);
+		FxQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		FxQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradePriceOnly);
 	}
 
 	public FxQuotesRequest(final Instrument instrument) {
@@ -31,9 +31,11 @@ public class FxQuotesRequest extends QuotesRequest<FxQuote> {
 
 	@Override
 	protected FxQuote parseCSVLine(final String line) throws IOException {
-		final String[] split = StringUtils.stripOverhead(line).split(YahooFeed.QUOTES_CSV_DELIMITER);
+		final String[] split = StringUtils.stripOverhead(line)
+		        .split(YahooFeed.QUOTES_CSV_DELIMITER);
 		if (split.length >= 2) {
-			return new FxQuote(Instrument.fromString(split[0]), NumberUtils.getBigDecimal(split[1]));
+			return new FxQuote(Instrument.fromString(split[0]),
+			        NumberUtils.getBigDecimal(split[1]));
 		}
 		return null;
 	}

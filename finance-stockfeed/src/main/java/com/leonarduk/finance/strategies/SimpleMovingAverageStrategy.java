@@ -9,25 +9,26 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 public class SimpleMovingAverageStrategy extends AbstractStrategy {
 
-	private SimpleMovingAverageStrategy(String name, Strategy strategy) {
-		super(name, strategy);
-	}
-
-	public static SimpleMovingAverageStrategy buildStrategy(TimeSeries series, int days) {
+	public static SimpleMovingAverageStrategy buildStrategy(final TimeSeries series,
+	        final int days) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");
 		}
 
-		ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-		SMAIndicator sma = new SMAIndicator(closePrice, days);
+		final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+		final SMAIndicator sma = new SMAIndicator(closePrice, days);
 
 		// Signals
 		// Buy when SMA goes over close price
 		// Sell when close price goes over SMA
-		Strategy buySellSignals = new Strategy(new OverIndicatorRule(sma, closePrice),
-				new UnderIndicatorRule(sma, closePrice));
+		final Strategy buySellSignals = new Strategy(new OverIndicatorRule(sma, closePrice),
+		        new UnderIndicatorRule(sma, closePrice));
 		return new SimpleMovingAverageStrategy("SMA (" + days + "days)", buySellSignals);
 
+	}
+
+	private SimpleMovingAverageStrategy(final String name, final Strategy strategy) {
+		super(name, strategy);
 	}
 
 }

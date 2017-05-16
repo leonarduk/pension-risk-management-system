@@ -15,16 +15,14 @@ import yahoofinance.quotes.QuotesRequest;
 public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 
 	/**
-	 * Yahoo Finance is responding with formatted numbers in some cases. Because
-	 * of this, those number may contain commas. This will screw up the CSV
-	 * file.
+	 * Yahoo Finance is responding with formatted numbers in some cases. Because of this, those
+	 * number may contain commas. This will screw up the CSV file.
 	 *
-	 * It's not possible to choose a different delimiter for the CSV or to
-	 * disable the number formatting
+	 * It's not possible to choose a different delimiter for the CSV or to disable the number
+	 * formatting
 	 *
-	 * To work around this, we surround the vulnerable values by the stock
-	 * symbol. This forces us to do manual parsing of the CSV lines instead of
-	 * using the easy String.split
+	 * To work around this, we surround the vulnerable values by the stock symbol. This forces us to
+	 * do manual parsing of the CSV lines instead of using the easy String.split
 	 *
 	 */
 	public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<>();
@@ -33,76 +31,77 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 
 		// Always keep the name and symbol in first and second place
 		// respectively!
-		DEFAULT_PROPERTIES.add(QuotesProperty.Name);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Name);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.Currency);
-		DEFAULT_PROPERTIES.add(QuotesProperty.StockExchange);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Currency);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.StockExchange);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.Ask);
-		DEFAULT_PROPERTIES.add(QuotesProperty.AskRealtime);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.AskSize);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Bid);
-		DEFAULT_PROPERTIES.add(QuotesProperty.BidRealtime);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.BidSize);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Ask);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.AskRealtime);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.AskSize);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Bid);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.BidRealtime);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.BidSize);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.LastTradePriceOnly);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeSize);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeDate);
-		DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeTime);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradePriceOnly);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeSize);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeDate);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeTime);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.Open);
-		DEFAULT_PROPERTIES.add(QuotesProperty.PreviousClose);
-		DEFAULT_PROPERTIES.add(QuotesProperty.DaysLow);
-		DEFAULT_PROPERTIES.add(QuotesProperty.DaysHigh);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Open);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PreviousClose);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DaysLow);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DaysHigh);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.Volume);
-		DEFAULT_PROPERTIES.add(QuotesProperty.AverageDailyVolume);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Volume);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.AverageDailyVolume);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.YearHigh);
-		DEFAULT_PROPERTIES.add(QuotesProperty.YearLow);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.YearHigh);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.YearLow);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.FiftydayMovingAverage);
-		DEFAULT_PROPERTIES.add(QuotesProperty.TwoHundreddayMovingAverage);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.FiftydayMovingAverage);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.TwoHundreddayMovingAverage);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.SharesOutstanding);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.SharesOwned);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.MarketCapitalization);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		DEFAULT_PROPERTIES.add(QuotesProperty.SharesFloat);
-		DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.SharesOutstanding);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.SharesOwned);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.MarketCapitalization);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.SharesFloat);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.DividendPayDate);
-		DEFAULT_PROPERTIES.add(QuotesProperty.ExDividendDate);
-		DEFAULT_PROPERTIES.add(QuotesProperty.TrailingAnnualDividendYield);
-		DEFAULT_PROPERTIES.add(QuotesProperty.TrailingAnnualDividendYieldInPercent);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DividendPayDate);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.ExDividendDate);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.TrailingAnnualDividendYield);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.TrailingAnnualDividendYieldInPercent);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.DilutedEPS);
-		DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateCurrentYear);
-		DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateNextQuarter);
-		DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateNextYear);
-		DEFAULT_PROPERTIES.add(QuotesProperty.PERatio);
-		DEFAULT_PROPERTIES.add(QuotesProperty.PEGRatio);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DilutedEPS);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateCurrentYear);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateNextQuarter);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateNextYear);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PERatio);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PEGRatio);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.PriceBook);
-		DEFAULT_PROPERTIES.add(QuotesProperty.PriceSales);
-		DEFAULT_PROPERTIES.add(QuotesProperty.BookValuePerShare);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PriceBook);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PriceSales);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.BookValuePerShare);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.Revenue);
-		DEFAULT_PROPERTIES.add(QuotesProperty.EBITDA);
-		DEFAULT_PROPERTIES.add(QuotesProperty.OneyrTargetPrice);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Revenue);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EBITDA);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.OneyrTargetPrice);
 
-		DEFAULT_PROPERTIES.add(QuotesProperty.ShortRatio);
+		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.ShortRatio);
 	}
 
 	public StockQuotesRequest(final Instrument instrument) {
@@ -124,9 +123,10 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 		if (line.startsWith("\"")) {
 			pos1 = 1; // skip first \"
 			pos2 = line.indexOf('\"', 1);
-		} else {
+		}
+		else {
 			pos2 = line.indexOf(",\""); // last comma before the first symbol
-										// (hopefully)
+			                            // (hopefully)
 			skip = 1;
 		}
 
@@ -142,7 +142,8 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 			pos1 += 1;
 			pos2 = line.indexOf('\"', pos1);
 			skip = 2;
-		} else {
+		}
+		else {
 			pos2 = line.indexOf(',', pos1);
 			skip = 1;
 		}
@@ -153,7 +154,8 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 			pos1 += 1;
 			pos2 = line.indexOf('\"', pos1);
 			skip = 2;
-		} else {
+		}
+		else {
 			pos2 = line.indexOf(',', pos1);
 			skip = 1;
 		}
@@ -169,18 +171,20 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 			if (line.startsWith(fullSymbol, pos1)) {
 				parsedLine.add(symbol);
 				pos1 = pos1 + fullSymbol.length() + 1; // immediately skip the ,
-														// as well
+				                                       // as well
 				pos2 = line.indexOf(fullSymbol, pos1) - 1; // don't include last
-															// ,
+				                                           // ,
 				parsedLine.add(line.substring(pos1, pos2));
 				parsedLine.add(symbol);
 				pos1 = pos2 + fullSymbol.length() + 1;
-			} else if (line.charAt(pos1) == '\"') {
+			}
+			else if (line.charAt(pos1) == '\"') {
 				pos1 += 1;
 				pos2 = line.indexOf('\"', pos1);
 				parsedLine.add(line.substring(pos1, pos2));
 				pos1 = pos2 + 1;
-			} else if (line.charAt(pos1) != ',') {
+			}
+			else if (line.charAt(pos1) != ',') {
 				pos2 = line.indexOf(',', pos1);
 				if (pos2 <= pos1) {
 					pos2 = line.length();

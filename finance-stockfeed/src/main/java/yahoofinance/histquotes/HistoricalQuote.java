@@ -9,35 +9,35 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo
- * Finance.
+ * All getters can return null in case the data is not available from Yahoo Finance.
  *
  * @author Stijn Strickx
  */
 public class HistoricalQuote {
 
-	private final LocalDate date;
+	private final BigDecimal	adjClose;
 
-	private final BigDecimal open;
-	private final BigDecimal low;
-	private final BigDecimal high;
-	private final BigDecimal close;
+	private final BigDecimal	close;
+	private final String		comment;
+	private final LocalDate		date;
+	private final BigDecimal	high;
 
-	private final BigDecimal adjClose;
+	private final Instrument	instrument;
 
-	private final String comment;
+	private final BigDecimal	low;
 
-	private final Long volume;
-	private final Instrument instrument;
+	private final BigDecimal	open;
+	private final Long			volume;
 
-	public HistoricalQuote(final HistoricalQuote that, final LocalDate today, final String comment) {
-		this(that.getInstrument(), today, that.getOpen(), that.getLow(), that.getHigh(), that.getClose(),
-				that.getAdjClose(), that.getVolume(), comment);
+	public HistoricalQuote(final HistoricalQuote that, final LocalDate today,
+	        final String comment) {
+		this(that.getInstrument(), today, that.getOpen(), that.getLow(), that.getHigh(),
+		        that.getClose(), that.getAdjClose(), that.getVolume(), comment);
 	}
 
 	public HistoricalQuote(final Instrument instrument, final LocalDate date, final BigDecimal open,
-			final BigDecimal low, final BigDecimal high, final BigDecimal close, final BigDecimal adjClose,
-			final Long volume, final String comment) {
+	        final BigDecimal low, final BigDecimal high, final BigDecimal close,
+	        final BigDecimal adjClose, final Long volume, final String comment) {
 		this.instrument = instrument;
 		this.date = date;
 		this.open = open;
@@ -82,38 +82,41 @@ public class HistoricalQuote {
 			if (other.comment != null) {
 				return false;
 			}
-		} else if (!this.comment.equals(other.comment)) {
+		}
+		else if (!this.comment.equals(other.comment)) {
 			return false;
 		}
 		if (this.date == null) {
 			if (other.date != null) {
 				return false;
 			}
-		} else if (!this.date.equals(other.date)) {
+		}
+		else if (!this.date.equals(other.date)) {
 			return false;
 		}
 		if (this.instrument == null) {
 			if (other.instrument != null) {
 				return false;
 			}
-		} else if (!this.instrument.equals(other.instrument)) {
+		}
+		else if (!this.instrument.equals(other.instrument)) {
 			return false;
 		}
 		if (this.volume == null) {
 			if (other.volume != null) {
 				return false;
 			}
-		} else if (!this.volume.equals(other.volume)) {
+		}
+		else if (!this.volume.equals(other.volume)) {
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * The adjusted closing price on a specific date reflects all of the
-	 * dividends and splits since that day. The adjusted closing price from a
-	 * date in history can be used to calculate a close estimate of the total
-	 * return, including dividends, that an investor earned if shares were
+	 * The adjusted closing price on a specific date reflects all of the dividends and splits since
+	 * that day. The adjusted closing price from a date in history can be used to calculate a close
+	 * estimate of the total return, including dividends, that an investor earned if shares were
 	 * purchased on that date.
 	 *
 	 * @return the adjusted close price
@@ -180,7 +183,7 @@ public class HistoricalQuote {
 
 	@Override
 	public String toString() {
-		return this.instrument + "@" + this.date.toString() + ": " + this.low + "-" + this.high + ", " + this.open
-				+ "->" + this.close + " (" + this.adjClose + ") " + this.comment;
+		return this.instrument + "@" + this.date.toString() + ": " + this.low + "-" + this.high
+		        + ", " + this.open + "->" + this.close + " (" + this.adjClose + ") " + this.comment;
 	}
 }

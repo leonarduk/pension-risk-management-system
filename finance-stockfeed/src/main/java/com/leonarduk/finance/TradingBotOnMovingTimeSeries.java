@@ -46,7 +46,7 @@ public class TradingBotOnMovingTimeSeries {
 		// Buy when SMA goes over close price
 		// Sell when close price goes over SMA
 		final Strategy buySellSignals = new Strategy(new OverIndicatorRule(sma, closePrice),
-				new UnderIndicatorRule(sma, closePrice));
+		        new UnderIndicatorRule(sma, closePrice));
 		return buySellSignals;
 	}
 
@@ -57,19 +57,18 @@ public class TradingBotOnMovingTimeSeries {
 	 */
 	private static Tick generateRandomTick() {
 		final Decimal maxRange = Decimal.valueOf("0.03"); // 3.0%
-		final Decimal openPrice = LAST_TICK_CLOSE_PRICE;
-		final Decimal minPrice = openPrice
-				.minus(openPrice.multipliedBy(maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
-		final Decimal maxPrice = openPrice
-				.plus(openPrice.multipliedBy(maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
-		final Decimal closePrice = randDecimal(minPrice, maxPrice);
-		LAST_TICK_CLOSE_PRICE = closePrice;
+		final Decimal openPrice = TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE;
+		final Decimal minPrice = openPrice.minus(
+		        openPrice.multipliedBy(maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
+		final Decimal maxPrice = openPrice.plus(
+		        openPrice.multipliedBy(maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
+		final Decimal closePrice = TradingBotOnMovingTimeSeries.randDecimal(minPrice, maxPrice);
+		TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE = closePrice;
 		return new Tick(DateTime.now(), openPrice, maxPrice, minPrice, closePrice, Decimal.ONE);
 	}
 
 	/**
-	 * Builds a moving time series (i.e. keeping only the maxTickCount last
-	 * ticks)
+	 * Builds a moving time series (i.e. keeping only the maxTickCount last ticks)
 	 *
 	 * @param maxTickCount
 	 *            the number of ticks to keep in the time series (at maximum)
@@ -83,8 +82,10 @@ public class TradingBotOnMovingTimeSeries {
 		System.out.print("Initial tick count: " + series.getTickCount());
 		// Limitating the number of ticks to maxTickCount
 		series.setMaximumTickCount(maxTickCount);
-		LAST_TICK_CLOSE_PRICE = series.getTick(series.getEnd()).getClosePrice();
-		System.out.println(" (limited to " + maxTickCount + "), close price = " + LAST_TICK_CLOSE_PRICE);
+		TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE = series.getTick(series.getEnd())
+		        .getClosePrice();
+		System.out.println(" (limited to " + maxTickCount + "), close price = "
+		        + TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE);
 		return series;
 	}
 
@@ -92,10 +93,10 @@ public class TradingBotOnMovingTimeSeries {
 
 		System.out.println("********************** Initialization **********************");
 		// Getting the time series
-		final TimeSeries series = initMovingTimeSeries(20);
+		final TimeSeries series = TradingBotOnMovingTimeSeries.initMovingTimeSeries(20);
 
 		// Building the trading strategy
-		final Strategy strategy = buildStrategy(series);
+		final Strategy strategy = TradingBotOnMovingTimeSeries.buildStrategy(series);
 
 		// Initializing the trading history
 		final TradingRecord tradingRecord = new TradingRecord();
@@ -108,29 +109,34 @@ public class TradingBotOnMovingTimeSeries {
 
 			// New tick
 			Thread.sleep(30); // I know...
-			final Tick newTick = generateRandomTick();
-			System.out.println("------------------------------------------------------\n" + "Tick " + i
-					+ " added, close price = " + newTick.getClosePrice().toDouble());
+			final Tick newTick = TradingBotOnMovingTimeSeries.generateRandomTick();
+			System.out.println("------------------------------------------------------\n" + "Tick "
+			        + i + " added, close price = " + newTick.getClosePrice().toDouble());
 			series.addTick(newTick);
 
 			final int endIndex = series.getEnd();
 			if (strategy.shouldEnter(endIndex)) {
 				// Our strategy should enter
 				System.out.println("Strategy should ENTER on " + endIndex);
-				final boolean entered = tradingRecord.enter(endIndex, newTick.getClosePrice(), Decimal.TEN);
+				final boolean entered = tradingRecord.enter(endIndex, newTick.getClosePrice(),
+				        Decimal.TEN);
 				if (entered) {
 					final Order entry = tradingRecord.getLastEntry();
-					System.out.println("Entered on " + entry.getIndex() + " (price=" + entry.getPrice().toDouble()
-							+ ", amount=" + entry.getAmount().toDouble() + ")");
+					System.out.println("Entered on " + entry.getIndex() + " (price="
+					        + entry.getPrice().toDouble() + ", amount="
+					        + entry.getAmount().toDouble() + ")");
 				}
-			} else if (strategy.shouldExit(endIndex)) {
+			}
+			else if (strategy.shouldExit(endIndex)) {
 				// Our strategy should exit
 				System.out.println("Strategy should EXIT on " + endIndex);
-				final boolean exited = tradingRecord.exit(endIndex, newTick.getClosePrice(), Decimal.TEN);
+				final boolean exited = tradingRecord.exit(endIndex, newTick.getClosePrice(),
+				        Decimal.TEN);
 				if (exited) {
 					final Order exit = tradingRecord.getLastExit();
-					System.out.println("Exited on " + exit.getIndex() + " (price=" + exit.getPrice().toDouble()
-							+ ", amount=" + exit.getAmount().toDouble() + ")");
+					System.out.println(
+					        "Exited on " + exit.getIndex() + " (price=" + exit.getPrice().toDouble()
+					                + ", amount=" + exit.getAmount().toDouble() + ")");
 				}
 			}
 		}

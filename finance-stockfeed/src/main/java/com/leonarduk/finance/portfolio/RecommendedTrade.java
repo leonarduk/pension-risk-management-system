@@ -1,5 +1,5 @@
 package com.leonarduk.finance.portfolio;
 
 public enum RecommendedTrade {
-	BUY, SELL, HOLD
+	BUY, HOLD, SELL
 }

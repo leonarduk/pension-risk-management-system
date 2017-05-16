@@ -5,28 +5,27 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 
 /**
- * All getters can return null in case the data is not available from Yahoo
- * Finance.
+ * All getters can return null in case the data is not available from Yahoo Finance.
  *
  * @author Stijn Strickx
  */
 public class StockDividend {
 
-	private final String symbol;
+	private BigDecimal		annualYield;
 
-	private Calendar payDate;
+	private BigDecimal		annualYieldPercent;
 
-	private Calendar exDate;
+	private Calendar		exDate;
 
-	private BigDecimal annualYield;
-	private BigDecimal annualYieldPercent;
+	private Calendar		payDate;
+	private final String	symbol;
 
 	public StockDividend(final String symbol) {
 		this.symbol = symbol;
 	}
 
 	public StockDividend(final String symbol, final Calendar payDate, final Calendar exDate,
-			final BigDecimal annualYield, final BigDecimal annualYieldPercent) {
+	        final BigDecimal annualYield, final BigDecimal annualYieldPercent) {
 		this(symbol);
 		this.payDate = payDate;
 		this.exDate = exDate;
@@ -50,35 +49,40 @@ public class StockDividend {
 			if (other.annualYield != null) {
 				return false;
 			}
-		} else if (!this.annualYield.equals(other.annualYield)) {
+		}
+		else if (!this.annualYield.equals(other.annualYield)) {
 			return false;
 		}
 		if (this.annualYieldPercent == null) {
 			if (other.annualYieldPercent != null) {
 				return false;
 			}
-		} else if (!this.annualYieldPercent.equals(other.annualYieldPercent)) {
+		}
+		else if (!this.annualYieldPercent.equals(other.annualYieldPercent)) {
 			return false;
 		}
 		if (this.exDate == null) {
 			if (other.exDate != null) {
 				return false;
 			}
-		} else if (!this.exDate.equals(other.exDate)) {
+		}
+		else if (!this.exDate.equals(other.exDate)) {
 			return false;
 		}
 		if (this.payDate == null) {
 			if (other.payDate != null) {
 				return false;
 			}
-		} else if (!this.payDate.equals(other.payDate)) {
+		}
+		else if (!this.payDate.equals(other.payDate)) {
 			return false;
 		}
 		if (this.symbol == null) {
 			if (other.symbol != null) {
 				return false;
 			}
-		} else if (!this.symbol.equals(other.symbol)) {
+		}
+		else if (!this.symbol.equals(other.symbol)) {
 			return false;
 		}
 		return true;
@@ -109,7 +113,8 @@ public class StockDividend {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + ((this.annualYield == null) ? 0 : this.annualYield.hashCode());
-		result = (prime * result) + ((this.annualYieldPercent == null) ? 0 : this.annualYieldPercent.hashCode());
+		result = (prime * result)
+		        + ((this.annualYieldPercent == null) ? 0 : this.annualYieldPercent.hashCode());
 		result = (prime * result) + ((this.exDate == null) ? 0 : this.exDate.hashCode());
 		result = (prime * result) + ((this.payDate == null) ? 0 : this.payDate.hashCode());
 		result = (prime * result) + ((this.symbol == null) ? 0 : this.symbol.hashCode());
@@ -146,7 +151,8 @@ public class StockDividend {
 		if (this.annualYieldPercent != null) {
 			annualYieldStr = this.annualYieldPercent.toString() + "%";
 		}
-		return "Pay date: " + payDateStr + ", Ex date: " + exDateStr + ", Annual yield: " + annualYieldStr;
+		return "Pay date: " + payDateStr + ", Ex date: " + exDateStr + ", Annual yield: "
+		        + annualYieldStr;
 	}
 
 }

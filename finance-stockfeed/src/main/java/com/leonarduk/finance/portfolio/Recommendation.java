@@ -5,33 +5,33 @@ import com.leonarduk.finance.strategies.AbstractStrategy;
 
 public class Recommendation {
 
+	private final Instrument		instrument;
+	private final AbstractStrategy	strategy;
+	private final RecommendedTrade	tradeRecommendation;
 
-	private RecommendedTrade tradeRecommendation;
-	private AbstractStrategy strategy;
-	private Instrument instrument;
-
-	public Recommendation(RecommendedTrade tradeRecommendation, AbstractStrategy strategy, Instrument stock2) {
+	public Recommendation(final RecommendedTrade tradeRecommendation,
+	        final AbstractStrategy strategy, final Instrument stock2) {
 		this.tradeRecommendation = tradeRecommendation;
 		this.strategy = strategy;
 		this.instrument = stock2;
 	}
 
-	public RecommendedTrade getTradeRecommendation() {
-		return tradeRecommendation;
-	}
-
 	public AbstractStrategy getStrategy() {
-		return strategy;
+		return this.strategy;
 	}
 
 	public Instrument getSymbol() {
-		return instrument;
+		return this.instrument;
+	}
+
+	public RecommendedTrade getTradeRecommendation() {
+		return this.tradeRecommendation;
 	}
 
 	@Override
 	public String toString() {
-		return "Recommendation [tradeRecommendation=" + tradeRecommendation + ", strategy=" + strategy + ", symbol="
-				+ instrument + "]";
+		return "Recommendation [tradeRecommendation=" + this.tradeRecommendation + ", strategy="
+		        + this.strategy + ", symbol=" + this.instrument + "]";
 	}
 
 }

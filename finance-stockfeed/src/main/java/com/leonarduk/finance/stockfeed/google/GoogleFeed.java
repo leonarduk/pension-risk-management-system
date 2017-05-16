@@ -16,22 +16,23 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 
 public class GoogleFeed extends CsvStockFeed {
+	private static final String		BASE_URL			= "http://www.google.com/finance/historical";
 	/** The logger */
-	public static final Logger log = Logger.getLogger(GoogleFeed.class.getName());
-	private static final String BASE_URL = "http://www.google.com/finance/historical";
+	public static final Logger		log					= Logger
+	        .getLogger(GoogleFeed.class.getName());
 
-	private static final String PARAM_START_DATE = "startdate";
+	private static final String		OUTPUT_CSV			= "csv";
 
-	private static final String PARAM_END_DATE = "enddate";
+	private static final String		PARAM_END_DATE		= "enddate";
 
-	private static final String PARAM_OUTPUT = "output";
+	private static final DateFormat	PARAM_FORMATTER		= new SimpleDateFormat("MMM'+'d'%2c+'yyyy");
 
-	private static final String PARAM_SYMBOL = "q";
+	private static final String		PARAM_OUTPUT		= "output";
 
-	private static final String OUTPUT_CSV = "csv";
+	private static final String		PARAM_START_DATE	= "startdate";
 
-	private static final DateFormat PARAM_FORMATTER = new SimpleDateFormat("MMM'+'d'%2c+'yyyy");
-	private static final DateFormat RESULT_FORMATTER = new SimpleDateFormat("dd-MMM-yy");
+	private static final String		PARAM_SYMBOL		= "q";
+	private static final DateFormat	RESULT_FORMATTER	= new SimpleDateFormat("dd-MMM-yy");
 
 	/**
 	 * Create request to uri
@@ -45,9 +46,10 @@ public class GoogleFeed extends CsvStockFeed {
 	 */
 	protected HttpRequest createRequest(final CharSequence uri) throws IOException {
 		try {
-			log.info("Request: " + uri);
+			GoogleFeed.log.info("Request: " + uri);
 			return HttpRequest.get(uri);
-		} catch (final HttpRequestException e) {
+		}
+		catch (final HttpRequestException e) {
 			throw e.getCause();
 		}
 	}
@@ -68,16 +70,20 @@ public class GoogleFeed extends CsvStockFeed {
 	@Override
 	protected BufferedReader openReader() throws IOException {
 		final Map<Object, Object> params = new HashMap<>(4, 1);
-		params.put(PARAM_OUTPUT, OUTPUT_CSV);
-		params.put(PARAM_SYMBOL, Instrument.fromString(this.getSymbol()).getGoogleCode());
+		params.put(GoogleFeed.PARAM_OUTPUT, GoogleFeed.OUTPUT_CSV);
+		params.put(GoogleFeed.PARAM_SYMBOL,
+		        Instrument.fromString(this.getSymbol()).getGoogleCode());
 		if (this.getStartDate() != null) {
-			params.put(PARAM_START_DATE, formatDate(PARAM_FORMATTER, this.getStartDate()));
+			params.put(GoogleFeed.PARAM_START_DATE,
+			        CsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getStartDate()));
 		}
 		if (this.getEndDate() != null) {
-			params.put(PARAM_END_DATE, formatDate(PARAM_FORMATTER, this.getEndDate()));
+			params.put(GoogleFeed.PARAM_END_DATE,
+			        CsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getEndDate()));
 		}
 
-		final HttpRequest request = this.createRequest(HttpRequest.append(BASE_URL, params));
+		final HttpRequest request = this
+		        .createRequest(HttpRequest.append(GoogleFeed.BASE_URL, params));
 		if (!request.ok()) {
 			throw new IOException("Bad response " + request.code());
 		}
@@ -85,7 +91,8 @@ public class GoogleFeed extends CsvStockFeed {
 		final BufferedReader reader;
 		try {
 			reader = request.bufferedReader();
-		} catch (final HttpRequestException e) {
+		}
+		catch (final HttpRequestException e) {
 			throw e.getCause();
 		}
 		// Skip first line that contains column names
@@ -95,6 +102,6 @@ public class GoogleFeed extends CsvStockFeed {
 
 	@Override
 	protected Date parseDate(final String fieldValue) throws ParseException {
-		return RESULT_FORMATTER.parse(fieldValue);
+		return GoogleFeed.RESULT_FORMATTER.parse(fieldValue);
 	}
 }

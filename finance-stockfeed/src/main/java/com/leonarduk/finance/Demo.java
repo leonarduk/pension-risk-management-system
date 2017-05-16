@@ -16,33 +16,35 @@ import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 public class Demo {
 	public static void main(final String[] args) throws IOException {
 
-		final String filePath = new File(Demo.class.getClassLoader().getResource("Book1.csv").getFile())
-				.getAbsolutePath();
+		final String filePath = new File(
+		        Demo.class.getClassLoader().getResource("Book1.csv").getFile()).getAbsolutePath();
 		final StockFeed yahoo = new YahooFeed();
 		final StockFeed google = new GoogleFeed();
 		final Map<String, String> sourceMap = new ConcurrentHashMap<>();
 
 		/*
-		 * {MINV=failed, ALAT=failed, CU2=failed, XFVT=failed, CW8=failed,
-		 * SAAA=failed, ANX=failed, GBDV=failed, XSTR=failed, CC1=failed,
-		 * AEEM=failed, UB39=failed, CKR1=failed, ASDX=failed, GHYS=failed,
-		 * MVUS=failed, IBGY=failed, EMV=failed, VGOV=failed, IMV=failed,
-		 * CRU1=failed, XMEA=failed, BRDX=failed, SCHP=failed, GOLB=failed}
+		 * {MINV=failed, ALAT=failed, CU2=failed, XFVT=failed, CW8=failed, SAAA=failed, ANX=failed,
+		 * GBDV=failed, XSTR=failed, CC1=failed, AEEM=failed, UB39=failed, CKR1=failed, ASDX=failed,
+		 * GHYS=failed, MVUS=failed, IBGY=failed, EMV=failed, VGOV=failed, IMV=failed, CRU1=failed,
+		 * XMEA=failed, BRDX=failed, SCHP=failed, GOLB=failed}
 		 *
 		 */
 		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
 			try {
 
-				if (showForOneSeries(yahoo, stock.getInstrument())) {
+				if (Demo.showForOneSeries(yahoo, stock.getInstrument())) {
 					// sourceMap.put(stock.getSymbol(), "yahoo");
-				} else {
-					if (!showForOneSeries(google, stock.getInstrument())) {
+				}
+				else {
+					if (!Demo.showForOneSeries(google, stock.getInstrument())) {
 						sourceMap.put(stock.getSymbol(), "google");
-					} else {
+					}
+					else {
 						sourceMap.put(stock.getSymbol(), "failed");
 					}
 				}
-			} catch (final Exception e) {
+			}
+			catch (final Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
@@ -71,7 +73,8 @@ public class Demo {
 				// IndicatorsToCsv.exportToCsv(series);
 				return true;
 			}
-		} catch (final IOException e) {
+		}
+		catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

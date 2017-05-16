@@ -3,22 +3,20 @@
  *
  * Copyright (c) 2014-2016 Marc de Verdelhan & respective authors (see AUTHORS)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.leonarduk.finance.stockfeed.file;
 
@@ -50,25 +48,25 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
  */
 public class IndicatorsToCsv {
 
-	private static final Logger LOGGER = Logger.getLogger(IndicatorsToCsv.class.getName());
-	private static final int ONE_YEAR = 251;
-	private static final int TEN_YEAR = 10 * ONE_YEAR;
-	private static final int FIVE_YEAR = 5 * ONE_YEAR;
-	private static final int THREE_YEAR = 3 * ONE_YEAR;
-	private static final int HALF_YEAR = ONE_YEAR / 2;
+	private static final int	FIVE_YEAR	= 5 * IndicatorsToCsv.ONE_YEAR;
+	static NumberFormat			formatter	= new DecimalFormat("#0.00");
+	private static final int	HALF_YEAR	= IndicatorsToCsv.ONE_YEAR / 2;
+	private static final Logger	LOGGER		= Logger.getLogger(IndicatorsToCsv.class.getName());
+	private static final int	ONE_YEAR	= 251;
+	private static final int	TEN_YEAR	= 10 * IndicatorsToCsv.ONE_YEAR;
 
-	static NumberFormat formatter = new DecimalFormat("#0.00");
+	private static final int	THREE_YEAR	= 3 * IndicatorsToCsv.ONE_YEAR;
 
 	public static void addValue(final StringBuilder buf, BigDecimal value) {
 		if (value == null) {
 			value = BigDecimal.ZERO;
 		}
-		final String format = formatter.format(value);
-		addValue(buf, format);
+		final String format = IndicatorsToCsv.formatter.format(value);
+		IndicatorsToCsv.addValue(buf, format);
 	}
 
 	private static void addValue(final StringBuilder buf, final Decimal value) {
-		addValue(buf, (BigDecimal.valueOf(value.toDouble())));
+		IndicatorsToCsv.addValue(buf, (BigDecimal.valueOf(value.toDouble())));
 	}
 
 	public static void addValue(final StringBuilder buf, final long value) {
@@ -79,7 +77,8 @@ public class IndicatorsToCsv {
 		buf.append(',').append(value);
 	}
 
-	private static Decimal calculateReturn(final TimeSeries series, final int timePeriod, final int ticker) {
+	private static Decimal calculateReturn(final TimeSeries series, final int timePeriod,
+	        final int ticker) {
 		final int index = ticker - timePeriod;
 		if ((index < 0) || (index > series.getEnd())) {
 			return Decimal.NaN;
@@ -123,7 +122,7 @@ public class IndicatorsToCsv {
 		 * Building header
 		 */
 		final StringBuilder sb = new StringBuilder(
-				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1D,1W,1M,3M,6M1YR,3YR,5YR,10YR\n");
+		        "timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1D,1W,1M,3M,6M1YR,3YR,5YR,10YR\n");
 
 		/**
 		 * Adding indicators values
@@ -131,33 +130,38 @@ public class IndicatorsToCsv {
 		final int nbTicks = series.getTickCount();
 		for (int i = 0; i < nbTicks; i++) {
 			sb.append(series.getTick(i).getEndTime().toLocalDate()); //
-			addValue(sb, (closePrice.getValue(i)));
-			addValue(sb, (typicalPrice.getValue(i)));
-			addValue(sb, (priceVariation.getValue(i)));
-			addValue(sb, (shortSma.getValue(i)));
-			addValue(sb, (longSma.getValue(i)));
-			addValue(sb, (shortEma.getValue(i)));
-			addValue(sb, (longEma.getValue(i)));
-			addValue(sb, (ppo.getValue(i)));
-			addValue(sb, (roc.getValue(i)));
-			addValue(sb, (rsi.getValue(i)));
-			addValue(sb, (williamsR.getValue(i)));
-			addValue(sb, (atr.getValue(i)));
-			addValue(sb, sd.getValue(i)); //
-			addValue(sb, calculateReturn(series, 1, i));
-			addValue(sb, calculateReturn(series, 5, i));
-			addValue(sb, calculateReturn(series, 21, i));
-			addValue(sb, calculateReturn(series, 63, i));
-			addValue(sb, calculateReturn(series, HALF_YEAR, i));
+			IndicatorsToCsv.addValue(sb, (closePrice.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (typicalPrice.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (priceVariation.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (shortSma.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (longSma.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (shortEma.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (longEma.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (ppo.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (roc.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (rsi.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (williamsR.getValue(i)));
+			IndicatorsToCsv.addValue(sb, (atr.getValue(i)));
+			IndicatorsToCsv.addValue(sb, sd.getValue(i)); //
+			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 1, i));
+			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 5, i));
+			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 21, i));
+			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 63, i));
+			IndicatorsToCsv.addValue(sb,
+			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.HALF_YEAR, i));
 
-			addValue(sb, calculateReturn(series, ONE_YEAR, i));
-			addValue(sb, calculateReturn(series, THREE_YEAR, i));
-			addValue(sb, calculateReturn(series, FIVE_YEAR, i));
-			addValue(sb, calculateReturn(series, TEN_YEAR, i));
+			IndicatorsToCsv.addValue(sb,
+			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.ONE_YEAR, i));
+			IndicatorsToCsv.addValue(sb,
+			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.THREE_YEAR, i));
+			IndicatorsToCsv.addValue(sb,
+			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.FIVE_YEAR, i));
+			IndicatorsToCsv.addValue(sb,
+			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.TEN_YEAR, i));
 			sb.append('\n');
 		}
 
-		writeFile(fileName, sb);
+		IndicatorsToCsv.writeFile(fileName, sb);
 	}
 
 	public static void writeFile(final String fileName, final StringBuilder sb) {
@@ -169,15 +173,18 @@ public class IndicatorsToCsv {
 
 			writer = new BufferedWriter(new FileWriter(fileName));
 			writer.write(sb.toString());
-			LOGGER.info("Saved to " + fileName);
-		} catch (final IOException ioe) {
-			LOGGER.log(Level.SEVERE, "Unable to write CSV file", ioe);
-		} finally {
+			IndicatorsToCsv.LOGGER.info("Saved to " + fileName);
+		}
+		catch (final IOException ioe) {
+			IndicatorsToCsv.LOGGER.log(Level.SEVERE, "Unable to write CSV file", ioe);
+		}
+		finally {
 			try {
 				if (writer != null) {
 					writer.close();
 				}
-			} catch (final IOException ioe) {
+			}
+			catch (final IOException ioe) {
 			}
 		}
 	}

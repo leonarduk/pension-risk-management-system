@@ -3,22 +3,20 @@
  *
  * Copyright (c) 2014-2016 Marc de Verdelhan & respective authors (see AUTHORS)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.leonarduk.finance;
 
@@ -78,9 +76,11 @@ public class WalkForward {
 	}
 
 	private static void calculateSubseries(final List<AbstractStrategy> strategies,
-			final AnalysisCriterion profitCriterion, final TimeSeries slice, final Map<String, AtomicInteger> scores) {
+	        final AnalysisCriterion profitCriterion, final TimeSeries slice,
+	        final Map<String, AtomicInteger> scores) {
 		boolean interesting = false;
-		final StringBuilder buf = new StringBuilder("Sub-series: " + slice.getSeriesPeriodDescription() + "\n");
+		final StringBuilder buf = new StringBuilder(
+		        "Sub-series: " + slice.getSeriesPeriodDescription() + "\n");
 		for (final AbstractStrategy entry : strategies) {
 			final Strategy strategy = entry.getStrategy();
 			final String name = entry.getName();
@@ -92,8 +92,8 @@ public class WalkForward {
 				if (profit > 1.0) {
 					scores.putIfAbsent(name, new AtomicInteger());
 					scores.get(name).incrementAndGet();
-					System.out
-							.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), slice, strategy, name));
+					System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(),
+					        slice, strategy, name));
 				}
 				if (profit < 1.0) {
 					scores.putIfAbsent(name, new AtomicInteger());
@@ -114,14 +114,14 @@ public class WalkForward {
 		}
 	}
 
-	private static void computeForStrategies(final Map<String, AtomicInteger> totalscores, final StockFeed feed,
-			final String ticker) throws IOException {
+	private static void computeForStrategies(final Map<String, AtomicInteger> totalscores,
+	        final StockFeed feed, final String ticker) throws IOException {
 		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
 
 		// Building the map of strategies
-		final List<AbstractStrategy> strategies = buildStrategiesMap(series);
+		final List<AbstractStrategy> strategies = WalkForward.buildStrategiesMap(series);
 
 		// The analysis criterion
 		final AnalysisCriterion profitCriterion = new TotalProfitCriterion();
@@ -129,7 +129,7 @@ public class WalkForward {
 
 		for (final TimeSeries slice : subseries) {
 			// For each sub-series...
-			calculateSubseries(strategies, profitCriterion, slice, scores);
+			WalkForward.calculateSubseries(strategies, profitCriterion, slice, scores);
 		}
 
 		for (final Entry<String, AtomicInteger> timeSeries : scores.entrySet()) {
@@ -143,13 +143,14 @@ public class WalkForward {
 		final Map<String, AtomicInteger> totalscores = new ConcurrentHashMap<>();
 		final StockFeed feed = new IntelligentStockFeed();
 
-		final String filePath = new File(Demo.class.getClassLoader().getResource("Book1.csv").getFile())
-				.getAbsolutePath();
+		final String filePath = new File(
+		        Demo.class.getClassLoader().getResource("Book1.csv").getFile()).getAbsolutePath();
 
 		InvestmentsFileReader.getStocksFromCSVFile(filePath).parallelStream().forEach(stock -> {
 			try {
-				computeForStrategies(totalscores, feed, stock.getSymbol());
-			} catch (final Exception e) {
+				WalkForward.computeForStrategies(totalscores, feed, stock.getSymbol());
+			}
+			catch (final Exception e) {
 				System.err.println("Failed to compute " + stock.getSymbol());
 			}
 		});

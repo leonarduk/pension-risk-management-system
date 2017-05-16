@@ -1,12 +1,10 @@
 package com.leonarduk.finance.stockfeed.yahoo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,15 +16,15 @@ import yahoofinance.histquotes.HistoricalQuote;
 
 public class YahooFeedIT {
 
-	private YahooFeed feed;
-	private Instrument gold;
-	private Instrument bonds;
+	private Instrument	bonds;
+	private YahooFeed	feed;
+	private Instrument	gold;
 
 	private void getInstrument(final Instrument instrument) throws IOException {
 		final Optional<Stock> stock = this.feed.get(instrument, 1);
-		assertTrue(stock.isPresent());
+		Assert.assertTrue(stock.isPresent());
 		final List<HistoricalQuote> history = stock.get().getHistory();
-		assertTrue(history.size() > 0);
+		Assert.assertTrue(history.size() > 0);
 	}
 
 	@Before
@@ -57,8 +55,8 @@ public class YahooFeedIT {
 
 	@Test
 	public final void testGetQueryName() {
-		assertEquals("PHGP.L", YahooFeed.getQueryName(this.gold));
-		assertEquals("GB00B1H05601.L", YahooFeed.getQueryName(this.bonds));
+		Assert.assertEquals("PHGP.L", YahooFeed.getQueryName(this.gold));
+		Assert.assertEquals("GB00B1H05601.L", YahooFeed.getQueryName(this.bonds));
 	}
 
 }
