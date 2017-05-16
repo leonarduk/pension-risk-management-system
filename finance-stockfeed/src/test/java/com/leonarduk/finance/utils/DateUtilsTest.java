@@ -43,7 +43,6 @@ public class DateUtilsTest {
 		Assert.assertTrue(iter.hasNext());
 		Assert.assertEquals(LocalDate.parse("2017-04-07"), iter.next());
 		Assert.assertEquals(LocalDate.parse(DateUtilsTest.APRIL10), iter.next());
-		Assert.assertTrue(iter.hasNext());
 		Assert.assertFalse(iter.hasNext());
 	}
 
