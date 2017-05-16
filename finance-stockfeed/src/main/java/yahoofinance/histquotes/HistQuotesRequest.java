@@ -28,33 +28,34 @@ import com.leonarduk.finance.utils.StringUtils;
  */
 public class HistQuotesRequest {
 
-	public static final Calendar DEFAULT_FROM = Calendar.getInstance();
+	private final Calendar			from;
+
+	private final Instrument		instrument;
+	private final Interval			interval;
+
+	private final Calendar			to;
+
+	public static final Calendar	DEFAULT_FROM		= Calendar.getInstance();
+
+	public static final Interval	DEFAULT_INTERVAL	= Interval.MONTHLY;
+	public static final Calendar	DEFAULT_TO			= Calendar.getInstance();
+	public static final Logger		logger				= Logger
+	        .getLogger(HistQuotesRequest.class.getName());
 
 	static {
-		DEFAULT_FROM.add(Calendar.YEAR, -1);
+		HistQuotesRequest.DEFAULT_FROM.add(Calendar.YEAR, -1);
 	}
-	public static final Calendar DEFAULT_TO = Calendar.getInstance();
-
-	public static final Interval DEFAULT_INTERVAL = Interval.MONTHLY;
-
-	public static final Logger logger = Logger.getLogger(HistQuotesRequest.class.getName());
-
-	private final Instrument instrument;
-	private final Calendar from;
-	private final Calendar to;
-
-	private final Interval interval;
 
 	public HistQuotesRequest(final Instrument instrument) {
-		this(instrument, DEFAULT_INTERVAL);
+		this(instrument, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
 
 	public HistQuotesRequest(final Instrument instrument, final Calendar from, final Calendar to) {
-		this(instrument, from, to, DEFAULT_INTERVAL);
+		this(instrument, from, to, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
 
 	public HistQuotesRequest(final Instrument instrument, final Calendar from, final Calendar to,
-			final Interval interval) {
+	        final Interval interval) {
 		this.instrument = instrument;
 		this.from = this.cleanHistCalendar(from);
 		this.to = this.cleanHistCalendar(to);
@@ -62,10 +63,11 @@ public class HistQuotesRequest {
 	}
 
 	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to) {
-		this(instrument, from, to, DEFAULT_INTERVAL);
+		this(instrument, from, to, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
 
-	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to, final Interval interval) {
+	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to,
+	        final Interval interval) {
 		this(instrument, interval);
 		this.from.setTime(from);
 		this.to.setTime(to);
@@ -74,7 +76,7 @@ public class HistQuotesRequest {
 	}
 
 	public HistQuotesRequest(final Instrument instrument, final Interval interval) {
-		this(instrument, DEFAULT_FROM, DEFAULT_TO, interval);
+		this(instrument, HistQuotesRequest.DEFAULT_FROM, HistQuotesRequest.DEFAULT_TO, interval);
 	}
 
 	/**
@@ -97,8 +99,9 @@ public class HistQuotesRequest {
 
 		if (this.from.after(this.to)) {
 			YahooFeed.logger.log(Level.WARNING,
-					"Unable to retrieve historical quotes. " + "From-date should not be after to-date. From: "
-							+ this.from.getTime() + ", to: " + this.to.getTime());
+			        "Unable to retrieve historical quotes. "
+			                + "From-date should not be after to-date. From: " + this.from.getTime()
+			                + ", to: " + this.to.getTime());
 			return result;
 		}
 
@@ -128,7 +131,7 @@ public class HistQuotesRequest {
 		connection.setReadTimeout(YahooFeed.CONNECTION_TIMEOUT);
 		final InputStreamReader is = new InputStreamReader(connection.getInputStream());
 		final BufferedReader br = new BufferedReader(is);
-		br.readLine(); // skip the first line
+		final String first = br.readLine(); // skip the first line
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 
@@ -141,10 +144,16 @@ public class HistQuotesRequest {
 
 	private HistoricalQuote parseCSVLine(final String line) {
 		final String[] data = line.split(YahooFeed.QUOTES_CSV_DELIMITER);
-		return new HistoricalQuote(this.instrument, LocalDate.parse(data[0]), NumberUtils.getBigDecimal(data[1]),
-				NumberUtils.getBigDecimal(data[3]), NumberUtils.getBigDecimal(data[2]),
-				NumberUtils.getBigDecimal(data[4]), NumberUtils.getBigDecimal(data[6]), NumberUtils.getLong(data[5]),
-				"Yahoo");
+		return new HistoricalQuote(this.instrument, LocalDate.parse(data[0]),
+		        NumberUtils.getBigDecimal(data[1]), NumberUtils.getBigDecimal(data[3]),
+		        NumberUtils.getBigDecimal(data[2]), NumberUtils.getBigDecimal(data[4]),
+		        NumberUtils.getBigDecimal(data[6]), NumberUtils.getLong(data[5]), "Yahoo");
+	}
+
+	@Override
+	public String toString() {
+		return "HistQuotesRequest [from=" + this.from + ", instrument=" + this.instrument
+		        + ", interval=" + this.interval + ", to=" + this.to + "]";
 	}
 
 }

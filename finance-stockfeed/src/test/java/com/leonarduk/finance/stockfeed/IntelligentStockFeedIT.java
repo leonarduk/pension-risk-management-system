@@ -1,12 +1,10 @@
 package com.leonarduk.finance.stockfeed;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,9 +18,9 @@ public class IntelligentStockFeedIT {
 
 	private void getInstrument(final Instrument instrument) throws IOException {
 		final Optional<Stock> stock = this.feed.get(instrument, 1);
-		assertTrue(stock.isPresent());
+		Assert.assertTrue(stock.isPresent());
 		final List<HistoricalQuote> history = stock.get().getHistory();
-		assertTrue(history.size() > 0);
+		Assert.assertTrue(history.size() > 0);
 	}
 
 	@Before
@@ -32,20 +30,23 @@ public class IntelligentStockFeedIT {
 
 	@Test
 	public final void testGetFlatCashSeries() throws IOException {
-		assertEquals(261, IntelligentStockFeed.getFlatCashSeries(Instrument.CASH, 1).get().getHistory().size());
+		Assert.assertEquals(262, IntelligentStockFeed.getFlatCashSeries(Instrument.CASH, 1).get()
+		        .getHistory().size());
 	}
 
 	@Test
 	public final void testGetGoogle() throws IOException {
-		final Optional<Instrument> instrument = Instrument.values().stream()
-				.filter(i -> i.getSource().equals(Source.Google) && !i.assetType().equals(AssetType.FX)).findFirst();
+		final Optional<Instrument> instrument = Instrument.values().stream().filter(
+		        i -> i.getSource().equals(Source.Google) && !i.assetType().equals(AssetType.FX))
+		        .findFirst();
 		this.getInstrument(instrument.get());
 	}
 
 	@Test
 	public final void testGetYahoo() throws IOException {
-		final Optional<Instrument> instrument = Instrument.values().stream()
-				.filter(i -> i.getSource().equals(Source.Yahoo) && !i.assetType().equals(AssetType.FX)).findFirst();
+		final Optional<Instrument> instrument = Instrument.values().stream().filter(
+		        i -> i.getSource().equals(Source.Yahoo) && !i.assetType().equals(AssetType.FX))
+		        .findFirst();
 		this.getInstrument(instrument.get());
 	}
 

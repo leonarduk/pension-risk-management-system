@@ -112,6 +112,10 @@ public class AnalyseSnapshot {
 						        + exit.getAmount().toDouble() + ")");
 					}
 				}
+				else {
+					valuation.addRecommendation(strategy.getName(), new Recommendation(
+					        RecommendedTrade.HOLD, strategy, stock2.getInstrument()));
+				}
 			}
 
 			valuation.addReturn(Period.days(1), AnalyseSnapshot.calculateReturn(series, 1));
@@ -130,7 +134,7 @@ public class AnalyseSnapshot {
 
 	public static BigDecimal calculateReturn(final TimeSeries series, final int timePeriod) {
 		if (timePeriod > series.getEnd()) {
-			return BigDecimal.valueOf(Decimal.NaN.toDouble());
+			return null;
 		}
 		final BigDecimal initialValue = BigDecimal
 		        .valueOf(series.getFirstTick().getClosePrice().toDouble());
@@ -139,7 +143,7 @@ public class AnalyseSnapshot {
 		final BigDecimal closePrice = BigDecimal
 		        .valueOf(series.getTick(i).getClosePrice().toDouble());
 		final BigDecimal diff = i > -1 ? closePrice.subtract(initialValue) : BigDecimal.ZERO;
-		return NumberUtils.roundDecimal(diff.divide(initialValue, 2, RoundingMode.HALF_UP)
+		return NumberUtils.roundDecimal(diff.divide(initialValue, 4, RoundingMode.HALF_UP)
 		        .multiply(BigDecimal.valueOf(100)));
 	}
 
