@@ -46,7 +46,8 @@ public class Valuation {
 	}
 
 	public void addRecommendation(final String strategyName, final Recommendation recommendation2) {
-		this.recommendation.put(strategyName.replaceAll(" ", "_"),
+		this.recommendation.put(
+		        strategyName.replaceAll(" ", "_").replaceAll("(", "").replaceAll(")", ""),
 		        recommendation2.getTradeRecommendation().name());
 	}
 
