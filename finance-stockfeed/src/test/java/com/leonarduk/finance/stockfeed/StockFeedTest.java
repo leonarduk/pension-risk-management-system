@@ -52,6 +52,11 @@ public class StockFeedTest {
 				return Optional
 				        .of(StockFeed.createStock(instrument, StockFeedTest.this.getQuotes()));
 			}
+
+			@Override
+			public boolean isAvailable() {
+				return true;
+			}
 		};
 
 	}

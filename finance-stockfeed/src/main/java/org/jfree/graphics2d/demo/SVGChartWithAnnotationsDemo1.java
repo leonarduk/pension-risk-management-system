@@ -3,10 +3,7 @@ package org.jfree.graphics2d.demo;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
-import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -30,8 +27,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Year;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
-import org.jfree.graphics2d.svg.SVGUtils;
 
 /**
  * A demo/test for a pie chart.
@@ -148,21 +143,4 @@ public class SVGChartWithAnnotationsDemo1 {
 		return units;
 	}
 
-	/**
-	 * Starting point for the demo.
-	 * 
-	 * @param args
-	 *            ignored.
-	 * 
-	 * @throws IOException
-	 */
-	public static void main(final String[] args) throws IOException {
-		final JFreeChart chart = SVGChartWithAnnotationsDemo1
-		        .createChart(SVGChartWithAnnotationsDemo1.createDataset());
-		final SVGGraphics2D g2 = new SVGGraphics2D(500, 300);
-		final Rectangle r = new Rectangle(0, 0, 500, 300);
-		chart.draw(g2, r);
-		final File f = new File("SVGChartWithAnnotationsDemo1.svg");
-		SVGUtils.writeToSVG(f, g2.getSVGElement());
-	}
 }

@@ -30,17 +30,11 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 /**
  * CCI Correction Strategy
- * <p>
- * 
- * @see http://stockcharts.com/school/doku.php?id=chart_school:trading_strategies:cci_correction
+ *
+ * http://stockcharts.com/school/doku.php?id=chart_school:trading_strategies:cci_correction
  */
 public class CCICorrectionStrategy {
 
-	/**
-	 * @param series
-	 *            a time series
-	 * @return a CCI correction strategy
-	 */
 	public static Strategy buildStrategy(final TimeSeries series) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");

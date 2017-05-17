@@ -196,7 +196,7 @@ public abstract class CsvStockFeed extends StockFeed {
 	 *
 	 * @return true if another quote was parsed, false if no more quotes exist to read
 	 * @throws IOException
-	 * @
+	 *             may fail to read file
 	 */
 	public boolean next() throws IOException {
 		if (this.reader == null) {
@@ -283,11 +283,6 @@ public abstract class CsvStockFeed extends StockFeed {
 		}
 	}
 
-	/**
-	 * Release the resources held by this request
-	 *
-	 * @return this request
-	 */
 	public CsvStockFeed release() {
 		if (this.reader != null) {
 			try {
@@ -305,22 +300,10 @@ public abstract class CsvStockFeed extends StockFeed {
 		this.comment = comment;
 	}
 
-	/**
-	 * Set end date of request
-	 *
-	 * @param endDate
-	 * @return this request
-	 */
 	public CsvStockFeed setEndDate(final Calendar endDate) {
 		return this.setEndDate(endDate != null ? endDate.getTime() : null);
 	}
 
-	/**
-	 * Set end date of request
-	 *
-	 * @param endDate
-	 * @return this request
-	 */
 	public CsvStockFeed setEndDate(final Date endDate) {
 		this.endDate = endDate;
 		return this;
@@ -330,22 +313,10 @@ public abstract class CsvStockFeed extends StockFeed {
 		this.instrument = instrument;
 	}
 
-	/**
-	 * Set start date of request
-	 *
-	 * @param startDate
-	 * @return this request
-	 */
 	public CsvStockFeed setStartDate(final Calendar startDate) {
 		return this.setStartDate(startDate != null ? startDate.getTime() : null);
 	}
 
-	/**
-	 * Set start date of request
-	 *
-	 * @param startDate
-	 * @return this request
-	 */
 	public CsvStockFeed setStartDate(final Date startDate) {
 		this.startDate = startDate;
 		return this;

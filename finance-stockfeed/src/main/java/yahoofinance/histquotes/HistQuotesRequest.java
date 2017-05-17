@@ -46,6 +46,27 @@ public class HistQuotesRequest {
 		HistQuotesRequest.DEFAULT_FROM.add(Calendar.YEAR, -1);
 	}
 
+	public static String createUrl(final Instrument instrument2, final Calendar from2,
+	        final Calendar to2, final Interval interval2) {
+		final Map<String, String> params = new LinkedHashMap<>();
+		params.put("s", YahooFeed.getQueryName(instrument2));
+
+		params.put("a", String.valueOf(from2.get(Calendar.MONTH)));
+		params.put("b", String.valueOf(from2.get(Calendar.DAY_OF_MONTH)));
+		params.put("c", String.valueOf(from2.get(Calendar.YEAR)));
+
+		params.put("d", String.valueOf(to2.get(Calendar.MONTH)));
+		params.put("e", String.valueOf(to2.get(Calendar.DAY_OF_MONTH)));
+		params.put("f", String.valueOf(to2.get(Calendar.YEAR)));
+
+		params.put("g", interval2.getTag());
+
+		params.put("ignore", ".csv");
+
+		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
+		return url;
+	}
+
 	public HistQuotesRequest(final Instrument instrument) {
 		this(instrument, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
@@ -105,22 +126,8 @@ public class HistQuotesRequest {
 			return result;
 		}
 
-		final Map<String, String> params = new LinkedHashMap<>();
-		params.put("s", YahooFeed.getQueryName(this.instrument));
-
-		params.put("a", String.valueOf(this.from.get(Calendar.MONTH)));
-		params.put("b", String.valueOf(this.from.get(Calendar.DAY_OF_MONTH)));
-		params.put("c", String.valueOf(this.from.get(Calendar.YEAR)));
-
-		params.put("d", String.valueOf(this.to.get(Calendar.MONTH)));
-		params.put("e", String.valueOf(this.to.get(Calendar.DAY_OF_MONTH)));
-		params.put("f", String.valueOf(this.to.get(Calendar.YEAR)));
-
-		params.put("g", this.interval.getTag());
-
-		params.put("ignore", ".csv");
-
-		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
+		final String url = HistQuotesRequest.createUrl(this.instrument, this.from, this.to,
+		        this.interval);
 
 		// Get CSV from Yahoo
 		YahooFeed.logger.log(Level.INFO, ("Sending request: " + url));

@@ -10,6 +10,7 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
+import com.leonarduk.web.SeleniumUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
@@ -42,8 +43,7 @@ public class YahooFeed extends StockFeed {
 	}
 
 	/**
-	 * Sends a request for a single FX rate. Some common symbols can easily be found in the ENUM
-	 * {@link quotes.fx.FxSymbols} Some examples of accepted symbols:
+	 * Some examples of accepted symbols:
 	 * <ul>
 	 * <li>EURUSD=X
 	 * <li>USDEUR=X
@@ -97,6 +97,11 @@ public class YahooFeed extends StockFeed {
 		catch (final Exception e) {
 			return Optional.empty();
 		}
+	}
+
+	@Override
+	public boolean isAvailable() {
+		return SeleniumUtils.isInternetAvailable(YahooFeed.QUOTES_BASE_URL);
 	}
 
 }

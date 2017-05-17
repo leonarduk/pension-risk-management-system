@@ -45,17 +45,11 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 /**
  * 2-Period RSI Strategy
- * <p>
  *
- * @see http://stockcharts.com/school/doku.php?id=chart_school:trading_strategies:rsi2
+ * http://stockcharts.com/school/doku.php?id=chart_school:trading_strategies:rsi2
  */
 public class RSI2Strategy {
 
-	/**
-	 * @param series
-	 *            a time series
-	 * @return a 2-period RSI strategy
-	 */
 	public static Strategy buildStrategy(final TimeSeries series) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");

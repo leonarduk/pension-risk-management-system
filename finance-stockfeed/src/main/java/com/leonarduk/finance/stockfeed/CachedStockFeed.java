@@ -55,6 +55,12 @@ public class CachedStockFeed extends CsvStockFeed {
 		return instrument.getExchange().name() + "_" + instrument.code() + ".csv";
 	}
 
+	@Override
+	public boolean isAvailable() {
+		final File store = new File(this.storeLocation);
+		return (store.exists() & store.isDirectory()) && store.canWrite() && store.canRead();
+	}
+
 	private List<HistoricalQuote> loadSeries(final Stock stock) throws IOException {
 		final Optional<Stock> optional = this.get(stock.getInstrument(), 1000);
 		if (optional.isPresent()) {

@@ -44,7 +44,6 @@ import jersey.repackaged.com.google.common.collect.Lists;
 
 /**
  * This class is an example of a dummy trading bot using ta4j.
- * <p>
  */
 public class AnalyseSnapshot {
 

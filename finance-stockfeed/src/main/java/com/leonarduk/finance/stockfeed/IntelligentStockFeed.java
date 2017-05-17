@@ -21,7 +21,7 @@ import yahoofinance.quotes.stock.StockQuote;
 public class IntelligentStockFeed extends StockFeed {
 	public static final Logger	log		= Logger.getLogger(IntelligentStockFeed.class.getName());
 
-	private static boolean		refresh	= true;
+	public static boolean		refresh	= true;
 
 	public static Optional<Stock> getFlatCashSeries(final Instrument instrument, final int years) {
 		return IntelligentStockFeed.getFlatCashSeries(instrument, LocalDate.now().minusYears(years),
@@ -47,51 +47,30 @@ public class IntelligentStockFeed extends StockFeed {
 		IntelligentStockFeed.refresh = refresh;
 	}
 
+	public Optional<Stock> cleanUpSeries(final LocalDate fromDate, final LocalDate toDate,
+	        final boolean interpolate, final Optional<Stock> liveData) throws IOException {
+		List<HistoricalQuote> history = liveData.get().getHistory();
+
+		history = new BadDateRemover().clean(history);
+		if (interpolate) {
+			final LinearInterpolator linearInterpolator = new LinearInterpolator();
+			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
+
+			history = linearInterpolator.interpolate(flatLineInterpolator.extendToToDate(
+			        flatLineInterpolator.extendToFromDate(history, fromDate), toDate));
+		}
+		final List<HistoricalQuote> subSeries = history.stream()
+		        .filter(q -> (q.getDate().isAfter(fromDate) && q.getDate().isBefore(toDate))
+		                || q.getDate().isEqual(fromDate) || q.getDate().isEqual(toDate))
+		        .collect(Collectors.toList());
+		TimeseriesUtils.sortQuoteList(subSeries);
+		liveData.get().setHistory(subSeries);
+		return liveData;
+	}
+
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) {
-		try {
-
-			if (instrument.equals(Instrument.CASH)) {
-				return IntelligentStockFeed.getFlatCashSeries(instrument, years);
-			}
-			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory
-			        .getDataFeed(Source.MANUAL);
-
-			final Optional<Stock> cachedData = dataFeed.get(instrument, years);
-
-			final StockFeed feed = StockFeedFactory.getDataFeed(instrument.getSource());
-
-			Optional<Stock> liveData;
-			try {
-				liveData = IntelligentStockFeed.refresh ? feed.get(instrument, years)
-				        : Optional.empty();
-			}
-			catch (final Throwable e) {
-				IntelligentStockFeed.log.warning(e.getMessage());
-				liveData = Optional.empty();
-			}
-			if (liveData.isPresent()) {
-				if (cachedData.isPresent()) {
-					this.mergeSeries(cachedData.get(), liveData.get().getHistory(),
-					        cachedData.get().getHistory());
-				}
-				dataFeed.storeSeries(liveData.get());
-			}
-			else {
-				liveData = cachedData;
-			}
-
-			if (!liveData.isPresent()) {
-				return liveData;
-			}
-
-			liveData.get().setHistory(new BadDateRemover().clean(liveData.get().getHistory()));
-			return liveData;
-		}
-		catch (final Exception e) {
-			IntelligentStockFeed.log.warning(e.getMessage());
-			return Optional.empty();
-		}
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), false);
 	}
 
 	public Optional<Stock> get(final Instrument instrument, final int years,
@@ -116,19 +95,13 @@ public class IntelligentStockFeed extends StockFeed {
 			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory
 			        .getDataFeed(Source.MANUAL);
 
-			final Optional<Stock> cachedData = dataFeed.get(instrument, fromDate, toDate);
+			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(instrument, fromDate,
+			        toDate, dataFeed, true);
 
-			final StockFeed feed = StockFeedFactory.getDataFeed(instrument.getSource());
+			final Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument, fromDate,
+			        toDate, StockFeedFactory.getDataFeed(instrument.getSource()),
+			        IntelligentStockFeed.refresh);
 
-			Optional<Stock> liveData;
-			try {
-				liveData = IntelligentStockFeed.refresh ? feed.get(instrument, fromDate, toDate)
-				        : Optional.empty();
-			}
-			catch (final Throwable e) {
-				IntelligentStockFeed.log.warning(e.getMessage());
-				liveData = Optional.empty();
-			}
 			if (liveData.isPresent()) {
 				if (cachedData.isPresent()) {
 					this.mergeSeries(cachedData.get(), liveData.get().getHistory(),
@@ -137,28 +110,9 @@ public class IntelligentStockFeed extends StockFeed {
 				dataFeed.storeSeries(liveData.get());
 			}
 			else {
-				liveData = cachedData;
+				return this.cleanUpSeries(fromDate, toDate, interpolate, cachedData);
 			}
-			List<HistoricalQuote> history = liveData.get().getHistory();
-
-			if (!liveData.isPresent()) {
-				return liveData;
-			}
-			history = new BadDateRemover().clean(history);
-			if (interpolate) {
-				final LinearInterpolator linearInterpolator = new LinearInterpolator();
-				final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
-
-				history = linearInterpolator.interpolate(flatLineInterpolator.extendToToDate(
-				        flatLineInterpolator.extendToFromDate(history, fromDate), toDate));
-			}
-			final List<HistoricalQuote> subSeries = history.stream()
-			        .filter(q -> (q.getDate().isAfter(fromDate) && q.getDate().isBefore(toDate))
-			                || q.getDate().isEqual(fromDate) || q.getDate().isEqual(toDate))
-			        .collect(Collectors.toList());
-			TimeseriesUtils.sortQuoteList(subSeries);
-			liveData.get().setHistory(subSeries);
-			return liveData;
+			return this.cleanUpSeries(fromDate, toDate, interpolate, liveData);
 		}
 		catch (final Exception e) {
 			IntelligentStockFeed.log.warning(e.getMessage());
@@ -171,6 +125,33 @@ public class IntelligentStockFeed extends StockFeed {
 	        final String toDate, final boolean interpolate) {
 		return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate),
 		        interpolate);
+	}
+
+	public Optional<Stock> getDataIfFeedAvailable(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate, final StockFeed dataFeed,
+	        final boolean useFeed) throws IOException {
+		final Optional<Stock> data;
+		if (useFeed) {
+			if (dataFeed.isAvailable()) {
+				data = dataFeed.get(instrument, fromDate, toDate);
+			}
+			else {
+				IntelligentStockFeed.log
+				        .warning(dataFeed.getClass().getName() + " is not available");
+				data = Optional.empty();
+			}
+		}
+		else {
+			data = Optional.empty();
+		}
+		return data;
+	}
+
+	@Override
+	public boolean isAvailable() {
+		return StockFeedFactory.getDataFeed(Source.MANUAL).isAvailable()
+		        || StockFeedFactory.getDataFeed(Source.Google).isAvailable()
+		        || StockFeedFactory.getDataFeed(Source.Yahoo).isAvailable();
 	}
 
 }

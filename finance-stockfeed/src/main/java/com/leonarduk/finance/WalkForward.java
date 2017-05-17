@@ -51,10 +51,10 @@ import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
 
 /**
  * Walk-forward optimization example.
- * <p>
  *
- * @see http://en.wikipedia.org/wiki/Walk_forward_optimization
- * @see http://www.futuresmag.com/2010/04/01/can-your-system-do-the-walk
+ * http://en.wikipedia.org/wiki/Walk_forward_optimization
+ *
+ * http://www.futuresmag.com/2010/04/01/can-your-system-do-the-walk
  */
 public class WalkForward {
 

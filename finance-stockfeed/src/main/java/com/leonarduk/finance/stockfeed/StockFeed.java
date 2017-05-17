@@ -66,6 +66,8 @@ public abstract class StockFeed {
 	public abstract Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
 	        final LocalDate toDate) throws IOException;
 
+	public abstract boolean isAvailable();
+
 	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original)
 	        throws IOException {
 		final List<HistoricalQuote> newSeries = stock.getHistory();

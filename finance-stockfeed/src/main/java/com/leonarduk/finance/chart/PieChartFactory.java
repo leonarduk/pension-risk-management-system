@@ -63,9 +63,8 @@ public class PieChartFactory {
 	 *
 	 * @param args
 	 *            ignored.
-	 * @throws IOException
 	 */
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) {
 		final PieChartFactory factory = new PieChartFactory("Title");
 		factory.put("A", 12.2).put("B", 13.2).put("C", 31.2);
 

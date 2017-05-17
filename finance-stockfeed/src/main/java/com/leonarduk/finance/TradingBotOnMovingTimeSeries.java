@@ -22,7 +22,6 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 /**
  * This class is an example of a dummy trading bot using ta4j.
- * <p>
  */
 public class TradingBotOnMovingTimeSeries {
 

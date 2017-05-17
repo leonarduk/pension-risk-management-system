@@ -47,35 +47,14 @@ public class DateUtils {
 
 	public static final Logger			logger	= Logger.getLogger(DateUtils.class.getName());
 
-	/**
-	 * Add the given number of days to the given date
-	 *
-	 * @param days
-	 * @param from
-	 * @return date
-	 */
 	public static Date addDays(final int days, final Calendar from) {
 		return DateUtils.addDays(days, from.getTimeInMillis());
 	}
 
-	/**
-	 * Add the given number of days to the given date
-	 *
-	 * @param days
-	 * @param from
-	 * @return date
-	 */
 	public static Date addDays(final int days, final Date from) {
 		return DateUtils.addDays(days, from.getTime());
 	}
 
-	/**
-	 * Add the given number of days to the given date
-	 *
-	 * @param days
-	 * @param from
-	 * @return date
-	 */
 	public static Date addDays(final int days, final long from) {
 		final GregorianCalendar date = new GregorianCalendar(Locale.US);
 		date.setTimeInMillis(from);
@@ -83,35 +62,14 @@ public class DateUtils {
 		return date.getTime();
 	}
 
-	/**
-	 * Add the given number of months to the given date
-	 *
-	 * @param months
-	 * @param from
-	 * @return date
-	 */
 	public static Date addMonths(final int months, final Calendar from) {
 		return DateUtils.addMonths(months, from.getTimeInMillis());
 	}
 
-	/**
-	 * Add the given number of months to the given date
-	 *
-	 * @param months
-	 * @param from
-	 * @return date
-	 */
 	public static Date addMonths(final int months, final Date from) {
 		return DateUtils.addMonths(months, from.getTime());
 	}
 
-	/**
-	 * Add the given number of months to the given date
-	 *
-	 * @param months
-	 * @param from
-	 * @return date
-	 */
 	public static Date addMonths(final int months, final long from) {
 		final GregorianCalendar date = new GregorianCalendar(Locale.US);
 		date.setTimeInMillis(from);
@@ -119,35 +77,14 @@ public class DateUtils {
 		return date.getTime();
 	}
 
-	/**
-	 * Add the given number of weeks to the given date
-	 *
-	 * @param weeks
-	 * @param from
-	 * @return date
-	 */
 	public static Date addWeeks(final int weeks, final Calendar from) {
 		return DateUtils.addWeeks(weeks, from.getTimeInMillis());
 	}
 
-	/**
-	 * Add the given number of weeks to the given date
-	 *
-	 * @param weeks
-	 * @param from
-	 * @return date
-	 */
 	public static Date addWeeks(final int weeks, final Date from) {
 		return DateUtils.addWeeks(weeks, from.getTime());
 	}
 
-	/**
-	 * Add the given number of weeks to the given date
-	 *
-	 * @param weeks
-	 * @param from
-	 * @return date
-	 */
 	public static Date addWeeks(final int weeks, final long from) {
 		final GregorianCalendar date = new GregorianCalendar(Locale.US);
 		date.setTimeInMillis(from);
@@ -155,35 +92,14 @@ public class DateUtils {
 		return date.getTime();
 	}
 
-	/**
-	 * Add the given number of years to the given date
-	 *
-	 * @param years
-	 * @param from
-	 * @return date
-	 */
 	public static Date addYears(final int years, final Calendar from) {
 		return DateUtils.addYears(years, from.getTimeInMillis());
 	}
 
-	/**
-	 * Add the given number of years to the given date
-	 *
-	 * @param years
-	 * @param from
-	 * @return date
-	 */
 	public static Date addYears(final int years, final Date from) {
 		return DateUtils.addYears(years, from.getTime());
 	}
 
-	/**
-	 * Add the given number of years to the given date
-	 *
-	 * @param years
-	 * @param from
-	 * @return date
-	 */
 	public static Date addYears(final int years, final long from) {
 		final GregorianCalendar date = new GregorianCalendar(Locale.US);
 		date.setTimeInMillis(from);

@@ -35,17 +35,11 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 /**
  * Moving momentum strategy.
- * <p>
  *
- * @see http://stockcharts.com/help/doku.php?id=chart_school:trading_strategies:moving_momentum
+ * http://stockcharts.com/help/doku.php?id=chart_school:trading_strategies:moving_momentum
  */
 public class MovingMomentumStrategy extends AbstractStrategy {
 
-	/**
-	 * @param series
-	 *            a time series
-	 * @return a moving momentum strategy
-	 */
 	public static AbstractStrategy buildStrategy(final TimeSeries series, final int shortEmaPeriod,
 	        final int longEmaPeriod, final int emaMacdPeriod) {
 		if (series == null) {

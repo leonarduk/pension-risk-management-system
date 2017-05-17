@@ -5,7 +5,7 @@
 
 	<groupId>com.leonarduk</groupId>
 	<artifactId>finance-stockfeed</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Finance-stockfeed</name>
@@ -25,9 +25,20 @@
 		<rest.assured.version>2.3.3</rest.assured.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<webscraper-core.version>1.0.15</webscraper-core.version>
+		<webscraper-core.version>1.0.16</webscraper-core.version>
 		<jacoco.version>0.7.6.201602180812</jacoco.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>sonatype</id>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>central.maven.org</id>
+			<url>http://central.maven.org/maven2/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -37,6 +48,14 @@
 				<exclusion>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-webmvc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -63,7 +82,16 @@
 			<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
 			<version>${log4jdbc.log4j2.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -93,6 +121,14 @@
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-entitymanager</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- ta4j -->
@@ -100,6 +136,12 @@
 			<groupId>eu.verdelhan</groupId>
 			<artifactId>ta4j</artifactId>
 			<version>0.8</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>au.com.bytecode</groupId>
@@ -176,6 +218,32 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
@@ -195,11 +263,75 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
 	</build>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
+	<organization>
+		<name>Leonard UK Ltd</name>
+		<url>http://leonarduk.com</url>
+	</organization>
+	<inceptionYear>2017</inceptionYear>
+	<licenses>
+		<license>
+			<name>GNU General Public License v3.0 or later</name>
+			<url>http://www.spdx.org/licenses/GPL-3.0+</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>leonarduk</id>
+			<name>Stephen Leonard</name>
+			<email>github@leonarduk.com</email>
+			<roles>
+				<role>Project Manager</role>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+			<organization>Leonard UK Ltd</organization>
+			<organizationUrl>http://leonarduk.com</organizationUrl>
+			<timezone>0</timezone>
+			<url>http://uk.linkedin.com/in/steveleonard/</url>
+		</developer>
+	</developers><!-- to get to sona type and onto maven central -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/
+			</url>
+		</repository>
+	</distributionManagement>
+	<scm>
+		<connection>scm:git:git@github.com:leonarduk/pension-risk-management-system.git
+		</connection>
+		<developerConnection>scm:git:git@github.com:leonarduk/pension-risk-management-system.git
+		</developerConnection>
+		<url>git@github.com:leonarduk/pension-risk-management-system.git</url>
+	</scm>
 </project>

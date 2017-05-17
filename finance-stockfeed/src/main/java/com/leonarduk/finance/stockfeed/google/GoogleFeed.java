@@ -14,6 +14,7 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
+import com.leonarduk.web.SeleniumUtils;
 
 public class GoogleFeed extends CsvStockFeed {
 	private static final String		BASE_URL			= "http://www.google.com/finance/historical";
@@ -34,16 +35,6 @@ public class GoogleFeed extends CsvStockFeed {
 	private static final String		PARAM_SYMBOL		= "q";
 	private static final DateFormat	RESULT_FORMATTER	= new SimpleDateFormat("dd-MMM-yy");
 
-	/**
-	 * Create request to uri
-	 * <p>
-	 * Sub-classes may override this method
-	 *
-	 * @param uri
-	 * @return request
-	 * @throws IOException
-	 * @
-	 */
 	protected HttpRequest createRequest(final CharSequence uri) throws IOException {
 		try {
 			GoogleFeed.log.info("Request: " + uri);
@@ -59,14 +50,11 @@ public class GoogleFeed extends CsvStockFeed {
 		return instrument.getGoogleCode();
 	}
 
-	/**
-	 * Open reader to configured request parameters
-	 *
-	 * @return reader
-	 * @throws IOException
-	 * @throws HttpRequestException
-	 * @
-	 */
+	@Override
+	public boolean isAvailable() {
+		return SeleniumUtils.isInternetAvailable(GoogleFeed.BASE_URL);
+	}
+
 	@Override
 	protected BufferedReader openReader() throws IOException {
 		final Map<Object, Object> params = new HashMap<>(4, 1);
