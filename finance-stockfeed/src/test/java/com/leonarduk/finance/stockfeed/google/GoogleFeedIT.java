@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoo;
+package com.leonarduk.finance.stockfeed.google;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.leonarduk.finance.stockfeed.Instrument;
@@ -14,10 +13,10 @@ import com.leonarduk.finance.stockfeed.Stock;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
-public class YahooFeedIT {
+public class GoogleFeedIT {
 
 	private Instrument	bonds;
-	private YahooFeed	feed;
+	private GoogleFeed	feed;
 	private Instrument	gold;
 
 	private boolean getInstrument(final Instrument instrument) throws IOException {
@@ -30,16 +29,10 @@ public class YahooFeedIT {
 
 	@Before
 	public void setUp() throws Exception {
-		this.feed = new YahooFeed();
+		this.feed = new GoogleFeed();
 		this.gold = Instrument.fromString("PHGP");
-		this.bonds = Instrument.fromString("MGOII");
+		this.bonds = Instrument.fromString("XGSG");
 
-	}
-
-	@Ignore
-	@Test
-	public final void testGetFx() throws IOException {
-		Assert.assertNotNull(YahooFeed.getFx(Instrument.fromString("USDGBP")));
 	}
 
 	@Test
@@ -56,8 +49,8 @@ public class YahooFeedIT {
 
 	@Test
 	public final void testGetQueryName() {
-		Assert.assertEquals("PHGP.L", YahooFeed.getQueryName(this.gold));
-		Assert.assertEquals("GB00B1H05601.L", YahooFeed.getQueryName(this.bonds));
+		Assert.assertEquals("LON:PHGP", this.feed.getQueryName(this.gold));
+		Assert.assertEquals("LON:XGSG", this.feed.getQueryName(this.bonds));
 	}
 
 	@Test

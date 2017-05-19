@@ -51,8 +51,12 @@ public class IntelligentStockFeedIT {
 	}
 
 	@Test
+	public void testIsAvailable() throws Exception {
+		Assert.assertTrue(this.feed.isAvailable());
+	}
+
+	@Test
 	public final void testSetRefresh() {
 		// TODO
 	}
-
 }

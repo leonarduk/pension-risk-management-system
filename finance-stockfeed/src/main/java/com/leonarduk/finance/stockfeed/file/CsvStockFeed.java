@@ -72,6 +72,10 @@ public abstract class CsvStockFeed extends StockFeed {
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
 	        final LocalDate toDate) throws IOException {
+		if (!this.isAvailable()) {
+			CsvStockFeed.log.warning("Feed is not available");
+			return Optional.empty();
+		}
 		this.setInstrument(instrument);
 		this.setStartDate(fromDate.toDate());
 		this.setEndDate(toDate.toDate());

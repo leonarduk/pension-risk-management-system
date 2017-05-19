@@ -84,6 +84,10 @@ public class YahooFeed extends StockFeed {
 		try {
 			final Stock stock = new Stock(instrument);
 
+			if (!this.isAvailable()) {
+				YahooFeed.logger.warning("Cannot connect to Yahoo");
+				return Optional.empty();
+			}
 			stock.getHistory(DateUtils.dateToCalendar(fromDate),
 			        DateUtils.dateToCalendar(toDate.toDate()), Interval.DAILY);
 			final StockQuote quote = stock.getQuote();
@@ -95,6 +99,7 @@ public class YahooFeed extends StockFeed {
 			return Optional.of(stock);
 		}
 		catch (final Exception e) {
+			YahooFeed.logger.warning("Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();
 		}
 	}
