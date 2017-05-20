@@ -66,7 +66,9 @@ public class PortfolioFeedEndpoint {
 		final LocalDate toDate = LocalDate.now();
 		final List<Valuation> valuations = AnalyseSnapshot
 		        .analayzeAllEtfs(AnalyseSnapshot.getPositions(), fromDate, toDate);
-		return new ValuationReport(valuations, fromDate, toDate);
+		final Valuation portfolioValuation = AnalyseSnapshot.getPortfolioValuation(valuations,
+		        toDate);
+		return new ValuationReport(valuations, portfolioValuation, fromDate, toDate);
 
 	}
 

@@ -86,6 +86,11 @@ public class Valuation {
 		return this.valuationDate.toString();
 	}
 
+	public void setValuation(final Map<Period, BigDecimal> returns2) {
+		this.returns.clear();
+		this.returns.putAll(returns2);
+	}
+
 	@Override
 	public String toString() {
 		return "Valuation [position=" + this.position + ", valuation=" + this.valuation

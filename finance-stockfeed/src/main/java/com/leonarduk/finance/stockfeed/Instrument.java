@@ -43,9 +43,10 @@ public class Instrument {
 
 	private static final String		CASH_TEXT		= "Cash";
 
-	private static final String		GBP				= "GBP";
+	public static final String		GBP				= "GBP";
 
 	private static final Logger		LOGGER			= Logger.getLogger(Instrument.class.getName());
+
 	public static final Instrument	UNKNOWN			= new Instrument(Instrument.UNKNOWN_TEXT,
 	        AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT,
 	        Instrument.UNKNOWN_TEXT, Exchange.London, Instrument.UNKNOWN_TEXT, Instrument.GBP,
@@ -54,7 +55,7 @@ public class Instrument {
 	private static final String		UNKNOWN_TEXT	= "UNKNOWN";
 
 	public enum AssetType {
-		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PROPERTY, UNKNOWN;
+		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, UNKNOWN;
 
 		public static AssetType fromString(final String value) {
 			try {
@@ -106,6 +107,13 @@ public class Instrument {
 			this.instruments.put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
 		}
 
+	}
+
+	public static Instrument createPortfolioInstrument(final String name) {
+		final Instrument PORTFOLIO = new Instrument(name, AssetType.PORTFOLIO, AssetType.UNKNOWN,
+		        Source.MANUAL, "Portfolio", "Portfolio", Exchange.London, "Portfolio",
+		        Instrument.GBP, "");
+		return PORTFOLIO;
 	}
 
 	public static Instrument fromString(final String symbol) throws IOException {

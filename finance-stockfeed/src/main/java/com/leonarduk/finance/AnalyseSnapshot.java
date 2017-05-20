@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -41,6 +42,7 @@ import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
 import jersey.repackaged.com.google.common.collect.Lists;
+import jersey.repackaged.com.google.common.collect.Maps;
 
 /**
  * This class is an example of a dummy trading bot using ta4j.
@@ -144,6 +146,15 @@ public class AnalyseSnapshot {
 		final BigDecimal diff = i > -1 ? closePrice.subtract(initialValue) : BigDecimal.ZERO;
 		return NumberUtils.roundDecimal(diff.divide(initialValue, 4, RoundingMode.HALF_UP)
 		        .multiply(BigDecimal.valueOf(100)));
+	}
+
+	public static Position createEmptyPortfolioPosition() {
+		final String name = "Portfolio";
+		final Instrument PORTFOLIO = Instrument.createPortfolioInstrument(name);
+
+		final Optional<Stock> stock2 = Optional.of(new Stock(PORTFOLIO));
+		final Position position = new Position(name, PORTFOLIO, BigDecimal.ONE, stock2, "");
+		return position;
 	}
 
 	public static StringBuilder createPortfolioReport(final LocalDate fromDate,
@@ -279,6 +290,31 @@ public class AnalyseSnapshot {
 			return new Position("", instrument, BigDecimal.ZERO,
 			        feed.get(instrument, AnalyseSnapshot.years), instrument.getIsin());
 		}).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	public static Valuation getPortfolioValuation(final List<Valuation> valuedPositions,
+	        final LocalDate valuationDate) {
+		final Position portfolioPosition = AnalyseSnapshot.createEmptyPortfolioPosition();
+		final Map<Period, BigDecimal> returns = Maps.newConcurrentMap();
+		BigDecimal total = BigDecimal.ZERO;
+		// so want to weight the returns to show value, 1d,5d,21d,63d,365d returns
+		// turn relative return to absolute and add-up
+		for (final Valuation valuation : valuedPositions) {
+			for (final Entry<Period, BigDecimal> ret : valuation.getReturns().entrySet()) {
+				final BigDecimal value = ret.getValue() == null ? BigDecimal.ZERO : ret.getValue();
+				returns.put(ret.getKey(), returns.getOrDefault(ret.getKey(), BigDecimal.ZERO)
+				        .add(value.multiply(valuation.getValuation())));
+			}
+			total = total.add(valuation.getValuation());
+		}
+		final Valuation portfolioValuation = new Valuation(portfolioPosition, total, valuationDate,
+		        BigDecimal.ONE);
+		for (final Entry<Period, BigDecimal> ret : returns.entrySet()) {
+			returns.put(ret.getKey(), ret.getValue().divide(total, 2, RoundingMode.HALF_UP));
+		}
+		portfolioValuation.setValuation(returns);
+
+		return portfolioValuation;
 	}
 
 	public static List<Position> getPositions() throws IOException {
