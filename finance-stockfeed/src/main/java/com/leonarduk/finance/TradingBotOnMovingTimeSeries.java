@@ -121,9 +121,7 @@ public class TradingBotOnMovingTimeSeries {
 				        Decimal.TEN);
 				if (entered) {
 					final Order entry = tradingRecord.getLastEntry();
-					System.out.println("Entered on " + entry.getIndex() + " (price="
-					        + entry.getPrice().toDouble() + ", amount="
-					        + entry.getAmount().toDouble() + ")");
+					AnalyseSnapshot.showTradeAction(entry, "Enter");
 				}
 			}
 			else if (strategy.shouldExit(endIndex)) {
@@ -133,9 +131,7 @@ public class TradingBotOnMovingTimeSeries {
 				        Decimal.TEN);
 				if (exited) {
 					final Order exit = tradingRecord.getLastExit();
-					System.out.println(
-					        "Exited on " + exit.getIndex() + " (price=" + exit.getPrice().toDouble()
-					                + ", amount=" + exit.getAmount().toDouble() + ")");
+					AnalyseSnapshot.showTradeAction(exit, "Exit");
 				}
 			}
 		}

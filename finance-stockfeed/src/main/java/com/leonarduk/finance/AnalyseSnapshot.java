@@ -51,6 +51,10 @@ public class AnalyseSnapshot {
 
 	private final static Logger	logger	= Logger.getLogger(AnalyseSnapshot.class.getName());
 
+	private static final String	TYPE	= "Type";
+
+	private static final String	VALUE	= "Value";
+
 	private static int			years	= 20;
 
 	public static List<Valuation> analayzeAllEtfs(final List<Position> stocks,
@@ -95,9 +99,7 @@ public class AnalyseSnapshot {
 					        mostRecentTick.getAmount(), Decimal.TEN);
 					if (entered) {
 						final Order entry = tradingRecord.getLastEntry();
-						System.out.println("Entered on " + entry.getIndex() + " (price="
-						        + entry.getPrice().toDouble() + ", amount="
-						        + entry.getAmount().toDouble() + ")");
+						AnalyseSnapshot.showTradeAction(entry, "Enter");
 					}
 				}
 				else if (strategy.getStrategy().shouldExit(endIndex)) {
@@ -108,9 +110,7 @@ public class AnalyseSnapshot {
 					        mostRecentTick.getClosePrice(), Decimal.TEN);
 					if (exited) {
 						final Order exit = tradingRecord.getLastExit();
-						System.out.println("Exited on " + exit.getIndex() + " (price="
-						        + exit.getPrice().toDouble() + ", amount="
-						        + exit.getAmount().toDouble() + ")");
+						AnalyseSnapshot.showTradeAction(exit, "Exit");
 					}
 				}
 				else {
@@ -192,10 +192,10 @@ public class AnalyseSnapshot {
 		                v -> v.getPosition().getInstrument().underlyingType().name(), Collectors
 		                        .summingDouble((v -> v.getValuation().doubleValue()))));
 
-		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", "Type",
-		        "Value");
+		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets",
+		        AnalyseSnapshot.TYPE, AnalyseSnapshot.VALUE);
 		HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
-		        "Type", "Value");
+		        AnalyseSnapshot.TYPE, AnalyseSnapshot.VALUE);
 
 		AnalyseSnapshot.createValuationsTable(
 		        AnalyseSnapshot.analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody, false,
@@ -256,7 +256,8 @@ public class AnalyseSnapshot {
 			fields.add(new DataField("ISIN", instrument.getIsin(), formatter));
 			fields.add(new DataField("Code", instrument.getCode(), formatter));
 			fields.add(new DataField("Sector", instrument.getCategory(), formatter));
-			fields.add(new DataField("Type", instrument.getAssetType().name(), formatter));
+			fields.add(new DataField(AnalyseSnapshot.TYPE, instrument.getAssetType().name(),
+			        formatter));
 
 			fields.add(new DataField("Quantity Owned", valuation.getPosition().getAmount(),
 			        formatter, showPositionsHeld));
@@ -328,5 +329,10 @@ public class AnalyseSnapshot {
 		final StringBuilder buf = AnalyseSnapshot.createPortfolioReport(LocalDate.now(),
 		        LocalDate.now().minusYears(1), true, true, false);
 		FileUtils.writeFile("recommendations.html", buf);
+	}
+
+	public static void showTradeAction(final Order entry, final String action) {
+		AnalyseSnapshot.logger.info(action + "ed on " + entry.getIndex() + " (price="
+		        + entry.getPrice().toDouble() + ", amount=" + entry.getAmount().toDouble() + ")");
 	}
 }
