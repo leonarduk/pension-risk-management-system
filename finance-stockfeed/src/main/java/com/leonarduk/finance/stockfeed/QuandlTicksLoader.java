@@ -49,7 +49,7 @@ public class QuandlTicksLoader {
 			this.endDate = endDate;
 		}
 
-		private URL buildURL() {
+		private URL buildURL() throws IOException {
 			final String urlString = String.format(
 			        "https://www.quandl.com/api/v3/datasets/%s.csv?start_date=%s&end_date=%s&order=asc",
 			        this.quandlCode, QuandlDataFeed.DATE_FORMATTER.print(this.startDate),
@@ -60,11 +60,11 @@ public class QuandlTicksLoader {
 				return new URL(urlString);
 			}
 			catch (final MalformedURLException e) {
-				throw new RuntimeException("Invalid URL");
+				throw new IOException("Invalid URL");
 			}
 		}
 
-		private TimeSeries get(final URL url) {
+		private TimeSeries get(final URL url) throws IOException {
 			HttpURLConnection connection = null;
 			try {
 				connection = (HttpURLConnection) url.openConnection();
@@ -73,11 +73,11 @@ public class QuandlTicksLoader {
 				return this.toTimeSeries(new BufferedInputStream(connection.getInputStream()));
 			}
 			catch (final FileNotFoundException fnfe) {
-				throw new RuntimeException(String.format("%s is not a valid Quandl URL", url));
+				throw new IOException(String.format("%s is not a valid Quandl URL", url));
 			}
 			catch (final Exception e) {
 				e.printStackTrace();
-				throw new RuntimeException(e);
+				throw new IOException(e);
 			}
 			finally {
 				if (connection != null) {
@@ -86,7 +86,7 @@ public class QuandlTicksLoader {
 			}
 		}
 
-		public TimeSeries load() {
+		public TimeSeries load() throws IOException {
 			return this.get(this.buildURL());
 		}
 
@@ -122,7 +122,7 @@ public class QuandlTicksLoader {
 		}
 	}
 
-	public static void main(final String args[]) {
+	public static void main(final String args[]) throws IOException {
 		final QuandlDataFeed quandl = new QuandlDataFeed("YAHOO/PHGP.L",
 		        DateTime.now().minusYears(20));
 		final TimeSeries series = quandl.load();

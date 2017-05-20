@@ -15,10 +15,10 @@ import net.sf.log4jdbc.sql.jdbcapi.DataSourceSpy;
 @Configuration
 public class AppConfig {
 	@Inject
-	DataSourceProperties dataSourceProperties;
+	private DataSourceProperties dataSourceProperties;
 
 	@Named
-	static class JerseyConfig extends ResourceConfig {
+	public static class JerseyConfig extends ResourceConfig {
 		public JerseyConfig() {
 			this.packages("com.leonarduk.finance.api");
 			this.register(CORSResponseFilter.class);
@@ -26,7 +26,7 @@ public class AppConfig {
 	}
 
 	@Bean
-	DataSource dataSource() {
+	public DataSource dataSource() {
 		final DataSource dataSource = DataSourceBuilder
 		        .create(this.dataSourceProperties.getClassLoader())
 		        .url(this.dataSourceProperties.getUrl())

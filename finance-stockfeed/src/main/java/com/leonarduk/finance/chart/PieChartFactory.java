@@ -54,9 +54,9 @@ import org.jfree.data.general.DefaultPieDataset;
  */
 public class PieChartFactory {
 
-	DefaultPieDataset		dataset;
+	private final DefaultPieDataset	dataset;
 
-	private final String	title;
+	private final String			title;
 
 	/**
 	 * Starting point for the demo.
