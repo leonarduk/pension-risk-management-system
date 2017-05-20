@@ -203,7 +203,6 @@ public class ExchangeTimeZone {
 	 *            suffix for the exchange in YahooFinance
 	 * @return time zone of the exchange
 	 */
-	@SuppressWarnings("LoggerStringConcat")
 	public static TimeZone get(final String suffix) {
 		if (ExchangeTimeZone.SUFFIX_TIMEZONES.containsKey(suffix)) {
 			return ExchangeTimeZone.SUFFIX_TIMEZONES.get(suffix);

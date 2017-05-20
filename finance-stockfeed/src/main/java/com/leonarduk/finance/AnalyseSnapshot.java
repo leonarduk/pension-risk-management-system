@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.portfolio.Recommendation;
 import com.leonarduk.finance.portfolio.RecommendedTrade;
@@ -24,6 +27,7 @@ import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
@@ -36,11 +40,14 @@ import com.leonarduk.finance.utils.NumberUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 import com.leonarduk.finance.utils.ValueFormatter;
 
+import eu.verdelhan.ta4j.AnalysisCriterion;
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Order;
+import eu.verdelhan.ta4j.Strategy;
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
+import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
 import jersey.repackaged.com.google.common.collect.Lists;
 import jersey.repackaged.com.google.common.collect.Maps;
 
@@ -133,6 +140,23 @@ public class AnalyseSnapshot {
 		}
 	}
 
+	/**
+	 * @param series
+	 *            the time series
+	 * @return a map (key: strategy, value: name) of trading strategies
+	 */
+	public static List<AbstractStrategy> buildStrategiesMap(final TimeSeries series) {
+		// {Moving Momentum=24916, RSI-2=-81064, Global Extrema=23748, CCI
+		// Correction=-28035}
+		final List<AbstractStrategy> strategies = new ArrayList<>();
+		strategies.add(GlobalExtremaStrategy.buildStrategy(series));
+		strategies.add(MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
+		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
+		return strategies;
+	}
+
 	public static BigDecimal calculateReturn(final TimeSeries series, final int timePeriod) {
 		if (timePeriod > series.getEnd()) {
 			return null;
@@ -146,6 +170,70 @@ public class AnalyseSnapshot {
 		final BigDecimal diff = i > -1 ? closePrice.subtract(initialValue) : BigDecimal.ZERO;
 		return NumberUtils.roundDecimal(diff.divide(initialValue, 4, RoundingMode.HALF_UP)
 		        .multiply(BigDecimal.valueOf(100)));
+	}
+
+	private static void calculateSubseries(final List<AbstractStrategy> strategies,
+	        final AnalysisCriterion profitCriterion, final TimeSeries slice,
+	        final Map<String, AtomicInteger> scores) {
+		boolean interesting = false;
+		final StringBuilder buf = new StringBuilder(
+		        "Sub-series: " + slice.getSeriesPeriodDescription() + "\n");
+		for (final AbstractStrategy entry : strategies) {
+			final Strategy strategy = entry.getStrategy();
+			final String name = entry.getName();
+			// For each strategy...
+			final TradingRecord tradingRecord = slice.run(strategy);
+			final double profit = profitCriterion.calculate(slice, tradingRecord);
+			if (profit != 1.0) {
+				interesting = true;
+				if (profit > 1.0) {
+					scores.putIfAbsent(name, new AtomicInteger());
+					scores.get(name).incrementAndGet();
+					System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(),
+					        slice, strategy, name));
+				}
+				if (profit < 1.0) {
+					scores.putIfAbsent(name, new AtomicInteger());
+					scores.get(name).decrementAndGet();
+				}
+			}
+			buf.append("\tProfit for " + name + ": " + profit + "\n");
+		}
+
+		// ArrayList<Strategy> strategies2 = new ArrayList<Strategy>();
+		//
+		// Strategy bestStrategy = profitCriterion.chooseBest(slice,
+		// strategies2);
+		// buf.append("\t\t--> Best strategy: " + strategies.get(bestStrategy) +
+		// "\n");
+		if (interesting) {
+			// System.out.println(buf.toString());
+		}
+	}
+
+	public static void computeForStrategies(final Map<String, AtomicInteger> totalscores,
+	        final StockFeed feed, final String ticker) throws IOException {
+		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
+		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
+
+		// Building the map of strategies
+		final List<AbstractStrategy> strategies = AnalyseSnapshot.buildStrategiesMap(series);
+
+		// The analysis criterion
+		final AnalysisCriterion profitCriterion = new TotalProfitCriterion();
+		final Map<String, AtomicInteger> scores = new ConcurrentHashMap<>();
+
+		for (final TimeSeries slice : subseries) {
+			// For each sub-series...
+			AnalyseSnapshot.calculateSubseries(strategies, profitCriterion, slice, scores);
+		}
+
+		for (final Entry<String, AtomicInteger> timeSeries : scores.entrySet()) {
+			totalscores.putIfAbsent(timeSeries.getKey(), new AtomicInteger());
+			totalscores.get(timeSeries.getKey()).addAndGet(timeSeries.getValue().get());
+		}
+		System.out.println(ticker + scores);
 	}
 
 	public static Position createEmptyPortfolioPosition() {

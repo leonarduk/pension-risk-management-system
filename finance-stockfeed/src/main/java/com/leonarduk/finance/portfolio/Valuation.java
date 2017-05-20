@@ -83,7 +83,7 @@ public class Valuation {
 	}
 
 	public String getValuationDate() {
-		return this.valuationDate.toString();
+		return this.valuationDate;
 	}
 
 	public void setValuation(final Map<Period, BigDecimal> returns2) {

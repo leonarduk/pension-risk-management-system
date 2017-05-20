@@ -138,7 +138,7 @@ public class HistQuotesRequest {
 		connection.setReadTimeout(YahooFeed.CONNECTION_TIMEOUT);
 		final InputStreamReader is = new InputStreamReader(connection.getInputStream());
 		final BufferedReader br = new BufferedReader(is);
-		final String first = br.readLine(); // skip the first line
+		br.readLine(); // skip the first line
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 

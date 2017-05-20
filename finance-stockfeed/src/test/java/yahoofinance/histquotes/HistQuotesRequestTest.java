@@ -5,17 +5,12 @@ import java.util.Calendar;
 
 import org.joda.time.LocalDate;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.utils.DateUtils;
 
 public class HistQuotesRequestTest {
-
-	@Before
-	public void setUp() throws Exception {
-	}
 
 	@Test
 	public final void testCreateUrl() throws IOException {

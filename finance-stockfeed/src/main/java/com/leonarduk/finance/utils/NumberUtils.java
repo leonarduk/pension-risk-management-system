@@ -49,6 +49,8 @@ public class NumberUtils {
 					data = data.substring(0, data.length() - 1);
 					multiplier = NumberUtils.THOUSAND;
 					break;
+				default:
+					break;
 			}
 			return new BigDecimal(data).multiply(multiplier);
 		}

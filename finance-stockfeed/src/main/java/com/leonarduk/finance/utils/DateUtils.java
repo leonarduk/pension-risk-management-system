@@ -236,19 +236,18 @@ public class DateUtils {
 	 *            String received that represents the date
 	 * @return Calendar object representing the parsed date
 	 */
-	public static Calendar parseDividendDate(String date) {
+	public static Calendar parseDividendDate(final String date) {
 		if (!StringUtils.isParseable(date)) {
 			return null;
 		}
-		date = date.trim();
-		final SimpleDateFormat format = new SimpleDateFormat(DateUtils.getDividendDateFormat(date),
-		        Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat(
+		        DateUtils.getDividendDateFormat(date.trim()), Locale.US);
 		format.setTimeZone(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 		try {
 			final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			final Calendar parsedDate = Calendar
 			        .getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
-			parsedDate.setTime(format.parse(date));
+			parsedDate.setTime(format.parse(date.trim()));
 
 			if (parsedDate.get(Calendar.YEAR) == 1970) {
 				// Not really clear which year the dividend date is... making a
