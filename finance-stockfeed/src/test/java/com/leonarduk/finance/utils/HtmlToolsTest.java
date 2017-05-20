@@ -56,13 +56,6 @@ public class HtmlToolsTest {
 		Assert.assertEquals("<th></th>", sb.toString());
 	}
 
-	// TODO
-	@Test
-	public final void testAddPieChartAndTable() {
-		// HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations,
-		// title, key, value);
-	}
-
 	@Test
 	public final void testCreateHtmlText() {
 		final StringBuilder sbHead = new StringBuilder("head");

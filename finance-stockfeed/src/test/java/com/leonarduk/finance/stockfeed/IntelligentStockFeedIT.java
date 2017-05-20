@@ -16,11 +16,11 @@ public class IntelligentStockFeedIT {
 
 	private IntelligentStockFeed feed;
 
-	private void getInstrument(final Instrument instrument) throws IOException {
+	private boolean getInstrument(final Instrument instrument) throws IOException {
 		final Optional<Stock> stock = this.feed.get(instrument, 1);
 		Assert.assertTrue(stock.isPresent());
 		final List<HistoricalQuote> history = stock.get().getHistory();
-		Assert.assertTrue(history.size() > 0);
+		return (history.size() > 0);
 	}
 
 	@Before
@@ -39,7 +39,7 @@ public class IntelligentStockFeedIT {
 		final Optional<Instrument> instrument = Instrument.values().stream().filter(
 		        i -> i.getSource().equals(Source.Google) && !i.assetType().equals(AssetType.FX))
 		        .findFirst();
-		this.getInstrument(instrument.get());
+		Assert.assertTrue(this.getInstrument(instrument.get()));
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class IntelligentStockFeedIT {
 		final Optional<Instrument> instrument = Instrument.values().stream().filter(
 		        i -> i.getSource().equals(Source.Yahoo) && !i.assetType().equals(AssetType.FX))
 		        .findFirst();
-		this.getInstrument(instrument.get());
+		Assert.assertTrue(this.getInstrument(instrument.get()));
 	}
 
 	@Test
@@ -55,8 +55,4 @@ public class IntelligentStockFeedIT {
 		Assert.assertTrue(this.feed.isAvailable());
 	}
 
-	@Test
-	public final void testSetRefresh() {
-		// TODO
-	}
 }
