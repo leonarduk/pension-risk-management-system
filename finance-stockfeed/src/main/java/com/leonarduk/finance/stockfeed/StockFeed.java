@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.joda.time.LocalDate;
 
-import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
+import com.leonarduk.finance.utils.StringUtils;
 
 import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -50,11 +50,11 @@ public abstract class StockFeed {
 		final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
 		for (final HistoricalQuote historicalQuote : series) {
 			sb.append(historicalQuote.getDate().toString());
-			IndicatorsToCsv.addValue(sb, historicalQuote.getOpen());
-			IndicatorsToCsv.addValue(sb, historicalQuote.getHigh());
-			IndicatorsToCsv.addValue(sb, historicalQuote.getLow());
-			IndicatorsToCsv.addValue(sb, historicalQuote.getClose());
-			IndicatorsToCsv.addValue(sb, historicalQuote.getVolume());
+			StringUtils.addValue(sb, historicalQuote.getOpen());
+			StringUtils.addValue(sb, historicalQuote.getHigh());
+			StringUtils.addValue(sb, historicalQuote.getLow());
+			StringUtils.addValue(sb, historicalQuote.getClose());
+			StringUtils.addValue(sb, historicalQuote.getVolume());
 			sb.append(",").append(historicalQuote.getComment()).append("\n");
 		}
 		return sb;

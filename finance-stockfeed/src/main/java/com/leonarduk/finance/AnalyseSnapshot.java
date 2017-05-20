@@ -24,13 +24,13 @@ import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.Stock;
-import com.leonarduk.finance.stockfeed.file.IndicatorsToCsv;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
 import com.leonarduk.finance.strategies.MovingMomentumStrategy;
 import com.leonarduk.finance.strategies.SimpleMovingAverageStrategy;
 import com.leonarduk.finance.utils.DataField;
+import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.HtmlTools;
 import com.leonarduk.finance.utils.NumberUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
@@ -327,7 +327,6 @@ public class AnalyseSnapshot {
 	        throws InterruptedException, IOException, URISyntaxException {
 		final StringBuilder buf = AnalyseSnapshot.createPortfolioReport(LocalDate.now(),
 		        LocalDate.now().minusYears(1), true, true, false);
-		IndicatorsToCsv.writeFile("recommendations.html", buf);
+		FileUtils.writeFile("recommendations.html", buf);
 	}
-
 }

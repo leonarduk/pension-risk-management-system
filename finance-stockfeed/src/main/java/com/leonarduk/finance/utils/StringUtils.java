@@ -1,6 +1,31 @@
 package com.leonarduk.finance.utils;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+import eu.verdelhan.ta4j.Decimal;
+
 public class StringUtils {
+	private static NumberFormat formatter = new DecimalFormat("#0.00");
+
+	public static void addValue(final StringBuilder buf, final BigDecimal value) {
+		final String format = StringUtils.formatter.format(value == null ? BigDecimal.ZERO : value);
+		StringUtils.addValue(buf, format);
+	}
+
+	public static void addValue(final StringBuilder buf, final Decimal value) {
+		StringUtils.addValue(buf, (BigDecimal.valueOf(value.toDouble())));
+	}
+
+	public static void addValue(final StringBuilder buf, final long value) {
+		buf.append(',').append(value);
+	}
+
+	public static void addValue(final StringBuilder buf, final String value) {
+		buf.append(',').append(value);
+	}
+
 	public static String getString(final String data) {
 		if (!StringUtils.isParseable(data)) {
 			return null;

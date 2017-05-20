@@ -20,16 +20,9 @@
  */
 package com.leonarduk.finance.stockfeed.file;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.leonarduk.finance.utils.FileUtils;
+import com.leonarduk.finance.utils.StringUtils;
 
-import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.indicators.helpers.AverageTrueRangeIndicator;
 import eu.verdelhan.ta4j.indicators.oscillators.PPOIndicator;
@@ -47,44 +40,6 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
  * This class builds a CSV file containing values from indicators.
  */
 public class IndicatorsToCsv {
-
-	private static final int	FIVE_YEAR	= 5 * IndicatorsToCsv.ONE_YEAR;
-	private static NumberFormat	formatter	= new DecimalFormat("#0.00");
-	private static final int	HALF_YEAR	= IndicatorsToCsv.ONE_YEAR / 2;
-	private static final Logger	LOGGER		= Logger.getLogger(IndicatorsToCsv.class.getName());
-	private static final int	ONE_YEAR	= 251;
-	private static final int	TEN_YEAR	= 10 * IndicatorsToCsv.ONE_YEAR;
-
-	private static final int	THREE_YEAR	= 3 * IndicatorsToCsv.ONE_YEAR;
-
-	public static void addValue(final StringBuilder buf, final BigDecimal value) {
-		final String format = IndicatorsToCsv.formatter
-		        .format(value == null ? BigDecimal.ZERO : value);
-		IndicatorsToCsv.addValue(buf, format);
-	}
-
-	private static void addValue(final StringBuilder buf, final Decimal value) {
-		IndicatorsToCsv.addValue(buf, (BigDecimal.valueOf(value.toDouble())));
-	}
-
-	public static void addValue(final StringBuilder buf, final long value) {
-		buf.append(',').append(value);
-	}
-
-	public static void addValue(final StringBuilder buf, final String value) {
-		buf.append(',').append(value);
-	}
-
-	private static Decimal calculateReturn(final TimeSeries series, final int timePeriod,
-	        final int ticker) {
-		final int index = ticker - timePeriod;
-		if ((index < 0) || (index > series.getEnd())) {
-			return Decimal.NaN;
-		}
-		final Decimal initialValue = series.getTick(index).getClosePrice();
-		final Decimal diff = series.getTick(ticker).getClosePrice().minus(initialValue);
-		return diff.dividedBy(initialValue);
-	}
 
 	public static void exportIndicatorsToCsv(final TimeSeries series) {
 		final String fileName = "target/" + series.getName() + "_indicators.csv";
@@ -128,63 +83,23 @@ public class IndicatorsToCsv {
 		final int nbTicks = series.getTickCount();
 		for (int i = 0; i < nbTicks; i++) {
 			sb.append(series.getTick(i).getEndTime().toLocalDate()); //
-			IndicatorsToCsv.addValue(sb, (closePrice.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (typicalPrice.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (priceVariation.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (shortSma.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (longSma.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (shortEma.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (longEma.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (ppo.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (roc.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (rsi.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (williamsR.getValue(i)));
-			IndicatorsToCsv.addValue(sb, (atr.getValue(i)));
-			IndicatorsToCsv.addValue(sb, sd.getValue(i)); //
-			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 1, i));
-			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 5, i));
-			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 21, i));
-			IndicatorsToCsv.addValue(sb, IndicatorsToCsv.calculateReturn(series, 63, i));
-			IndicatorsToCsv.addValue(sb,
-			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.HALF_YEAR, i));
-
-			IndicatorsToCsv.addValue(sb,
-			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.ONE_YEAR, i));
-			IndicatorsToCsv.addValue(sb,
-			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.THREE_YEAR, i));
-			IndicatorsToCsv.addValue(sb,
-			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.FIVE_YEAR, i));
-			IndicatorsToCsv.addValue(sb,
-			        IndicatorsToCsv.calculateReturn(series, IndicatorsToCsv.TEN_YEAR, i));
+			StringUtils.addValue(sb, (closePrice.getValue(i)));
+			StringUtils.addValue(sb, (typicalPrice.getValue(i)));
+			StringUtils.addValue(sb, (priceVariation.getValue(i)));
+			StringUtils.addValue(sb, (shortSma.getValue(i)));
+			StringUtils.addValue(sb, (longSma.getValue(i)));
+			StringUtils.addValue(sb, (shortEma.getValue(i)));
+			StringUtils.addValue(sb, (longEma.getValue(i)));
+			StringUtils.addValue(sb, (ppo.getValue(i)));
+			StringUtils.addValue(sb, (roc.getValue(i)));
+			StringUtils.addValue(sb, (rsi.getValue(i)));
+			StringUtils.addValue(sb, (williamsR.getValue(i)));
+			StringUtils.addValue(sb, (atr.getValue(i)));
+			StringUtils.addValue(sb, sd.getValue(i)); //
 			sb.append('\n');
 		}
 
-		IndicatorsToCsv.writeFile(fileName, sb);
-	}
-
-	public static void writeFile(final String fileName, final StringBuilder sb) {
-		/**
-		 * Writing CSV file
-		 */
-		BufferedWriter writer = null;
-		try {
-
-			writer = new BufferedWriter(new FileWriter(fileName));
-			writer.write(sb.toString());
-			IndicatorsToCsv.LOGGER.info("Saved to " + fileName);
-		}
-		catch (final IOException ioe) {
-			IndicatorsToCsv.LOGGER.log(Level.SEVERE, "Unable to write CSV file", ioe);
-		}
-		finally {
-			try {
-				if (writer != null) {
-					writer.close();
-				}
-			}
-			catch (final IOException ioe) {
-			}
-		}
+		FileUtils.writeFile(fileName, sb);
 	}
 
 }
