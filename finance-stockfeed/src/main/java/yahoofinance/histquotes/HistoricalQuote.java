@@ -2,13 +2,13 @@
 package yahoofinance.histquotes;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.utils.NumberUtils;
 
 /**
  * All getters can return null in case the data is not available from Yahoo Finance.
@@ -42,11 +42,11 @@ public class HistoricalQuote {
 	        final BigDecimal adjClose, final Long volume, final String comment) {
 		this.instrument = instrument;
 		this.date = date;
-		this.open = open.setScale(2, RoundingMode.DOWN);
-		this.low = low.setScale(2, RoundingMode.DOWN);
-		this.high = high.setScale(2, RoundingMode.DOWN);
-		this.close = close.setScale(2, RoundingMode.DOWN);
-		this.adjClose = adjClose.setScale(2, RoundingMode.DOWN);
+		this.open = NumberUtils.cleanBigDecimal(open);
+		this.low = NumberUtils.cleanBigDecimal(low);
+		this.high = NumberUtils.cleanBigDecimal(high);
+		this.close = NumberUtils.cleanBigDecimal(close);
+		this.adjClose = NumberUtils.cleanBigDecimal(adjClose);
 		this.volume = volume;
 		this.comment = comment;
 	}

@@ -61,6 +61,13 @@ public class NumberUtils {
 		return null;
 	}
 
+	public static BigDecimal cleanBigDecimal(final BigDecimal input) {
+		if (input == null) {
+			return BigDecimal.ZERO;
+		}
+		return input.setScale(2, RoundingMode.DOWN);
+	}
+
 	private static String cleanNumberString(final String data) {
 		return StringUtils.join(data.trim().split(","), "");
 	}
