@@ -91,11 +91,13 @@ public class YahooFeed extends StockFeed {
 			stock.getHistory(DateUtils.dateToCalendar(fromDate),
 			        DateUtils.dateToCalendar(toDate.toDate()), Interval.DAILY);
 			final StockQuote quote = stock.getQuote();
-			stock.getHistory()
-			        .add(new HistoricalQuote(stock.getInstrument(),
-			                LocalDate.fromCalendarFields(quote.getLastTradeTime()), quote.getOpen(),
-			                quote.getDayLow(), quote.getDayHigh(), quote.getPrice(),
-			                quote.getPrice(), quote.getVolume(), "Yahoo"));
+			if (quote.isPopulated()) {
+				stock.getHistory()
+				        .add(new HistoricalQuote(stock.getInstrument(),
+				                LocalDate.fromCalendarFields(quote.getLastTradeTime()),
+				                quote.getOpen(), quote.getDayLow(), quote.getDayHigh(),
+				                quote.getPrice(), quote.getPrice(), quote.getVolume(), "Yahoo"));
+			}
 			return Optional.of(stock);
 		}
 		catch (final Exception e) {

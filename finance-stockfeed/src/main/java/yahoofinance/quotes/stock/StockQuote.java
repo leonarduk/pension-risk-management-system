@@ -295,6 +295,10 @@ public class StockQuote {
 		        .append(this.yearHigh).append(this.yearLow).toHashCode();
 	}
 
+	public boolean isPopulated() {
+		return this.lastTradeDateStr != null;
+	}
+
 	public void setAsk(final BigDecimal ask) {
 		this.ask = ask;
 	}
