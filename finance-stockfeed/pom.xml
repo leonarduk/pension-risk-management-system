@@ -26,7 +26,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<webscraper-core.version>1.0.16</webscraper-core.version>
-		<jacoco.version>0.7.6.201602180812</jacoco.version>
 	</properties>
 
 	<repositories>
@@ -102,10 +101,6 @@
 			<version>${webscraper-core.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>com.google.code.gson</groupId>
 					<artifactId>gson</artifactId>
 				</exclusion>
@@ -169,12 +164,6 @@
 			<artifactId>gson</artifactId>
 			<version>2.7</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>${jacoco.version}</version>
-			<type>maven-plugin</type>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -206,20 +195,6 @@
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>emma-maven-plugin</artifactId>
-				<version>1.0-alpha-3</version>
-				<inherited>true</inherited>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
