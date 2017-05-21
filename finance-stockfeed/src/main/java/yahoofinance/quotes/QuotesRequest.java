@@ -80,7 +80,7 @@ public abstract class QuotesRequest<T> {
 
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
-			if (line.equals("Missing Symbols List.")) {
+			if ("Missing Symbols List.".equals(line)) {
 				QuotesRequest.logger.log(Level.SEVERE,
 				        "The requested symbol was not recognized by Yahoo Finance");
 			}

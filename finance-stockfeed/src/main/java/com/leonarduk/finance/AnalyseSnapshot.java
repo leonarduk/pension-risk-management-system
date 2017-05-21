@@ -200,15 +200,6 @@ public class AnalyseSnapshot {
 			buf.append("\tProfit for " + name + ": " + profit + "\n");
 		}
 
-		// ArrayList<Strategy> strategies2 = new ArrayList<Strategy>();
-		//
-		// Strategy bestStrategy = profitCriterion.chooseBest(slice,
-		// strategies2);
-		// buf.append("\t\t--> Best strategy: " + strategies.get(bestStrategy) +
-		// "\n");
-		if (interesting) {
-			// System.out.println(buf.toString());
-		}
 	}
 
 	public static void computeForStrategies(final Map<String, AtomicInteger> totalscores,

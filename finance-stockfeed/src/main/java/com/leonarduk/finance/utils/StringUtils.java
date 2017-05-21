@@ -33,7 +33,7 @@ public class StringUtils {
 		return data;
 	}
 
-	static boolean isParseable(final String data) {
+	public static boolean isParseable(final String data) {
 		return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("")
 		        || data.equals("nan"));
 	}

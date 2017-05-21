@@ -22,18 +22,16 @@ import eu.verdelhan.ta4j.Decimal;
 public class HtmlTools {
 	public static final Logger logger = Logger.getLogger(HtmlTools.class.getName());
 
-	public static void addField(Object value, final StringBuilder sb,
+	public static void addField(final Object value, final StringBuilder sb,
 	        final ValueFormatter formatterRaw) {
 		final ValueFormatter formatter = formatterRaw == null ? (Object::toString) : formatterRaw;
 		if (sb == null) {
 			throw new IllegalArgumentException("Passed in null StringBuilder");
 		}
 		if (null == value) {
-			value = "";
 			HtmlTools.logger.warning("Null value supplied - treat as empty string");
-
 		}
-		sb.append("<td bgcolor='" + HtmlTools.getColour(value) + "'>")
+		sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : "") + "'>")
 		        .append(formatter.format(value)).append("</td>");
 	}
 

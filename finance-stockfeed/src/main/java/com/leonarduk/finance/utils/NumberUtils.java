@@ -101,6 +101,8 @@ public class NumberUtils {
 					data = data.substring(0, data.length() - 1);
 					multiplier = 1000;
 					break;
+				default:
+					break;
 			}
 			result = Double.parseDouble(data) * multiplier;
 		}
@@ -126,14 +128,13 @@ public class NumberUtils {
 		return result;
 	}
 
-	public static Long getLong(String data) {
+	public static Long getLong(final String data) {
 		Long result = null;
 		if (!StringUtils.isParseable(data)) {
 			return result;
 		}
 		try {
-			data = NumberUtils.cleanNumberString(data);
-			result = Long.parseLong(data);
+			result = Long.parseLong(NumberUtils.cleanNumberString(data));
 		}
 		catch (final NumberFormatException e) {
 			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + data);
