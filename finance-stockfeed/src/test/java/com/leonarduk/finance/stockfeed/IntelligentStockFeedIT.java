@@ -30,7 +30,7 @@ public class IntelligentStockFeedIT {
 
 	@Test
 	public final void testGetFlatCashSeries() throws IOException {
-		Assert.assertEquals(262, IntelligentStockFeed.getFlatCashSeries(Instrument.CASH, 1).get()
+		Assert.assertEquals(261, IntelligentStockFeed.getFlatCashSeries(Instrument.CASH, 1).get()
 		        .getHistory().size());
 	}
 

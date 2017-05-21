@@ -32,7 +32,7 @@ public class HtmlTools {
 			HtmlTools.logger.warning("Null value supplied - treat as empty string");
 		}
 		sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : "") + "'>")
-		        .append(formatter.format(value)).append("</td>");
+		        .append(formatter.format(value == null ? "" : value)).append("</td>");
 	}
 
 	public static void addHeader(final String nameRaw, final StringBuilder sb) {
