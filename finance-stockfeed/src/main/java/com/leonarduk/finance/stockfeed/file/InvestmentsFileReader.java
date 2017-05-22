@@ -16,15 +16,15 @@ import com.leonarduk.finance.utils.ResourceTools;
 public class InvestmentsFileReader {
 	private final static Logger logger = Logger.getLogger(InvestmentsFileReader.class.getName());
 
-	private static Position createPosition(final List<String> list) {
-		if (list.size() < 2) {
-			InvestmentsFileReader.logger.warning("not enough detsails: " + list);
+	private static Position createPosition(final List<String> fields) {
+		if (fields.size() < 2) {
+			InvestmentsFileReader.logger.warning("not enough detsails: " + fields);
 			return null;
 		}
 		final int portfolioIdx = 0;
 		final int isinIdx = 1;
 		final int amountIndex = 2;
-		final String symbol = list.get(isinIdx);
+		final String symbol = fields.get(isinIdx);
 		Instrument instrument;
 		try {
 			instrument = Instrument.fromString(symbol);
@@ -34,19 +34,19 @@ public class InvestmentsFileReader {
 			instrument = Instrument.UNKNOWN;
 		}
 		final Optional<Stock> stock = Optional.of(new Stock(instrument));
-		return new Position(list.get(portfolioIdx), instrument,
-		        new BigDecimal(list.get(amountIndex)), stock, symbol);
+		return new Position(fields.get(portfolioIdx), instrument,
+		        new BigDecimal(fields.get(amountIndex)), stock, symbol);
 	}
 
-	private static Stock createStock(final List<String> list) {
-		if (list.size() < 2) {
-			InvestmentsFileReader.logger.warning("not enough details: " + list);
+	private static Stock createStock(final List<String> fields) {
+		if (fields.size() < 2) {
+			InvestmentsFileReader.logger.warning("not enough details: " + fields);
 			return null;
 		}
 		final int isinIdx = 1;
 		Instrument instrument;
 		try {
-			instrument = Instrument.fromString(list.get(isinIdx));
+			instrument = Instrument.fromString(fields.get(isinIdx));
 		}
 		catch (final IOException e) {
 			e.printStackTrace();
@@ -57,19 +57,8 @@ public class InvestmentsFileReader {
 	}
 
 	public static List<Position> getPositionsFromCSVFile(final String filePath) throws IOException {
-		final List<List<String>> stream = ResourceTools.readCsvRecords(filePath);
-		return stream.stream().skip(1).map(InvestmentsFileReader::createPosition)
-		        .collect(Collectors.toList());
+		return ResourceTools.readCsvRecords(filePath).stream().skip(1)
+		        .map(InvestmentsFileReader::createPosition).collect(Collectors.toList());
 	}
 
-	public static List<Stock> getStocksFromCSVFile(final String filePath) throws IOException {
-		final List<List<String>> stream = ResourceTools.readCsvRecords(filePath);
-		// List<String> inputList = stream.get(0);
-		// Map<String, Integer> outputMap = new HashMap<>();
-		// for (int j = 0; j < inputList.size(); j++) {
-		// outputMap.put(inputList.get(j), 1 + j);
-		// }
-		return stream.stream().skip(1).map(InvestmentsFileReader::createStock)
-		        .collect(Collectors.toList());
-	}
 }
