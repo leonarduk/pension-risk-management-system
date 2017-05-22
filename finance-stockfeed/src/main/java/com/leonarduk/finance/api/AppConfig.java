@@ -20,8 +20,9 @@ public class AppConfig {
 	@Named
 	public static class JerseyConfig extends ResourceConfig {
 		public JerseyConfig() {
-			this.packages("com.leonarduk.finance.api");
 			this.register(CORSResponseFilter.class);
+			this.register(PortfolioFeedEndpoint.class);
+			this.register(StockFeedEndpoint.class);
 		}
 	}
 
