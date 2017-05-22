@@ -13,6 +13,7 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
 
 import yahoofinance.histquotes.HistoricalQuote;
+import yahoofinance.quotes.stock.StockQuote;
 
 public class YahooFeedIT {
 
@@ -58,6 +59,13 @@ public class YahooFeedIT {
 	public final void testGetQueryName() {
 		Assert.assertEquals("PHGP.L", YahooFeed.getQueryName(this.gold));
 		Assert.assertEquals("GB00B1H05601.L", YahooFeed.getQueryName(this.bonds));
+	}
+
+	@Test
+	public final void testGetQuoteGold() throws IOException {
+		final Stock stock = new Stock(this.gold);
+		final StockQuote quote = stock.getQuote(true);
+		Assert.assertTrue(quote.isPopulated());
 	}
 
 	@Test
