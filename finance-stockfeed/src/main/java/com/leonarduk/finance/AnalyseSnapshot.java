@@ -145,7 +145,7 @@ public class AnalyseSnapshot {
 	 *            the time series
 	 * @return a map (key: strategy, value: name) of trading strategies
 	 */
-	public static List<AbstractStrategy> buildStrategiesMap(final TimeSeries series) {
+	public static List<AbstractStrategy> buildStrategiesList(final TimeSeries series) {
 		// {Moving Momentum=24916, RSI-2=-81064, Global Extrema=23748, CCI
 		// Correction=-28035}
 		final List<AbstractStrategy> strategies = new ArrayList<>();
@@ -209,7 +209,7 @@ public class AnalyseSnapshot {
 		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
 
 		// Building the map of strategies
-		final List<AbstractStrategy> strategies = AnalyseSnapshot.buildStrategiesMap(series);
+		final List<AbstractStrategy> strategies = AnalyseSnapshot.buildStrategiesList(series);
 
 		// The analysis criterion
 		final AnalysisCriterion profitCriterion = new TotalProfitCriterion();

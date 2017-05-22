@@ -2,6 +2,7 @@ package com.leonarduk.finance.stockfeed;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,10 +15,13 @@ import com.google.common.collect.Lists;
 import com.leonarduk.finance.AnalyseSnapshot;
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.portfolio.Valuation;
+import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.utils.NumberUtils;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
+import jersey.repackaged.com.google.common.collect.Sets;
 
 public class AnalyseSnapshotTest {
 	private Valuation createTestValuation(final LocalDate date, final BigDecimal price,
@@ -44,6 +48,21 @@ public class AnalyseSnapshotTest {
 
 		Assert.assertTrue(NumberUtils.areSame(BigDecimal.valueOf(100d), actual.getValuation()));
 		Assert.assertTrue(NumberUtils.areSame(BigDecimal.ONE, actual.getPrice()));
+	}
+
+	@Test
+	public void testBuildStrategiesMap() throws Exception {
+		final Stock stock = new Stock(Instrument.CASH);
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
+
+		final List<AbstractStrategy> values = AnalyseSnapshot.buildStrategiesList(series);
+		Assert.assertEquals(5, values.size());
+		final HashSet<String> expected = Sets.newHashSet(new String[] { "SMA (20days)",
+		        "SMA (50days)", "Moving Momentum", "SMA (12days)", "Global Extrema" });
+		values.stream()
+		        .forEach(value -> Assert.assertTrue(
+		                values.toString() + " does not contain '" + value.getName() + "'",
+		                values.contains(value)));
 	}
 
 	@Test
