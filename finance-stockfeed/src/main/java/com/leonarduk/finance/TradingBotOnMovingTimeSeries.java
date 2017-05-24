@@ -114,6 +114,7 @@ public class TradingBotOnMovingTimeSeries {
 			series.addTick(newTick);
 
 			final int endIndex = series.getEnd();
+			final SnapshotAnalyser snapshotAnalyser = new SnapshotAnalyser();
 			if (strategy.shouldEnter(endIndex)) {
 				// Our strategy should enter
 				System.out.println("Strategy should ENTER on " + endIndex);
@@ -121,7 +122,7 @@ public class TradingBotOnMovingTimeSeries {
 				        Decimal.TEN);
 				if (entered) {
 					final Order entry = tradingRecord.getLastEntry();
-					AnalyseSnapshot.showTradeAction(entry, "Enter");
+					snapshotAnalyser.showTradeAction(entry, "Enter");
 				}
 			}
 			else if (strategy.shouldExit(endIndex)) {
@@ -131,7 +132,7 @@ public class TradingBotOnMovingTimeSeries {
 				        Decimal.TEN);
 				if (exited) {
 					final Order exit = tradingRecord.getLastExit();
-					AnalyseSnapshot.showTradeAction(exit, "Exit");
+					snapshotAnalyser.showTradeAction(exit, "Exit");
 				}
 			}
 		}

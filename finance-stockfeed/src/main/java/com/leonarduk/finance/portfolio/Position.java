@@ -2,26 +2,45 @@ package com.leonarduk.finance.portfolio;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
+
+import jersey.repackaged.com.google.common.collect.Sets;
 
 public class Position {
 	final private BigDecimal		amount;
 
 	final private Instrument		instrument;
 
-	final private String			portfolio;
+	final private Set<String>		portfolios;
 	final private Optional<Stock>	stock;
 	private final String			symbol;
 
 	public Position(final String portfolio, final Instrument instrument, final BigDecimal amount,
 	        final Optional<Stock> stock2, final String symbol) {
-		this.portfolio = portfolio;
+		this.portfolios = Sets.newHashSet(portfolio.split(":"));
 		this.instrument = instrument;
 		this.amount = amount;
 		this.stock = stock2;
 		this.symbol = symbol;
+	}
+
+	@Override
+	public boolean equals(final Object other) {
+		if (!(other instanceof Position)) {
+			return false;
+		}
+		final Position castOther = (Position) other;
+		return new EqualsBuilder().append(this.amount, castOther.amount)
+		        .append(this.instrument, castOther.instrument)
+		        .append(this.portfolios, castOther.portfolios).append(this.stock, castOther.stock)
+		        .append(this.symbol, castOther.symbol).isEquals();
 	}
 
 	public BigDecimal getAmount() {
@@ -32,8 +51,8 @@ public class Position {
 		return this.instrument;
 	}
 
-	public String getPortfolio() {
-		return this.portfolio;
+	public Set<String> getPortfolios() {
+		return this.portfolios;
 	}
 
 	public Optional<Stock> getStock() {
@@ -45,13 +64,16 @@ public class Position {
 	}
 
 	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(this.amount).append(this.instrument)
+		        .append(this.portfolios).append(this.stock).append(this.symbol).toHashCode();
+	}
+
+	@Override
 	public String toString() {
-		String name = "";
-		if (this.stock.isPresent()) {
-			name = this.stock.get().toString();
-		}
-		return "Position [instrument=" + this.instrument + ", stock=" + name + ", amount="
-		        + this.amount + ", portfolio=" + this.portfolio + " symbol=" + this.symbol + "]";
+		return new ToStringBuilder(this).append("amount", this.amount)
+		        .append("instrument", this.instrument).append("portfolios", this.portfolios)
+		        .append("stock", this.stock).append("symbol", this.symbol).toString();
 	}
 
 }

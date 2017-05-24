@@ -3,6 +3,7 @@ package com.leonarduk.finance.api;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.joda.time.LocalDate;
 
-import com.leonarduk.finance.AnalyseSnapshot;
+import com.leonarduk.finance.SnapshotAnalyser;
 import com.leonarduk.finance.portfolio.Portfolio;
 import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.portfolio.ValuationReport;
@@ -24,7 +25,18 @@ import jersey.repackaged.com.google.common.collect.Sets;
 @Named
 @Path("/portfolio")
 public class PortfolioFeedEndpoint {
-	private final static Logger logger = Logger.getLogger(PortfolioFeedEndpoint.class.getName());
+	private final SnapshotAnalyser	snapshotAnalyzer;
+
+	private final static Logger		logger	= Logger
+	        .getLogger(PortfolioFeedEndpoint.class.getName());
+
+	public PortfolioFeedEndpoint() {
+		this.snapshotAnalyzer = new SnapshotAnalyser();
+	}
+
+	public PortfolioFeedEndpoint(final SnapshotAnalyser analyseSnapshot) {
+		this.snapshotAnalyzer = analyseSnapshot;
+	}
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -33,8 +45,8 @@ public class PortfolioFeedEndpoint {
 	        @QueryParam("toDate") final String toDate,
 	        @QueryParam("interpolate") final boolean interpolate)
 	        throws IOException, URISyntaxException {
-		return AnalyseSnapshot.createPortfolioReport(fromDate, toDate, interpolate, true, true)
-		        .toString();
+		return this.snapshotAnalyzer
+		        .createPortfolioReport(fromDate, toDate, interpolate, true, true).toString();
 	}
 
 	@GET
@@ -44,8 +56,14 @@ public class PortfolioFeedEndpoint {
 	        @QueryParam("toDate") final String toDate,
 	        @QueryParam("interpolate") final boolean interpolate)
 	        throws IOException, URISyntaxException {
-		return AnalyseSnapshot.createPortfolioReport(fromDate, toDate, interpolate, false, true)
-		        .toString();
+		return this.snapshotAnalyzer
+		        .createPortfolioReport(fromDate, toDate, interpolate, false, true).toString();
+	}
+
+	@Path("/api/listnames/")
+	public Set<String> getPortfolios() throws IOException {
+		PortfolioFeedEndpoint.logger.info("JSON query of positions");
+		return this.snapshotAnalyzer.getPortfolios();
 	}
 
 	@GET
@@ -53,7 +71,7 @@ public class PortfolioFeedEndpoint {
 	@Path("/api/display/")
 	public Portfolio getPositions() throws IOException {
 		PortfolioFeedEndpoint.logger.info("JSON query of positions");
-		return new Portfolio(Sets.newHashSet(AnalyseSnapshot.getPositions()));
+		return new Portfolio(Sets.newHashSet(this.snapshotAnalyzer.getPositions()));
 	}
 
 	@GET
@@ -64,9 +82,9 @@ public class PortfolioFeedEndpoint {
 
 		final LocalDate fromDate = LocalDate.now().minusYears(2);
 		final LocalDate toDate = LocalDate.now();
-		final List<Valuation> valuations = AnalyseSnapshot
-		        .analayzeAllEtfs(AnalyseSnapshot.getPositions(), fromDate, toDate);
-		final Valuation portfolioValuation = AnalyseSnapshot.getPortfolioValuation(valuations,
+		final List<Valuation> valuations = this.snapshotAnalyzer
+		        .analayzeAllEtfs(this.snapshotAnalyzer.getPositions(), fromDate, toDate);
+		final Valuation portfolioValuation = this.snapshotAnalyzer.getPortfolioValuation(valuations,
 		        toDate);
 		return new ValuationReport(valuations, portfolioValuation, fromDate, toDate);
 
