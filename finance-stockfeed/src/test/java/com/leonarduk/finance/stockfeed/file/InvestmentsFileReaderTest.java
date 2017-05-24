@@ -25,7 +25,7 @@ public class InvestmentsFileReaderTest {
 	public final void testGetPositionsFromCSVFile() throws IOException {
 		final List<Position> positions = InvestmentsFileReader
 		        .getPositionsFromCSVFile("resources/data/portfolios.csv");
-		Assert.assertEquals(15, positions.size());
+		Assert.assertEquals(75, positions.size());
 	}
 
 	@Test

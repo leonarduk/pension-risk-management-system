@@ -36,14 +36,15 @@ public class PortfolioFeedEndpointTest {
 
 	@Test
 	public final void testGetPortfolios() throws IOException {
-		final Set<String> expected = Sets
-		        .newHashSet(new String[] { "Steve ISA", "Steve SIPP", "Family", "Lucy ISA" });
+		final Set<String> expected = Sets.newHashSet(new String[] { "Steve ISA", "Permanent",
+		        "Steve SIPP", "Lucy ISA", "Global Market", "Risk Parity", "Ivy", "All Seaons",
+		        "Marc Faber", "Swensen", "Family", "El-Erian", "Rob Arnott" });
 		Assert.assertEquals(expected, this.endpoint.getPortfolios());
 	}
 
 	@Test
 	public final void testGetPositions() throws IOException {
-		Assert.assertEquals(15, this.endpoint.getPositions().getHoldings().size());
+		Assert.assertEquals(75, this.endpoint.getPositions().getHoldings().size());
 	}
 
 	// @Test
