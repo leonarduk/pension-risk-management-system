@@ -2,6 +2,7 @@ package com.leonarduk.finance.utils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class HtmlTools {
 		if (null == value) {
 			HtmlTools.logger.warning("Null value supplied - treat as empty string");
 		}
-		sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : "") + "'>")
+		sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : value) + "'>")
 		        .append(formatter.format(value == null ? "" : value)).append("</td>");
 	}
 
@@ -70,20 +71,22 @@ public class HtmlTools {
 
 	public static String getColour(final Object value) {
 		String colour = "white";
-		if ((value != null)
-		        && (value.equals(RecommendedTrade.BUY) || ((value instanceof LocalDate) && (Decimal
+		if (((value != null) && (value.equals(RecommendedTrade.BUY.name())
+		        || ((value instanceof LocalDate) && (Decimal
 		                .valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
 		                        .equals(Decimal.ZERO))
-
-		                || ((value instanceof Decimal)
-		                        && ((Decimal) value).isGreaterThan(Decimal.ZERO)))) {
+		        || ((value instanceof BigDecimal)
+		                && (((BigDecimal) value).compareTo(BigDecimal.ZERO) > 0))))
+		        || ((value instanceof Decimal) && ((Decimal) value).isGreaterThan(Decimal.ZERO))) {
 			colour = "green";
 		}
 
-		if (((value != null) && value.equals(RecommendedTrade.SELL))
+		if (((value != null) && value.equals(RecommendedTrade.SELL.name()))
 		        || ((value instanceof LocalDate) && (Decimal
 		                .valueOf(Days.daysBetween(LocalDate.now(), ((LocalDate) value)).getDays()))
 		                        .isGreaterThan(Decimal.ONE))
+		        || ((value instanceof BigDecimal)
+		                && (((BigDecimal) value).compareTo(BigDecimal.ZERO) < 0))
 		        || ((value instanceof Decimal) && ((Decimal) value).isLessThan(Decimal.ZERO))) {
 			colour = "red";
 		}
@@ -114,7 +117,7 @@ public class HtmlTools {
 
 	public static void printTable(final StringBuilder sb, final List<List<DataField>> records) {
 		if (records.size() > 0) {
-			sb.append("<table><tr>");
+			sb.append("<table border=\"1\"><tr>");
 			records.get(0).stream().forEach(f -> {
 				if (f.isDisplay()) {
 					HtmlTools.addHeader(f.getName(), sb);

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.ws.rs.GET;
@@ -77,16 +78,19 @@ public class PortfolioFeedEndpoint {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/api/report/")
-	public ValuationReport getValuations() throws IOException {
+	public List<ValuationReport> getValuations() throws IOException {
 		PortfolioFeedEndpoint.logger.info("JSON query of valuations");
 
 		final LocalDate fromDate = LocalDate.now().minusYears(2);
 		final LocalDate toDate = LocalDate.now();
+
 		final List<Valuation> valuations = this.snapshotAnalyzer
 		        .analayzeAllEtfs(this.snapshotAnalyzer.getPositions(), fromDate, toDate);
-		final Valuation portfolioValuation = this.snapshotAnalyzer.getPortfolioValuation(valuations,
-		        toDate);
-		return new ValuationReport(valuations, portfolioValuation, fromDate, toDate);
+
+		return this.snapshotAnalyzer
+		        .getPortfolios().stream().map(portfolioName -> this.snapshotAnalyzer
+		                .createValuationReport(fromDate, toDate, valuations, portfolioName))
+		        .collect(Collectors.toList());
 
 	}
 

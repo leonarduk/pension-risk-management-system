@@ -25,6 +25,7 @@ import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.portfolio.Recommendation;
 import com.leonarduk.finance.portfolio.RecommendedTrade;
 import com.leonarduk.finance.portfolio.Valuation;
+import com.leonarduk.finance.portfolio.ValuationReport;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.Stock;
@@ -73,6 +74,43 @@ public class SnapshotAnalyser {
 
 	public SnapshotAnalyser(final IntelligentStockFeed intelligentStockFeed) {
 		this.feed = intelligentStockFeed;
+	}
+
+	private void addPortfolioDetails(final LocalDate fromDate, final LocalDate toDate,
+	        final boolean interpolate, final boolean createSeriesLinks, final StringBuilder sbBody,
+	        final List<Valuation> valuations, final String portfolioName) {
+		sbBody.append("Portfolio: " + portfolioName + "<br>");
+		final ValuationReport report = this.createValuationReport(fromDate, toDate, valuations,
+		        portfolioName);
+
+		final List<Valuation> valuations2 = report.getValuations().stream()
+		        .filter(val -> val.getPosition().getPortfolios().contains(portfolioName))
+		        .collect(Collectors.toList());
+
+		valuations2.add(report.getPortfolioValuation());
+		this.createValuationsTable(valuations2, sbBody, true, createSeriesLinks, fromDate, toDate,
+		        interpolate);
+		sbBody.append("<hr/>");
+
+		// final Map<String, Double> assetTypeMap = valuations.parallelStream()
+		// .collect(Collectors.groupingByConcurrent(
+		// v -> v.getPosition().getInstrument().assetType().name(), Collectors
+		// .summingDouble((v -> v.getValuation().doubleValue()))));
+		// final Map<String, Double> underlyingTypeMap = valuations.parallelStream()
+		// .collect(Collectors.groupingByConcurrent(
+		// v -> v.getPosition().getInstrument().underlyingType().name(), Collectors
+		// .summingDouble((v -> v.getValuation().doubleValue()))));
+
+		// try {
+		// HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets",
+		// SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+		// HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations,
+		// "Underlying Assets", SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+		//
+		// }
+		// catch (final IOException e) {
+		// sbBody.append("Failed to create images:" + e.getMessage());
+		// }
 	}
 
 	public List<Valuation> analayzeAllEtfs(final List<Position> stocks, final LocalDate fromDate,
@@ -236,8 +274,7 @@ public class SnapshotAnalyser {
 		System.out.println(ticker + scores);
 	}
 
-	public Position createEmptyPortfolioPosition() {
-		final String name = "Portfolio";
+	public Position createEmptyPortfolioPosition(final String name) {
 		final Instrument PORTFOLIO = Instrument.createPortfolioInstrument(name);
 
 		final Optional<Stock> stock2 = Optional.of(new Stock(PORTFOLIO));
@@ -264,23 +301,8 @@ public class SnapshotAnalyser {
 
 		final List<Valuation> valuations = this.analayzeAllEtfs(positions, fromDate, toDate);
 
-		this.createValuationsTable(valuations, sbBody, true, createSeriesLinks, fromDate, toDate,
-		        interpolate);
-		sbBody.append("<hr/>");
-
-		final Map<String, Double> assetTypeMap = valuations.parallelStream()
-		        .collect(Collectors.groupingByConcurrent(
-		                v -> v.getPosition().getInstrument().assetType().name(), Collectors
-		                        .summingDouble((v -> v.getValuation().doubleValue()))));
-		final Map<String, Double> underlyingTypeMap = valuations.parallelStream()
-		        .collect(Collectors.groupingByConcurrent(
-		                v -> v.getPosition().getInstrument().underlyingType().name(), Collectors
-		                        .summingDouble((v -> v.getValuation().doubleValue()))));
-
-		HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets",
-		        SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
-		HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
-		        SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+		this.getPortfolios().stream().forEach(portfolioName -> this.addPortfolioDetails(fromDate,
+		        toDate, interpolate, createSeriesLinks, sbBody, valuations, portfolioName));
 
 		this.createValuationsTable(this.analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody,
 		        false, createSeriesLinks, fromDate, toDate, interpolate);
@@ -294,7 +316,7 @@ public class SnapshotAnalyser {
 	        final boolean interpolate, final boolean extendedReport,
 	        final boolean createSeriesLinks) throws IOException, URISyntaxException {
 		final LocalDate fromLocalDate = StringUtils.isEmpty(fromDate)
-		        ? LocalDate.now().minusYears(1) : LocalDate.parse(fromDate);
+		        ? LocalDate.now().minusYears(2) : LocalDate.parse(fromDate);
 		final LocalDate toLocalDate = StringUtils.isEmpty(toDate) ? LocalDate.now()
 		        : LocalDate.parse(toDate);
 		return this.createPortfolioReport(fromLocalDate, toLocalDate, interpolate, extendedReport,
@@ -312,6 +334,16 @@ public class SnapshotAnalyser {
 		        NumberUtils.roundDecimal(price.multiply(volume)),
 		        lastTick.getEndTime().toLocalDate(), NumberUtils.roundDecimal(price));
 		return valuation;
+	}
+
+	public ValuationReport createValuationReport(final LocalDate fromDate, final LocalDate toDate,
+	        final List<Valuation> valuations, final String portfolioName) {
+		final List<Valuation> portfolioPositions = valuations.stream()
+		        .filter(val -> val.getPosition().getPortfolios().contains(portfolioName))
+		        .collect(Collectors.toList());
+		final Valuation portfolioValuation = this.getPortfolioValuation(portfolioPositions, toDate,
+		        portfolioName);
+		return new ValuationReport(valuations, portfolioValuation, fromDate, toDate);
 	}
 
 	protected void createValuationsTable(final List<Valuation> valuations, final StringBuilder sb,
@@ -356,8 +388,8 @@ public class SnapshotAnalyser {
 				fields.add(new DataField(day + "D", valuation.getReturn(Period.days(day))));
 			}
 
-			for (final String name : new String[] { "SMA (12days)", "SMA (20days)", "SMA (50days)",
-			        "Global Extrema", "Moving Momentum", }) {
+			for (final String name : new String[] { "SMA12days", "SMA20days", "SMA50days",
+			        "GlobalExtrema", "MovingMomentum", }) {
 				fields.add(new DataField(name, valuation.getRecommendation(name)));
 			}
 		}
@@ -381,8 +413,8 @@ public class SnapshotAnalyser {
 	}
 
 	public Valuation getPortfolioValuation(final List<Valuation> valuedPositions,
-	        final LocalDate valuationDate) {
-		final Position portfolioPosition = this.createEmptyPortfolioPosition();
+	        final LocalDate valuationDate, final String name) {
+		final Position portfolioPosition = this.createEmptyPortfolioPosition(name);
 		final Map<Period, BigDecimal> returns = Maps.newConcurrentMap();
 		BigDecimal total = BigDecimal.ZERO;
 		// so want to weight the returns to show value, 1d,5d,21d,63d,365d returns

@@ -23,7 +23,7 @@ import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import jersey.repackaged.com.google.common.collect.Sets;
 
-public class AnalyseSnapshotTest {
+public class SnapshotAnalyserTest {
 	private final SnapshotAnalyser snapshotAnalyser = new SnapshotAnalyser();
 
 	private Valuation createTestValuation(final LocalDate date, final BigDecimal price,
@@ -113,7 +113,7 @@ public class AnalyseSnapshotTest {
 		        BigDecimal.valueOf(10000), BigDecimal.valueOf(2.2), BigDecimal.valueOf(4.2),
 		        BigDecimal.valueOf(2.2), BigDecimal.valueOf(5.2), null));
 		final Valuation valuation = this.snapshotAnalyser.getPortfolioValuation(valuedPositions,
-		        date);
+		        date, "tests");
 
 		Assert.assertEquals("{P63D=3.15, P1D=1.27, P21D=1.55, P5D=2.18, P365D=0.72}",
 		        valuation.getReturns().toString());
