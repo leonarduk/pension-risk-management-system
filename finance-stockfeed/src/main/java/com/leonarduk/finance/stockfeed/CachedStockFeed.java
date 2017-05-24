@@ -56,6 +56,11 @@ public class CachedStockFeed extends CsvStockFeed {
 	}
 
 	@Override
+	public Source getSource() {
+		return Source.MANUAL;
+	}
+
+	@Override
 	public boolean isAvailable() {
 		final File store = new File(this.storeLocation);
 		return (store.exists() & store.isDirectory()) && store.canWrite() && store.canRead();

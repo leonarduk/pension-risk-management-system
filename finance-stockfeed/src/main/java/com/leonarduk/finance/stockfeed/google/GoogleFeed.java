@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 import com.leonarduk.web.SeleniumUtils;
 
@@ -48,6 +49,11 @@ public class GoogleFeed extends CsvStockFeed {
 	@Override
 	protected String getQueryName(final Instrument instrument) {
 		return instrument.getGoogleCode();
+	}
+
+	@Override
+	public Source getSource() {
+		return Source.Google;
 	}
 
 	@Override

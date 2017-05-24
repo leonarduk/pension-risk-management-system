@@ -98,9 +98,16 @@ public class IntelligentStockFeed extends StockFeed {
 			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(instrument, fromDate,
 			        toDate, dataFeed, true);
 
-			final Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument, fromDate,
-			        toDate, StockFeedFactory.getDataFeed(instrument.getSource()),
-			        IntelligentStockFeed.refresh);
+			// Yahoo often give 503 errors when downloading history
+			StockFeed webDataFeed = StockFeedFactory.getDataFeed(instrument.getSource());
+			Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
+			        webDataFeed, IntelligentStockFeed.refresh);
+			if (webDataFeed.isAvailable() && !liveData.isPresent()
+			        && webDataFeed.getSource().equals(Source.Yahoo)) {
+				webDataFeed = StockFeedFactory.getDataFeed(Source.Google);
+				liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
+				        IntelligentStockFeed.refresh);
+			}
 
 			if (liveData.isPresent()) {
 				if (cachedData.isPresent()) {
@@ -145,6 +152,11 @@ public class IntelligentStockFeed extends StockFeed {
 			data = Optional.empty();
 		}
 		return data;
+	}
+
+	@Override
+	public Source getSource() {
+		return Source.MANUAL;
 	}
 
 	@Override

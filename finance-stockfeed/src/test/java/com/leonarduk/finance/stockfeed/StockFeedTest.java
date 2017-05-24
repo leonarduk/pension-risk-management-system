@@ -54,6 +54,11 @@ public class StockFeedTest {
 			}
 
 			@Override
+			public Source getSource() {
+				return Source.MANUAL;
+			}
+
+			@Override
 			public boolean isAvailable() {
 				return true;
 			}

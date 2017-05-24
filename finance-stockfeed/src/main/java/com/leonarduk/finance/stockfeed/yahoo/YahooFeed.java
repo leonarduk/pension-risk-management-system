@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
@@ -104,6 +105,11 @@ public class YahooFeed extends StockFeed {
 			YahooFeed.logger.warning("Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();
 		}
+	}
+
+	@Override
+	public Source getSource() {
+		return Source.Yahoo;
 	}
 
 	@Override
