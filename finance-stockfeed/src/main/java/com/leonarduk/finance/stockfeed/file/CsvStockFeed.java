@@ -202,10 +202,11 @@ public abstract class CsvStockFeed extends StockFeed {
 	/**
 	 * Advance to next stock quote in response
 	 * <p>
-	 * This method will open a new request on the first call and will update the fields for open,
-	 * close, high, low, and volume each time it is called.
+	 * This method will open a new request on the first call and will update the
+	 * fields for open, close, high, low, and volume each time it is called.
 	 *
-	 * @return true if another quote was parsed, false if no more quotes exist to read
+	 * @return true if another quote was parsed, false if no more quotes exist
+	 *         to read
 	 * @throws IOException
 	 *             may fail to read file
 	 */

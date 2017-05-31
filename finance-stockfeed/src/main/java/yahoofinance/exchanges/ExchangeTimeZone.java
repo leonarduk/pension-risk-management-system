@@ -322,8 +322,8 @@ public class ExchangeTimeZone {
 	}
 
 	/**
-	 * Get the time zone for a specific stock or index. For stocks, the exchange suffix is extracted
-	 * from the stock symbol to retrieve the time zone.
+	 * Get the time zone for a specific stock or index. For stocks, the exchange
+	 * suffix is extracted from the stock symbol to retrieve the time zone.
 	 *
 	 * @param symbol
 	 *            stock symbol in YahooFinance

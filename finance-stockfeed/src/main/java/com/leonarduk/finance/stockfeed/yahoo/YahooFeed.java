@@ -80,7 +80,8 @@ public class YahooFeed extends StockFeed implements QuoteFeed {
 	// this.setQuote(data.getQuote());
 	// this.setStats(data.getStats());
 	// this.setDividend(data.getDividend());
-	// Stock.logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
+	// Stock.logger.log(Level.INFO, "Updated Stock with symbol: {0}",
+	// this.instrument.isin());
 	// }
 	// else {
 	// Stock.logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}",

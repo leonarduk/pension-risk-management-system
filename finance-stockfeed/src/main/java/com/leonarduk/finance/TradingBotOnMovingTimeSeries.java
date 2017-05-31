@@ -70,7 +70,8 @@ public class TradingBotOnMovingTimeSeries {
 	}
 
 	/**
-	 * Builds a moving time series (i.e. keeping only the maxTickCount last ticks)
+	 * Builds a moving time series (i.e. keeping only the maxTickCount last
+	 * ticks)
 	 *
 	 * @param maxTickCount
 	 *            the number of ticks to keep in the time series (at maximum)

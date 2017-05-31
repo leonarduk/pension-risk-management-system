@@ -8,7 +8,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * All getters can return null in case the data is not available from Yahoo Finance.
+ * All getters can return null in case the data is not available from Yahoo
+ * Finance.
  *
  * @author Stijn Strickx
  */

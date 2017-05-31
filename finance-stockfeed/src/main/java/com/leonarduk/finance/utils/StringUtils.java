@@ -54,7 +54,8 @@ public class StringUtils {
 	}
 
 	/**
-	 * Strips the unwanted chars from a line returned in the CSV Used for parsing the FX CSV lines
+	 * Strips the unwanted chars from a line returned in the CSV Used for
+	 * parsing the FX CSV lines
 	 *
 	 * @param line
 	 *            the original CSV line

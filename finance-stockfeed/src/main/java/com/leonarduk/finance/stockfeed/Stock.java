@@ -77,20 +77,21 @@ public class Stock {
 	}
 
 	/**
-	 * This method will return historical quotes from this stock. If the historical quotes are not
-	 * available yet, they will be requested first from Yahoo Finance.
+	 * This method will return historical quotes from this stock. If the
+	 * historical quotes are not available yet, they will be requested first
+	 * from Yahoo Finance.
 	 * <p>
-	 * If the historical quotes are not available yet, the following characteristics will be used
-	 * for the request:
+	 * If the historical quotes are not available yet, the following
+	 * characteristics will be used for the request:
 	 * <ul>
 	 * <li>from: 1 year ago (default)
 	 * <li>to: today (default)
 	 * <li>interval: MONTHLY (default)
 	 * </ul>
 	 * <p>
-	 * There are several more methods available that allow you to define some characteristics of the
-	 * historical data. Calling one of those methods will result in a new request being sent to
-	 * Yahoo Finance.
+	 * There are several more methods available that allow you to define some
+	 * characteristics of the historical data. Calling one of those methods will
+	 * result in a new request being sent to Yahoo Finance.
 	 *
 	 * @return a list of historical quotes from this stock
 	 * @throws java.io.IOException
@@ -99,7 +100,8 @@ public class Stock {
 	 * @see #getHistory(java.util.Calendar)
 	 * @see #getHistory(java.util.Calendar, java.util.Calendar)
 	 * @see #getHistory(java.util.Calendar, yahoofinance.histquotes.Interval)
-	 * @see #getHistory(java.util.Calendar, java.util.Calendar, yahoofinance.histquotes.Interval)
+	 * @see #getHistory(java.util.Calendar, java.util.Calendar,
+	 *      yahoofinance.histquotes.Interval)
 	 */
 	public List<HistoricalQuote> getHistory() throws IOException {
 		if (this.history == null) {
@@ -109,7 +111,8 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following characteristics.
+	 * Requests the historical quotes for this stock with the following
+	 * characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: today (default)
@@ -129,7 +132,8 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following characteristics.
+	 * Requests the historical quotes for this stock with the following
+	 * characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: specified value
@@ -151,7 +155,8 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following characteristics.
+	 * Requests the historical quotes for this stock with the following
+	 * characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: specified value
@@ -178,7 +183,8 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following characteristics.
+	 * Requests the historical quotes for this stock with the following
+	 * characteristics.
 	 * <ul>
 	 * <li>from: specified value
 	 * <li>to: today (default)
@@ -200,7 +206,8 @@ public class Stock {
 	}
 
 	/**
-	 * Requests the historical quotes for this stock with the following characteristics.
+	 * Requests the historical quotes for this stock with the following
+	 * characteristics.
 	 * <ul>
 	 * <li>from: 1 year ago (default)
 	 * <li>to: today (default)

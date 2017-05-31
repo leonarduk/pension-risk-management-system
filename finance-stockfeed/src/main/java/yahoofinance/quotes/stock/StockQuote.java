@@ -13,7 +13,8 @@ import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo Finance.
+ * All getters can return null in case the data is not available from Yahoo
+ * Finance.
  *
  * @author Stijn Strickx
  */
@@ -303,7 +304,8 @@ public class StockQuote {
 
 	/**
 	 *
-	 * @return change from 200 day moving average relative to 200 day moving average
+	 * @return change from 200 day moving average relative to 200 day moving
+	 *         average
 	 */
 	public BigDecimal getChangeFromAvg200InPercent() {
 		return NumberUtils.getPercent(this.getChangeFromAvg200(),
@@ -323,7 +325,8 @@ public class StockQuote {
 
 	/**
 	 *
-	 * @return change from 50 day moving average relative to 50 day moving average
+	 * @return change from 50 day moving average relative to 50 day moving
+	 *         average
 	 */
 	public BigDecimal getChangeFromAvg50InPercent() {
 		return NumberUtils.getPercent(this.getChangeFromAvg50(),
@@ -399,8 +402,9 @@ public class StockQuote {
 	}
 
 	/**
-	 * Will derive the time zone from the exchange to parse the date time into a Calendar object.
-	 * This will not react to changes in the lastTradeDateStr and lastTradeTimeStr
+	 * Will derive the time zone from the exchange to parse the date time into a
+	 * Calendar object. This will not react to changes in the lastTradeDateStr
+	 * and lastTradeTimeStr
 	 *
 	 * @return last trade date time
 	 */
@@ -409,8 +413,8 @@ public class StockQuote {
 	}
 
 	/**
-	 * Will use the provided time zone to parse the date time into a Calendar object Reacts to
-	 * changes in the lastTradeDateStr and lastTradeTimeStr
+	 * Will use the provided time zone to parse the date time into a Calendar
+	 * object Reacts to changes in the lastTradeDateStr and lastTradeTimeStr
 	 *
 	 * @param timeZone
 	 *            time zone where the stock is traded

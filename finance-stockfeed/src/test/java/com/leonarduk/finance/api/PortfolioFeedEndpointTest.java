@@ -52,7 +52,8 @@ public class PortfolioFeedEndpointTest {
 
 	// @Test
 	// public final void testGetValuations() throws IOException {
-	// ValuationReport expected = new ValuationReport(valuations, portfolioValuation, fromDate,
+	// ValuationReport expected = new ValuationReport(valuations,
+	// portfolioValuation, fromDate,
 	// toDate);
 	// Assert.assertEquals(expected, this.endpoint.getValuations());
 	// }

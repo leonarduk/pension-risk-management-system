@@ -21,7 +21,8 @@ import com.leonarduk.finance.utils.StringUtils;
  *
  * @author Stijn Strickx
  * @param <T>
- *            Type of object that can contain the retrieved information from a quotes request
+ *            Type of object that can contain the retrieved information from a
+ *            quotes request
  */
 public abstract class QuotesRequest<T> {
 

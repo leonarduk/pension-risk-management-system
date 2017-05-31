@@ -98,13 +98,16 @@ public class SnapshotAnalyser {
 		// .collect(Collectors.groupingByConcurrent(
 		// v -> v.getPosition().getInstrument().assetType().name(), Collectors
 		// .summingDouble((v -> v.getValuation().doubleValue()))));
-		// final Map<String, Double> underlyingTypeMap = valuations.parallelStream()
+		// final Map<String, Double> underlyingTypeMap =
+		// valuations.parallelStream()
 		// .collect(Collectors.groupingByConcurrent(
-		// v -> v.getPosition().getInstrument().underlyingType().name(), Collectors
+		// v -> v.getPosition().getInstrument().underlyingType().name(),
+		// Collectors
 		// .summingDouble((v -> v.getValuation().doubleValue()))));
 
 		// try {
-		// HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets",
+		// HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations,
+		// "Owned Assets",
 		// SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
 		// HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations,
 		// "Underlying Assets", SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
@@ -471,7 +474,8 @@ public class SnapshotAnalyser {
 		        .createEmptyPortfolioPosition(name);
 		final Map<Period, BigDecimal> returns = Maps.newConcurrentMap();
 		BigDecimal total = BigDecimal.ZERO;
-		// so want to weight the returns to show value, 1d,5d,21d,63d,365d returns
+		// so want to weight the returns to show value, 1d,5d,21d,63d,365d
+		// returns
 		// turn relative return to absolute and add-up
 		for (final Valuation valuation : valuedPositions) {
 			for (final Entry<Period, BigDecimal> ret : valuation.getReturns()

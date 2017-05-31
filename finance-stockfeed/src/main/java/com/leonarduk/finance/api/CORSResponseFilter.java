@@ -16,7 +16,8 @@ public class CORSResponseFilter implements ContainerResponseFilter {
 		        .getHeaders();
 
 		headers.add("Access-Control-Allow-Origin", "*");
-		// headers.add("Access-Control-Allow-Origin", "http://risk.leonarduk.com"); // allows CORS
+		// headers.add("Access-Control-Allow-Origin",
+		// "http://risk.leonarduk.com"); // allows CORS
 		// requests
 		// only coming from abcd.org
 		headers.add("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");

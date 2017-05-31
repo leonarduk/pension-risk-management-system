@@ -11,7 +11,8 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo Finance.
+ * All getters can return null in case the data is not available from Yahoo
+ * Finance.
  *
  * @author Stijn Strickx
  */
@@ -71,9 +72,10 @@ public class HistoricalQuote {
 	}
 
 	/**
-	 * The adjusted closing price on a specific date reflects all of the dividends and splits since
-	 * that day. The adjusted closing price from a date in history can be used to calculate a close
-	 * estimate of the total return, including dividends, that an investor earned if shares were
+	 * The adjusted closing price on a specific date reflects all of the
+	 * dividends and splits since that day. The adjusted closing price from a
+	 * date in history can be used to calculate a close estimate of the total
+	 * return, including dividends, that an investor earned if shares were
 	 * purchased on that date.
 	 *
 	 * @return the adjusted close price

@@ -18,8 +18,10 @@ public enum QuotesProperty {
 	BookValuePerShare("b4"), // Book Value Per Share
 	Change("c1"), // Change
 	Change_ChangeInPercent("c"), // ChangeÂ Change In Percent
-	ChangeFromFiftydayMovingAverage("m7"), // Change From Fiftyday Moving Average
-	ChangeFromTwoHundreddayMovingAverage("m5"), // Change From Two Hundredday Moving Average
+	ChangeFromFiftydayMovingAverage("m7"), // Change From Fiftyday Moving
+	                                       // Average
+	ChangeFromTwoHundreddayMovingAverage("m5"), // Change From Two Hundredday
+	                                            // Moving Average
 	ChangeFromYearHigh("k4"), // Change From Year High
 	ChangeFromYearLow("j5"), // Change From Year Low
 	ChangeInPercent("p2"), // Change In Percent
@@ -69,7 +71,8 @@ public enum QuotesProperty {
 	PERatioRealtime("r2"), // P E G Ratio
 	PercentChangeFromFiftydayMovingAverage("m8"), // P E Ratio
 	PercentChangeFromTwoHundreddayMovingAverage("m6"), // P E Ratio (Realtime)
-	PercentChangeFromYearLow("j6"), // Percent Change From Fiftyday Moving Average
+	PercentChangeFromYearLow("j6"), // Percent Change From Fiftyday Moving
+	                                // Average
 	PreviousClose("p"), // Percent Change From Two Hundredday Moving Average
 	PriceBook("p6"), // Change In Percent From Year High
 	PriceEPSEstimateCurrentYear("r6"), // Percent Change From Year Low

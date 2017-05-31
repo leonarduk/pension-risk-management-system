@@ -9,7 +9,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.leonarduk.finance.utils.NumberUtils;
 
 /**
- * All getters can return null in case the data is not available from Yahoo Finance.
+ * All getters can return null in case the data is not available from Yahoo
+ * Finance.
  *
  * @author Stijn Strickx
  */
@@ -17,7 +18,7 @@ public class StockStats {
 
 	private BigDecimal		bookValuePerShare;
 
-	private BigDecimal		EBITDA;																				 // ttm
+	private BigDecimal		EBITDA;																									 // ttm
 
 	private BigDecimal		eps;
 
@@ -32,7 +33,7 @@ public class StockStats {
 
 	private BigDecimal		priceBook;
 	private BigDecimal		priceSales;
-	private BigDecimal		revenue;																 // ttm
+	private BigDecimal		revenue;																				 // ttm
 
 	private Long			sharesFloat;
 	private Long			sharesOutstanding;
