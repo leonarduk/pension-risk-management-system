@@ -17,4 +17,8 @@ public class StockFeedFactory {
 		}
 	}
 
+	public static QuoteFeed getQuoteFeed(final Source yahoo) {
+		return new YahooFeed();
+	}
+
 }

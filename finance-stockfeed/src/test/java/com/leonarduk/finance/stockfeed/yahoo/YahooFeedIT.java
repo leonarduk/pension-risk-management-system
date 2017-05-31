@@ -64,7 +64,7 @@ public class YahooFeedIT {
 	@Test
 	public final void testGetQuoteGold() throws IOException {
 		final Stock stock = new Stock(this.gold);
-		final StockQuote quote = stock.getQuote(true);
+		final StockQuote quote = this.feed.getStockQuote(stock.getInstrument());
 		Assert.assertTrue(quote.isPopulated());
 	}
 

@@ -18,8 +18,6 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.stock.StockDividend;
 import yahoofinance.quotes.stock.StockQuote;
-import yahoofinance.quotes.stock.StockQuotesData;
-import yahoofinance.quotes.stock.StockQuotesRequest;
 import yahoofinance.quotes.stock.StockStats;
 
 /**
@@ -72,32 +70,6 @@ public class Stock {
 	 * @see #getDividend(boolean)
 	 */
 	public StockDividend getDividend() {
-		return this.dividend;
-	}
-
-	/**
-	 * Returns the dividend data available for this stock.
-	 *
-	 * This method will return null in the following situations:
-	 * <ul>
-	 * <li>the data hasn't been loaded yet in a previous request and refresh is set to false.
-	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance for whatever reason
-	 * (symbol not recognized, no network connection, ...)
-	 * </ul>
-	 * <p>
-	 * When the dividend data get refreshed, it will automatically also refresh the quote and
-	 * statistics data of the stock from Yahoo Finance in the same request.
-	 *
-	 * @param refresh
-	 *            indicates whether the data should be requested again to Yahoo Finance
-	 * @return dividend data available for this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
-	 */
-	public StockDividend getDividend(final boolean refresh) throws IOException {
-		if (refresh) {
-			this.update();
-		}
 		return this.dividend;
 	}
 
@@ -262,32 +234,7 @@ public class Stock {
 	 */
 	public StockQuote getQuote() {
 		if (this.quote == null) {
-			return new StockQuote(this.instrument);
-		}
-		return this.quote;
-	}
-
-	/**
-	 * Returns the basic quotes data available for this stock. This method will return null in the
-	 * following situations:
-	 * <ul>
-	 * <li>the data hasn't been loaded yet in a previous request and refresh is set to false.
-	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance for whatever reason
-	 * (symbol not recognized, no network connection, ...)
-	 * </ul>
-	 * <p>
-	 * When the quote data gets refreshed, it will automatically also refresh the statistics and
-	 * dividend data of the stock from Yahoo Finance in the same request.
-	 *
-	 * @param refresh
-	 *            indicates whether the data should be requested again to Yahoo Finance
-	 * @return basic quotes data available for this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
-	 */
-	public StockQuote getQuote(final boolean refresh) throws IOException {
-		if (refresh) {
-			this.update();
+			return new StockQuote.StockQuoteBuilder(this.instrument).build();
 		}
 		return this.quote;
 	}
@@ -299,31 +246,6 @@ public class Stock {
 	 * @see #getStats(boolean)
 	 */
 	public StockStats getStats() {
-		return this.stats;
-	}
-
-	/**
-	 * Returns the statistics available for this stock. This method will return null in the
-	 * following situations:
-	 * <ul>
-	 * <li>the data hasn't been loaded yet in a previous request and refresh is set to false.
-	 * <li>refresh is true and the data cannot be retrieved from Yahoo Finance for whatever reason
-	 * (symbol not recognized, no network connection, ...)
-	 * </ul>
-	 * <p>
-	 * When the statistics get refreshed, it will automatically also refresh the quote and dividend
-	 * data of the stock from Yahoo Finance in the same request.
-	 *
-	 * @param refresh
-	 *            indicates whether the data should be requested again to Yahoo Finance
-	 * @return statistics available for this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
-	 */
-	public StockStats getStats(final boolean refresh) throws IOException {
-		if (refresh) {
-			this.update();
-		}
 		return this.stats;
 	}
 
@@ -387,21 +309,6 @@ public class Stock {
 	@Override
 	public String toString() {
 		return this.getSymbol() + ": " + this.getQuote().getPrice();
-	}
-
-	private void update() throws IOException {
-		final StockQuotesRequest request = new StockQuotesRequest(this.instrument);
-		final StockQuotesData data = request.getSingleResult();
-		if (data != null) {
-			this.setQuote(data.getQuote());
-			this.setStats(data.getStats());
-			this.setDividend(data.getDividend());
-			Stock.logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
-		}
-		else {
-			Stock.logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}",
-			        this.instrument.isin());
-		}
 	}
 
 }

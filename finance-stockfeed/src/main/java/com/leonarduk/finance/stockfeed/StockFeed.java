@@ -15,10 +15,25 @@ import com.leonarduk.finance.utils.StringUtils;
 import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
+import yahoofinance.quotes.stock.StockQuote.StockQuoteBuilder;
 
 public abstract class StockFeed {
 	public enum Exchange {
 		London
+	}
+
+	public static void addQuoteToSeries(final Instrument instrument,
+	        final List<HistoricalQuote> quotes, final Stock stock) {
+		final StockQuoteBuilder quoteBuilder = new StockQuote.StockQuoteBuilder(instrument);
+
+		if ((quotes != null) && !quotes.isEmpty()) {
+			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
+			quoteBuilder.setDayHigh(historicalQuote.getHigh()).setDayLow(historicalQuote.getLow())
+			        .setOpen(historicalQuote.getOpen()).setAvgVolume(historicalQuote.getVolume())
+			        .setPrice(historicalQuote.getClose());
+			stock.setQuote(quoteBuilder.build());
+			stock.setHistory(quotes);
+		}
 	}
 
 	public static Stock createStock(final Instrument instrument) {
@@ -28,21 +43,8 @@ public abstract class StockFeed {
 	public static Stock createStock(final Instrument instrument,
 	        final List<HistoricalQuote> quotes) {
 		final Stock stock = new Stock(instrument);
-
-		// stock.setCurrency();
-		final StockQuote quote = new StockQuote(instrument);
-
-		if ((quotes != null) && !quotes.isEmpty()) {
-			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
-
-			quote.setDayHigh(historicalQuote.getHigh());
-			quote.setDayLow(historicalQuote.getLow());
-			quote.setOpen(historicalQuote.getOpen());
-			quote.setAvgVolume(historicalQuote.getVolume());
-			quote.setPrice(historicalQuote.getClose());
-			stock.setQuote(quote);
-			stock.setHistory(quotes);
-		}
+		stock.setHistory(quotes);
+		StockFeed.addQuoteToSeries(instrument, quotes, stock);
 		return stock;
 	}
 

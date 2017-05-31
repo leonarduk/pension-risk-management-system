@@ -19,37 +19,206 @@ import com.leonarduk.finance.utils.NumberUtils;
  */
 public class StockQuote {
 
-	private BigDecimal			ask;
+	private final BigDecimal	ask;
 
-	private Long				askSize;
+	private final Long			askSize;
 
-	private Long				avgVolume;
+	private final Long			avgVolume;
 
-	private BigDecimal			bid;
-	private Long				bidSize;
-	private BigDecimal			dayHigh;
-	private BigDecimal			dayLow;
+	private final BigDecimal	bid;
+	private final Long			bidSize;
+	private final BigDecimal	dayHigh;
+	private final BigDecimal	dayLow;
 	private final Instrument	instrument;
 
-	private String				lastTradeDateStr;
-	private Long				lastTradeSize;
-	private Calendar			lastTradeTime;
-	private String				lastTradeTimeStr;
+	private final String		lastTradeDateStr;
+	private final Long			lastTradeSize;
+	private final Calendar		lastTradeTime;
+	private final String		lastTradeTimeStr;
 
-	private BigDecimal			open;
-	private BigDecimal			previousClose;
-	private BigDecimal			price;
-	private BigDecimal			priceAvg200;
+	private final BigDecimal	open;
+	private final BigDecimal	previousClose;
+	private final BigDecimal	price;
+	private final BigDecimal	priceAvg200;
 
-	private BigDecimal			priceAvg50;
-	private TimeZone			timeZone;
-	private Long				volume;
-	private BigDecimal			yearHigh;
+	private final BigDecimal	priceAvg50;
+	private final TimeZone		timeZone;
+	private final Long			volume;
+	private final BigDecimal	yearHigh;
 
-	private BigDecimal			yearLow;
+	private final BigDecimal	yearLow;
 
-	public StockQuote(final Instrument instrument) {
+	public static class StockQuoteBuilder {
+		private BigDecimal			ask;
+
+		private Long				askSize;
+
+		private Long				avgVolume;
+
+		private BigDecimal			bid;
+		private Long				bidSize;
+		private BigDecimal			dayHigh;
+		private BigDecimal			dayLow;
+		private final Instrument	instrument;
+
+		private String				lastTradeDateStr;
+		private Long				lastTradeSize;
+		private Calendar			lastTradeTime;
+		private String				lastTradeTimeStr;
+
+		private BigDecimal			open;
+		private BigDecimal			previousClose;
+		private BigDecimal			price;
+		private BigDecimal			priceAvg200;
+
+		private BigDecimal			priceAvg50;
+		private TimeZone			timeZone;
+		private Long				volume;
+		private BigDecimal			yearHigh;
+
+		private BigDecimal			yearLow;
+
+		public StockQuoteBuilder(final Instrument instrument) {
+			this.instrument = instrument;
+		}
+
+		public StockQuote build() {
+			return new StockQuote(this.ask, this.askSize, this.avgVolume, this.bid, this.bidSize,
+			        this.dayHigh, this.dayLow, this.instrument, this.lastTradeDateStr,
+			        this.lastTradeSize, this.lastTradeTime, this.lastTradeTimeStr, this.open,
+			        this.previousClose, this.price, this.priceAvg200, this.priceAvg50,
+			        this.timeZone, this.volume, this.yearHigh, this.yearLow);
+		}
+
+		public StockQuoteBuilder setAsk(final BigDecimal ask) {
+			this.ask = ask;
+			return this;
+		}
+
+		public StockQuoteBuilder setAskSize(final Long askSize) {
+			this.askSize = askSize;
+			return this;
+		}
+
+		public StockQuoteBuilder setAvgVolume(final Long avgVolume) {
+			this.avgVolume = avgVolume;
+			return this;
+		}
+
+		public StockQuoteBuilder setBid(final BigDecimal bid) {
+			this.bid = bid;
+			return this;
+		}
+
+		public StockQuoteBuilder setBidSize(final Long bidSize) {
+			this.bidSize = bidSize;
+			return this;
+		}
+
+		public StockQuoteBuilder setDayHigh(final BigDecimal dayHigh) {
+			this.dayHigh = dayHigh;
+			return this;
+		}
+
+		public StockQuoteBuilder setDayLow(final BigDecimal dayLow) {
+			this.dayLow = dayLow;
+			return this;
+		}
+
+		public StockQuoteBuilder setLastTradeDateStr(final String lastTradeDateStr) {
+			this.lastTradeDateStr = lastTradeDateStr;
+			return this;
+		}
+
+		public StockQuoteBuilder setLastTradeSize(final Long lastTradeSize) {
+			this.lastTradeSize = lastTradeSize;
+			return this;
+		}
+
+		public StockQuoteBuilder setLastTradeTime(final Calendar lastTradeTime) {
+			this.lastTradeTime = lastTradeTime;
+			return this;
+		}
+
+		public StockQuoteBuilder setLastTradeTimeStr(final String lastTradeTimeStr) {
+			this.lastTradeTimeStr = lastTradeTimeStr;
+			return this;
+		}
+
+		public StockQuoteBuilder setOpen(final BigDecimal open) {
+			this.open = open;
+			return this;
+		}
+
+		public StockQuoteBuilder setPreviousClose(final BigDecimal previousClose) {
+			this.previousClose = previousClose;
+			return this;
+		}
+
+		public StockQuoteBuilder setPrice(final BigDecimal price) {
+			this.price = price;
+			return this;
+		}
+
+		public StockQuoteBuilder setPriceAvg200(final BigDecimal priceAvg200) {
+			this.priceAvg200 = priceAvg200;
+			return this;
+		}
+
+		public StockQuoteBuilder setPriceAvg50(final BigDecimal priceAvg50) {
+			this.priceAvg50 = priceAvg50;
+			return this;
+		}
+
+		public StockQuoteBuilder setTimeZone(final TimeZone timeZone) {
+			this.timeZone = timeZone;
+			return this;
+		}
+
+		public StockQuoteBuilder setVolume(final Long volume) {
+			this.volume = volume;
+			return this;
+		}
+
+		public StockQuoteBuilder setYearHigh(final BigDecimal yearHigh) {
+			this.yearHigh = yearHigh;
+			return this;
+		}
+
+		public StockQuoteBuilder setYearLow(final BigDecimal yearLow) {
+			this.yearLow = yearLow;
+			return this;
+		}
+	}
+
+	public StockQuote(final BigDecimal ask, final Long askSize, final Long avgVolume,
+	        final BigDecimal bid, final Long bidSize, final BigDecimal dayHigh,
+	        final BigDecimal dayLow, final Instrument instrument, final String lastTradeDateStr,
+	        final Long lastTradeSize, final Calendar lastTradeTime, final String lastTradeTimeStr,
+	        final BigDecimal open, final BigDecimal previousClose, final BigDecimal price,
+	        final BigDecimal priceAvg200, final BigDecimal priceAvg50, final TimeZone timeZone,
+	        final Long volume, final BigDecimal yearHigh, final BigDecimal yearLow) {
+		this.ask = ask;
+		this.askSize = askSize;
+		this.avgVolume = avgVolume;
+		this.bid = bid;
+		this.bidSize = bidSize;
+		this.dayHigh = dayHigh;
+		this.dayLow = dayLow;
 		this.instrument = instrument;
+		this.lastTradeDateStr = lastTradeDateStr;
+		this.lastTradeSize = lastTradeSize;
+		this.lastTradeTime = lastTradeTime;
+		this.lastTradeTimeStr = lastTradeTimeStr;
+		this.open = open;
+		this.previousClose = previousClose;
+		this.price = price;
+		this.priceAvg200 = priceAvg200;
+		this.priceAvg50 = priceAvg50;
+		this.timeZone = timeZone;
+		this.volume = volume;
+		this.yearHigh = yearHigh;
+		this.yearLow = yearLow;
 	}
 
 	@Override
@@ -299,90 +468,9 @@ public class StockQuote {
 		return this.lastTradeDateStr != null;
 	}
 
-	public void setAsk(final BigDecimal ask) {
-		this.ask = ask;
-	}
-
-	public void setAskSize(final Long askSize) {
-		this.askSize = askSize;
-	}
-
-	public void setAvgVolume(final Long avgVolume) {
-		this.avgVolume = avgVolume;
-	}
-
-	public void setBid(final BigDecimal bid) {
-		this.bid = bid;
-	}
-
-	public void setBidSize(final Long bidSize) {
-		this.bidSize = bidSize;
-	}
-
-	public void setDayHigh(final BigDecimal dayHigh) {
-		this.dayHigh = dayHigh;
-	}
-
-	public void setDayLow(final BigDecimal dayLow) {
-		this.dayLow = dayLow;
-	}
-
-	public void setLastTradeDateStr(final String lastTradeDateStr) {
-		this.lastTradeDateStr = lastTradeDateStr;
-	}
-
-	public void setLastTradeSize(final Long lastTradeSize) {
-		this.lastTradeSize = lastTradeSize;
-	}
-
-	public void setLastTradeTime(final Calendar lastTradeTime) {
-		this.lastTradeTime = lastTradeTime;
-	}
-
-	public void setLastTradeTimeStr(final String lastTradeTimeStr) {
-		this.lastTradeTimeStr = lastTradeTimeStr;
-	}
-
-	public void setOpen(final BigDecimal open) {
-		this.open = open;
-	}
-
-	public void setPreviousClose(final BigDecimal previousClose) {
-		this.previousClose = previousClose;
-	}
-
-	public void setPrice(final BigDecimal price) {
-		this.price = price;
-	}
-
-	public void setPriceAvg200(final BigDecimal priceAvg200) {
-		this.priceAvg200 = priceAvg200;
-	}
-
-	public void setPriceAvg50(final BigDecimal priceAvg50) {
-		this.priceAvg50 = priceAvg50;
-	}
-
-	public void setTimeZone(final TimeZone timeZone) {
-		this.timeZone = timeZone;
-	}
-
-	public void setVolume(final Long volume) {
-		this.volume = volume;
-	}
-
-	public void setYearHigh(final BigDecimal yearHigh) {
-		this.yearHigh = yearHigh;
-	}
-
-	public void setYearLow(final BigDecimal yearLow) {
-		this.yearLow = yearLow;
-	}
-
 	@Override
 	public String toString() {
 		return "Ask: " + this.ask + ", Bid: " + this.bid + ", Price: " + this.price
 		        + ", Prev close: " + this.previousClose;
 	}
-
 }

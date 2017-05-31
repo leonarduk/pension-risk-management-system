@@ -7,19 +7,21 @@ import java.util.logging.Logger;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.QuoteFeed;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.web.SeleniumUtils;
 
-import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.fx.FxQuote;
 import yahoofinance.quotes.fx.FxQuotesRequest;
 import yahoofinance.quotes.stock.StockQuote;
+import yahoofinance.quotes.stock.StockQuotesData;
+import yahoofinance.quotes.stock.StockQuotesRequest;
 
-public class YahooFeed extends StockFeed {
+public class YahooFeed extends StockFeed implements QuoteFeed {
 
 	public static final int		CONNECTION_TIMEOUT		= Integer
 	        .parseInt(System.getProperty("connection.timeout", "10000"));
@@ -74,6 +76,18 @@ public class YahooFeed extends StockFeed {
 		}
 	}
 
+	// if (data != null) {
+	// this.setQuote(data.getQuote());
+	// this.setStats(data.getStats());
+	// this.setDividend(data.getDividend());
+	// Stock.logger.log(Level.INFO, "Updated Stock with symbol: {0}", this.instrument.isin());
+	// }
+	// else {
+	// Stock.logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}",
+	// this.instrument.isin());
+	// }
+	// }
+
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) {
 		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
@@ -91,14 +105,6 @@ public class YahooFeed extends StockFeed {
 			}
 			stock.getHistory(DateUtils.dateToCalendar(fromDate),
 			        DateUtils.dateToCalendar(toDate.toDate()), Interval.DAILY);
-			final StockQuote quote = stock.getQuote();
-			if (quote.isPopulated()) {
-				stock.getHistory()
-				        .add(new HistoricalQuote(stock.getInstrument(),
-				                LocalDate.fromCalendarFields(quote.getLastTradeTime()),
-				                quote.getOpen(), quote.getDayLow(), quote.getDayHigh(),
-				                quote.getPrice(), quote.getPrice(), quote.getVolume(), "Yahoo"));
-			}
 			return Optional.of(stock);
 		}
 		catch (final Exception e) {
@@ -110,6 +116,16 @@ public class YahooFeed extends StockFeed {
 	@Override
 	public Source getSource() {
 		return Source.Yahoo;
+	}
+
+	@Override
+	public StockQuote getStockQuote(final Instrument instrument) throws IOException {
+		return this.getStockQuotesData(instrument).getQuote();
+	}
+
+	public StockQuotesData getStockQuotesData(final Instrument instrument) throws IOException {
+		final StockQuotesRequest request = new StockQuotesRequest(instrument);
+		return request.getSingleResult();
 	}
 
 	@Override

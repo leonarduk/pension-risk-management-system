@@ -1,6 +1,7 @@
 package yahoofinance.quotes.stock;
 
 import java.io.IOException;
+import java.util.TimeZone;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
@@ -41,39 +42,38 @@ public class StockQuotesData {
 
 	public StockQuote getQuote() throws IOException {
 		final String symbol = this.getValue(QuotesProperty.Symbol);
-		final StockQuote quote = new StockQuote(Instrument.fromString(symbol));
+		final TimeZone stockTimeZone = ExchangeTimeZone.getStockTimeZone(symbol);
+		return new StockQuote.StockQuoteBuilder(Instrument.fromString(symbol))
+		        .setPrice(
+		                NumberUtils.getBigDecimal(this.getValue(QuotesProperty.LastTradePriceOnly)))
+		        .setLastTradeSize(NumberUtils.getLong(this.getValue(QuotesProperty.LastTradeSize)))
+		        .setAsk(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.AskRealtime),
+		                this.getValue(QuotesProperty.Ask)))
+		        .setAskSize(NumberUtils.getLong(this.getValue(QuotesProperty.AskSize)))
+		        .setBid(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.BidRealtime),
+		                this.getValue(QuotesProperty.Bid)))
+		        .setBidSize(NumberUtils.getLong(this.getValue(QuotesProperty.BidSize)))
+		        .setOpen(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.Open)))
+		        .setPreviousClose(
+		                NumberUtils.getBigDecimal(this.getValue(QuotesProperty.PreviousClose)))
+		        .setDayHigh(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.DaysHigh)))
+		        .setDayLow(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.DaysLow)))
+		        .setTimeZone(stockTimeZone)
+		        .setLastTradeDateStr(this.getValue(QuotesProperty.LastTradeDate))
+		        .setLastTradeTimeStr(this.getValue(QuotesProperty.LastTradeTime))
+		        .setLastTradeTime(
+		                DateUtils.parseDateTime(this.getValue(QuotesProperty.LastTradeDate),
+		                        this.getValue(QuotesProperty.LastTradeTime), stockTimeZone))
+		        .setYearHigh(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.YearHigh)))
+		        .setYearLow(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.YearLow)))
+		        .setPriceAvg50(NumberUtils
+		                .getBigDecimal(this.getValue(QuotesProperty.FiftydayMovingAverage)))
+		        .setPriceAvg200(NumberUtils
+		                .getBigDecimal(this.getValue(QuotesProperty.TwoHundreddayMovingAverage)))
 
-		quote.setPrice(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.LastTradePriceOnly)));
-		quote.setLastTradeSize(NumberUtils.getLong(this.getValue(QuotesProperty.LastTradeSize)));
-		quote.setAsk(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.AskRealtime),
-		        this.getValue(QuotesProperty.Ask)));
-		quote.setAskSize(NumberUtils.getLong(this.getValue(QuotesProperty.AskSize)));
-		quote.setBid(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.BidRealtime),
-		        this.getValue(QuotesProperty.Bid)));
-		quote.setBidSize(NumberUtils.getLong(this.getValue(QuotesProperty.BidSize)));
-		quote.setOpen(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.Open)));
-		quote.setPreviousClose(
-		        NumberUtils.getBigDecimal(this.getValue(QuotesProperty.PreviousClose)));
-		quote.setDayHigh(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.DaysHigh)));
-		quote.setDayLow(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.DaysLow)));
-
-		quote.setTimeZone(ExchangeTimeZone.getStockTimeZone(symbol));
-		quote.setLastTradeDateStr(this.getValue(QuotesProperty.LastTradeDate));
-		quote.setLastTradeTimeStr(this.getValue(QuotesProperty.LastTradeTime));
-		quote.setLastTradeTime(DateUtils.parseDateTime(this.getValue(QuotesProperty.LastTradeDate),
-		        this.getValue(QuotesProperty.LastTradeTime), quote.getTimeZone()));
-
-		quote.setYearHigh(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.YearHigh)));
-		quote.setYearLow(NumberUtils.getBigDecimal(this.getValue(QuotesProperty.YearLow)));
-		quote.setPriceAvg50(
-		        NumberUtils.getBigDecimal(this.getValue(QuotesProperty.FiftydayMovingAverage)));
-		quote.setPriceAvg200(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.TwoHundreddayMovingAverage)));
-
-		quote.setVolume(NumberUtils.getLong(this.getValue(QuotesProperty.Volume)));
-		quote.setAvgVolume(NumberUtils.getLong(this.getValue(QuotesProperty.AverageDailyVolume)));
-
-		return quote;
+		        .setVolume(NumberUtils.getLong(this.getValue(QuotesProperty.Volume)))
+		        .setAvgVolume(NumberUtils.getLong(this.getValue(QuotesProperty.AverageDailyVolume)))
+		        .build();
 	}
 
 	public StockStats getStats() {

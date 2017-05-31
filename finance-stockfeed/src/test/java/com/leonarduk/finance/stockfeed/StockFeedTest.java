@@ -83,12 +83,10 @@ public class StockFeedTest {
 
 		// TODO should really populate this a different way to the code we are
 		// testing
-		final StockQuote quote = new StockQuote(cash);
-		quote.setDayHigh(historicalQuote.getHigh());
-		quote.setDayLow(historicalQuote.getLow());
-		quote.setOpen(historicalQuote.getOpen());
-		quote.setAvgVolume(historicalQuote.getVolume());
-		quote.setPrice(historicalQuote.getClose());
+		final StockQuote quote = new StockQuote.StockQuoteBuilder(cash)
+		        .setDayHigh(historicalQuote.getHigh()).setDayLow(historicalQuote.getLow())
+		        .setOpen(historicalQuote.getOpen()).setAvgVolume(historicalQuote.getVolume())
+		        .setPrice(historicalQuote.getClose()).build();
 		expected.setQuote(quote);
 		Assert.assertEquals(expected, actual);
 	}

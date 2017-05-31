@@ -37,14 +37,31 @@ public class IntelligentStockFeed extends StockFeed {
 
 		final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 		cash.setHistory(flatLineInterpolator.extendToFromDate(history, fromDate));
-		final StockQuote quote = new StockQuote(instrument);
-		quote.setPrice(BigDecimal.ONE);
-		cash.setQuote(quote);
+		cash.setQuote(
+		        new StockQuote.StockQuoteBuilder(instrument).setPrice(BigDecimal.ONE).build());
 		return Optional.of(cash);
 	}
 
 	public static void setRefresh(final boolean refresh) {
 		IntelligentStockFeed.refresh = refresh;
+	}
+
+	public void addLatestQuoteToTheSeries(final Stock stock, final QuoteFeed dataFeed)
+	        throws IOException {
+		// Add latest price to the series
+		if (dataFeed.isAvailable()) {
+			final StockQuote quote = dataFeed.getStockQuote(stock.getInstrument());
+			if (quote.isPopulated()) {
+				stock.getHistory().add(new HistoricalQuote(stock.getInstrument(),
+				        LocalDate.fromCalendarFields(quote.getLastTradeTime()), quote.getOpen(),
+				        quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(),
+				        quote.getVolume(), Source.Yahoo.name()));
+			}
+			else {
+				throw new IOException(
+				        String.format("Failed to populate quote for %s", stock.getInstrument()));
+			}
+		}
 	}
 
 	public Optional<Stock> cleanUpSeries(final LocalDate fromDate, final LocalDate toDate,
@@ -98,6 +115,16 @@ public class IntelligentStockFeed extends StockFeed {
 			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(instrument, fromDate,
 			        toDate, dataFeed, true);
 
+			// If we have the data already, don't bother to refresh
+			// Note will need to update today's live quote still though
+			boolean getWebData = IntelligentStockFeed.refresh;
+			if (getWebData && cachedData.isPresent()) {
+				final List<HistoricalQuote> cachedHistory = cachedData.get().getHistory();
+				getWebData = (cachedHistory.stream()
+				        .filter(quote -> quote.getDate().isEqual(toDate)
+				                || quote.getDate().isEqual(fromDate))
+				        .collect(Collectors.toList()).size() != 2);
+			}
 			// Yahoo often give 503 errors when downloading history
 			StockFeed webDataFeed = StockFeedFactory.getDataFeed(instrument.getSource());
 			Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
@@ -109,16 +136,20 @@ public class IntelligentStockFeed extends StockFeed {
 				        IntelligentStockFeed.refresh);
 			}
 
+			final Stock stock = liveData.get();
 			if (liveData.isPresent()) {
 				if (cachedData.isPresent()) {
-					this.mergeSeries(cachedData.get(), liveData.get().getHistory(),
+					this.mergeSeries(cachedData.get(), stock.getHistory(),
 					        cachedData.get().getHistory());
 				}
-				dataFeed.storeSeries(liveData.get());
+				dataFeed.storeSeries(stock);
 			}
 			else {
 				return this.cleanUpSeries(fromDate, toDate, interpolate, cachedData);
 			}
+
+			this.addLatestQuoteToTheSeries(stock, StockFeedFactory.getQuoteFeed(Source.Yahoo));
+
 			return this.cleanUpSeries(fromDate, toDate, interpolate, liveData);
 		}
 		catch (final Exception e) {
