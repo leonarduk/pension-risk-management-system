@@ -28,9 +28,11 @@ public abstract class QuotesRequest<T> {
 	protected final Instrument		instrument;
 	protected List<QuotesProperty>	properties;
 
-	public static final Logger		logger	= Logger.getLogger(QuotesRequest.class.getName());
+	public static final Logger		logger	= Logger
+	        .getLogger(QuotesRequest.class.getName());
 
-	public QuotesRequest(final Instrument instrument, final List<QuotesProperty> properties) {
+	public QuotesRequest(final Instrument instrument,
+	        final List<QuotesProperty> properties) {
 		this.instrument = instrument;
 		this.properties = properties;
 	}
@@ -66,7 +68,8 @@ public abstract class QuotesRequest<T> {
 		params.put("f", this.getFieldsString());
 		params.put("e", ".csv");
 
-		final String url = YahooFeed.QUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
+		final String url = YahooFeed.QUOTES_BASE_URL + "?"
+		        + HtmlTools.getURLParameters(params);
 
 		// Get CSV from Yahoo
 		QuotesRequest.logger.log(Level.INFO, ("Sending request: " + url));
@@ -75,7 +78,8 @@ public abstract class QuotesRequest<T> {
 		final URLConnection connection = request.openConnection();
 		connection.setConnectTimeout(YahooFeed.CONNECTION_TIMEOUT);
 		connection.setReadTimeout(YahooFeed.CONNECTION_TIMEOUT);
-		final InputStreamReader is = new InputStreamReader(connection.getInputStream());
+		final InputStreamReader is = new InputStreamReader(
+		        connection.getInputStream());
 		final BufferedReader br = new BufferedReader(is);
 
 		// Parse CSV

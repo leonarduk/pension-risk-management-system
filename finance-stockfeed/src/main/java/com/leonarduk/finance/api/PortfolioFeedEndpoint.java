@@ -42,12 +42,13 @@ public class PortfolioFeedEndpoint {
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("extended")
-	public String getExtendedAnalysis(@QueryParam("fromDate") final String fromDate,
+	public String getExtendedAnalysis(
+	        @QueryParam("fromDate") final String fromDate,
 	        @QueryParam("toDate") final String toDate,
 	        @QueryParam("interpolate") final boolean interpolate)
 	        throws IOException, URISyntaxException {
-		return this.snapshotAnalyzer
-		        .createPortfolioReport(fromDate, toDate, interpolate, true, true).toString();
+		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate,
+		        interpolate, true, true).toString();
 	}
 
 	@GET
@@ -57,8 +58,8 @@ public class PortfolioFeedEndpoint {
 	        @QueryParam("toDate") final String toDate,
 	        @QueryParam("interpolate") final boolean interpolate)
 	        throws IOException, URISyntaxException {
-		return this.snapshotAnalyzer
-		        .createPortfolioReport(fromDate, toDate, interpolate, false, true).toString();
+		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate,
+		        interpolate, false, true).toString();
 	}
 
 	@Path("/api/listnames/")
@@ -72,7 +73,8 @@ public class PortfolioFeedEndpoint {
 	@Path("/api/display/")
 	public Portfolio getPositions() throws IOException {
 		PortfolioFeedEndpoint.logger.info("JSON query of positions");
-		return new Portfolio(Sets.newHashSet(this.snapshotAnalyzer.getPositions()));
+		return new Portfolio(
+		        Sets.newHashSet(this.snapshotAnalyzer.getPositions()));
 	}
 
 	@GET
@@ -85,11 +87,13 @@ public class PortfolioFeedEndpoint {
 		final LocalDate toDate = LocalDate.now();
 
 		final List<Valuation> valuations = this.snapshotAnalyzer
-		        .analayzeAllEtfs(this.snapshotAnalyzer.getPositions(), fromDate, toDate);
+		        .analayzeAllEtfs(this.snapshotAnalyzer.getPositions(), fromDate,
+		                toDate);
 
-		return this.snapshotAnalyzer
-		        .getPortfolios().stream().map(portfolioName -> this.snapshotAnalyzer
-		                .createValuationReport(fromDate, toDate, valuations, portfolioName))
+		return this.snapshotAnalyzer.getPortfolios().stream()
+		        .map(portfolioName -> this.snapshotAnalyzer
+		                .createValuationReport(fromDate, toDate, valuations,
+		                        portfolioName))
 		        .collect(Collectors.toList());
 
 	}

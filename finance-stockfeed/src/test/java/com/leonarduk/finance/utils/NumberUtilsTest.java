@@ -64,9 +64,11 @@ public class NumberUtilsTest {
 	@Test
 	public final void testRoundDecimalDecimal() {
 		Assert.assertEquals(Decimal.valueOf(12.12).toDouble(),
-		        NumberUtils.roundDecimal(Decimal.valueOf(12.1234)).toDouble(), 0.0001);
+		        NumberUtils.roundDecimal(Decimal.valueOf(12.1234)).toDouble(),
+		        0.0001);
 		Assert.assertEquals(Decimal.valueOf(12.13).toDouble(),
-		        NumberUtils.roundDecimal(Decimal.valueOf(12.1254)).toDouble(), 0.0001);
+		        NumberUtils.roundDecimal(Decimal.valueOf(12.1254)).toDouble(),
+		        0.0001);
 
 	}
 

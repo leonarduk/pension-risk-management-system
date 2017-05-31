@@ -14,24 +14,37 @@ public class DateUtilsTest {
 
 	@Test
 	public final void testGetDiffInWorkDays() {
-		Assert.assertEquals(7, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-		        LocalDate.parse("2017-04-12")));
-		Assert.assertEquals(1, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-		        LocalDate.parse(DateUtilsTest.APRIL4)));
-		Assert.assertEquals(5, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-		        LocalDate.parse(DateUtilsTest.APRIL10)));
-		Assert.assertEquals(6, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-		        LocalDate.parse("2017-04-11")));
-		Assert.assertEquals(8, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-		        LocalDate.parse("2017-04-13")));
-		Assert.assertEquals(10, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-		        LocalDate.parse("2017-04-17")));
+		Assert.assertEquals(7,
+		        DateUtils.getDiffInWorkDays(
+		                LocalDate.parse(DateUtilsTest.APRIL3),
+		                LocalDate.parse("2017-04-12")));
+		Assert.assertEquals(1,
+		        DateUtils.getDiffInWorkDays(
+		                LocalDate.parse(DateUtilsTest.APRIL3),
+		                LocalDate.parse(DateUtilsTest.APRIL4)));
+		Assert.assertEquals(5,
+		        DateUtils.getDiffInWorkDays(
+		                LocalDate.parse(DateUtilsTest.APRIL3),
+		                LocalDate.parse(DateUtilsTest.APRIL10)));
+		Assert.assertEquals(6,
+		        DateUtils.getDiffInWorkDays(
+		                LocalDate.parse(DateUtilsTest.APRIL3),
+		                LocalDate.parse("2017-04-11")));
+		Assert.assertEquals(8,
+		        DateUtils.getDiffInWorkDays(
+		                LocalDate.parse(DateUtilsTest.APRIL3),
+		                LocalDate.parse("2017-04-13")));
+		Assert.assertEquals(10,
+		        DateUtils.getDiffInWorkDays(
+		                LocalDate.parse(DateUtilsTest.APRIL3),
+		                LocalDate.parse("2017-04-17")));
 	}
 
 	@Test
 	public final void testGetLocalDateIterator() {
 		final Iterator<LocalDate> iter = DateUtils.getLocalDateIterator(
-		        LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse(DateUtilsTest.APRIL10));
+		        LocalDate.parse(DateUtilsTest.APRIL3),
+		        LocalDate.parse(DateUtilsTest.APRIL10));
 		Assert.assertTrue(iter.hasNext());
 		Assert.assertEquals(LocalDate.parse(DateUtilsTest.APRIL3), iter.next());
 		Assert.assertTrue(iter.hasNext());
@@ -42,7 +55,8 @@ public class DateUtilsTest {
 		Assert.assertEquals(LocalDate.parse("2017-04-06"), iter.next());
 		Assert.assertTrue(iter.hasNext());
 		Assert.assertEquals(LocalDate.parse("2017-04-07"), iter.next());
-		Assert.assertEquals(LocalDate.parse(DateUtilsTest.APRIL10), iter.next());
+		Assert.assertEquals(LocalDate.parse(DateUtilsTest.APRIL10),
+		        iter.next());
 		Assert.assertFalse(iter.hasNext());
 	}
 

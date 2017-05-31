@@ -69,23 +69,24 @@ public class BuyAndSellSignalsToChart {
 	 * @param plot
 	 *            the plot
 	 */
-	private static void addBuySellSignals(final TimeSeries series, final AbstractStrategy strategy2,
-	        final XYPlot plot) {
+	private static void addBuySellSignals(final TimeSeries series,
+	        final AbstractStrategy strategy2, final XYPlot plot) {
 		// Running the strategy
-		final List<Trade> trades = series.run(strategy2.getStrategy()).getTrades();
+		final List<Trade> trades = series.run(strategy2.getStrategy())
+		        .getTrades();
 		// Adding markers to plot
 		for (final Trade trade : trades) {
 			// Buy signal
-			final double buySignalTickTime = new Minute(
-			        series.getTick(trade.getEntry().getIndex()).getEndTime().toDate())
+			final double buySignalTickTime = new Minute(series
+			        .getTick(trade.getEntry().getIndex()).getEndTime().toDate())
 			                .getFirstMillisecond();
 			final Marker buyMarker = new ValueMarker(buySignalTickTime);
 			buyMarker.setPaint(Color.GREEN);
 			buyMarker.setLabel("B");
 			plot.addDomainMarker(buyMarker);
 			// Sell signal
-			final double sellSignalTickTime = new Minute(
-			        series.getTick(trade.getExit().getIndex()).getEndTime().toDate())
+			final double sellSignalTickTime = new Minute(series
+			        .getTick(trade.getExit().getIndex()).getEndTime().toDate())
 			                .getFirstMillisecond();
 			final Marker sellMarker = new ValueMarker(sellSignalTickTime);
 			sellMarker.setPaint(Color.RED);
@@ -105,8 +106,9 @@ public class BuyAndSellSignalsToChart {
 	 *            the name of the chart time series
 	 * @return the JFreeChart time series
 	 */
-	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(final TimeSeries tickSeries,
-	        final Indicator<Decimal> indicator, final String name) {
+	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(
+	        final TimeSeries tickSeries, final Indicator<Decimal> indicator,
+	        final String name) {
 		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(
 		        name);
 		for (int i = 0; i < tickSeries.getTickCount(); i++) {
@@ -192,7 +194,8 @@ public class BuyAndSellSignalsToChart {
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
 		strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 
-		BuyAndSellSignalsToChart.displayBuyAndSellChart(series, strategies, stock.getName());
+		BuyAndSellSignalsToChart.displayBuyAndSellChart(series, strategies,
+		        stock.getName());
 	}
 
 }

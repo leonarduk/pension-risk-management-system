@@ -33,13 +33,15 @@ public class HistoricalQuote {
 
 	public HistoricalQuote(final HistoricalQuote that, final LocalDate today,
 	        final String comment) {
-		this(that.getInstrument(), today, that.getOpen(), that.getLow(), that.getHigh(),
-		        that.getClose(), that.getAdjClose(), that.getVolume(), comment);
+		this(that.getInstrument(), today, that.getOpen(), that.getLow(),
+		        that.getHigh(), that.getClose(), that.getAdjClose(),
+		        that.getVolume(), comment);
 	}
 
-	public HistoricalQuote(final Instrument instrument, final LocalDate date, final BigDecimal open,
-	        final BigDecimal low, final BigDecimal high, final BigDecimal close,
-	        final BigDecimal adjClose, final Long volume, final String comment) {
+	public HistoricalQuote(final Instrument instrument, final LocalDate date,
+	        final BigDecimal open, final BigDecimal low, final BigDecimal high,
+	        final BigDecimal close, final BigDecimal adjClose,
+	        final Long volume, final String comment) {
 		this.instrument = instrument;
 		this.date = date;
 		this.open = NumberUtils.cleanBigDecimal(open);
@@ -58,10 +60,14 @@ public class HistoricalQuote {
 		}
 		final HistoricalQuote castOther = (HistoricalQuote) other;
 		return new EqualsBuilder().append(this.adjClose, castOther.adjClose)
-		        .append(this.close, castOther.close).append(this.comment, castOther.comment)
-		        .append(this.date, castOther.date).append(this.high, castOther.high)
-		        .append(this.instrument, castOther.instrument).append(this.low, castOther.low)
-		        .append(this.open, castOther.open).append(this.volume, castOther.volume).isEquals();
+		        .append(this.close, castOther.close)
+		        .append(this.comment, castOther.comment)
+		        .append(this.date, castOther.date)
+		        .append(this.high, castOther.high)
+		        .append(this.instrument, castOther.instrument)
+		        .append(this.low, castOther.low)
+		        .append(this.open, castOther.open)
+		        .append(this.volume, castOther.volume).isEquals();
 	}
 
 	/**
@@ -118,14 +124,16 @@ public class HistoricalQuote {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.adjClose).append(this.close).append(this.comment)
-		        .append(this.date).append(this.high).append(this.instrument).append(this.low)
-		        .append(this.open).append(this.volume).toHashCode();
+		return new HashCodeBuilder().append(this.adjClose).append(this.close)
+		        .append(this.comment).append(this.date).append(this.high)
+		        .append(this.instrument).append(this.low).append(this.open)
+		        .append(this.volume).toHashCode();
 	}
 
 	@Override
 	public String toString() {
-		return this.instrument + "@" + this.date.toString() + ": " + this.low + "-" + this.high
-		        + ", " + this.open + "->" + this.close + " (" + this.adjClose + ") " + this.comment;
+		return this.instrument + "@" + this.date.toString() + ": " + this.low
+		        + "-" + this.high + ", " + this.open + "->" + this.close + " ("
+		        + this.adjClose + ") " + this.comment;
 	}
 }

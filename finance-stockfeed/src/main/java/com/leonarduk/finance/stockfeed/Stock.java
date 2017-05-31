@@ -36,7 +36,8 @@ public class Stock {
 
 	private StockStats				stats;
 
-	public static final Logger		logger	= Logger.getLogger(Stock.class.getName());
+	public static final Logger		logger	= Logger
+	        .getLogger(Stock.class.getName());
 
 	public Stock(final Instrument instrument) {
 		this.instrument = instrument;
@@ -49,8 +50,10 @@ public class Stock {
 		}
 		final Stock castOther = (Stock) other;
 		return new EqualsBuilder().append(this.currency, castOther.currency)
-		        .append(this.dividend, castOther.dividend).append(this.history, castOther.history)
-		        .append(this.instrument, castOther.instrument).append(this.quote, castOther.quote)
+		        .append(this.dividend, castOther.dividend)
+		        .append(this.history, castOther.history)
+		        .append(this.instrument, castOther.instrument)
+		        .append(this.quote, castOther.quote)
 		        .append(this.stats, castOther.stats).isEquals();
 	}
 
@@ -120,7 +123,8 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from) throws IOException {
+	public List<HistoricalQuote> getHistory(final Calendar from)
+	        throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO);
 	}
 
@@ -141,8 +145,8 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from, final Calendar to)
-	        throws IOException {
+	public List<HistoricalQuote> getHistory(final Calendar from,
+	        final Calendar to) throws IOException {
 		return this.getHistory(from, to, Interval.MONTHLY);
 	}
 
@@ -165,9 +169,10 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from, final Calendar to,
-	        final Interval interval) throws IOException {
-		final HistQuotesRequest hist = new HistQuotesRequest(this.instrument, from, to, interval);
+	public List<HistoricalQuote> getHistory(final Calendar from,
+	        final Calendar to, final Interval interval) throws IOException {
+		final HistQuotesRequest hist = new HistQuotesRequest(this.instrument,
+		        from, to, interval);
 		this.setHistory(hist.getResult());
 		return this.history;
 	}
@@ -189,8 +194,8 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from, final Interval interval)
-	        throws IOException {
+	public List<HistoricalQuote> getHistory(final Calendar from,
+	        final Interval interval) throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO, interval);
 	}
 
@@ -209,7 +214,8 @@ public class Stock {
 	 *             when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Interval interval) throws IOException {
+	public List<HistoricalQuote> getHistory(final Interval interval)
+	        throws IOException {
 		return this.getHistory(HistQuotesRequest.DEFAULT_FROM, interval);
 	}
 
@@ -265,8 +271,8 @@ public class Stock {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(this.currency).append(this.dividend)
-		        .append(this.history).append(this.instrument).append(this.quote).append(this.stats)
-		        .toHashCode();
+		        .append(this.history).append(this.instrument).append(this.quote)
+		        .append(this.stats).toHashCode();
 	}
 
 	public void print() {
@@ -277,10 +283,12 @@ public class Stock {
 				System.out.println(f.getName() + ": " + f.get(this));
 			}
 			catch (final IllegalArgumentException ex) {
-				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null,
+				        ex);
 			}
 			catch (final IllegalAccessException ex) {
-				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null,
+				        ex);
 			}
 		}
 		System.out.println("--------------------------------");

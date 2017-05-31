@@ -40,8 +40,9 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
  */
 public class MovingMomentumStrategy extends AbstractStrategy {
 
-	public static AbstractStrategy buildStrategy(final TimeSeries series, final int shortEmaPeriod,
-	        final int longEmaPeriod, final int emaMacdPeriod) {
+	public static AbstractStrategy buildStrategy(final TimeSeries series,
+	        final int shortEmaPeriod, final int longEmaPeriod,
+	        final int emaMacdPeriod) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");
 		}
@@ -52,28 +53,34 @@ public class MovingMomentumStrategy extends AbstractStrategy {
 		// longer moving average.
 		// The bias is bearish when the shorter-moving average moves below the
 		// longer moving average.
-		final EMAIndicator shortEma = new EMAIndicator(closePrice, shortEmaPeriod);
-		final EMAIndicator longEma = new EMAIndicator(closePrice, longEmaPeriod);
+		final EMAIndicator shortEma = new EMAIndicator(closePrice,
+		        shortEmaPeriod);
+		final EMAIndicator longEma = new EMAIndicator(closePrice,
+		        longEmaPeriod);
 
 		final StochasticOscillatorKIndicator stochasticOscillK = new StochasticOscillatorKIndicator(
 		        series, 14);
 
-		final MACDIndicator macd = new MACDIndicator(closePrice, shortEmaPeriod, longEmaPeriod);
+		final MACDIndicator macd = new MACDIndicator(closePrice, shortEmaPeriod,
+		        longEmaPeriod);
 		final EMAIndicator emaMacd = new EMAIndicator(macd, emaMacdPeriod);
 
 		// Entry rule
 		final Rule entryRule = new OverIndicatorRule(shortEma, longEma) // Trend
-		        .and(new CrossedDownIndicatorRule(stochasticOscillK, Decimal.valueOf(20))) // Signal
-		                                                                                   // 1
+		        .and(new CrossedDownIndicatorRule(stochasticOscillK,
+		                Decimal.valueOf(20))) // Signal
+		                                      // 1
 		        .and(new OverIndicatorRule(macd, emaMacd)); // Signal 2
 
 		// Exit rule
 		final Rule exitRule = new UnderIndicatorRule(shortEma, longEma) // Trend
-		        .and(new CrossedUpIndicatorRule(stochasticOscillK, Decimal.valueOf(80))) // Signal
-		                                                                                 // 1
+		        .and(new CrossedUpIndicatorRule(stochasticOscillK,
+		                Decimal.valueOf(80))) // Signal
+		                                      // 1
 		        .and(new UnderIndicatorRule(macd, emaMacd)); // Signal 2
 
-		return new MovingMomentumStrategy("Moving Momentum", new Strategy(entryRule, exitRule));
+		return new MovingMomentumStrategy("Moving Momentum",
+		        new Strategy(entryRule, exitRule));
 	}
 
 	private MovingMomentumStrategy(final String name, final Strategy strategy) {

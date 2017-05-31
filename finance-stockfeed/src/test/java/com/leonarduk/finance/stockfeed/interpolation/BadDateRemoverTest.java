@@ -28,9 +28,10 @@ public class BadDateRemoverTest {
 		        .getFlatCashSeries(Instrument.CASH, 1).get().getHistory();
 		final int size = series.size();
 
-		series.add(
-		        new HistoricalQuote(series.get(0), LocalDate.parse("2023232-01-01"), "bad point"));
-		series.add(new HistoricalQuote(series.get(0), LocalDate.parse("01-01-01"), "bad point"));
+		series.add(new HistoricalQuote(series.get(0),
+		        LocalDate.parse("2023232-01-01"), "bad point"));
+		series.add(new HistoricalQuote(series.get(0),
+		        LocalDate.parse("01-01-01"), "bad point"));
 		Assert.assertEquals(size + 2, series.size());
 
 		Assert.assertEquals(size, this.remover.clean(series).size());

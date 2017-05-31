@@ -22,7 +22,8 @@ public class FxQuotesRequest extends QuotesRequest<FxQuote> {
 	public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<>();
 	static {
 		FxQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		FxQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradePriceOnly);
+		FxQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.LastTradePriceOnly);
 	}
 
 	public FxQuotesRequest(final Instrument instrument) {

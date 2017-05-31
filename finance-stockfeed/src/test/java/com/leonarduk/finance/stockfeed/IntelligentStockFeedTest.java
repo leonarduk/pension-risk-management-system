@@ -34,12 +34,13 @@ public class IntelligentStockFeedTest {
 		final QuoteFeed dataFeed = new QuoteFeed() {
 
 			@Override
-			public StockQuote getStockQuote(final Instrument instrument) throws IOException {
+			public StockQuote getStockQuote(final Instrument instrument)
+			        throws IOException {
 				final Calendar lastTradeDateTime = DateUtils
 				        .dateToCalendar(LocalDate.parse("2017-02-01"));
 				return new StockQuote.StockQuoteBuilder(instrument)
-				        .setLastTradeDateStr("2017-02-01").setLastTradeTime(lastTradeDateTime)
-				        .build();
+				        .setLastTradeDateStr("2017-02-01")
+				        .setLastTradeTime(lastTradeDateTime).build();
 			}
 
 			@Override

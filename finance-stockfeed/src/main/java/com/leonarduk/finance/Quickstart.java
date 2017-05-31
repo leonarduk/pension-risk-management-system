@@ -78,8 +78,8 @@ public class Quickstart {
 		// last 5 ticks
 		final SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
 		// Here is the 5-ticks-SMA value at the 42nd index
-		System.out.println(
-		        "5-ticks-SMA value at the 42nd index: " + shortSma.getValue(42).toDouble());
+		System.out.println("5-ticks-SMA value at the 42nd index: "
+		        + shortSma.getValue(42).toDouble());
 
 		// Getting a longer SMA (e.g. over the 30 last ticks)
 		final SMAIndicator longSma = new SMAIndicator(closePrice, 30);
@@ -107,7 +107,8 @@ public class Quickstart {
 		final Strategy strategy = new Strategy(buyingRule, sellingRule);
 		final String strategyName = "30-tick-SMA";
 		final TradingRecord tradingRecord = series.run(strategy);
-		System.out.println("Number of trades for our strategy: " + tradingRecord.getTradeCount());
+		System.out.println("Number of trades for our strategy: "
+		        + tradingRecord.getTradeCount());
 
 		// Analysis
 
@@ -116,12 +117,12 @@ public class Quickstart {
 
 		// Getting the profitable trades ratio
 		final AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
-		System.out.println(
-		        "Profitable trades ratio: " + profitTradesRatio.calculate(series, tradingRecord));
+		System.out.println("Profitable trades ratio: "
+		        + profitTradesRatio.calculate(series, tradingRecord));
 		// Getting the reward-risk ratio
 		final AnalysisCriterion rewardRiskRatio = new RewardRiskRatioCriterion();
-		System.out
-		        .println("Reward-risk ratio: " + rewardRiskRatio.calculate(series, tradingRecord));
+		System.out.println("Reward-risk ratio: "
+		        + rewardRiskRatio.calculate(series, tradingRecord));
 
 		// Total profit of our strategy
 		// vs total profit of a buy-and-hold strategy
@@ -133,8 +134,8 @@ public class Quickstart {
 		BollingerBars.displayBollingerBars(stock);
 		IndicatorsToCsv.exportIndicatorsToCsv(series);
 
-		System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(), series,
-		        strategy, strategyName));
+		System.out.println(TraderOrderUtils.getOrdersList(
+		        tradingRecord.getTrades(), series, strategy, strategyName));
 
 		// Your turn!
 	}

@@ -83,11 +83,13 @@ public class StockQuote {
 		}
 
 		public StockQuote build() {
-			return new StockQuote(this.ask, this.askSize, this.avgVolume, this.bid, this.bidSize,
-			        this.dayHigh, this.dayLow, this.instrument, this.lastTradeDateStr,
-			        this.lastTradeSize, this.lastTradeTime, this.lastTradeTimeStr, this.open,
-			        this.previousClose, this.price, this.priceAvg200, this.priceAvg50,
-			        this.timeZone, this.volume, this.yearHigh, this.yearLow);
+			return new StockQuote(this.ask, this.askSize, this.avgVolume,
+			        this.bid, this.bidSize, this.dayHigh, this.dayLow,
+			        this.instrument, this.lastTradeDateStr, this.lastTradeSize,
+			        this.lastTradeTime, this.lastTradeTimeStr, this.open,
+			        this.previousClose, this.price, this.priceAvg200,
+			        this.priceAvg50, this.timeZone, this.volume, this.yearHigh,
+			        this.yearLow);
 		}
 
 		public StockQuoteBuilder setAsk(final BigDecimal ask) {
@@ -125,7 +127,8 @@ public class StockQuote {
 			return this;
 		}
 
-		public StockQuoteBuilder setLastTradeDateStr(final String lastTradeDateStr) {
+		public StockQuoteBuilder setLastTradeDateStr(
+		        final String lastTradeDateStr) {
 			this.lastTradeDateStr = lastTradeDateStr;
 			return this;
 		}
@@ -135,12 +138,14 @@ public class StockQuote {
 			return this;
 		}
 
-		public StockQuoteBuilder setLastTradeTime(final Calendar lastTradeTime) {
+		public StockQuoteBuilder setLastTradeTime(
+		        final Calendar lastTradeTime) {
 			this.lastTradeTime = lastTradeTime;
 			return this;
 		}
 
-		public StockQuoteBuilder setLastTradeTimeStr(final String lastTradeTimeStr) {
+		public StockQuoteBuilder setLastTradeTimeStr(
+		        final String lastTradeTimeStr) {
 			this.lastTradeTimeStr = lastTradeTimeStr;
 			return this;
 		}
@@ -150,7 +155,8 @@ public class StockQuote {
 			return this;
 		}
 
-		public StockQuoteBuilder setPreviousClose(final BigDecimal previousClose) {
+		public StockQuoteBuilder setPreviousClose(
+		        final BigDecimal previousClose) {
 			this.previousClose = previousClose;
 			return this;
 		}
@@ -191,13 +197,16 @@ public class StockQuote {
 		}
 	}
 
-	public StockQuote(final BigDecimal ask, final Long askSize, final Long avgVolume,
-	        final BigDecimal bid, final Long bidSize, final BigDecimal dayHigh,
-	        final BigDecimal dayLow, final Instrument instrument, final String lastTradeDateStr,
-	        final Long lastTradeSize, final Calendar lastTradeTime, final String lastTradeTimeStr,
-	        final BigDecimal open, final BigDecimal previousClose, final BigDecimal price,
-	        final BigDecimal priceAvg200, final BigDecimal priceAvg50, final TimeZone timeZone,
-	        final Long volume, final BigDecimal yearHigh, final BigDecimal yearLow) {
+	public StockQuote(final BigDecimal ask, final Long askSize,
+	        final Long avgVolume, final BigDecimal bid, final Long bidSize,
+	        final BigDecimal dayHigh, final BigDecimal dayLow,
+	        final Instrument instrument, final String lastTradeDateStr,
+	        final Long lastTradeSize, final Calendar lastTradeTime,
+	        final String lastTradeTimeStr, final BigDecimal open,
+	        final BigDecimal previousClose, final BigDecimal price,
+	        final BigDecimal priceAvg200, final BigDecimal priceAvg50,
+	        final TimeZone timeZone, final Long volume,
+	        final BigDecimal yearHigh, final BigDecimal yearLow) {
 		this.ask = ask;
 		this.askSize = askSize;
 		this.avgVolume = avgVolume;
@@ -228,9 +237,12 @@ public class StockQuote {
 		}
 		final StockQuote castOther = (StockQuote) other;
 		return new EqualsBuilder().append(this.ask, castOther.ask)
-		        .append(this.askSize, castOther.askSize).append(this.avgVolume, castOther.avgVolume)
-		        .append(this.bid, castOther.bid).append(this.bidSize, castOther.bidSize)
-		        .append(this.dayHigh, castOther.dayHigh).append(this.dayLow, castOther.dayLow)
+		        .append(this.askSize, castOther.askSize)
+		        .append(this.avgVolume, castOther.avgVolume)
+		        .append(this.bid, castOther.bid)
+		        .append(this.bidSize, castOther.bidSize)
+		        .append(this.dayHigh, castOther.dayHigh)
+		        .append(this.dayLow, castOther.dayLow)
 		        .append(this.instrument, castOther.instrument)
 		        .append(this.lastTradeDateStr, castOther.lastTradeDateStr)
 		        .append(this.lastTradeSize, castOther.lastTradeSize)
@@ -238,11 +250,13 @@ public class StockQuote {
 		        .append(this.lastTradeTimeStr, castOther.lastTradeTimeStr)
 		        .append(this.open, castOther.open)
 		        .append(this.previousClose, castOther.previousClose)
-		        .append(this.price, castOther.price).append(this.priceAvg200, castOther.priceAvg200)
+		        .append(this.price, castOther.price)
+		        .append(this.priceAvg200, castOther.priceAvg200)
 		        .append(this.priceAvg50, castOther.priceAvg50)
-		        .append(this.timeZone, castOther.timeZone).append(this.volume, castOther.volume)
-		        .append(this.yearHigh, castOther.yearHigh).append(this.yearLow, castOther.yearLow)
-		        .isEquals();
+		        .append(this.timeZone, castOther.timeZone)
+		        .append(this.volume, castOther.volume)
+		        .append(this.yearHigh, castOther.yearHigh)
+		        .append(this.yearLow, castOther.yearLow).isEquals();
 	}
 
 	public BigDecimal getAsk() {
@@ -292,7 +306,8 @@ public class StockQuote {
 	 * @return change from 200 day moving average relative to 200 day moving average
 	 */
 	public BigDecimal getChangeFromAvg200InPercent() {
-		return NumberUtils.getPercent(this.getChangeFromAvg200(), this.priceAvg200);
+		return NumberUtils.getPercent(this.getChangeFromAvg200(),
+		        this.priceAvg200);
 	}
 
 	/**
@@ -311,7 +326,8 @@ public class StockQuote {
 	 * @return change from 50 day moving average relative to 50 day moving average
 	 */
 	public BigDecimal getChangeFromAvg50InPercent() {
-		return NumberUtils.getPercent(this.getChangeFromAvg50(), this.priceAvg50);
+		return NumberUtils.getPercent(this.getChangeFromAvg50(),
+		        this.priceAvg50);
 	}
 
 	/**
@@ -330,7 +346,8 @@ public class StockQuote {
 	 * @return change from year high relative to year high
 	 */
 	public BigDecimal getChangeFromYearHighInPercent() {
-		return NumberUtils.getPercent(this.getChangeFromYearHigh(), this.yearHigh);
+		return NumberUtils.getPercent(this.getChangeFromYearHigh(),
+		        this.yearHigh);
 	}
 
 	/**
@@ -349,7 +366,8 @@ public class StockQuote {
 	 * @return change from year low relative to year low
 	 */
 	public BigDecimal getChangeFromYearLowInPercent() {
-		return NumberUtils.getPercent(this.getChangeFromYearLow(), this.yearLow);
+		return NumberUtils.getPercent(this.getChangeFromYearLow(),
+		        this.yearLow);
 	}
 
 	/**
@@ -399,7 +417,8 @@ public class StockQuote {
 	 * @return last trade date time
 	 */
 	public Calendar getLastTradeTime(final TimeZone timeZone) {
-		return DateUtils.parseDateTime(this.lastTradeDateStr, this.lastTradeTimeStr, timeZone);
+		return DateUtils.parseDateTime(this.lastTradeDateStr,
+		        this.lastTradeTimeStr, timeZone);
 	}
 
 	public String getLastTradeTimeStr() {
@@ -455,13 +474,16 @@ public class StockQuote {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.ask).append(this.askSize).append(this.avgVolume)
-		        .append(this.bid).append(this.bidSize).append(this.dayHigh).append(this.dayLow)
-		        .append(this.instrument).append(this.lastTradeDateStr).append(this.lastTradeSize)
-		        .append(this.lastTradeTime).append(this.lastTradeTimeStr).append(this.open)
-		        .append(this.previousClose).append(this.price).append(this.priceAvg200)
-		        .append(this.priceAvg50).append(this.timeZone).append(this.volume)
-		        .append(this.yearHigh).append(this.yearLow).toHashCode();
+		return new HashCodeBuilder().append(this.ask).append(this.askSize)
+		        .append(this.avgVolume).append(this.bid).append(this.bidSize)
+		        .append(this.dayHigh).append(this.dayLow)
+		        .append(this.instrument).append(this.lastTradeDateStr)
+		        .append(this.lastTradeSize).append(this.lastTradeTime)
+		        .append(this.lastTradeTimeStr).append(this.open)
+		        .append(this.previousClose).append(this.price)
+		        .append(this.priceAvg200).append(this.priceAvg50)
+		        .append(this.timeZone).append(this.volume).append(this.yearHigh)
+		        .append(this.yearLow).toHashCode();
 	}
 
 	public boolean isPopulated() {
@@ -470,7 +492,7 @@ public class StockQuote {
 
 	@Override
 	public String toString() {
-		return "Ask: " + this.ask + ", Bid: " + this.bid + ", Price: " + this.price
-		        + ", Prev close: " + this.previousClose;
+		return "Ask: " + this.ask + ", Bid: " + this.bid + ", Price: "
+		        + this.price + ", Prev close: " + this.previousClose;
 	}
 }

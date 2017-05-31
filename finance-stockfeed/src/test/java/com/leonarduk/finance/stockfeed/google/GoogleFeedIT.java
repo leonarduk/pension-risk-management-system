@@ -19,7 +19,8 @@ public class GoogleFeedIT {
 	private GoogleFeed	feed;
 	private Instrument	gold;
 
-	private boolean getInstrument(final Instrument instrument) throws IOException {
+	private boolean getInstrument(final Instrument instrument)
+	        throws IOException {
 		final Optional<Stock> stock = this.feed.get(instrument, 1);
 		Assert.assertTrue(stock.isPresent());
 		final List<HistoricalQuote> history = stock.get().getHistory();

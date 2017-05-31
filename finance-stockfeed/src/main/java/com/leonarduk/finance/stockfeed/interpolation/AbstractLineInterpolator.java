@@ -17,46 +17,56 @@ import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import yahoofinance.histquotes.HistoricalQuote;
 
-public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator {
+public abstract class AbstractLineInterpolator
+        implements TimeSeriesInterpolator {
 
-	protected abstract HistoricalQuote calculateFutureValue(HistoricalQuote lastQuote,
-	        LocalDate today);
+	protected abstract HistoricalQuote calculateFutureValue(
+	        HistoricalQuote lastQuote, LocalDate today);
 
-	protected abstract HistoricalQuote calculatePastValue(final HistoricalQuote firstQuote,
-	        final LocalDate fromDate);
+	protected abstract HistoricalQuote calculatePastValue(
+	        final HistoricalQuote firstQuote, final LocalDate fromDate);
 
-	protected HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote,
-	        final LocalDate currentDate, final BigDecimal newClosePriceRaw,
-	        final BigDecimal newOpenPriceRaw, final String comment) {
-		final BigDecimal newClosePrice = NumberUtils.roundDecimal(newClosePriceRaw);
-		final BigDecimal newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
-		return new HistoricalQuote(currentQuote.getInstrument(), currentDate, newOpenPrice,
-		        newClosePrice.min(newOpenPrice), newClosePrice.max(newOpenPrice), newClosePrice,
-		        newClosePrice, 0L, comment);
+	protected HistoricalQuote createSyntheticQuote(
+	        final HistoricalQuote currentQuote, final LocalDate currentDate,
+	        final BigDecimal newClosePriceRaw, final BigDecimal newOpenPriceRaw,
+	        final String comment) {
+		final BigDecimal newClosePrice = NumberUtils
+		        .roundDecimal(newClosePriceRaw);
+		final BigDecimal newOpenPrice = NumberUtils
+		        .roundDecimal(newOpenPriceRaw);
+		return new HistoricalQuote(currentQuote.getInstrument(), currentDate,
+		        newOpenPrice, newClosePrice.min(newOpenPrice),
+		        newClosePrice.max(newOpenPrice), newClosePrice, newClosePrice,
+		        0L, comment);
 	}
 
-	public abstract HistoricalQuote createSyntheticQuote(final HistoricalQuote currentQuote,
-	        final LocalDate currentDate, HistoricalQuote nextQuote);
+	public abstract HistoricalQuote createSyntheticQuote(
+	        final HistoricalQuote currentQuote, final LocalDate currentDate,
+	        HistoricalQuote nextQuote);
 
-	protected Tick createSyntheticTick(final LocalDate currentDate, final Decimal newClosePriceRaw,
-	        final Decimal newOpenPriceRaw) {
-		final Decimal newClosePrice = NumberUtils.roundDecimal(newClosePriceRaw);
+	protected Tick createSyntheticTick(final LocalDate currentDate,
+	        final Decimal newClosePriceRaw, final Decimal newOpenPriceRaw) {
+		final Decimal newClosePrice = NumberUtils
+		        .roundDecimal(newClosePriceRaw);
 		final Decimal newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
 		return new Tick(currentDate.toDateTimeAtCurrentTime(), newOpenPrice,
-		        Decimal.valueOf(Math.max(newOpenPrice.toDouble(), newClosePrice.toDouble())),
-		        Decimal.valueOf(Math.min(newOpenPrice.toDouble(), newClosePrice.toDouble())),
+		        Decimal.valueOf(Math.max(newOpenPrice.toDouble(),
+		                newClosePrice.toDouble())),
+		        Decimal.valueOf(Math.min(newOpenPrice.toDouble(),
+		                newClosePrice.toDouble())),
 		        newClosePrice, Decimal.NaN);
 	}
 
-	public abstract Tick createSyntheticTick(final Tick currentQuote, final LocalDate currentDate,
-	        Tick nextQuote);
+	public abstract Tick createSyntheticTick(final Tick currentQuote,
+	        final LocalDate currentDate, Tick nextQuote);
 
-	public List<HistoricalQuote> extendToFromDate(final List<HistoricalQuote> history,
-	        final LocalDate fromDate) {
+	public List<HistoricalQuote> extendToFromDate(
+	        final List<HistoricalQuote> history, final LocalDate fromDate) {
 		if (history.isEmpty()) {
 			return history;
 		}
-		final HistoricalQuote firstQuote = TimeseriesUtils.getOldestQuote(history);
+		final HistoricalQuote firstQuote = TimeseriesUtils
+		        .getOldestQuote(history);
 		final LocalDate firstDateInSeries = firstQuote.getDate();
 		if (firstDateInSeries.isAfter(fromDate)) {
 			history.add(this.calculatePastValue(firstQuote, fromDate));
@@ -67,12 +77,13 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 		return history;
 	}
 
-	public List<HistoricalQuote> extendToToDate(final List<HistoricalQuote> history,
-	        final LocalDate today) {
+	public List<HistoricalQuote> extendToToDate(
+	        final List<HistoricalQuote> history, final LocalDate today) {
 		if (history.isEmpty()) {
 			return history;
 		}
-		final HistoricalQuote lastQuote = TimeseriesUtils.getMostRecentQuote(history);
+		final HistoricalQuote lastQuote = TimeseriesUtils
+		        .getMostRecentQuote(history);
 		final LocalDate lastDateInSeries = lastQuote.getDate();
 		if (lastDateInSeries.isBefore(today)) {
 			history.add(this.calculateFutureValue(lastQuote, today));
@@ -84,12 +95,14 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 	}
 
 	@Override
-	public List<HistoricalQuote> interpolate(final List<HistoricalQuote> series) {
+	public List<HistoricalQuote> interpolate(
+	        final List<HistoricalQuote> series) {
 		if ((series == null) || (series.size() < 2)) {
 			return series;
 		}
 		final List<HistoricalQuote> newSeries = Lists.newLinkedList();
-		final HistoricalQuote oldestQuote = TimeseriesUtils.getOldestQuote(series);
+		final HistoricalQuote oldestQuote = TimeseriesUtils
+		        .getOldestQuote(series);
 
 		final Iterator<HistoricalQuote> seriesIter = series.iterator();
 		HistoricalQuote currentQuote = seriesIter.next();
@@ -110,7 +123,8 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 			// until we match this date
 			while (nextQuote.getDate().isBefore(currentDate)) {
 				if (nextQuote.getDate().isBefore(currentQuote.getDate())) {
-					newSeries.add(this.createSyntheticQuote(currentQuote, currentDate, nextQuote));
+					newSeries.add(this.createSyntheticQuote(currentQuote,
+					        currentDate, nextQuote));
 				}
 				currentDate = dateIter.next();
 			}
@@ -130,11 +144,13 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 		final TimeSeries newSeries = new TimeSeries(Period.days(1));
 		final Tick oldestQuote = series.getFirstTick();
 
-		final Iterator<Tick> seriesIter = TimeseriesUtils.getTimeSeriesIterator(series);
+		final Iterator<Tick> seriesIter = TimeseriesUtils
+		        .getTimeSeriesIterator(series);
 		Tick currentQuote = seriesIter.next();
 
 		final Iterator<LocalDate> dateIter = DateUtils.getLocalDateIterator(
-		        currentQuote.getEndTime().toLocalDate(), oldestQuote.getEndTime().toLocalDate());
+		        currentQuote.getEndTime().toLocalDate(),
+		        oldestQuote.getEndTime().toLocalDate());
 		LocalDate currentDate = dateIter.next();
 
 		newSeries.addTick(series.getLastTick());
@@ -148,8 +164,8 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 			// until we match this date
 			while (nextQuote.getEndTime().toLocalDate().isAfter(currentDate)) {
 				if (nextQuote.getEndTime().isAfter(currentQuote.getEndTime())) {
-					newSeries.addTick(
-					        this.createSyntheticTick(currentQuote, currentDate, nextQuote));
+					newSeries.addTick(this.createSyntheticTick(currentQuote,
+					        currentDate, nextQuote));
 				}
 				currentDate = dateIter.next();
 			}

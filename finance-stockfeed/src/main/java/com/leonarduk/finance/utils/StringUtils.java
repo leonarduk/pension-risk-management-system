@@ -9,8 +9,10 @@ import eu.verdelhan.ta4j.Decimal;
 public class StringUtils {
 	private static NumberFormat formatter = new DecimalFormat("#0.00");
 
-	public static void addValue(final StringBuilder buf, final BigDecimal value) {
-		final String format = StringUtils.formatter.format(value == null ? BigDecimal.ZERO : value);
+	public static void addValue(final StringBuilder buf,
+	        final BigDecimal value) {
+		final String format = StringUtils.formatter
+		        .format(value == null ? BigDecimal.ZERO : value);
 		StringUtils.addValue(buf, format);
 	}
 
@@ -34,8 +36,8 @@ public class StringUtils {
 	}
 
 	public static boolean isParseable(final String data) {
-		return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("")
-		        || data.equals("nan"));
+		return !((data == null) || data.equals("N/A") || data.equals("-")
+		        || data.equals("") || data.equals("nan"));
 	}
 
 	public static String join(final String[] data, final String d) {
@@ -66,7 +68,8 @@ public class StringUtils {
 		final StringBuilder buffer = new StringBuilder(data.length());
 		for (int i = 0; i < data.length(); i++) {
 			if (data.charAt(i) > 256) {
-				buffer.append("\\u").append(Integer.toHexString(data.charAt(i)));
+				buffer.append("\\u")
+				        .append(Integer.toHexString(data.charAt(i)));
 			}
 			else {
 				if (data.charAt(i) == '\n') {

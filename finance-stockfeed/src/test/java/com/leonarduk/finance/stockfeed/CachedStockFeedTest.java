@@ -25,11 +25,13 @@ public class CachedStockFeedTest {
 		final Stock stock = new Stock(symbol);
 		final List<HistoricalQuote> history = Lists.newArrayList();
 		history.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-01"),
-		        BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11),
-		        BigDecimal.valueOf(9), BigDecimal.valueOf(9), Long.valueOf(23), "TestCache"));
+		        BigDecimal.valueOf(10), BigDecimal.valueOf(8),
+		        BigDecimal.valueOf(11), BigDecimal.valueOf(9),
+		        BigDecimal.valueOf(9), Long.valueOf(23), "TestCache"));
 		history.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-02"),
-		        BigDecimal.valueOf(10), BigDecimal.valueOf(9), BigDecimal.valueOf(12),
-		        BigDecimal.valueOf(10), BigDecimal.valueOf(10), Long.valueOf(3), "TestCache"));
+		        BigDecimal.valueOf(10), BigDecimal.valueOf(9),
+		        BigDecimal.valueOf(12), BigDecimal.valueOf(10),
+		        BigDecimal.valueOf(10), Long.valueOf(3), "TestCache"));
 		stock.setHistory(history);
 		feed.storeSeries(stock);
 
@@ -40,20 +42,26 @@ public class CachedStockFeedTest {
 		Assert.assertTrue(history.containsAll(fetchedFeed.get().getHistory()));
 
 		final List<HistoricalQuote> newhistory = Lists.newArrayList();
-		newhistory.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-01"),
-		        BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11),
-		        BigDecimal.valueOf(9), BigDecimal.valueOf(9), Long.valueOf(23), "TestCache"));
-		newhistory.add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-03"),
-		        BigDecimal.valueOf(10), BigDecimal.valueOf(8), BigDecimal.valueOf(11),
-		        BigDecimal.valueOf(9), BigDecimal.valueOf(9), Long.valueOf(23), "TestCache"));
+		newhistory
+		        .add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-01"),
+		                BigDecimal.valueOf(10), BigDecimal.valueOf(8),
+		                BigDecimal.valueOf(11), BigDecimal.valueOf(9),
+		                BigDecimal.valueOf(9), Long.valueOf(23), "TestCache"));
+		newhistory
+		        .add(new HistoricalQuote(symbol, LocalDate.parse("2017-01-03"),
+		                BigDecimal.valueOf(10), BigDecimal.valueOf(8),
+		                BigDecimal.valueOf(11), BigDecimal.valueOf(9),
+		                BigDecimal.valueOf(9), Long.valueOf(23), "TestCache"));
 
 		stock.setHistory(newhistory);
 		feed.storeSeries(stock);
 
 		final Optional<Stock> newfetchedFeed = feed.get(symbol, 1);
 		Assert.assertTrue(newfetchedFeed.isPresent());
-		Assert.assertTrue(newfetchedFeed.get().getHistory().containsAll(newhistory));
-		Assert.assertEquals(new HashSet<>(newfetchedFeed.get().getHistory()).size(),
+		Assert.assertTrue(
+		        newfetchedFeed.get().getHistory().containsAll(newhistory));
+		Assert.assertEquals(
+		        new HashSet<>(newfetchedFeed.get().getHistory()).size(),
 		        newfetchedFeed.get().getHistory().size());
 
 	}

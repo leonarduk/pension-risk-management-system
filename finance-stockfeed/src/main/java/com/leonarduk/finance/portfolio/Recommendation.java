@@ -30,8 +30,9 @@ public class Recommendation {
 
 	@Override
 	public String toString() {
-		return "Recommendation [tradeRecommendation=" + this.tradeRecommendation + ", strategy="
-		        + this.strategy + ", symbol=" + this.instrument + "]";
+		return "Recommendation [tradeRecommendation=" + this.tradeRecommendation
+		        + ", strategy=" + this.strategy + ", symbol=" + this.instrument
+		        + "]";
 	}
 
 }

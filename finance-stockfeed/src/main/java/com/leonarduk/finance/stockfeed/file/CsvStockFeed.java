@@ -48,30 +48,37 @@ public abstract class CsvStockFeed extends StockFeed {
 
 	private Optional<BigDecimal>	volume;
 
-	public static final Logger		log	= Logger.getLogger(CsvStockFeed.class.getName());
+	public static final Logger		log	= Logger
+	        .getLogger(CsvStockFeed.class.getName());
 
-	protected static String formatDate(final DateFormat formatter, final Date date) {
+	protected static String formatDate(final DateFormat formatter,
+	        final Date date) {
 		synchronized (formatter) {
 			return formatter.format(date);
 		}
 	}
 
 	public HistoricalQuote asHistoricalQuote() {
-		return new HistoricalQuote(this.instrument, LocalDate.fromDateFields(this.date),
+		return new HistoricalQuote(this.instrument,
+		        LocalDate.fromDateFields(this.date),
 		        this.getOpen().orElse(null), this.getLow().orElse(null),
 		        this.getHigh().orElse(null), this.getClose().orElse(null),
-		        this.getClose().orElse(null), this.getVolume().orElse(BigDecimal.ONE).longValue(),
+		        this.getClose().orElse(null),
+		        this.getVolume().orElse(BigDecimal.ONE).longValue(),
 		        this.getComment());
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final int years) throws IOException {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+	public Optional<Stock> get(final Instrument instrument, final int years)
+	        throws IOException {
+		return this.get(instrument, LocalDate.now().minusYears(years),
+		        LocalDate.now());
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
-	        final LocalDate toDate) throws IOException {
+	public Optional<Stock> get(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate)
+	        throws IOException {
 		if (!this.isAvailable()) {
 			CsvStockFeed.log.warning("Feed is not available");
 			return Optional.empty();
@@ -229,7 +236,8 @@ public abstract class CsvStockFeed extends StockFeed {
 		return DateUtils.parseDate(fieldValue);
 	}
 
-	protected boolean parseReader(final BufferedReader reader2) throws IOException {
+	protected boolean parseReader(final BufferedReader reader2)
+	        throws IOException {
 		try {
 			String line = reader2.readLine();
 			if ((line == null) || (line.length() == 0)) {
@@ -318,7 +326,8 @@ public abstract class CsvStockFeed extends StockFeed {
 	}
 
 	public CsvStockFeed setStartDate(final Calendar startDate) {
-		return this.setStartDate(startDate != null ? startDate.getTime() : null);
+		return this
+		        .setStartDate(startDate != null ? startDate.getTime() : null);
 	}
 
 	public CsvStockFeed setStartDate(final Date startDate) {

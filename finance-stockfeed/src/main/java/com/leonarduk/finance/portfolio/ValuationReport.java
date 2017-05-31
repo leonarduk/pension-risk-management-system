@@ -12,8 +12,9 @@ public class ValuationReport {
 	private final String			toDate;
 	private final List<Valuation>	valuations;
 
-	public ValuationReport(final List<Valuation> valuations, final Valuation portfolioValuation,
-	        final LocalDate fromDate, final LocalDate toDate) {
+	public ValuationReport(final List<Valuation> valuations,
+	        final Valuation portfolioValuation, final LocalDate fromDate,
+	        final LocalDate toDate) {
 		this.valuations = ImmutableList.copyOf(valuations);
 		this.fromDate = fromDate.toString();
 		this.toDate = toDate.toString();

@@ -10,16 +10,18 @@ public class DataField {
 		this(name, value, (Object::toString), true);
 	}
 
-	public DataField(final String name, final Object value, final boolean display) {
+	public DataField(final String name, final Object value,
+	        final boolean display) {
 		this(name, value, (Object::toString), display);
 	}
 
-	public DataField(final String name, final Object value, final ValueFormatter formatter) {
+	public DataField(final String name, final Object value,
+	        final ValueFormatter formatter) {
 		this(name, value, formatter, true);
 	}
 
-	public DataField(final String name, final Object value, final ValueFormatter formatter,
-	        final boolean display) {
+	public DataField(final String name, final Object value,
+	        final ValueFormatter formatter, final boolean display) {
 		this.name = name;
 		this.value = value;
 		this.display = display;

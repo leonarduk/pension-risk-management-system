@@ -45,8 +45,10 @@ public class Valuation {
 		this.price = price;
 	}
 
-	public void addRecommendation(final String strategyName, final Recommendation recommendation2) {
-		this.recommendation.put(strategyName.replaceAll(" ", "_").replaceAll("\\p{P}", ""),
+	public void addRecommendation(final String strategyName,
+	        final Recommendation recommendation2) {
+		this.recommendation.put(
+		        strategyName.replaceAll(" ", "_").replaceAll("\\p{P}", ""),
 		        recommendation2.getTradeRecommendation().name());
 	}
 
@@ -67,7 +69,8 @@ public class Valuation {
 	}
 
 	public String getRecommendation(final String name) {
-		return this.recommendation.getOrDefault(name, RecommendedTrade.HOLD.name());
+		return this.recommendation.getOrDefault(name,
+		        RecommendedTrade.HOLD.name());
 	}
 
 	public BigDecimal getReturn(final Period days) {
@@ -93,9 +96,10 @@ public class Valuation {
 
 	@Override
 	public String toString() {
-		return "Valuation [position=" + this.position + ", valuation=" + this.valuation
-		        + ", valuationDate=" + this.valuationDate + ", recommendation="
-		        + this.recommendation + ", returns=" + this.returns + "]";
+		return "Valuation [position=" + this.position + ", valuation="
+		        + this.valuation + ", valuationDate=" + this.valuationDate
+		        + ", recommendation=" + this.recommendation + ", returns="
+		        + this.returns + "]";
 	}
 
 }

@@ -44,7 +44,8 @@ public class TradingBotOnMovingTimeSeries {
 		// Signals
 		// Buy when SMA goes over close price
 		// Sell when close price goes over SMA
-		final Strategy buySellSignals = new Strategy(new OverIndicatorRule(sma, closePrice),
+		final Strategy buySellSignals = new Strategy(
+		        new OverIndicatorRule(sma, closePrice),
 		        new UnderIndicatorRule(sma, closePrice));
 		return buySellSignals;
 	}
@@ -57,13 +58,15 @@ public class TradingBotOnMovingTimeSeries {
 	private static Tick generateRandomTick() {
 		final Decimal maxRange = Decimal.valueOf("0.03"); // 3.0%
 		final Decimal openPrice = TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE;
-		final Decimal minPrice = openPrice.minus(
-		        openPrice.multipliedBy(maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
-		final Decimal maxPrice = openPrice.plus(
-		        openPrice.multipliedBy(maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
-		final Decimal closePrice = TradingBotOnMovingTimeSeries.randDecimal(minPrice, maxPrice);
+		final Decimal minPrice = openPrice.minus(openPrice.multipliedBy(
+		        maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
+		final Decimal maxPrice = openPrice.plus(openPrice.multipliedBy(
+		        maxRange.multipliedBy(Decimal.valueOf(Math.random()))));
+		final Decimal closePrice = TradingBotOnMovingTimeSeries
+		        .randDecimal(minPrice, maxPrice);
 		TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE = closePrice;
-		return new Tick(DateTime.now(), openPrice, maxPrice, minPrice, closePrice, Decimal.ONE);
+		return new Tick(DateTime.now(), openPrice, maxPrice, minPrice,
+		        closePrice, Decimal.ONE);
 	}
 
 	/**
@@ -74,32 +77,39 @@ public class TradingBotOnMovingTimeSeries {
 	 * @return a moving time series
 	 * @throws IOException
 	 */
-	private static TimeSeries initMovingTimeSeries(final int maxTickCount) throws IOException {
+	private static TimeSeries initMovingTimeSeries(final int maxTickCount)
+	        throws IOException {
 		final String ticker = "PHGP";
-		final Stock stock = new IntelligentStockFeed().get(Instrument.fromString(ticker), 1).get();
+		final Stock stock = new IntelligentStockFeed()
+		        .get(Instrument.fromString(ticker), 1).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 		System.out.print("Initial tick count: " + series.getTickCount());
 		// Limitating the number of ticks to maxTickCount
 		series.setMaximumTickCount(maxTickCount);
-		TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE = series.getTick(series.getEnd())
-		        .getClosePrice();
+		TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE = series
+		        .getTick(series.getEnd()).getClosePrice();
 		System.out.println(" (limited to " + maxTickCount + "), close price = "
 		        + TradingBotOnMovingTimeSeries.LAST_TICK_CLOSE_PRICE);
 		return series;
 	}
 
-	public static void main(final String[] args) throws InterruptedException, IOException {
+	public static void main(final String[] args)
+	        throws InterruptedException, IOException {
 
-		System.out.println("********************** Initialization **********************");
+		System.out.println(
+		        "********************** Initialization **********************");
 		// Getting the time series
-		final TimeSeries series = TradingBotOnMovingTimeSeries.initMovingTimeSeries(20);
+		final TimeSeries series = TradingBotOnMovingTimeSeries
+		        .initMovingTimeSeries(20);
 
 		// Building the trading strategy
-		final Strategy strategy = TradingBotOnMovingTimeSeries.buildStrategy(series);
+		final Strategy strategy = TradingBotOnMovingTimeSeries
+		        .buildStrategy(series);
 
 		// Initializing the trading history
 		final TradingRecord tradingRecord = new TradingRecord();
-		System.out.println("************************************************************");
+		System.out.println(
+		        "************************************************************");
 
 		/**
 		 * We run the strategy for the 50 next ticks.
@@ -108,9 +118,12 @@ public class TradingBotOnMovingTimeSeries {
 
 			// New tick
 			Thread.sleep(30); // I know...
-			final Tick newTick = TradingBotOnMovingTimeSeries.generateRandomTick();
-			System.out.println("------------------------------------------------------\n" + "Tick "
-			        + i + " added, close price = " + newTick.getClosePrice().toDouble());
+			final Tick newTick = TradingBotOnMovingTimeSeries
+			        .generateRandomTick();
+			System.out.println(
+			        "------------------------------------------------------\n"
+			                + "Tick " + i + " added, close price = "
+			                + newTick.getClosePrice().toDouble());
 			series.addTick(newTick);
 
 			final int endIndex = series.getEnd();
@@ -118,8 +131,8 @@ public class TradingBotOnMovingTimeSeries {
 			if (strategy.shouldEnter(endIndex)) {
 				// Our strategy should enter
 				System.out.println("Strategy should ENTER on " + endIndex);
-				final boolean entered = tradingRecord.enter(endIndex, newTick.getClosePrice(),
-				        Decimal.TEN);
+				final boolean entered = tradingRecord.enter(endIndex,
+				        newTick.getClosePrice(), Decimal.TEN);
 				if (entered) {
 					final Order entry = tradingRecord.getLastEntry();
 					snapshotAnalyser.showTradeAction(entry, "Enter");
@@ -128,8 +141,8 @@ public class TradingBotOnMovingTimeSeries {
 			else if (strategy.shouldExit(endIndex)) {
 				// Our strategy should exit
 				System.out.println("Strategy should EXIT on " + endIndex);
-				final boolean exited = tradingRecord.exit(endIndex, newTick.getClosePrice(),
-				        Decimal.TEN);
+				final boolean exited = tradingRecord.exit(endIndex,
+				        newTick.getClosePrice(), Decimal.TEN);
 				if (exited) {
 					final Order exit = tradingRecord.getLastExit();
 					snapshotAnalyser.showTradeAction(exit, "Exit");
@@ -150,7 +163,8 @@ public class TradingBotOnMovingTimeSeries {
 	private static Decimal randDecimal(final Decimal min, final Decimal max) {
 		Decimal randomDecimal = null;
 		if ((min != null) && (max != null) && min.isLessThan(max)) {
-			randomDecimal = max.minus(min).multipliedBy(Decimal.valueOf(Math.random())).plus(min);
+			randomDecimal = max.minus(min)
+			        .multipliedBy(Decimal.valueOf(Math.random())).plus(min);
 		}
 		return randomDecimal;
 	}

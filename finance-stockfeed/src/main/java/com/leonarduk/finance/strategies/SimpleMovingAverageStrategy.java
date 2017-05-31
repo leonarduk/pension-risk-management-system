@@ -9,8 +9,8 @@ import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 public class SimpleMovingAverageStrategy extends AbstractStrategy {
 
-	public static SimpleMovingAverageStrategy buildStrategy(final TimeSeries series,
-	        final int days) {
+	public static SimpleMovingAverageStrategy buildStrategy(
+	        final TimeSeries series, final int days) {
 		if (series == null) {
 			throw new IllegalArgumentException("Series cannot be null");
 		}
@@ -21,13 +21,16 @@ public class SimpleMovingAverageStrategy extends AbstractStrategy {
 		// Signals
 		// Buy when SMA goes over close price
 		// Sell when close price goes over SMA
-		final Strategy buySellSignals = new Strategy(new OverIndicatorRule(sma, closePrice),
+		final Strategy buySellSignals = new Strategy(
+		        new OverIndicatorRule(sma, closePrice),
 		        new UnderIndicatorRule(sma, closePrice));
-		return new SimpleMovingAverageStrategy("SMA (" + days + "days)", buySellSignals);
+		return new SimpleMovingAverageStrategy("SMA (" + days + "days)",
+		        buySellSignals);
 
 	}
 
-	private SimpleMovingAverageStrategy(final String name, final Strategy strategy) {
+	private SimpleMovingAverageStrategy(final String name,
+	        final Strategy strategy) {
 		super(name, strategy);
 	}
 

@@ -48,7 +48,8 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.BidSize);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradePriceOnly);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.LastTradePriceOnly);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.LastTradeSize);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
@@ -61,45 +62,58 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DaysHigh);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Volume);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.AverageDailyVolume);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.AverageDailyVolume);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.YearHigh);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.YearLow);
 
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.FiftydayMovingAverage);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.TwoHundreddayMovingAverage);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.FiftydayMovingAverage);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.TwoHundreddayMovingAverage);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.SharesOutstanding);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.SharesOutstanding);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.SharesOwned);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.MarketCapitalization);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.MarketCapitalization);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.SharesFloat);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);
 
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DividendPayDate);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.ExDividendDate);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.TrailingAnnualDividendYield);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.DividendPayDate);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.ExDividendDate);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.TrailingAnnualDividendYield);
 		StockQuotesRequest.DEFAULT_PROPERTIES
 		        .add(QuotesProperty.TrailingAnnualDividendYieldInPercent);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.DilutedEPS);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateCurrentYear);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateNextQuarter);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EPSEstimateNextYear);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.EPSEstimateCurrentYear);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.EPSEstimateNextQuarter);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.EPSEstimateNextYear);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PERatio);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PEGRatio);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PriceBook);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.PriceSales);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.BookValuePerShare);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.BookValuePerShare);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.Revenue);
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.EBITDA);
-		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.OneyrTargetPrice);
+		StockQuotesRequest.DEFAULT_PROPERTIES
+		        .add(QuotesProperty.OneyrTargetPrice);
 
 		StockQuotesRequest.DEFAULT_PROPERTIES.add(QuotesProperty.ShortRatio);
 	}
@@ -193,7 +207,8 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 				pos1 = pos2;
 			}
 		}
-		return new StockQuotesData(parsedLine.toArray(new String[this.properties.size()]));
+		return new StockQuotesData(
+		        parsedLine.toArray(new String[this.properties.size()]));
 	}
 
 }

@@ -58,8 +58,9 @@ public class BollingerBars {
 	 *            the name of the chart time series
 	 * @return the JFreeChart time series
 	 */
-	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(final TimeSeries tickSeries,
-	        final Indicator<Decimal> indicator, final String name) {
+	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(
+	        final TimeSeries tickSeries, final Indicator<Decimal> indicator,
+	        final String name) {
 		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(
 		        name);
 		for (int i = 0; i < tickSeries.getTickCount(); i++) {
@@ -70,7 +71,8 @@ public class BollingerBars {
 		return chartTimeSeries;
 	}
 
-	public static void displayBollingerBars(final Stock stock) throws IOException {
+	public static void displayBollingerBars(final Stock stock)
+	        throws IOException {
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		/**
@@ -81,21 +83,22 @@ public class BollingerBars {
 		// Bollinger bands
 		final BollingerBandsMiddleIndicator middleBBand = new BollingerBandsMiddleIndicator(
 		        closePrice);
-		final BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand,
-		        closePrice, Decimal.ONE);
-		final BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand,
-		        closePrice, Decimal.ONE);
+		final BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(
+		        middleBBand, closePrice, Decimal.ONE);
+		final BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(
+		        middleBBand, closePrice, Decimal.ONE);
 
 		/**
 		 * Building chart dataset
 		 */
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(BollingerBars.buildChartTimeSeries(series, closePrice,
-		        stock.getName() + ". (" + stock.getSymbol() + ") - " + stock.getStockExchange()));
-		dataset.addSeries(
-		        BollingerBars.buildChartTimeSeries(series, lowBBand, "Low Bollinger Band"));
-		dataset.addSeries(
-		        BollingerBars.buildChartTimeSeries(series, upBBand, "High Bollinger Band"));
+		        stock.getName() + ". (" + stock.getSymbol() + ") - "
+		                + stock.getStockExchange()));
+		dataset.addSeries(BollingerBars.buildChartTimeSeries(series, lowBBand,
+		        "Low Bollinger Band"));
+		dataset.addSeries(BollingerBars.buildChartTimeSeries(series, upBBand,
+		        "High Bollinger Band"));
 
 		/**
 		 * Creating the chart

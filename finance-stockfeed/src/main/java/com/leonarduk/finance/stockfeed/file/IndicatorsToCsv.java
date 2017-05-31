@@ -42,16 +42,19 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
 public class IndicatorsToCsv {
 
 	public static void exportIndicatorsToCsv(final TimeSeries series) {
-		final String fileName = "target/" + series.getName() + "_indicators.csv";
+		final String fileName = "target/" + series.getName()
+		        + "_indicators.csv";
 		/**
 		 * Creating indicators
 		 */
 		// Close price
 		final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 		// Typical price
-		final TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(series);
+		final TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(
+		        series);
 		// Price variation
-		final PriceVariationIndicator priceVariation = new PriceVariationIndicator(series);
+		final PriceVariationIndicator priceVariation = new PriceVariationIndicator(
+		        series);
 		// Simple moving averages
 		final SMAIndicator shortSma = new SMAIndicator(closePrice, 8);
 		final SMAIndicator longSma = new SMAIndicator(closePrice, 20);
@@ -67,9 +70,11 @@ public class IndicatorsToCsv {
 		// Williams %R
 		final WilliamsRIndicator williamsR = new WilliamsRIndicator(series, 20);
 		// Average true range
-		final AverageTrueRangeIndicator atr = new AverageTrueRangeIndicator(series, 20);
+		final AverageTrueRangeIndicator atr = new AverageTrueRangeIndicator(
+		        series, 20);
 		// Standard deviation
-		final StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, 14);
+		final StandardDeviationIndicator sd = new StandardDeviationIndicator(
+		        closePrice, 14);
 
 		/**
 		 * Building header

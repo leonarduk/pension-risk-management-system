@@ -27,16 +27,19 @@ public class GoogleFeed extends CsvStockFeed {
 
 	private static final String		PARAM_END_DATE		= "enddate";
 
-	private static final DateFormat	PARAM_FORMATTER		= new SimpleDateFormat("MMM'+'d'%2c+'yyyy");
+	private static final DateFormat	PARAM_FORMATTER		= new SimpleDateFormat(
+	        "MMM'+'d'%2c+'yyyy");
 
 	private static final String		PARAM_OUTPUT		= "output";
 
 	private static final String		PARAM_START_DATE	= "startdate";
 
 	private static final String		PARAM_SYMBOL		= "q";
-	private static final DateFormat	RESULT_FORMATTER	= new SimpleDateFormat("dd-MMM-yy");
+	private static final DateFormat	RESULT_FORMATTER	= new SimpleDateFormat(
+	        "dd-MMM-yy");
 
-	protected HttpRequest createRequest(final CharSequence uri) throws IOException {
+	protected HttpRequest createRequest(final CharSequence uri)
+	        throws IOException {
 		try {
 			GoogleFeed.log.info("Request: " + uri);
 			return HttpRequest.get(uri);
@@ -68,12 +71,12 @@ public class GoogleFeed extends CsvStockFeed {
 		params.put(GoogleFeed.PARAM_SYMBOL,
 		        Instrument.fromString(this.getSymbol()).getGoogleCode());
 		if (this.getStartDate() != null) {
-			params.put(GoogleFeed.PARAM_START_DATE,
-			        CsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getStartDate()));
+			params.put(GoogleFeed.PARAM_START_DATE, CsvStockFeed.formatDate(
+			        GoogleFeed.PARAM_FORMATTER, this.getStartDate()));
 		}
 		if (this.getEndDate() != null) {
-			params.put(GoogleFeed.PARAM_END_DATE,
-			        CsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getEndDate()));
+			params.put(GoogleFeed.PARAM_END_DATE, CsvStockFeed
+			        .formatDate(GoogleFeed.PARAM_FORMATTER, this.getEndDate()));
 		}
 
 		final HttpRequest request = this

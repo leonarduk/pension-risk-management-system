@@ -19,12 +19,12 @@ public class FlatLineInterpolatorTest {
 	public void setUp() throws Exception {
 		this.interpolator = new FlatLineInterpolator();
 		final List<Tick> ticks = Arrays.asList(new Tick[] { //
-		        new Tick(LocalDate.parse("2017-04-14").toDateTimeAtStartOfDay(), 105, 115, 95, 110,
-		                2000),
-		        new Tick(LocalDate.parse("2017-04-07").toDateTimeAtStartOfDay(), 100, 112, 92, 102,
-		                5000),
-		        new Tick(LocalDate.parse("2017-04-03").toDateTimeAtStartOfDay(), 100, 110, 90, 105,
-		                1000) });
+		        new Tick(LocalDate.parse("2017-04-14").toDateTimeAtStartOfDay(),
+		                105, 115, 95, 110, 2000),
+		        new Tick(LocalDate.parse("2017-04-07").toDateTimeAtStartOfDay(),
+		                100, 112, 92, 102, 5000),
+		        new Tick(LocalDate.parse("2017-04-03").toDateTimeAtStartOfDay(),
+		                100, 110, 90, 105, 1000) });
 		this.series = new TimeSeries(ticks);
 	}
 
@@ -43,8 +43,10 @@ public class FlatLineInterpolatorTest {
 		Assert.assertEquals(LocalDate.parse("2017-04-14"),
 		        actual.getTick(9).getEndTime().toLocalDate());
 
-		Assert.assertEquals(actual.getTick(0).getClosePrice(), actual.getTick(1).getClosePrice());
-		Assert.assertEquals(actual.getTick(4).getClosePrice(), actual.getTick(5).getClosePrice());
+		Assert.assertEquals(actual.getTick(0).getClosePrice(),
+		        actual.getTick(1).getClosePrice());
+		Assert.assertEquals(actual.getTick(4).getClosePrice(),
+		        actual.getTick(5).getClosePrice());
 
 	}
 

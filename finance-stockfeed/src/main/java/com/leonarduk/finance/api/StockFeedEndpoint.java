@@ -35,9 +35,11 @@ public class StockFeedEndpoint {
 	@Produces({ MediaType.TEXT_HTML })
 	@Path("/ticker/{ticker}/")
 	public String displayHistory(@PathParam("ticker") final String ticker,
-	        @QueryParam("years") final int years, @QueryParam("fromDate") final String fromDate,
+	        @QueryParam("years") final int years,
+	        @QueryParam("fromDate") final String fromDate,
 	        @QueryParam("toDate") final String toDate,
-	        @QueryParam("interpolate") final boolean interpolate) throws IOException {
+	        @QueryParam("interpolate") final boolean interpolate)
+	        throws IOException {
 
 		final Instrument instrument = Instrument.fromString(ticker);
 		final StringBuilder sbBody = new StringBuilder();
@@ -53,11 +55,13 @@ public class StockFeedEndpoint {
 			else {
 				toLocalDate = LocalDate.parse(toDate);
 			}
-			historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate);
+			historyData = this.getHistoryData(instrument, fromLocalDate,
+			        toLocalDate, interpolate);
 
 		}
 		else {
-			historyData = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
+			historyData = this.getHistoryData(instrument,
+			        years == 0 ? 1 : years, interpolate);
 		}
 		for (final HistoricalQuote historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -80,30 +84,35 @@ public class StockFeedEndpoint {
 	@Path("/download/ticker/{ticker}/")
 	public Response downloadHistoryCsv(@PathParam("ticker") final String ticker,
 	        @QueryParam("years") final int years,
-	        @QueryParam("interpolate") final boolean interpolate) throws IOException {
+	        @QueryParam("interpolate") final boolean interpolate)
+	        throws IOException {
 		final Instrument instrument = Instrument.fromString(ticker);
-		final List<HistoricalQuote> series = this.getHistoryData(instrument, years == 0 ? 1 : years,
-		        interpolate);
-		final String fileName = instrument.getExchange().name() + "_" + instrument.code() + ".csv";
+		final List<HistoricalQuote> series = this.getHistoryData(instrument,
+		        years == 0 ? 1 : years, interpolate);
+		final String fileName = instrument.getExchange().name() + "_"
+		        + instrument.code() + ".csv";
 		final String myCsvText = StockFeed.seriesToCsv(series).toString();
-		return Response.ok(myCsvText)
-		        .header("Content-Disposition", "attachment; filename=" + fileName).build();
+		return Response.ok(myCsvText).header("Content-Disposition",
+		        "attachment; filename=" + fileName).build();
 	}
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/api/ticker/{ticker}/")
-	public List<HistoricalQuote> getHistory(@PathParam("ticker") final String ticker,
+	public List<HistoricalQuote> getHistory(
+	        @PathParam("ticker") final String ticker,
 	        @QueryParam("years") final int years,
-	        @QueryParam("interpolate") final boolean interpolate) throws IOException {
+	        @QueryParam("interpolate") final boolean interpolate)
+	        throws IOException {
 		final Instrument instrument = Instrument.fromString(ticker);
-		return this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
+		return this.getHistoryData(instrument, years == 0 ? 1 : years,
+		        interpolate);
 	}
 
-	private List<HistoricalQuote> getHistoryData(final Instrument instrument, final int years,
-	        final boolean interpolate) throws IOException {
-		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, years,
-		        interpolate);
+	private List<HistoricalQuote> getHistoryData(final Instrument instrument,
+	        final int years, final boolean interpolate) throws IOException {
+		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument,
+		        years, interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}
@@ -111,10 +120,10 @@ public class StockFeedEndpoint {
 	}
 
 	private List<HistoricalQuote> getHistoryData(final Instrument instrument,
-	        final LocalDate fromLocalDate, final LocalDate toLocalDate, final boolean interpolate)
-	        throws IOException {
-		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument, fromLocalDate,
-		        toLocalDate, interpolate);
+	        final LocalDate fromLocalDate, final LocalDate toLocalDate,
+	        final boolean interpolate) throws IOException {
+		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument,
+		        fromLocalDate, toLocalDate, interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}

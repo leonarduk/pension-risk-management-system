@@ -17,7 +17,8 @@ import yahoofinance.histquotes.HistoricalQuote;
 public class CachedStockFeed extends CsvStockFeed {
 	private final String		storeLocation;
 
-	public static final Logger	log	= Logger.getLogger(CachedStockFeed.class.getName());
+	public static final Logger	log	= Logger
+	        .getLogger(CachedStockFeed.class.getName());
 
 	public CachedStockFeed(final String storeLocation) {
 		this.storeLocation = storeLocation;
@@ -52,7 +53,8 @@ public class CachedStockFeed extends CsvStockFeed {
 
 	@Override
 	protected String getQueryName(final Instrument instrument) {
-		return instrument.getExchange().name() + "_" + instrument.code() + ".csv";
+		return instrument.getExchange().name() + "_" + instrument.code()
+		        + ".csv";
 	}
 
 	@Override
@@ -63,10 +65,12 @@ public class CachedStockFeed extends CsvStockFeed {
 	@Override
 	public boolean isAvailable() {
 		final File store = new File(this.storeLocation);
-		return (store.exists() & store.isDirectory()) && store.canWrite() && store.canRead();
+		return (store.exists() & store.isDirectory()) && store.canWrite()
+		        && store.canRead();
 	}
 
-	private List<HistoricalQuote> loadSeries(final Stock stock) throws IOException {
+	private List<HistoricalQuote> loadSeries(final Stock stock)
+	        throws IOException {
 		final Optional<Stock> optional = this.get(stock.getInstrument(), 1000);
 		if (optional.isPresent()) {
 			return optional.get().getHistory();
@@ -82,7 +86,8 @@ public class CachedStockFeed extends CsvStockFeed {
 
 	@Override
 	protected BufferedReader openReader() throws IOException {
-		final File file = new File(this.storeLocation, this.getQueryName(this.getInstrument()));
+		final File file = new File(this.storeLocation,
+		        this.getQueryName(this.getInstrument()));
 		CachedStockFeed.log.info("Read file from " + file.getAbsolutePath());
 
 		if (!file.exists()) {

@@ -12,7 +12,8 @@ public class CORSResponseFilter implements ContainerResponseFilter {
 	public void filter(final ContainerRequestContext requestContext,
 	        final ContainerResponseContext responseContext) throws IOException {
 
-		final MultivaluedMap<String, Object> headers = responseContext.getHeaders();
+		final MultivaluedMap<String, Object> headers = responseContext
+		        .getHeaders();
 
 		headers.add("Access-Control-Allow-Origin", "*");
 		// headers.add("Access-Control-Allow-Origin", "http://risk.leonarduk.com"); // allows CORS

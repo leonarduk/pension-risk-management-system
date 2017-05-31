@@ -71,14 +71,16 @@ public class PieChartFactory {
 		try {
 			// write an HTML page incorporating the image with an image map
 			final File file2 = new File("multipiechart100.html");
-			final OutputStream out = new BufferedOutputStream(new FileOutputStream(file2));
+			final OutputStream out = new BufferedOutputStream(
+			        new FileOutputStream(file2));
 			final PrintWriter writer = new PrintWriter(out);
 			writer.println("<HTML>");
-			writer.println("<HEAD><TITLE>JFreeChart Image Map Demo</TITLE></HEAD>");
+			writer.println(
+			        "<HEAD><TITLE>JFreeChart Image Map Demo</TITLE></HEAD>");
 			writer.println("<BODY>");
 			// ChartUtilities.writeImageMap(writer, "chart", info);
-			writer.println(ChartDisplay.saveImageAsPngAndReturnHtmlLink("345", 400, 400,
-			        factory.buildChart()));
+			writer.println(ChartDisplay.saveImageAsPngAndReturnHtmlLink("345",
+			        400, 400, factory.buildChart()));
 			writer.println("</BODY>");
 			writer.println("</HTML>");
 			writer.close();
@@ -116,7 +118,8 @@ public class PieChartFactory {
 	}
 
 	public JFreeChart buildChart() {
-		final JFreeChart chart = ChartFactory.createPieChart(this.title, this.dataset);
+		final JFreeChart chart = ChartFactory.createPieChart(this.title,
+		        this.dataset);
 
 		final PiePlot p = (PiePlot) chart.getPlot();
 		p.setLabelFont(new Font("SansSerif", Font.PLAIN, 8));
@@ -127,15 +130,17 @@ public class PieChartFactory {
 
 	@SuppressWarnings("unchecked")
 	public Double getTotal() {
-		return (Double) this.dataset.getKeys().stream().collect(Collectors.summingDouble(key -> {
-			return (Double) this.dataset.getValue((String) key);
-		}));
+		return (Double) this.dataset.getKeys().stream()
+		        .collect(Collectors.summingDouble(key -> {
+			        return (Double) this.dataset.getValue((String) key);
+		        }));
 	}
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Double> getValueMap() {
-		return (Map<String, Double>) this.dataset.getKeys().stream().collect(
-		        Collectors.toMap(key -> key, key -> (Double) this.dataset.getValue((String) key)));
+		return (Map<String, Double>) this.dataset.getKeys().stream()
+		        .collect(Collectors.toMap(key -> key,
+		                key -> (Double) this.dataset.getValue((String) key)));
 	}
 
 	public PieChartFactory put(final String key, final Double value) {

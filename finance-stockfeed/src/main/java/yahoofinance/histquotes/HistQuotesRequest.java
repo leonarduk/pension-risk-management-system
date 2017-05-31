@@ -35,10 +35,12 @@ public class HistQuotesRequest {
 
 	private final Calendar			to;
 
-	public static final Calendar	DEFAULT_FROM		= Calendar.getInstance();
+	public static final Calendar	DEFAULT_FROM		= Calendar
+	        .getInstance();
 
 	public static final Interval	DEFAULT_INTERVAL	= Interval.MONTHLY;
-	public static final Calendar	DEFAULT_TO			= Calendar.getInstance();
+	public static final Calendar	DEFAULT_TO			= Calendar
+	        .getInstance();
 	public static final Logger		logger				= Logger
 	        .getLogger(HistQuotesRequest.class.getName());
 
@@ -46,8 +48,9 @@ public class HistQuotesRequest {
 		HistQuotesRequest.DEFAULT_FROM.add(Calendar.YEAR, -1);
 	}
 
-	public static String createUrl(final Instrument instrument2, final Calendar from2,
-	        final Calendar to2, final Interval interval2) {
+	public static String createUrl(final Instrument instrument2,
+	        final Calendar from2, final Calendar to2,
+	        final Interval interval2) {
 		final Map<String, String> params = new LinkedHashMap<>();
 		params.put("s", YahooFeed.getQueryName(instrument2));
 
@@ -63,7 +66,8 @@ public class HistQuotesRequest {
 
 		params.put("ignore", ".csv");
 
-		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?" + HtmlTools.getURLParameters(params);
+		final String url = YahooFeed.HISTQUOTES_BASE_URL + "?"
+		        + HtmlTools.getURLParameters(params);
 		return url;
 	}
 
@@ -71,24 +75,26 @@ public class HistQuotesRequest {
 		this(instrument, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
 
-	public HistQuotesRequest(final Instrument instrument, final Calendar from, final Calendar to) {
+	public HistQuotesRequest(final Instrument instrument, final Calendar from,
+	        final Calendar to) {
 		this(instrument, from, to, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
 
-	public HistQuotesRequest(final Instrument instrument, final Calendar from, final Calendar to,
-	        final Interval interval) {
+	public HistQuotesRequest(final Instrument instrument, final Calendar from,
+	        final Calendar to, final Interval interval) {
 		this.instrument = instrument;
 		this.from = this.cleanHistCalendar(from);
 		this.to = this.cleanHistCalendar(to);
 		this.interval = interval;
 	}
 
-	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to) {
+	public HistQuotesRequest(final Instrument instrument, final Date from,
+	        final Date to) {
 		this(instrument, from, to, HistQuotesRequest.DEFAULT_INTERVAL);
 	}
 
-	public HistQuotesRequest(final Instrument instrument, final Date from, final Date to,
-	        final Interval interval) {
+	public HistQuotesRequest(final Instrument instrument, final Date from,
+	        final Date to, final Interval interval) {
 		this(instrument, interval);
 		this.from.setTime(from);
 		this.to.setTime(to);
@@ -96,8 +102,10 @@ public class HistQuotesRequest {
 		this.cleanHistCalendar(this.to);
 	}
 
-	public HistQuotesRequest(final Instrument instrument, final Interval interval) {
-		this(instrument, HistQuotesRequest.DEFAULT_FROM, HistQuotesRequest.DEFAULT_TO, interval);
+	public HistQuotesRequest(final Instrument instrument,
+	        final Interval interval) {
+		this(instrument, HistQuotesRequest.DEFAULT_FROM,
+		        HistQuotesRequest.DEFAULT_TO, interval);
 	}
 
 	/**
@@ -121,13 +129,14 @@ public class HistQuotesRequest {
 		if (this.from.after(this.to)) {
 			YahooFeed.logger.log(Level.WARNING,
 			        "Unable to retrieve historical quotes. "
-			                + "From-date should not be after to-date. From: " + this.from.getTime()
-			                + ", to: " + this.to.getTime());
+			                + "From-date should not be after to-date. From: "
+			                + this.from.getTime() + ", to: "
+			                + this.to.getTime());
 			return result;
 		}
 
-		final String url = HistQuotesRequest.createUrl(this.instrument, this.from, this.to,
-		        this.interval);
+		final String url = HistQuotesRequest.createUrl(this.instrument,
+		        this.from, this.to, this.interval);
 
 		// Get CSV from Yahoo
 		YahooFeed.logger.log(Level.INFO, ("Sending request: " + url));
@@ -136,13 +145,15 @@ public class HistQuotesRequest {
 		final URLConnection connection = request.openConnection();
 		connection.setConnectTimeout(YahooFeed.CONNECTION_TIMEOUT);
 		connection.setReadTimeout(YahooFeed.CONNECTION_TIMEOUT);
-		final InputStreamReader is = new InputStreamReader(connection.getInputStream());
+		final InputStreamReader is = new InputStreamReader(
+		        connection.getInputStream());
 		final BufferedReader br = new BufferedReader(is);
 		br.readLine(); // skip the first line
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 
-			YahooFeed.logger.log(Level.INFO, ("Parsing CSV line: " + StringUtils.unescape(line)));
+			YahooFeed.logger.log(Level.INFO,
+			        ("Parsing CSV line: " + StringUtils.unescape(line)));
 			final HistoricalQuote quote = this.parseCSVLine(line);
 			result.add(quote);
 		}
@@ -152,15 +163,19 @@ public class HistQuotesRequest {
 	private HistoricalQuote parseCSVLine(final String line) {
 		final String[] data = line.split(YahooFeed.QUOTES_CSV_DELIMITER);
 		return new HistoricalQuote(this.instrument, LocalDate.parse(data[0]),
-		        NumberUtils.getBigDecimal(data[1]), NumberUtils.getBigDecimal(data[3]),
-		        NumberUtils.getBigDecimal(data[2]), NumberUtils.getBigDecimal(data[4]),
-		        NumberUtils.getBigDecimal(data[6]), NumberUtils.getLong(data[5]), "Yahoo");
+		        NumberUtils.getBigDecimal(data[1]),
+		        NumberUtils.getBigDecimal(data[3]),
+		        NumberUtils.getBigDecimal(data[2]),
+		        NumberUtils.getBigDecimal(data[4]),
+		        NumberUtils.getBigDecimal(data[6]),
+		        NumberUtils.getLong(data[5]), "Yahoo");
 	}
 
 	@Override
 	public String toString() {
-		return "HistQuotesRequest [from=" + this.from + ", instrument=" + this.instrument
-		        + ", interval=" + this.interval + ", to=" + this.to + "]";
+		return "HistQuotesRequest [from=" + this.from + ", instrument="
+		        + this.instrument + ", interval=" + this.interval + ", to="
+		        + this.to + "]";
 	}
 
 }

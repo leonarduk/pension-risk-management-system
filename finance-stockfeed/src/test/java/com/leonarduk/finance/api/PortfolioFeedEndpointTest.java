@@ -20,7 +20,8 @@ public class PortfolioFeedEndpointTest {
 	@Before
 	public void setUp() throws Exception {
 		this.intelligentStockFeed = Mockito.mock(IntelligentStockFeed.class);
-		final SnapshotAnalyser snapshotAnalyser = new SnapshotAnalyser(this.intelligentStockFeed);
+		final SnapshotAnalyser snapshotAnalyser = new SnapshotAnalyser(
+		        this.intelligentStockFeed);
 		this.endpoint = new PortfolioFeedEndpoint(snapshotAnalyser);
 	}
 
@@ -36,15 +37,17 @@ public class PortfolioFeedEndpointTest {
 
 	@Test
 	public final void testGetPortfolios() throws IOException {
-		final Set<String> expected = Sets.newHashSet(new String[] { "Steve ISA", "Permanent",
-		        "Steve SIPP", "Lucy ISA", "Global Market", "Risk Parity", "Ivy", "All Seaons",
-		        "Marc Faber", "Swensen", "Family", "El-Erian", "Rob Arnott" });
+		final Set<String> expected = Sets.newHashSet(new String[] { "Steve ISA",
+		        "Permanent", "Steve SIPP", "Lucy ISA", "Global Market",
+		        "Risk Parity", "Ivy", "All Seaons", "Marc Faber", "Swensen",
+		        "Family", "El-Erian", "Rob Arnott" });
 		Assert.assertEquals(expected, this.endpoint.getPortfolios());
 	}
 
 	@Test
 	public final void testGetPositions() throws IOException {
-		Assert.assertEquals(75, this.endpoint.getPositions().getHoldings().size());
+		Assert.assertEquals(75,
+		        this.endpoint.getPositions().getHoldings().size());
 	}
 
 	// @Test

@@ -21,7 +21,8 @@ public class YahooFeedIT {
 	private YahooFeed	feed;
 	private Instrument	gold;
 
-	private boolean getInstrument(final Instrument instrument) throws IOException {
+	private boolean getInstrument(final Instrument instrument)
+	        throws IOException {
 		final Optional<Stock> stock = this.feed.get(instrument, 1);
 		Assert.assertTrue(stock.isPresent());
 		final List<HistoricalQuote> history = stock.get().getHistory();
@@ -58,7 +59,8 @@ public class YahooFeedIT {
 	@Test
 	public final void testGetQueryName() {
 		Assert.assertEquals("PHGP.L", YahooFeed.getQueryName(this.gold));
-		Assert.assertEquals("GB00B1H05601.L", YahooFeed.getQueryName(this.bonds));
+		Assert.assertEquals("GB00B1H05601.L",
+		        YahooFeed.getQueryName(this.bonds));
 	}
 
 	@Test

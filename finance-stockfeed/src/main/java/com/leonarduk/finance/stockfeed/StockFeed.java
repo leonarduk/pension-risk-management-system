@@ -24,12 +24,16 @@ public abstract class StockFeed {
 
 	public static void addQuoteToSeries(final Instrument instrument,
 	        final List<HistoricalQuote> quotes, final Stock stock) {
-		final StockQuoteBuilder quoteBuilder = new StockQuote.StockQuoteBuilder(instrument);
+		final StockQuoteBuilder quoteBuilder = new StockQuote.StockQuoteBuilder(
+		        instrument);
 
 		if ((quotes != null) && !quotes.isEmpty()) {
-			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
-			quoteBuilder.setDayHigh(historicalQuote.getHigh()).setDayLow(historicalQuote.getLow())
-			        .setOpen(historicalQuote.getOpen()).setAvgVolume(historicalQuote.getVolume())
+			final HistoricalQuote historicalQuote = quotes
+			        .get(quotes.size() - 1);
+			quoteBuilder.setDayHigh(historicalQuote.getHigh())
+			        .setDayLow(historicalQuote.getLow())
+			        .setOpen(historicalQuote.getOpen())
+			        .setAvgVolume(historicalQuote.getVolume())
 			        .setPrice(historicalQuote.getClose());
 			stock.setQuote(quoteBuilder.build());
 			stock.setHistory(quotes);
@@ -48,8 +52,10 @@ public abstract class StockFeed {
 		return stock;
 	}
 
-	public static StringBuilder seriesToCsv(final List<HistoricalQuote> series) {
-		final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
+	public static StringBuilder seriesToCsv(
+	        final List<HistoricalQuote> series) {
+		final StringBuilder sb = new StringBuilder(
+		        "date,open,high,low,close,volume\n");
 		for (final HistoricalQuote historicalQuote : series) {
 			sb.append(historicalQuote.getDate().toString());
 			StringUtils.addValue(sb, historicalQuote.getOpen());
@@ -62,26 +68,29 @@ public abstract class StockFeed {
 		return sb;
 	}
 
-	public abstract Optional<Stock> get(final Instrument instrument, final int years)
-	        throws IOException;
+	public abstract Optional<Stock> get(final Instrument instrument,
+	        final int years) throws IOException;
 
-	public abstract Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
-	        final LocalDate toDate) throws IOException;
+	public abstract Optional<Stock> get(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate)
+	        throws IOException;
 
 	public abstract Source getSource();
 
 	public abstract boolean isAvailable();
 
-	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original)
-	        throws IOException {
+	public void mergeSeries(final Stock stock,
+	        final List<HistoricalQuote> original) throws IOException {
 		final List<HistoricalQuote> newSeries = stock.getHistory();
 		this.mergeSeries(stock, original, newSeries);
 	}
 
-	public void mergeSeries(final Stock stock, final List<HistoricalQuote> original,
+	public void mergeSeries(final Stock stock,
+	        final List<HistoricalQuote> original,
 	        final List<HistoricalQuote> newSeries) {
 		final Map<LocalDate, HistoricalQuote> dates = original.stream()
-		        .collect(Collectors.toMap(quote -> quote.getDate(), Function.identity()));
+		        .collect(Collectors.toMap(quote -> quote.getDate(),
+		                Function.identity()));
 		newSeries.stream().forEach(historicalQuote -> {
 			final LocalDate date = historicalQuote.getDate();
 			if ((date != null) && !dates.containsKey(date)
@@ -90,8 +99,10 @@ public abstract class StockFeed {
 			}
 		});
 
-		final List<HistoricalQuote> sortedList = new LinkedList<>(dates.values());
-		sortedList.sort((quote1, quote2) -> quote1.getDate().compareTo(quote2.getDate()));
+		final List<HistoricalQuote> sortedList = new LinkedList<>(
+		        dates.values());
+		sortedList.sort((quote1, quote2) -> quote1.getDate()
+		        .compareTo(quote2.getDate()));
 		stock.setHistory(sortedList);
 
 	}

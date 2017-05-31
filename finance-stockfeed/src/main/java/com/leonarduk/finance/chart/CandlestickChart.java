@@ -55,7 +55,8 @@ public class CandlestickChart {
 	 *            a time series
 	 * @return an additional dataset
 	 */
-	private static TimeSeriesCollection createAdditionalDataset(final TimeSeries series) {
+	private static TimeSeriesCollection createAdditionalDataset(
+	        final TimeSeries series) {
 		final ClosePriceIndicator indicator = new ClosePriceIndicator(series);
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
 		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(
@@ -96,30 +97,34 @@ public class CandlestickChart {
 			volumes[i] = tick.getVolume().toDouble();
 		}
 
-		final OHLCDataset dataset = new DefaultHighLowDataset(series.getName(), dates, highs, lows,
-		        opens, closes, volumes);
+		final OHLCDataset dataset = new DefaultHighLowDataset(series.getName(),
+		        dates, highs, lows, opens, closes, volumes);
 
 		return dataset;
 	}
 
-	public static void displayCandlestickChart(final Stock stock) throws IOException {
+	public static void displayCandlestickChart(final Stock stock)
+	        throws IOException {
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		/**
 		 * Creating the OHLC dataset
 		 */
-		final OHLCDataset ohlcDataset = CandlestickChart.createOHLCDataset(series);
+		final OHLCDataset ohlcDataset = CandlestickChart
+		        .createOHLCDataset(series);
 
 		/**
 		 * Creating the additional dataset
 		 */
-		final TimeSeriesCollection xyDataset = CandlestickChart.createAdditionalDataset(series);
+		final TimeSeriesCollection xyDataset = CandlestickChart
+		        .createAdditionalDataset(series);
 
 		/**
 		 * Creating the chart
 		 */
-		final JFreeChart chart = ChartFactory.createCandlestickChart(stock.getName() + " price",
-		        "Time", stock.getCurrency(), ohlcDataset, true);
+		final JFreeChart chart = ChartFactory.createCandlestickChart(
+		        stock.getName() + " price", "Time", stock.getCurrency(),
+		        ohlcDataset, true);
 		// Candlestick rendering
 		final CandlestickRenderer renderer = new CandlestickRenderer();
 		renderer.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_SMALLEST);
@@ -129,7 +134,8 @@ public class CandlestickChart {
 		final int index = 1;
 		plot.setDataset(index, xyDataset);
 		plot.mapDatasetToRangeAxis(index, 0);
-		final XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(true, false);
+		final XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(
+		        true, false);
 		renderer2.setSeriesPaint(index, Color.blue);
 		plot.setRenderer(index, renderer2);
 		// Misc

@@ -76,20 +76,22 @@ public class SnapshotAnalyser {
 		this.feed = intelligentStockFeed;
 	}
 
-	private void addPortfolioDetails(final LocalDate fromDate, final LocalDate toDate,
-	        final boolean interpolate, final boolean createSeriesLinks, final StringBuilder sbBody,
+	private void addPortfolioDetails(final LocalDate fromDate,
+	        final LocalDate toDate, final boolean interpolate,
+	        final boolean createSeriesLinks, final StringBuilder sbBody,
 	        final List<Valuation> valuations, final String portfolioName) {
 		sbBody.append("Portfolio: " + portfolioName + "<br>");
-		final ValuationReport report = this.createValuationReport(fromDate, toDate, valuations,
-		        portfolioName);
+		final ValuationReport report = this.createValuationReport(fromDate,
+		        toDate, valuations, portfolioName);
 
-		final List<Valuation> valuations2 = report.getValuations().stream()
-		        .filter(val -> val.getPosition().getPortfolios().contains(portfolioName))
+		final List<Valuation> valuations2 = report
+		        .getValuations().stream().filter(val -> val.getPosition()
+		                .getPortfolios().contains(portfolioName))
 		        .collect(Collectors.toList());
 
 		valuations2.add(report.getPortfolioValuation());
-		this.createValuationsTable(valuations2, sbBody, true, createSeriesLinks, fromDate, toDate,
-		        interpolate);
+		this.createValuationsTable(valuations2, sbBody, true, createSeriesLinks,
+		        fromDate, toDate, interpolate);
 		sbBody.append("<hr/>");
 
 		// final Map<String, Double> assetTypeMap = valuations.parallelStream()
@@ -113,44 +115,54 @@ public class SnapshotAnalyser {
 		// }
 	}
 
-	public List<Valuation> analayzeAllEtfs(final List<Position> stocks, final LocalDate fromDate,
-	        final LocalDate toDate) throws IOException {
-		return stocks.parallelStream().map(s -> this.analyseStock(s, fromDate, toDate))
+	public List<Valuation> analayzeAllEtfs(final List<Position> stocks,
+	        final LocalDate fromDate, final LocalDate toDate)
+	        throws IOException {
+		return stocks.parallelStream()
+		        .map(s -> this.analyseStock(s, fromDate, toDate))
 		        .collect(Collectors.toList());
 	}
 
-	public Valuation analyseStock(final Position stock2, final LocalDate fromDate,
-	        final LocalDate toDate) {
+	public Valuation analyseStock(final Position stock2,
+	        final LocalDate fromDate, final LocalDate toDate) {
 		TimeSeries series;
 		try {
 			Optional<Stock> stock = stock2.getStock();
 			if (!stock.isPresent()) {
-				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), 1);
+				stock = IntelligentStockFeed
+				        .getFlatCashSeries(stock2.getInstrument(), 1);
 			}
-			series = TimeseriesUtils.getTimeSeries(stock.get(), fromDate, toDate);
+			series = TimeseriesUtils.getTimeSeries(stock.get(), fromDate,
+			        toDate);
 			if ((null == series) || (series.getTickCount() < 1)) {
 				throw new IllegalArgumentException("No data");
 			}
 
 			final List<AbstractStrategy> strategies = new ArrayList<>();
 			strategies.add(GlobalExtremaStrategy.buildStrategy(series));
-			strategies.add(MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
-			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
-			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
-			strategies.add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
+			strategies.add(
+			        MovingMomentumStrategy.buildStrategy(series, 12, 26, 9));
+			strategies
+			        .add(SimpleMovingAverageStrategy.buildStrategy(series, 12));
+			strategies
+			        .add(SimpleMovingAverageStrategy.buildStrategy(series, 20));
+			strategies
+			        .add(SimpleMovingAverageStrategy.buildStrategy(series, 50));
 
 			// IndicatorsToCsv.exportIndicatorsToCsv(series);
 			final TradingRecord tradingRecord = new TradingRecord();
 
 			final Tick mostRecentTick = series.getLastTick();
-			final Valuation valuation = this.createValuation(stock2, mostRecentTick);
+			final Valuation valuation = this.createValuation(stock2,
+			        mostRecentTick);
 			for (final AbstractStrategy strategy : strategies) {
 
 				final int endIndex = series.getEnd();
 				if (strategy.getStrategy().shouldEnter(endIndex)) {
 					// Our strategy should enter
-					valuation.addRecommendation(strategy.getName(), new Recommendation(
-					        RecommendedTrade.BUY, strategy, stock2.getInstrument()));
+					valuation.addRecommendation(strategy.getName(),
+					        new Recommendation(RecommendedTrade.BUY, strategy,
+					                stock2.getInstrument()));
 					final boolean entered = tradingRecord.enter(endIndex,
 					        mostRecentTick.getAmount(), Decimal.TEN);
 					if (entered) {
@@ -160,8 +172,9 @@ public class SnapshotAnalyser {
 				}
 				else if (strategy.getStrategy().shouldExit(endIndex)) {
 					// Our strategy should exit
-					valuation.addRecommendation(strategy.getName(), new Recommendation(
-					        RecommendedTrade.SELL, strategy, stock2.getInstrument()));
+					valuation.addRecommendation(strategy.getName(),
+					        new Recommendation(RecommendedTrade.SELL, strategy,
+					                stock2.getInstrument()));
 					final boolean exited = tradingRecord.exit(endIndex,
 					        mostRecentTick.getClosePrice(), Decimal.TEN);
 					if (exited) {
@@ -170,22 +183,29 @@ public class SnapshotAnalyser {
 					}
 				}
 				else {
-					valuation.addRecommendation(strategy.getName(), new Recommendation(
-					        RecommendedTrade.HOLD, strategy, stock2.getInstrument()));
+					valuation.addRecommendation(strategy.getName(),
+					        new Recommendation(RecommendedTrade.HOLD, strategy,
+					                stock2.getInstrument()));
 				}
 			}
 
-			valuation.addReturn(Period.days(1), this.calculateReturn(series, 1));
-			valuation.addReturn(Period.days(5), this.calculateReturn(series, 5));
-			valuation.addReturn(Period.days(21), this.calculateReturn(series, 21));
-			valuation.addReturn(Period.days(63), this.calculateReturn(series, 63));
-			valuation.addReturn(Period.days(365), this.calculateReturn(series, 365));
+			valuation.addReturn(Period.days(1),
+			        this.calculateReturn(series, 1));
+			valuation.addReturn(Period.days(5),
+			        this.calculateReturn(series, 5));
+			valuation.addReturn(Period.days(21),
+			        this.calculateReturn(series, 21));
+			valuation.addReturn(Period.days(63),
+			        this.calculateReturn(series, 63));
+			valuation.addReturn(Period.days(365),
+			        this.calculateReturn(series, 365));
 
 			return valuation;
 		}
 		catch (final Exception e) {
 			SnapshotAnalyser.logger.warning("Failed:" + e.getMessage());
-			return new Valuation(stock2, BigDecimal.ZERO, LocalDate.now(), BigDecimal.ONE);
+			return new Valuation(stock2, BigDecimal.ZERO, LocalDate.now(),
+			        BigDecimal.ONE);
 		}
 	}
 
@@ -206,7 +226,8 @@ public class SnapshotAnalyser {
 		return strategies;
 	}
 
-	public BigDecimal calculateReturn(final TimeSeries series, final int timePeriod) {
+	public BigDecimal calculateReturn(final TimeSeries series,
+	        final int timePeriod) {
 		if (timePeriod > series.getEnd()) {
 			return null;
 		}
@@ -216,9 +237,11 @@ public class SnapshotAnalyser {
 
 		final BigDecimal closePrice = BigDecimal
 		        .valueOf(series.getTick(i).getClosePrice().toDouble());
-		final BigDecimal diff = i > -1 ? closePrice.subtract(initialValue) : BigDecimal.ZERO;
-		return NumberUtils.roundDecimal(diff.divide(initialValue, 4, RoundingMode.HALF_UP)
-		        .multiply(BigDecimal.valueOf(100)));
+		final BigDecimal diff = i > -1 ? closePrice.subtract(initialValue)
+		        : BigDecimal.ZERO;
+		return NumberUtils
+		        .roundDecimal(diff.divide(initialValue, 4, RoundingMode.HALF_UP)
+		                .multiply(BigDecimal.valueOf(100)));
 	}
 
 	private void calculateSubseries(final List<AbstractStrategy> strategies,
@@ -231,13 +254,14 @@ public class SnapshotAnalyser {
 			final String name = entry.getName();
 			// For each strategy...
 			final TradingRecord tradingRecord = slice.run(strategy);
-			final double profit = profitCriterion.calculate(slice, tradingRecord);
+			final double profit = profitCriterion.calculate(slice,
+			        tradingRecord);
 			if (profit != 1.0) {
 				if (profit > 1.0) {
 					scores.putIfAbsent(name, new AtomicInteger());
 					scores.get(name).incrementAndGet();
-					System.out.println(TraderOrderUtils.getOrdersList(tradingRecord.getTrades(),
-					        slice, strategy, name));
+					System.out.println(TraderOrderUtils.getOrdersList(
+					        tradingRecord.getTrades(), slice, strategy, name));
 				}
 				if (profit < 1.0) {
 					scores.putIfAbsent(name, new AtomicInteger());
@@ -249,14 +273,17 @@ public class SnapshotAnalyser {
 
 	}
 
-	public void computeForStrategies(final Map<String, AtomicInteger> totalscores,
-	        final StockFeed feed, final String ticker) throws IOException {
+	public void computeForStrategies(
+	        final Map<String, AtomicInteger> totalscores, final StockFeed feed,
+	        final String ticker) throws IOException {
 		final Stock stock = feed.get(Instrument.fromString(ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
-		final List<TimeSeries> subseries = series.split(Period.days(1), Period.weeks(4));
+		final List<TimeSeries> subseries = series.split(Period.days(1),
+		        Period.weeks(4));
 
 		// Building the map of strategies
-		final List<AbstractStrategy> strategies = this.buildStrategiesList(series);
+		final List<AbstractStrategy> strategies = this
+		        .buildStrategiesList(series);
 
 		// The analysis criterion
 		final AnalysisCriterion profitCriterion = new TotalProfitCriterion();
@@ -267,9 +294,11 @@ public class SnapshotAnalyser {
 			this.calculateSubseries(strategies, profitCriterion, slice, scores);
 		}
 
-		for (final Entry<String, AtomicInteger> timeSeries : scores.entrySet()) {
+		for (final Entry<String, AtomicInteger> timeSeries : scores
+		        .entrySet()) {
 			totalscores.putIfAbsent(timeSeries.getKey(), new AtomicInteger());
-			totalscores.get(timeSeries.getKey()).addAndGet(timeSeries.getValue().get());
+			totalscores.get(timeSeries.getKey())
+			        .addAndGet(timeSeries.getValue().get());
 		}
 		System.out.println(ticker + scores);
 	}
@@ -278,13 +307,15 @@ public class SnapshotAnalyser {
 		final Instrument PORTFOLIO = Instrument.createPortfolioInstrument(name);
 
 		final Optional<Stock> stock2 = Optional.of(new Stock(PORTFOLIO));
-		final Position position = new Position(name, PORTFOLIO, BigDecimal.ONE, stock2, "");
+		final Position position = new Position(name, PORTFOLIO, BigDecimal.ONE,
+		        stock2, "");
 		return position;
 	}
 
-	public StringBuilder createPortfolioReport(final LocalDate fromDate, final LocalDate toDate,
-	        final boolean interpolate, final boolean extendedReport,
-	        final boolean createSeriesLinks) throws IOException, URISyntaxException {
+	public StringBuilder createPortfolioReport(final LocalDate fromDate,
+	        final LocalDate toDate, final boolean interpolate,
+	        final boolean extendedReport, final boolean createSeriesLinks)
+	        throws IOException, URISyntaxException {
 
 		final List<Position> positions = this.getPositions();
 		final List<Instrument> heldInstruments = positions.stream()
@@ -299,12 +330,16 @@ public class SnapshotAnalyser {
 		final StringBuilder sbBody = new StringBuilder();
 		final StringBuilder sbHead = new StringBuilder();
 
-		final List<Valuation> valuations = this.analayzeAllEtfs(positions, fromDate, toDate);
+		final List<Valuation> valuations = this.analayzeAllEtfs(positions,
+		        fromDate, toDate);
 
-		this.getPortfolios().stream().forEach(portfolioName -> this.addPortfolioDetails(fromDate,
-		        toDate, interpolate, createSeriesLinks, sbBody, valuations, portfolioName));
+		this.getPortfolios().stream()
+		        .forEach(portfolioName -> this.addPortfolioDetails(fromDate,
+		                toDate, interpolate, createSeriesLinks, sbBody,
+		                valuations, portfolioName));
 
-		this.createValuationsTable(this.analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody,
+		this.createValuationsTable(
+		        this.analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody,
 		        false, createSeriesLinks, fromDate, toDate, interpolate);
 
 		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
@@ -312,43 +347,51 @@ public class SnapshotAnalyser {
 		return buf;
 	}
 
-	public StringBuilder createPortfolioReport(final String fromDate, final String toDate,
-	        final boolean interpolate, final boolean extendedReport,
-	        final boolean createSeriesLinks) throws IOException, URISyntaxException {
+	public StringBuilder createPortfolioReport(final String fromDate,
+	        final String toDate, final boolean interpolate,
+	        final boolean extendedReport, final boolean createSeriesLinks)
+	        throws IOException, URISyntaxException {
 		final LocalDate fromLocalDate = StringUtils.isEmpty(fromDate)
 		        ? LocalDate.now().minusYears(2) : LocalDate.parse(fromDate);
-		final LocalDate toLocalDate = StringUtils.isEmpty(toDate) ? LocalDate.now()
-		        : LocalDate.parse(toDate);
-		return this.createPortfolioReport(fromLocalDate, toLocalDate, interpolate, extendedReport,
-		        createSeriesLinks);
+		final LocalDate toLocalDate = StringUtils.isEmpty(toDate)
+		        ? LocalDate.now() : LocalDate.parse(toDate);
+		return this.createPortfolioReport(fromLocalDate, toLocalDate,
+		        interpolate, extendedReport, createSeriesLinks);
 
 	}
 
-	public Valuation createValuation(final Position position, final Tick lastTick) {
-		BigDecimal price = BigDecimal.valueOf(lastTick.getClosePrice().toDouble());
+	public Valuation createValuation(final Position position,
+	        final Tick lastTick) {
+		BigDecimal price = BigDecimal
+		        .valueOf(lastTick.getClosePrice().toDouble());
 		if (position.getInstrument().currency().equals("GBX")) {
 			price = price.divide(BigDecimal.valueOf(100));
 		}
 		final BigDecimal volume = position.getAmount();
 		final Valuation valuation = new Valuation(position,
 		        NumberUtils.roundDecimal(price.multiply(volume)),
-		        lastTick.getEndTime().toLocalDate(), NumberUtils.roundDecimal(price));
+		        lastTick.getEndTime().toLocalDate(),
+		        NumberUtils.roundDecimal(price));
 		return valuation;
 	}
 
-	public ValuationReport createValuationReport(final LocalDate fromDate, final LocalDate toDate,
-	        final List<Valuation> valuations, final String portfolioName) {
+	public ValuationReport createValuationReport(final LocalDate fromDate,
+	        final LocalDate toDate, final List<Valuation> valuations,
+	        final String portfolioName) {
 		final List<Valuation> portfolioPositions = valuations.stream()
-		        .filter(val -> val.getPosition().getPortfolios().contains(portfolioName))
+		        .filter(val -> val.getPosition().getPortfolios()
+		                .contains(portfolioName))
 		        .collect(Collectors.toList());
-		final Valuation portfolioValuation = this.getPortfolioValuation(portfolioPositions, toDate,
-		        portfolioName);
-		return new ValuationReport(valuations, portfolioValuation, fromDate, toDate);
+		final Valuation portfolioValuation = this.getPortfolioValuation(
+		        portfolioPositions, toDate, portfolioName);
+		return new ValuationReport(valuations, portfolioValuation, fromDate,
+		        toDate);
 	}
 
-	protected void createValuationsTable(final List<Valuation> valuations, final StringBuilder sb,
-	        final boolean showPositionsHeld, final boolean createSeriesLinks,
-	        final LocalDate fromDate, final LocalDate toDate, final boolean interpolate) {
+	protected void createValuationsTable(final List<Valuation> valuations,
+	        final StringBuilder sb, final boolean showPositionsHeld,
+	        final boolean createSeriesLinks, final LocalDate fromDate,
+	        final LocalDate toDate, final boolean interpolate) {
 
 		final List<List<DataField>> records = Lists.newLinkedList();
 
@@ -356,28 +399,32 @@ public class SnapshotAnalyser {
 			final List<DataField> fields = Lists.newLinkedList();
 			records.add(fields);
 			SnapshotAnalyser.logger.info(valuation.toString());
-			final Instrument instrument = valuation.getPosition().getInstrument();
+			final Instrument instrument = valuation.getPosition()
+			        .getInstrument();
 
 			final String ticker = instrument.code();
 
 			final ValueFormatter formatter = (value -> {
-				return new StringBuilder("<a href=\"/stock/ticker/").append(ticker)
-				        .append("?fromDate=").append(fromDate).append("&toDate=").append(toDate)
-				        .append("&interpolate=").append(interpolate).append("\">").append(value)
-				        .append("</a>").toString();
+				return new StringBuilder("<a href=\"/stock/ticker/")
+				        .append(ticker).append("?fromDate=").append(fromDate)
+				        .append("&toDate=").append(toDate)
+				        .append("&interpolate=").append(interpolate)
+				        .append("\">").append(value).append("</a>").toString();
 			});
 
 			fields.add(new DataField("Name", instrument.getName(), formatter));
 			fields.add(new DataField("ISIN", instrument.getIsin(), formatter));
 			fields.add(new DataField("Code", instrument.getCode(), formatter));
-			fields.add(new DataField("Sector", instrument.getCategory(), formatter));
-			fields.add(new DataField(SnapshotAnalyser.TYPE, instrument.getAssetType().name(),
+			fields.add(new DataField("Sector", instrument.getCategory(),
 			        formatter));
+			fields.add(new DataField(SnapshotAnalyser.TYPE,
+			        instrument.getAssetType().name(), formatter));
 
-			fields.add(new DataField("Quantity Owned", valuation.getPosition().getAmount(),
-			        formatter, showPositionsHeld));
-			fields.add(new DataField("Value Owned", valuation.getValuation(), formatter,
+			fields.add(new DataField("Quantity Owned",
+			        valuation.getPosition().getAmount(), formatter,
 			        showPositionsHeld));
+			fields.add(new DataField("Value Owned", valuation.getValuation(),
+			        formatter, showPositionsHeld));
 
 			final String valuationDate = valuation.getValuationDate();
 
@@ -385,52 +432,63 @@ public class SnapshotAnalyser {
 			fields.add(new DataField("AsOf", valuationDate));
 
 			for (final int day : new Integer[] { 1, 5, 21, 63, 365 }) {
-				fields.add(new DataField(day + "D", valuation.getReturn(Period.days(day))));
+				fields.add(new DataField(day + "D",
+				        valuation.getReturn(Period.days(day))));
 			}
 
-			for (final String name : new String[] { "SMA12days", "SMA20days", "SMA50days",
-			        "GlobalExtrema", "MovingMomentum", }) {
-				fields.add(new DataField(name, valuation.getRecommendation(name)));
+			for (final String name : new String[] { "SMA12days", "SMA20days",
+			        "SMA50days", "GlobalExtrema", "MovingMomentum", }) {
+				fields.add(
+				        new DataField(name, valuation.getRecommendation(name)));
 			}
 		}
 
 		HtmlTools.printTable(sb, records);
 	}
 
-	public List<Position> getListedInstruments(final List<Instrument> heldInstruments)
-	        throws IOException {
-		final List<Instrument> emptyInstruments = Lists.newArrayList(Instrument.values());
+	public List<Position> getListedInstruments(
+	        final List<Instrument> heldInstruments) throws IOException {
+		final List<Instrument> emptyInstruments = Lists
+		        .newArrayList(Instrument.values());
 		emptyInstruments.removeAll(heldInstruments);
 		return emptyInstruments.stream().map(instrument -> {
 			return new Position("", instrument, BigDecimal.ZERO,
-			        this.feed.get(instrument, SnapshotAnalyser.years), instrument.getIsin());
+			        this.feed.get(instrument, SnapshotAnalyser.years),
+			        instrument.getIsin());
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	public Set<String> getPortfolios() throws IOException {
-		return this.getPositions().stream().map(position -> position.getPortfolios())
-		        .flatMap(Set::stream).collect(Collectors.toSet());
+		return this.getPositions().stream()
+		        .map(position -> position.getPortfolios()).flatMap(Set::stream)
+		        .collect(Collectors.toSet());
 	}
 
-	public Valuation getPortfolioValuation(final List<Valuation> valuedPositions,
+	public Valuation getPortfolioValuation(
+	        final List<Valuation> valuedPositions,
 	        final LocalDate valuationDate, final String name) {
-		final Position portfolioPosition = this.createEmptyPortfolioPosition(name);
+		final Position portfolioPosition = this
+		        .createEmptyPortfolioPosition(name);
 		final Map<Period, BigDecimal> returns = Maps.newConcurrentMap();
 		BigDecimal total = BigDecimal.ZERO;
 		// so want to weight the returns to show value, 1d,5d,21d,63d,365d returns
 		// turn relative return to absolute and add-up
 		for (final Valuation valuation : valuedPositions) {
-			for (final Entry<Period, BigDecimal> ret : valuation.getReturns().entrySet()) {
-				final BigDecimal value = ret.getValue() == null ? BigDecimal.ZERO : ret.getValue();
-				returns.put(ret.getKey(), returns.getOrDefault(ret.getKey(), BigDecimal.ZERO)
-				        .add(value.multiply(valuation.getValuation())));
+			for (final Entry<Period, BigDecimal> ret : valuation.getReturns()
+			        .entrySet()) {
+				final BigDecimal value = ret.getValue() == null
+				        ? BigDecimal.ZERO : ret.getValue();
+				returns.put(ret.getKey(),
+				        returns.getOrDefault(ret.getKey(), BigDecimal.ZERO)
+				                .add(value.multiply(valuation.getValuation())));
 			}
 			total = total.add(valuation.getValuation());
 		}
-		final Valuation portfolioValuation = new Valuation(portfolioPosition, total, valuationDate,
-		        BigDecimal.ONE);
+		final Valuation portfolioValuation = new Valuation(portfolioPosition,
+		        total, valuationDate, BigDecimal.ONE);
 		for (final Entry<Period, BigDecimal> ret : returns.entrySet()) {
-			returns.put(ret.getKey(), ret.getValue().divide(total, 2, RoundingMode.HALF_UP));
+			returns.put(ret.getKey(),
+			        ret.getValue().divide(total, 2, RoundingMode.HALF_UP));
 		}
 		portfolioValuation.setValuation(returns);
 
@@ -443,9 +501,10 @@ public class SnapshotAnalyser {
 		return positions;
 	}
 
-	public List<Position> getPositions(final String portfolio) throws IOException {
-		return this.getPositions().stream()
-		        .filter(position -> position.getPortfolios().contains(portfolio))
+	public List<Position> getPositions(final String portfolio)
+	        throws IOException {
+		return this.getPositions().stream().filter(
+		        position -> position.getPortfolios().contains(portfolio))
 		        .collect(Collectors.toList());
 	}
 
@@ -457,7 +516,8 @@ public class SnapshotAnalyser {
 	}
 
 	public void showTradeAction(final Order entry, final String action) {
-		SnapshotAnalyser.logger.info(action + "ed on " + entry.getIndex() + " (price="
-		        + entry.getPrice().toDouble() + ", amount=" + entry.getAmount().toDouble() + ")");
+		SnapshotAnalyser.logger.info(action + "ed on " + entry.getIndex()
+		        + " (price=" + entry.getPrice().toDouble() + ", amount="
+		        + entry.getAmount().toDouble() + ")");
 	}
 }

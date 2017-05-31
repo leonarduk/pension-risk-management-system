@@ -19,12 +19,15 @@ public class InstrumentTest {
 	@Test
 	public void testFromString() throws IOException {
 		Assert.assertEquals(Instrument.CASH, Instrument.fromString("Cash"));
-		Assert.assertEquals("IE00BH361H73", Instrument.fromString("IE00BH361H73").isin());
-		Assert.assertEquals("XDND", Instrument.fromString("IE00BH361H73").code());
+		Assert.assertEquals("IE00BH361H73",
+		        Instrument.fromString("IE00BH361H73").isin());
+		Assert.assertEquals("XDND",
+		        Instrument.fromString("IE00BH361H73").code());
 
 		final Instrument actual = Instrument.fromString("XDND");
 		Assert.assertEquals("IE00BH361H73", actual.isin());
-		Assert.assertEquals("db x-trackers MSCI NA Hi Div Yld (DR)1C GBP", actual.getName());
+		Assert.assertEquals("db x-trackers MSCI NA Hi Div Yld (DR)1C GBP",
+		        actual.getName());
 		Assert.assertEquals(AssetType.ETF, actual.assetType());
 		Assert.assertEquals(AssetType.EQUITY, actual.underlyingType());
 		Assert.assertEquals(Source.Google, actual.source());

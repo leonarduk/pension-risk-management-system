@@ -19,26 +19,30 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
 public class IntelligentStockFeed extends StockFeed {
-	public static final Logger	log		= Logger.getLogger(IntelligentStockFeed.class.getName());
+	public static final Logger	log		= Logger
+	        .getLogger(IntelligentStockFeed.class.getName());
 
 	public static boolean		refresh	= true;
 
-	public static Optional<Stock> getFlatCashSeries(final Instrument instrument, final int years) {
-		return IntelligentStockFeed.getFlatCashSeries(instrument, LocalDate.now().minusYears(years),
-		        LocalDate.now());
+	public static Optional<Stock> getFlatCashSeries(final Instrument instrument,
+	        final int years) {
+		return IntelligentStockFeed.getFlatCashSeries(instrument,
+		        LocalDate.now().minusYears(years), LocalDate.now());
 	}
 
 	public static Optional<Stock> getFlatCashSeries(final Instrument instrument,
 	        final LocalDate fromDate, final LocalDate toDate) {
 		final Stock cash = new Stock(instrument);
 		final List<HistoricalQuote> history = Lists.newArrayList();
-		history.add(new HistoricalQuote(instrument, toDate, BigDecimal.ONE, BigDecimal.ONE,
-		        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 0l, "Manually created"));
+		history.add(new HistoricalQuote(instrument, toDate, BigDecimal.ONE,
+		        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+		        0l, "Manually created"));
 
 		final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
-		cash.setHistory(flatLineInterpolator.extendToFromDate(history, fromDate));
-		cash.setQuote(
-		        new StockQuote.StockQuoteBuilder(instrument).setPrice(BigDecimal.ONE).build());
+		cash.setHistory(
+		        flatLineInterpolator.extendToFromDate(history, fromDate));
+		cash.setQuote(new StockQuote.StockQuoteBuilder(instrument)
+		        .setPrice(BigDecimal.ONE).build());
 		return Optional.of(cash);
 	}
 
@@ -46,26 +50,33 @@ public class IntelligentStockFeed extends StockFeed {
 		IntelligentStockFeed.refresh = refresh;
 	}
 
-	public void addLatestQuoteToTheSeries(final Stock stock, final QuoteFeed dataFeed)
-	        throws IOException {
+	public void addLatestQuoteToTheSeries(final Stock stock,
+	        final QuoteFeed dataFeed) throws IOException {
 		// Add latest price to the series
 		if (dataFeed.isAvailable()) {
-			final StockQuote quote = dataFeed.getStockQuote(stock.getInstrument());
+			final StockQuote quote = dataFeed
+			        .getStockQuote(stock.getInstrument());
 			if (quote.isPopulated()) {
-				stock.getHistory().add(new HistoricalQuote(stock.getInstrument(),
-				        LocalDate.fromCalendarFields(quote.getLastTradeTime()), quote.getOpen(),
-				        quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(),
-				        quote.getVolume(), Source.Yahoo.name()));
+				stock.getHistory()
+				        .add(new HistoricalQuote(stock.getInstrument(),
+				                LocalDate.fromCalendarFields(
+				                        quote.getLastTradeTime()),
+				                quote.getOpen(), quote.getDayLow(),
+				                quote.getDayHigh(), quote.getPrice(),
+				                quote.getPrice(), quote.getVolume(),
+				                Source.Yahoo.name()));
 			}
 			else {
 				throw new IOException(
-				        String.format("Failed to populate quote for %s", stock.getInstrument()));
+				        String.format("Failed to populate quote for %s",
+				                stock.getInstrument()));
 			}
 		}
 	}
 
-	public Optional<Stock> cleanUpSeries(final LocalDate fromDate, final LocalDate toDate,
-	        final boolean interpolate, final Optional<Stock> liveData) throws IOException {
+	public Optional<Stock> cleanUpSeries(final LocalDate fromDate,
+	        final LocalDate toDate, final boolean interpolate,
+	        final Optional<Stock> liveData) throws IOException {
 		List<HistoricalQuote> history = liveData.get().getHistory();
 
 		history = new BadDateRemover().clean(history);
@@ -73,12 +84,15 @@ public class IntelligentStockFeed extends StockFeed {
 			final LinearInterpolator linearInterpolator = new LinearInterpolator();
 			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 
-			history = linearInterpolator.interpolate(flatLineInterpolator.extendToToDate(
-			        flatLineInterpolator.extendToFromDate(history, fromDate), toDate));
+			history = linearInterpolator.interpolate(
+			        flatLineInterpolator.extendToToDate(flatLineInterpolator
+			                .extendToFromDate(history, fromDate), toDate));
 		}
 		final List<HistoricalQuote> subSeries = history.stream()
-		        .filter(q -> (q.getDate().isAfter(fromDate) && q.getDate().isBefore(toDate))
-		                || q.getDate().isEqual(fromDate) || q.getDate().isEqual(toDate))
+		        .filter(q -> (q.getDate().isAfter(fromDate)
+		                && q.getDate().isBefore(toDate))
+		                || q.getDate().isEqual(fromDate)
+		                || q.getDate().isEqual(toDate))
 		        .collect(Collectors.toList());
 		TimeseriesUtils.sortQuoteList(subSeries);
 		liveData.get().setHistory(subSeries);
@@ -87,53 +101,60 @@ public class IntelligentStockFeed extends StockFeed {
 
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), false);
+		return this.get(instrument, LocalDate.now().minusYears(years),
+		        LocalDate.now(), false);
 	}
 
 	public Optional<Stock> get(final Instrument instrument, final int years,
 	        final boolean interpolate) throws IOException {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(),
-		        interpolate);
+		return this.get(instrument, LocalDate.now().minusYears(years),
+		        LocalDate.now(), interpolate);
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
-	        final LocalDate toDate) throws IOException {
+	public Optional<Stock> get(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate)
+	        throws IOException {
 		return this.get(instrument, fromDate, toDate, false);
 	}
 
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
-	        final LocalDate toDate, final boolean interpolate) {
+	public Optional<Stock> get(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate,
+	        final boolean interpolate) {
 		try {
 
 			if (instrument.equals(Instrument.CASH)) {
-				return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
+				return IntelligentStockFeed.getFlatCashSeries(instrument,
+				        fromDate, toDate);
 			}
 			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory
 			        .getDataFeed(Source.MANUAL);
 
-			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(instrument, fromDate,
-			        toDate, dataFeed, true);
+			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(
+			        instrument, fromDate, toDate, dataFeed, true);
 
 			// If we have the data already, don't bother to refresh
 			// Note will need to update today's live quote still though
 			boolean getWebData = IntelligentStockFeed.refresh;
 			if (getWebData && cachedData.isPresent()) {
-				final List<HistoricalQuote> cachedHistory = cachedData.get().getHistory();
+				final List<HistoricalQuote> cachedHistory = cachedData.get()
+				        .getHistory();
 				getWebData = (cachedHistory.stream()
 				        .filter(quote -> quote.getDate().isEqual(toDate)
 				                || quote.getDate().isEqual(fromDate))
 				        .collect(Collectors.toList()).size() != 2);
 			}
 			// Yahoo often give 503 errors when downloading history
-			StockFeed webDataFeed = StockFeedFactory.getDataFeed(instrument.getSource());
-			Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
-			        webDataFeed, IntelligentStockFeed.refresh);
+			StockFeed webDataFeed = StockFeedFactory
+			        .getDataFeed(instrument.getSource());
+			Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument,
+			        fromDate, toDate, webDataFeed,
+			        IntelligentStockFeed.refresh);
 			if (webDataFeed.isAvailable() && !liveData.isPresent()
 			        && webDataFeed.getSource().equals(Source.Yahoo)) {
 				webDataFeed = StockFeedFactory.getDataFeed(Source.Google);
-				liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
-				        IntelligentStockFeed.refresh);
+				liveData = this.getDataIfFeedAvailable(instrument, fromDate,
+				        toDate, webDataFeed, IntelligentStockFeed.refresh);
 			}
 
 			final Stock stock = liveData.get();
@@ -145,10 +166,12 @@ public class IntelligentStockFeed extends StockFeed {
 				dataFeed.storeSeries(stock);
 			}
 			else {
-				return this.cleanUpSeries(fromDate, toDate, interpolate, cachedData);
+				return this.cleanUpSeries(fromDate, toDate, interpolate,
+				        cachedData);
 			}
 
-			this.addLatestQuoteToTheSeries(stock, StockFeedFactory.getQuoteFeed(Source.Yahoo));
+			this.addLatestQuoteToTheSeries(stock,
+			        StockFeedFactory.getQuoteFeed(Source.Yahoo));
 
 			return this.cleanUpSeries(fromDate, toDate, interpolate, liveData);
 		}
@@ -159,23 +182,25 @@ public class IntelligentStockFeed extends StockFeed {
 
 	}
 
-	public Optional<Stock> get(final Instrument instrument, final String fromDate,
-	        final String toDate, final boolean interpolate) {
-		return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate),
-		        interpolate);
+	public Optional<Stock> get(final Instrument instrument,
+	        final String fromDate, final String toDate,
+	        final boolean interpolate) {
+		return this.get(instrument, LocalDate.parse(fromDate),
+		        LocalDate.parse(toDate), interpolate);
 	}
 
 	public Optional<Stock> getDataIfFeedAvailable(final Instrument instrument,
-	        final LocalDate fromDate, final LocalDate toDate, final StockFeed dataFeed,
-	        final boolean useFeed) throws IOException {
+	        final LocalDate fromDate, final LocalDate toDate,
+	        final StockFeed dataFeed, final boolean useFeed)
+	        throws IOException {
 		final Optional<Stock> data;
 		if (useFeed) {
 			if (dataFeed.isAvailable()) {
 				data = dataFeed.get(instrument, fromDate, toDate);
 			}
 			else {
-				IntelligentStockFeed.log
-				        .warning(dataFeed.getClass().getName() + " is not available");
+				IntelligentStockFeed.log.warning(
+				        dataFeed.getClass().getName() + " is not available");
 				data = Optional.empty();
 			}
 		}

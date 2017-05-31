@@ -17,7 +17,7 @@ public class StockStats {
 
 	private BigDecimal		bookValuePerShare;
 
-	private BigDecimal		EBITDA;															 // ttm
+	private BigDecimal		EBITDA;																				 // ttm
 
 	private BigDecimal		eps;
 
@@ -32,7 +32,7 @@ public class StockStats {
 
 	private BigDecimal		priceBook;
 	private BigDecimal		priceSales;
-	private BigDecimal		revenue;												 // ttm
+	private BigDecimal		revenue;																 // ttm
 
 	private Long			sharesFloat;
 	private Long			sharesOutstanding;
@@ -51,10 +51,14 @@ public class StockStats {
 			return false;
 		}
 		final StockStats castOther = (StockStats) other;
-		return new EqualsBuilder().append(this.bookValuePerShare, castOther.bookValuePerShare)
-		        .append(this.EBITDA, castOther.EBITDA).append(this.eps, castOther.eps)
-		        .append(this.epsEstimateCurrentYear, castOther.epsEstimateCurrentYear)
-		        .append(this.epsEstimateNextQuarter, castOther.epsEstimateNextQuarter)
+		return new EqualsBuilder()
+		        .append(this.bookValuePerShare, castOther.bookValuePerShare)
+		        .append(this.EBITDA, castOther.EBITDA)
+		        .append(this.eps, castOther.eps)
+		        .append(this.epsEstimateCurrentYear,
+		                castOther.epsEstimateCurrentYear)
+		        .append(this.epsEstimateNextQuarter,
+		                castOther.epsEstimateNextQuarter)
 		        .append(this.epsEstimateNextYear, castOther.epsEstimateNextYear)
 		        .append(this.marketCap, castOther.marketCap)
 		        .append(this.oneYearTargetPrice, castOther.oneYearTargetPrice)
@@ -65,8 +69,8 @@ public class StockStats {
 		        .append(this.sharesFloat, castOther.sharesFloat)
 		        .append(this.sharesOutstanding, castOther.sharesOutstanding)
 		        .append(this.sharesOwned, castOther.sharesOwned)
-		        .append(this.shortRatio, castOther.shortRatio).append(this.symbol, castOther.symbol)
-		        .isEquals();
+		        .append(this.shortRatio, castOther.shortRatio)
+		        .append(this.symbol, castOther.symbol).isEquals();
 	}
 
 	public BigDecimal getBookValuePerShare() {
@@ -147,13 +151,16 @@ public class StockStats {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.bookValuePerShare).append(this.EBITDA)
-		        .append(this.eps).append(this.epsEstimateCurrentYear)
-		        .append(this.epsEstimateNextQuarter).append(this.epsEstimateNextYear)
-		        .append(this.marketCap).append(this.oneYearTargetPrice).append(this.pe)
+		return new HashCodeBuilder().append(this.bookValuePerShare)
+		        .append(this.EBITDA).append(this.eps)
+		        .append(this.epsEstimateCurrentYear)
+		        .append(this.epsEstimateNextQuarter)
+		        .append(this.epsEstimateNextYear).append(this.marketCap)
+		        .append(this.oneYearTargetPrice).append(this.pe)
 		        .append(this.peg).append(this.priceBook).append(this.priceSales)
-		        .append(this.revenue).append(this.sharesFloat).append(this.sharesOutstanding)
-		        .append(this.sharesOwned).append(this.shortRatio).append(this.symbol).toHashCode();
+		        .append(this.revenue).append(this.sharesFloat)
+		        .append(this.sharesOutstanding).append(this.sharesOwned)
+		        .append(this.shortRatio).append(this.symbol).toHashCode();
 	}
 
 	public void setBookValuePerShare(final BigDecimal bookValuePerShare) {
@@ -168,11 +175,13 @@ public class StockStats {
 		this.eps = eps;
 	}
 
-	public void setEpsEstimateCurrentYear(final BigDecimal epsEstimateCurrentYear) {
+	public void setEpsEstimateCurrentYear(
+	        final BigDecimal epsEstimateCurrentYear) {
 		this.epsEstimateCurrentYear = epsEstimateCurrentYear;
 	}
 
-	public void setEpsEstimateNextQuarter(final BigDecimal epsEstimateNextQuarter) {
+	public void setEpsEstimateNextQuarter(
+	        final BigDecimal epsEstimateNextQuarter) {
 		this.epsEstimateNextQuarter = epsEstimateNextQuarter;
 	}
 

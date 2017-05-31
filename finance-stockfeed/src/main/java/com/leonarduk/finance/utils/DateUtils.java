@@ -45,7 +45,8 @@ import jersey.repackaged.com.google.common.collect.Maps;
 public class DateUtils {
 	private static Map<String, Date>	dates;
 
-	public static final Logger			logger	= Logger.getLogger(DateUtils.class.getName());
+	public static final Logger			logger	= Logger
+	        .getLogger(DateUtils.class.getName());
 
 	public static Date addDays(final int days, final Calendar from) {
 		return DateUtils.addDays(days, from.getTimeInMillis());
@@ -117,8 +118,10 @@ public class DateUtils {
 		return DateUtils.dateToCalendar(fromDate.toDate());
 	}
 
-	public static int getDiffInWorkDays(final LocalDate currentDate, final LocalDate nextDate) {
-		final int calendarDaysDiff = Math.abs(Days.daysBetween(nextDate, currentDate).getDays());
+	public static int getDiffInWorkDays(final LocalDate currentDate,
+	        final LocalDate nextDate) {
+		final int calendarDaysDiff = Math
+		        .abs(Days.daysBetween(nextDate, currentDate).getDays());
 		final int weeks = Math.round(calendarDaysDiff / 7);
 		return Math.abs((5 * weeks) + Math.min(calendarDaysDiff % 7, 5));
 	}
@@ -138,15 +141,16 @@ public class DateUtils {
 		}
 	}
 
-	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate startDate,
-	        final LocalDate lastDate) {
+	public static Iterator<LocalDate> getLocalDateIterator(
+	        final LocalDate startDate, final LocalDate lastDate) {
 		return new Iterator<LocalDate>() {
 
 			LocalDate nextDate = startDate;
 
 			@Override
 			public boolean hasNext() {
-				return this.nextDate.isBefore(lastDate) || this.nextDate.equals(lastDate);
+				return this.nextDate.isBefore(lastDate)
+				        || this.nextDate.equals(lastDate);
 			}
 
 			@Override
@@ -163,15 +167,16 @@ public class DateUtils {
 
 	}
 
-	public static Iterator<LocalDate> getLocalDateNewToOldIterator(final LocalDate startDate,
-	        final LocalDate lastDate) {
+	public static Iterator<LocalDate> getLocalDateNewToOldIterator(
+	        final LocalDate startDate, final LocalDate lastDate) {
 		return new Iterator<LocalDate>() {
 
 			LocalDate nextDate = startDate;
 
 			@Override
 			public boolean hasNext() {
-				return this.nextDate.isAfter(lastDate) || this.nextDate.equals(lastDate);
+				return this.nextDate.isAfter(lastDate)
+				        || this.nextDate.equals(lastDate);
 			}
 
 			@Override
@@ -179,7 +184,8 @@ public class DateUtils {
 				if (this.nextDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
 					this.nextDate = this.nextDate.minusDays(2);
 				}
-				if (this.nextDate.getDayOfWeek() == DateTimeConstants.SATURDAY) {
+				if (this.nextDate
+				        .getDayOfWeek() == DateTimeConstants.SATURDAY) {
 					this.nextDate = this.nextDate.minusDays(1);
 				}
 				final LocalDate currentDate = this.nextDate;
@@ -191,11 +197,13 @@ public class DateUtils {
 
 	}
 
-	public static Date parseDate(final String fieldValue) throws ParseException {
+	public static Date parseDate(final String fieldValue)
+	        throws ParseException {
 		if (null == DateUtils.dates) {
 			DateUtils.dates = Maps.newConcurrentMap();
 		}
-		return (DateUtils.dates.computeIfAbsent(fieldValue, v -> LocalDate.parse(v).toDate()));
+		return (DateUtils.dates.computeIfAbsent(fieldValue,
+		        v -> LocalDate.parse(v).toDate()));
 	}
 
 	/**
@@ -212,19 +220,23 @@ public class DateUtils {
 	public static Calendar parseDateTime(final String date, final String time,
 	        final TimeZone timeZone) {
 		final String datetime = date + " " + time;
-		final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma",
+		        Locale.US);
 
 		format.setTimeZone(timeZone);
 		try {
-			if (StringUtils.isParseable(date) && StringUtils.isParseable(time)) {
+			if (StringUtils.isParseable(date)
+			        && StringUtils.isParseable(time)) {
 				final Calendar c = Calendar.getInstance();
 				c.setTime(format.parse(datetime));
 				return c;
 			}
 		}
 		catch (final ParseException ex) {
-			DateUtils.logger.log(Level.WARNING, "Failed to parse datetime: " + datetime);
-			DateUtils.logger.log(Level.FINEST, "Failed to parse datetime: " + datetime, ex);
+			DateUtils.logger.log(Level.WARNING,
+			        "Failed to parse datetime: " + datetime);
+			DateUtils.logger.log(Level.FINEST,
+			        "Failed to parse datetime: " + datetime, ex);
 		}
 		return null;
 	}
@@ -244,7 +256,8 @@ public class DateUtils {
 		        DateUtils.getDividendDateFormat(date.trim()), Locale.US);
 		format.setTimeZone(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 		try {
-			final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
+			final Calendar today = Calendar
+			        .getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			final Calendar parsedDate = Calendar
 			        .getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			parsedDate.setTime(format.parse(date.trim()));
@@ -252,7 +265,8 @@ public class DateUtils {
 			if (parsedDate.get(Calendar.YEAR) == 1970) {
 				// Not really clear which year the dividend date is... making a
 				// reasonable guess.
-				final int monthDiff = parsedDate.get(Calendar.MONTH) - today.get(Calendar.MONTH);
+				final int monthDiff = parsedDate.get(Calendar.MONTH)
+				        - today.get(Calendar.MONTH);
 				int year = today.get(Calendar.YEAR);
 				if (monthDiff > 6) {
 					year -= 1;
@@ -266,14 +280,17 @@ public class DateUtils {
 			return parsedDate;
 		}
 		catch (final ParseException ex) {
-			DateUtils.logger.log(Level.WARNING, "Failed to parse dividend date: " + date);
-			DateUtils.logger.log(Level.FINEST, "Failed to parse dividend date: " + date, ex);
+			DateUtils.logger.log(Level.WARNING,
+			        "Failed to parse dividend date: " + date);
+			DateUtils.logger.log(Level.FINEST,
+			        "Failed to parse dividend date: " + date, ex);
 			return null;
 		}
 	}
 
 	public static Calendar parseHistDate(final String date) {
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",
+		        Locale.US);
 		try {
 			if (StringUtils.isParseable(date)) {
 				final Calendar c = Calendar.getInstance();
@@ -282,8 +299,10 @@ public class DateUtils {
 			}
 		}
 		catch (final ParseException ex) {
-			DateUtils.logger.log(Level.WARNING, "Failed to parse hist date: " + date);
-			DateUtils.logger.log(Level.FINEST, "Failed to parse hist date: " + date, ex);
+			DateUtils.logger.log(Level.WARNING,
+			        "Failed to parse hist date: " + date);
+			DateUtils.logger.log(Level.FINEST,
+			        "Failed to parse hist date: " + date, ex);
 		}
 		return null;
 	}

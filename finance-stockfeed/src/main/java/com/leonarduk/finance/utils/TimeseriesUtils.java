@@ -35,27 +35,32 @@ public class TimeseriesUtils {
 		return comparator;
 	}
 
-	public static HistoricalQuote getMostRecentQuote(final List<HistoricalQuote> history) {
+	public static HistoricalQuote getMostRecentQuote(
+	        final List<HistoricalQuote> history) {
 		final HistoricalQuote firstQuote = history.get(0);
 		return firstQuote;
 	}
 
-	public static HistoricalQuote getOldestQuote(final List<HistoricalQuote> history) {
+	public static HistoricalQuote getOldestQuote(
+	        final List<HistoricalQuote> history) {
 		final HistoricalQuote lastQuote = history.get(history.size() - 1);
 		return lastQuote;
 	}
 
-	public static TimeSeries getTimeSeries(final Stock stock, final int i) throws IOException {
+	public static TimeSeries getTimeSeries(final Stock stock, final int i)
+	        throws IOException {
 		// TODO Auto-generated method stub
-		return TimeseriesUtils.getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now());
+		return TimeseriesUtils.getTimeSeries(stock,
+		        LocalDate.now().minusYears(i), LocalDate.now());
 	}
 
-	public static TimeSeries getTimeSeries(final Stock stock, final LocalDate fromDate,
-	        final LocalDate toDate) throws IOException {
+	public static TimeSeries getTimeSeries(final Stock stock,
+	        final LocalDate fromDate, final LocalDate toDate)
+	        throws IOException {
 		List<HistoricalQuote> history = stock.getHistory();
 		if ((null == history) || history.isEmpty()) {
-			final Optional<Stock> optional = new IntelligentStockFeed().get(stock.getInstrument(),
-			        fromDate, toDate);
+			final Optional<Stock> optional = new IntelligentStockFeed()
+			        .get(stock.getInstrument(), fromDate, toDate);
 			if (optional.isPresent()) {
 				history = optional.get().getHistory();
 			}
@@ -73,28 +78,31 @@ public class TimeseriesUtils {
 				final HistoricalQuote quote = series.next();
 
 				final BigDecimal closeBd = quote.getClose();
-				final double open = TimeseriesUtils
-				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getOpen(), closeBd));
-				final double high = TimeseriesUtils
-				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getHigh(), closeBd));
-				final double low = TimeseriesUtils
-				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getLow(), closeBd));
+				final double open = TimeseriesUtils.ensureIsDouble(
+				        TimeseriesUtils.ifNull(quote.getOpen(), closeBd));
+				final double high = TimeseriesUtils.ensureIsDouble(
+				        TimeseriesUtils.ifNull(quote.getHigh(), closeBd));
+				final double low = TimeseriesUtils.ensureIsDouble(
+				        TimeseriesUtils.ifNull(quote.getLow(), closeBd));
 				final double close = TimeseriesUtils.ensureIsDouble(closeBd);
-				final double volume = TimeseriesUtils
-				        .ensureIsDouble(TimeseriesUtils.ifNull(quote.getVolume(), 0L));
+				final double volume = TimeseriesUtils.ensureIsDouble(
+				        TimeseriesUtils.ifNull(quote.getVolume(), 0L));
 
-				ticks.add(new Tick(new DateTime(quote.getDate().toDateTimeAtStartOfDay()), open,
-				        high, low, close, volume));
+				ticks.add(new Tick(
+				        new DateTime(quote.getDate().toDateTimeAtStartOfDay()),
+				        open, high, low, close, volume));
 			}
 			catch (final NullPointerException e) {
 				System.err.println(e);
 				return null;
 			}
 		}
-		return new LinearInterpolator().interpolate(new TimeSeries(stock.getName(), ticks));
+		return new LinearInterpolator()
+		        .interpolate(new TimeSeries(stock.getName(), ticks));
 	}
 
-	public static Iterator<Tick> getTimeSeriesIterator(final TimeSeries series) {
+	public static Iterator<Tick> getTimeSeriesIterator(
+	        final TimeSeries series) {
 		final Iterator<Tick> iter = new Iterator<Tick>() {
 			int index = series.getEnd();
 
@@ -118,7 +126,8 @@ public class TimeseriesUtils {
 		return open;
 	}
 
-	public static List<HistoricalQuote> sortQuoteList(final List<HistoricalQuote> history) {
+	public static List<HistoricalQuote> sortQuoteList(
+	        final List<HistoricalQuote> history) {
 		Collections.sort(history, TimeseriesUtils.getComparator());
 		return history;
 	}

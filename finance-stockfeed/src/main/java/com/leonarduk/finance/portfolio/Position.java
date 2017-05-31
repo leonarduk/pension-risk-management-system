@@ -22,8 +22,9 @@ public class Position {
 	final private Optional<Stock>	stock;
 	private final String			symbol;
 
-	public Position(final String portfolio, final Instrument instrument, final BigDecimal amount,
-	        final Optional<Stock> stock2, final String symbol) {
+	public Position(final String portfolio, final Instrument instrument,
+	        final BigDecimal amount, final Optional<Stock> stock2,
+	        final String symbol) {
 		this.portfolios = Sets.newHashSet(portfolio.split(":"));
 		this.instrument = instrument;
 		this.amount = amount;
@@ -39,7 +40,8 @@ public class Position {
 		final Position castOther = (Position) other;
 		return new EqualsBuilder().append(this.amount, castOther.amount)
 		        .append(this.instrument, castOther.instrument)
-		        .append(this.portfolios, castOther.portfolios).append(this.stock, castOther.stock)
+		        .append(this.portfolios, castOther.portfolios)
+		        .append(this.stock, castOther.stock)
 		        .append(this.symbol, castOther.symbol).isEquals();
 	}
 
@@ -66,14 +68,17 @@ public class Position {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(this.amount).append(this.instrument)
-		        .append(this.portfolios).append(this.stock).append(this.symbol).toHashCode();
+		        .append(this.portfolios).append(this.stock).append(this.symbol)
+		        .toHashCode();
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("amount", this.amount)
-		        .append("instrument", this.instrument).append("portfolios", this.portfolios)
-		        .append("stock", this.stock).append("symbol", this.symbol).toString();
+		        .append("instrument", this.instrument)
+		        .append("portfolios", this.portfolios)
+		        .append("stock", this.stock).append("symbol", this.symbol)
+		        .toString();
 	}
 
 }

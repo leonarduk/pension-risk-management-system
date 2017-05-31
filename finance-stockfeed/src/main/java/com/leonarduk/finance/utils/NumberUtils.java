@@ -10,21 +10,29 @@ import eu.verdelhan.ta4j.Decimal;
 
 public class NumberUtils {
 
-	public static final BigDecimal	BILLION		= NumberUtils.getBigDecimal("1000000000");
+	public static final BigDecimal	BILLION		= NumberUtils
+	        .getBigDecimal("1000000000");
 	private static DecimalFormat	format;
-	public static final BigDecimal	HUNDRED		= NumberUtils.getBigDecimal("100");
-	public static final Logger		logger		= Logger.getLogger(NumberUtils.class.getName());
+	public static final BigDecimal	HUNDRED		= NumberUtils
+	        .getBigDecimal("100");
+	public static final Logger		logger		= Logger
+	        .getLogger(NumberUtils.class.getName());
 
-	public static final BigDecimal	MILLION		= NumberUtils.getBigDecimal("1000000");
+	public static final BigDecimal	MILLION		= NumberUtils
+	        .getBigDecimal("1000000");
 
-	public static final BigDecimal	THOUSAND	= NumberUtils.getBigDecimal("1000");
+	public static final BigDecimal	THOUSAND	= NumberUtils
+	        .getBigDecimal("1000");
 
-	public static boolean areSame(final BigDecimal thisOne, final BigDecimal thatOne) {
-		if (((thisOne == null) && (thatOne != null)) || ((thatOne == null) && (thisOne != null))) {
+	public static boolean areSame(final BigDecimal thisOne,
+	        final BigDecimal thatOne) {
+		if (((thisOne == null) && (thatOne != null))
+		        || ((thatOne == null) && (thisOne != null))) {
 			return false;
 		}
 
-		return NumberUtils.roundDecimal(thisOne).equals(NumberUtils.roundDecimal(thatOne));
+		return NumberUtils.roundDecimal(thisOne)
+		        .equals(NumberUtils.roundDecimal(thatOne));
 	}
 
 	private static BigDecimal calculateBigDecimal(final String dataRaw) {
@@ -55,8 +63,10 @@ public class NumberUtils {
 			return new BigDecimal(data).multiply(multiplier);
 		}
 		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + dataRaw);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw, e);
+			NumberUtils.logger.log(Level.WARNING,
+			        "Failed to parse: " + dataRaw);
+			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw,
+			        e);
 		}
 		return null;
 	}
@@ -76,7 +86,8 @@ public class NumberUtils {
 		return NumberUtils.calculateBigDecimal(data);
 	}
 
-	public static BigDecimal getBigDecimal(final String dataMain, final String dataSub) {
+	public static BigDecimal getBigDecimal(final String dataMain,
+	        final String dataSub) {
 		final BigDecimal main = NumberUtils.getBigDecimal(dataMain);
 		final BigDecimal sub = NumberUtils.getBigDecimal(dataSub);
 		if ((main == null) || (main.compareTo(BigDecimal.ZERO) == 0)) {
@@ -114,8 +125,10 @@ public class NumberUtils {
 			result = Double.parseDouble(data) * multiplier;
 		}
 		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + dataRaw);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw, e);
+			NumberUtils.logger.log(Level.WARNING,
+			        "Failed to parse: " + dataRaw);
+			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw,
+			        e);
 		}
 		return result;
 	}
@@ -150,16 +163,19 @@ public class NumberUtils {
 		return result;
 	}
 
-	public static BigDecimal getPercent(final BigDecimal numerator, final BigDecimal denominator) {
+	public static BigDecimal getPercent(final BigDecimal numerator,
+	        final BigDecimal denominator) {
 		if ((denominator == null) || (numerator == null)
 		        || (denominator.compareTo(BigDecimal.ZERO) == 0)) {
 			return BigDecimal.ZERO;
 		}
 		return numerator.divide(denominator, 4, BigDecimal.ROUND_HALF_EVEN)
-		        .multiply(NumberUtils.HUNDRED).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		        .multiply(NumberUtils.HUNDRED)
+		        .setScale(2, BigDecimal.ROUND_HALF_EVEN);
 	}
 
-	public static double getPercent(final double numerator, final double denominator) {
+	public static double getPercent(final double numerator,
+	        final double denominator) {
 		if (denominator == 0) {
 			return 0;
 		}

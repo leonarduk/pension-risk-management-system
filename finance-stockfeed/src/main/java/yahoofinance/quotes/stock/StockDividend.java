@@ -27,8 +27,9 @@ public class StockDividend {
 		this.symbol = symbol;
 	}
 
-	public StockDividend(final String symbol, final Calendar payDate, final Calendar exDate,
-	        final BigDecimal annualYield, final BigDecimal annualYieldPercent) {
+	public StockDividend(final String symbol, final Calendar payDate,
+	        final Calendar exDate, final BigDecimal annualYield,
+	        final BigDecimal annualYieldPercent) {
 		this(symbol);
 		this.payDate = payDate;
 		this.exDate = exDate;
@@ -42,9 +43,11 @@ public class StockDividend {
 			return false;
 		}
 		final StockDividend castOther = (StockDividend) other;
-		return new EqualsBuilder().append(this.annualYield, castOther.annualYield)
+		return new EqualsBuilder()
+		        .append(this.annualYield, castOther.annualYield)
 		        .append(this.annualYieldPercent, castOther.annualYieldPercent)
-		        .append(this.exDate, castOther.exDate).append(this.payDate, castOther.payDate)
+		        .append(this.exDate, castOther.exDate)
+		        .append(this.payDate, castOther.payDate)
 		        .append(this.symbol, castOther.symbol).isEquals();
 	}
 
@@ -70,8 +73,9 @@ public class StockDividend {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.annualYield).append(this.annualYieldPercent)
-		        .append(this.exDate).append(this.payDate).append(this.symbol).toHashCode();
+		return new HashCodeBuilder().append(this.annualYield)
+		        .append(this.annualYieldPercent).append(this.exDate)
+		        .append(this.payDate).append(this.symbol).toHashCode();
 	}
 
 	public void setAnnualYield(final BigDecimal annualYield) {
@@ -104,8 +108,8 @@ public class StockDividend {
 		if (this.annualYieldPercent != null) {
 			annualYieldStr = this.annualYieldPercent.toString() + "%";
 		}
-		return "Pay date: " + payDateStr + ", Ex date: " + exDateStr + ", Annual yield: "
-		        + annualYieldStr;
+		return "Pay date: " + payDateStr + ", Ex date: " + exDateStr
+		        + ", Annual yield: " + annualYieldStr;
 	}
 
 }

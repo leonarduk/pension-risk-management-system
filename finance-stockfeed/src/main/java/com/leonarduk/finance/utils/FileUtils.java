@@ -7,9 +7,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileUtils {
-	private static final Logger LOGGER = Logger.getLogger(FileUtils.class.getName());
+	private static final Logger LOGGER = Logger
+	        .getLogger(FileUtils.class.getName());
 
-	public static void writeFile(final String fileName, final StringBuilder sb) {
+	public static void writeFile(final String fileName,
+	        final StringBuilder sb) {
 		/**
 		 * Writing CSV file
 		 */

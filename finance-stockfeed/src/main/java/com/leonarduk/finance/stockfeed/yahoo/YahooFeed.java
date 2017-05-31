@@ -26,13 +26,13 @@ public class YahooFeed extends StockFeed implements QuoteFeed {
 	public static final int		CONNECTION_TIMEOUT		= Integer
 	        .parseInt(System.getProperty("connection.timeout", "10000"));
 
-	public static final String	HISTQUOTES_BASE_URL		= System.getProperty("baseurl.histquotes",
-	        "http://ichart.yahoo.com/table.csv");
+	public static final String	HISTQUOTES_BASE_URL		= System.getProperty(
+	        "baseurl.histquotes", "http://ichart.yahoo.com/table.csv");
 
 	public static final Logger	logger					= Logger
 	        .getLogger(YahooFeed.class.getName());
-	public static final String	QUOTES_BASE_URL			= System.getProperty("baseurl.quotes",
-	        "http://finance.yahoo.com/d/quotes.csv");
+	public static final String	QUOTES_BASE_URL			= System.getProperty(
+	        "baseurl.quotes", "http://finance.yahoo.com/d/quotes.csv");
 	public static final String	QUOTES_CSV_DELIMITER	= ",";
 	public static final String	TIMEZONE				= "America/New_York";
 
@@ -90,12 +90,13 @@ public class YahooFeed extends StockFeed implements QuoteFeed {
 
 	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years) {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+		return this.get(instrument, LocalDate.now().minusYears(years),
+		        LocalDate.now());
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final LocalDate fromDate,
-	        final LocalDate toDate) {
+	public Optional<Stock> get(final Instrument instrument,
+	        final LocalDate fromDate, final LocalDate toDate) {
 		try {
 			final Stock stock = new Stock(instrument);
 
@@ -108,7 +109,8 @@ public class YahooFeed extends StockFeed implements QuoteFeed {
 			return Optional.of(stock);
 		}
 		catch (final Exception e) {
-			YahooFeed.logger.warning("Error when fetching from Yahoo: " + e.getMessage());
+			YahooFeed.logger.warning(
+			        "Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();
 		}
 	}
@@ -119,11 +121,13 @@ public class YahooFeed extends StockFeed implements QuoteFeed {
 	}
 
 	@Override
-	public StockQuote getStockQuote(final Instrument instrument) throws IOException {
+	public StockQuote getStockQuote(final Instrument instrument)
+	        throws IOException {
 		return this.getStockQuotesData(instrument).getQuote();
 	}
 
-	public StockQuotesData getStockQuotesData(final Instrument instrument) throws IOException {
+	public StockQuotesData getStockQuotesData(final Instrument instrument)
+	        throws IOException {
 		final StockQuotesRequest request = new StockQuotesRequest(instrument);
 		return request.getSingleResult();
 	}

@@ -66,7 +66,8 @@ public class CashFlowToChart {
 	 * @param dataset
 	 *            the cash flow dataset
 	 */
-	private static void addCashFlowAxis(final XYPlot plot, final TimeSeriesCollection dataset) {
+	private static void addCashFlowAxis(final XYPlot plot,
+	        final TimeSeriesCollection dataset) {
 		final NumberAxis cashAxis = new NumberAxis("Cash Flow Ratio");
 		cashAxis.setAutoRangeIncludesZero(false);
 		plot.setRangeAxis(1, cashAxis);
@@ -88,8 +89,9 @@ public class CashFlowToChart {
 	 *            the name of the chart time series
 	 * @return the JFreeChart time series
 	 */
-	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(final TimeSeries tickSeries,
-	        final Indicator<Decimal> indicator, final String name) {
+	private static org.jfree.data.time.TimeSeries buildChartTimeSeries(
+	        final TimeSeries tickSeries, final Indicator<Decimal> indicator,
+	        final String name) {
 		final org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(
 		        name);
 		for (int i = 0; i < tickSeries.getTickCount(); i++) {
@@ -113,7 +115,8 @@ public class CashFlowToChart {
 		panel.setMouseWheelEnabled(true);
 		panel.setPreferredSize(new Dimension(1024, 400));
 		// Application frame
-		final ApplicationFrame frame = new ApplicationFrame("Ta4j example - Cash flow to chart");
+		final ApplicationFrame frame = new ApplicationFrame(
+		        "Ta4j example - Cash flow to chart");
 		frame.setContentPane(panel);
 		frame.pack();
 		RefineryUtilities.centerFrameOnScreen(frame);
@@ -129,7 +132,8 @@ public class CashFlowToChart {
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Building the trading strategy
-		final AbstractStrategy strategy = MovingMomentumStrategy.buildStrategy(series, 12, 26, 9);
+		final AbstractStrategy strategy = MovingMomentumStrategy
+		        .buildStrategy(series, 12, 26, 9);
 
 		// Running the strategy
 		final TradingRecord tradingRecord = series.run(strategy.getStrategy());
@@ -143,12 +147,14 @@ public class CashFlowToChart {
 		datasetAxis1.addSeries(CashFlowToChart.buildChartTimeSeries(series,
 		        new ClosePriceIndicator(series), "Bitstamp Bitcoin (BTC)"));
 		final TimeSeriesCollection datasetAxis2 = new TimeSeriesCollection();
-		datasetAxis2.addSeries(CashFlowToChart.buildChartTimeSeries(series, cashFlow, "Cash Flow"));
+		datasetAxis2.addSeries(CashFlowToChart.buildChartTimeSeries(series,
+		        cashFlow, "Cash Flow"));
 
 		/**
 		 * Creating the chart
 		 */
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Bitstamp BTC", // title
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+		        "Bitstamp BTC", // title
 		        "Date", // x-axis label
 		        "Price", // y-axis label
 		        datasetAxis1, // data
