@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.TimeZone;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
-import com.leonarduk.finance.utils.StringUtils;
 
 import yahoofinance.exchanges.ExchangeTimeZone;
 import yahoofinance.quotes.QuotesProperty;
@@ -90,68 +88,6 @@ public class StockQuotesData {
 		        .setAvgVolume(NumberUtils.getLong(
 		                this.getValue(QuotesProperty.AverageDailyVolume)))
 		        .build();
-	}
-
-	public StockStats getStats() {
-		final String symbol = this.getValue(QuotesProperty.Symbol);
-		final StockStats stats = new StockStats(symbol);
-
-		stats.setMarketCap(NumberUtils.getBigDecimal(
-		        this.getValue(QuotesProperty.MarketCapitalization)));
-		stats.setSharesFloat(
-		        NumberUtils.getLong(this.getValue(QuotesProperty.SharesFloat)));
-		stats.setSharesOutstanding(NumberUtils
-		        .getLong(this.getValue(QuotesProperty.SharesOutstanding)));
-		stats.setSharesOwned(
-		        NumberUtils.getLong(this.getValue(QuotesProperty.SharesOwned)));
-
-		stats.setEps(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.DilutedEPS)));
-		stats.setPe(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.PERatio)));
-		stats.setPeg(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.PEGRatio)));
-
-		stats.setEpsEstimateCurrentYear(NumberUtils.getBigDecimal(
-		        this.getValue(QuotesProperty.EPSEstimateCurrentYear)));
-		stats.setEpsEstimateNextQuarter(NumberUtils.getBigDecimal(
-		        this.getValue(QuotesProperty.EPSEstimateNextQuarter)));
-		stats.setEpsEstimateNextYear(NumberUtils.getBigDecimal(
-		        this.getValue(QuotesProperty.EPSEstimateNextYear)));
-
-		stats.setPriceBook(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.PriceBook)));
-		stats.setPriceSales(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.PriceSales)));
-		stats.setBookValuePerShare(NumberUtils.getBigDecimal(
-		        this.getValue(QuotesProperty.BookValuePerShare)));
-
-		stats.setOneYearTargetPrice(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.OneyrTargetPrice)));
-		stats.setEBITDA(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.EBITDA)));
-		stats.setRevenue(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.Revenue)));
-
-		stats.setShortRatio(NumberUtils
-		        .getBigDecimal(this.getValue(QuotesProperty.ShortRatio)));
-
-		return stats;
-	}
-
-	public Stock getStock() throws IOException {
-		final String symbol = this.getValue(QuotesProperty.Symbol);
-		final Stock stock = new Stock(Instrument
-		        .fromString(symbol.substring(0, symbol.indexOf("."))));
-
-		stock.setCurrency(
-		        StringUtils.getString(this.getValue(QuotesProperty.Currency)));
-
-		stock.setQuote(this.getQuote());
-		stock.setStats(this.getStats());
-		stock.setDividend(this.getDividend());
-
-		return stock;
 	}
 
 	public String getValue(final QuotesProperty property) {

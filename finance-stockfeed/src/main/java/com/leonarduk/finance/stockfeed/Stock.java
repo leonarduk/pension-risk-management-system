@@ -18,7 +18,6 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.stock.StockDividend;
 import yahoofinance.quotes.stock.StockQuote;
-import yahoofinance.quotes.stock.StockStats;
 
 /**
  *
@@ -33,8 +32,6 @@ public class Stock {
 	private List<HistoricalQuote>	history;
 	private final Instrument		instrument;
 	private StockQuote				quote;
-
-	private StockStats				stats;
 
 	public static final Logger		logger	= Logger
 	        .getLogger(Stock.class.getName());
@@ -53,8 +50,7 @@ public class Stock {
 		        .append(this.dividend, castOther.dividend)
 		        .append(this.history, castOther.history)
 		        .append(this.instrument, castOther.instrument)
-		        .append(this.quote, castOther.quote)
-		        .append(this.stats, castOther.stats).isEquals();
+		        .append(this.quote, castOther.quote).isEquals();
 	}
 
 	/**
@@ -253,16 +249,6 @@ public class Stock {
 	}
 
 	/**
-	 * Returns the statistics available for this stock.
-	 *
-	 * @return statistics available for this stock
-	 * @see #getStats(boolean)
-	 */
-	public StockStats getStats() {
-		return this.stats;
-	}
-
-	/**
 	 * Get the exchange on which the stock is traded
 	 *
 	 * @return the exchange or null if the data is not available
@@ -279,7 +265,7 @@ public class Stock {
 	public int hashCode() {
 		return new HashCodeBuilder().append(this.currency).append(this.dividend)
 		        .append(this.history).append(this.instrument).append(this.quote)
-		        .append(this.stats).toHashCode();
+		        .toHashCode();
 	}
 
 	public void print() {
@@ -315,10 +301,6 @@ public class Stock {
 
 	public void setQuote(final StockQuote quote) {
 		this.quote = quote;
-	}
-
-	public void setStats(final StockStats stats) {
-		this.stats = stats;
 	}
 
 	@Override
