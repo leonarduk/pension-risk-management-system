@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 import com.leonarduk.finance.utils.FileUtils;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -33,7 +34,7 @@ public class CachedStockFeed extends CsvStockFeed {
 		/**
 		 * Building header
 		 */
-		final StringBuilder sb = StockFeed.seriesToCsv(series);
+		final StringBuilder sb = TimeseriesUtils.seriesToCsv(series);
 		FileUtils.writeFile(file.getAbsolutePath(), sb);
 
 	}

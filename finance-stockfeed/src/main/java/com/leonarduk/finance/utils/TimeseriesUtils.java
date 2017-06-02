@@ -8,12 +8,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.interpolation.BadDateRemover;
+import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 
 import eu.verdelhan.ta4j.Tick;
@@ -21,6 +24,31 @@ import eu.verdelhan.ta4j.TimeSeries;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class TimeseriesUtils {
+	public static Optional<Stock> cleanUpSeries(final LocalDate fromDate,
+	        final LocalDate toDate, final boolean interpolate,
+	        final Optional<Stock> liveData) throws IOException {
+		List<HistoricalQuote> history = liveData.get().getHistory();
+
+		history = new BadDateRemover().clean(history);
+		if (interpolate) {
+			final LinearInterpolator linearInterpolator = new LinearInterpolator();
+			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
+
+			history = linearInterpolator.interpolate(
+			        flatLineInterpolator.extendToToDate(flatLineInterpolator
+			                .extendToFromDate(history, fromDate), toDate));
+		}
+		final List<HistoricalQuote> subSeries = history.stream()
+		        .filter(q -> (q.getDate().isAfter(fromDate)
+		                && q.getDate().isBefore(toDate))
+		                || q.getDate().isEqual(fromDate)
+		                || q.getDate().isEqual(toDate))
+		        .collect(Collectors.toList());
+		TimeseriesUtils.sortQuoteList(subSeries);
+		liveData.get().setHistory(subSeries);
+		return liveData;
+	}
+
 	private static Double ensureIsDouble(final Number bigDecimal) {
 		if (bigDecimal == null) {
 			return null;
@@ -124,6 +152,22 @@ public class TimeseriesUtils {
 			return close;
 		}
 		return open;
+	}
+
+	public static StringBuilder seriesToCsv(
+	        final List<HistoricalQuote> series) {
+		final StringBuilder sb = new StringBuilder(
+		        "date,open,high,low,close,volume\n");
+		for (final HistoricalQuote historicalQuote : series) {
+			sb.append(historicalQuote.getDate().toString());
+			StringUtils.addValue(sb, historicalQuote.getOpen());
+			StringUtils.addValue(sb, historicalQuote.getHigh());
+			StringUtils.addValue(sb, historicalQuote.getLow());
+			StringUtils.addValue(sb, historicalQuote.getClose());
+			StringUtils.addValue(sb, historicalQuote.getVolume());
+			sb.append(",").append(historicalQuote.getComment()).append("\n");
+		}
+		return sb;
 	}
 
 	public static List<HistoricalQuote> sortQuoteList(

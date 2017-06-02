@@ -17,7 +17,7 @@ import yahoofinance.quotes.stock.StockQuote;
 
 public class StockFeedTest {
 
-	private StockFeed stockFeed;
+	private AbstractStockFeed stockFeed;
 
 	private List<HistoricalQuote> getAlternateQuotes() {
 		final List<HistoricalQuote> series = Lists.newArrayList();
@@ -41,12 +41,12 @@ public class StockFeedTest {
 
 	@Before
 	public void setUp() throws Exception {
-		this.stockFeed = new StockFeed() {
+		this.stockFeed = new AbstractStockFeed() {
 
 			@Override
 			public Optional<Stock> get(final Instrument instrument,
 			        final int years) throws IOException {
-				return Optional.of(StockFeed.createStock(instrument,
+				return Optional.of(AbstractStockFeed.createStock(instrument,
 				        StockFeedTest.this.getQuotes()));
 			}
 
@@ -54,7 +54,7 @@ public class StockFeedTest {
 			public Optional<Stock> get(final Instrument instrument,
 			        final LocalDate fromDate, final LocalDate toDate)
 			        throws IOException {
-				return Optional.of(StockFeed.createStock(instrument,
+				return Optional.of(AbstractStockFeed.createStock(instrument,
 				        StockFeedTest.this.getQuotes()));
 			}
 
@@ -73,7 +73,7 @@ public class StockFeedTest {
 
 	@Test
 	public final void testCreateStockInstrument() {
-		final Stock actual = StockFeed.createStock(Instrument.CASH);
+		final Stock actual = AbstractStockFeed.createStock(Instrument.CASH);
 		Assert.assertEquals(new Stock(Instrument.CASH), actual);
 	}
 
@@ -81,7 +81,7 @@ public class StockFeedTest {
 	public final void testCreateStockInstrumentListOfHistoricalQuote() {
 		final Instrument cash = Instrument.CASH;
 		final List<HistoricalQuote> quotes = this.getQuotes();
-		final Stock actual = StockFeed.createStock(cash, quotes);
+		final Stock actual = AbstractStockFeed.createStock(cash, quotes);
 		final Stock expected = new Stock(cash);
 		expected.setHistory(quotes);
 		final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
@@ -107,7 +107,7 @@ public class StockFeedTest {
 	@Test
 	public final void testMergeSeriesStockListOfHistoricalQuote()
 	        throws IOException {
-		final Stock stock = StockFeed.createStock(Instrument.CASH,
+		final Stock stock = AbstractStockFeed.createStock(Instrument.CASH,
 		        this.getQuotes());
 		this.stockFeed.mergeSeries(stock, this.getAlternateQuotes());
 		Assert.assertEquals(2, stock.getHistory().size());
@@ -116,20 +116,11 @@ public class StockFeedTest {
 	@Test
 	public final void testMergeSeriesStockListOfHistoricalQuoteListOfHistoricalQuote()
 	        throws IOException {
-		final Stock stock = StockFeed.createStock(Instrument.CASH,
+		final Stock stock = AbstractStockFeed.createStock(Instrument.CASH,
 		        this.getQuotes());
 		this.stockFeed.mergeSeries(stock, this.getQuotes(),
 		        this.getAlternateQuotes());
 		Assert.assertEquals(2, stock.getHistory().size());
-	}
-
-	@Test
-	public final void testSeriesToCsv() {
-		final StringBuilder actual = StockFeed.seriesToCsv(this.getQuotes());
-		Assert.assertEquals(
-		        "date,open,high,low,close,volume\n"
-		                + "2017-01-01,12.30,9.30,10.00,12.20,23,TestCache\n",
-		        actual.toString());
 	}
 
 }

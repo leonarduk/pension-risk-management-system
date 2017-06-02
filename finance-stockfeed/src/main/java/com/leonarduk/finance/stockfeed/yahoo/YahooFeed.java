@@ -6,11 +6,11 @@ import java.util.logging.Logger;
 
 import org.joda.time.LocalDate;
 
+import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.QuoteFeed;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.Stock;
-import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.web.SeleniumUtils;
 
@@ -21,7 +21,7 @@ import yahoofinance.quotes.stock.StockQuote;
 import yahoofinance.quotes.stock.StockQuotesData;
 import yahoofinance.quotes.stock.StockQuotesRequest;
 
-public class YahooFeed extends StockFeed implements QuoteFeed {
+public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
 	public static final int		CONNECTION_TIMEOUT		= Integer
 	        .parseInt(System.getProperty("connection.timeout", "10000"));

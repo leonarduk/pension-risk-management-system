@@ -23,6 +23,7 @@ import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -30,6 +31,15 @@ import yahoofinance.histquotes.HistoricalQuote;
 @Named
 @Path("/stock")
 public class StockFeedEndpoint {
+	StockFeed stockFeed;
+
+	public StockFeedEndpoint() {
+		this(new IntelligentStockFeed());
+	}
+
+	public StockFeedEndpoint(final StockFeed stockFeed) {
+		this.stockFeed = stockFeed;
+	}
 
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
@@ -91,7 +101,7 @@ public class StockFeedEndpoint {
 		        years == 0 ? 1 : years, interpolate);
 		final String fileName = instrument.getExchange().name() + "_"
 		        + instrument.code() + ".csv";
-		final String myCsvText = StockFeed.seriesToCsv(series).toString();
+		final String myCsvText = TimeseriesUtils.seriesToCsv(series).toString();
 		return Response.ok(myCsvText).header("Content-Disposition",
 		        "attachment; filename=" + fileName).build();
 	}
@@ -111,8 +121,8 @@ public class StockFeedEndpoint {
 
 	private List<HistoricalQuote> getHistoryData(final Instrument instrument,
 	        final int years, final boolean interpolate) throws IOException {
-		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument,
-		        years, interpolate);
+		final Optional<Stock> stock = this.stockFeed.get(instrument, years,
+		        interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}
@@ -122,7 +132,7 @@ public class StockFeedEndpoint {
 	private List<HistoricalQuote> getHistoryData(final Instrument instrument,
 	        final LocalDate fromLocalDate, final LocalDate toLocalDate,
 	        final boolean interpolate) throws IOException {
-		final Optional<Stock> stock = new IntelligentStockFeed().get(instrument,
+		final Optional<Stock> stock = this.stockFeed.get(instrument,
 		        fromLocalDate, toLocalDate, interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();

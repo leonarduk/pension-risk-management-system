@@ -16,15 +16,15 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
+import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Stock;
-import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
-public abstract class CsvStockFeed extends StockFeed {
+public abstract class CsvStockFeed extends AbstractStockFeed {
 
 	private Optional<BigDecimal>	close;
 
@@ -103,7 +103,7 @@ public abstract class CsvStockFeed extends StockFeed {
 			return Optional.empty();
 		}
 
-		return Optional.of(StockFeed.createStock(instrument, quotes));
+		return Optional.of(AbstractStockFeed.createStock(instrument, quotes));
 	}
 
 	/**
