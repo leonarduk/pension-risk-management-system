@@ -96,58 +96,6 @@ public class NumberUtils {
 		return main;
 	}
 
-	public static double getDouble(final String dataRaw) {
-		double result = Double.NaN;
-		if (!StringUtils.isParseable(dataRaw)) {
-			return result;
-		}
-		String data;
-		try {
-			data = NumberUtils.cleanNumberString(dataRaw);
-			final char lastChar = data.charAt(data.length() - 1);
-			int multiplier = 1;
-			switch (lastChar) {
-				case 'B':
-					data = data.substring(0, data.length() - 1);
-					multiplier = 1000000000;
-					break;
-				case 'M':
-					data = data.substring(0, data.length() - 1);
-					multiplier = 1000000;
-					break;
-				case 'K':
-					data = data.substring(0, data.length() - 1);
-					multiplier = 1000;
-					break;
-				default:
-					break;
-			}
-			result = Double.parseDouble(data) * multiplier;
-		}
-		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING,
-			        "Failed to parse: " + dataRaw);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw,
-			        e);
-		}
-		return result;
-	}
-
-	public static Integer getInt(final String data) {
-		Integer result = null;
-		if (!StringUtils.isParseable(data)) {
-			return result;
-		}
-		try {
-			result = Integer.parseInt(NumberUtils.cleanNumberString(data));
-		}
-		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + data);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + data, e);
-		}
-		return result;
-	}
-
 	public static Long getLong(final String data) {
 		Long result = null;
 		if (!StringUtils.isParseable(data)) {
@@ -172,14 +120,6 @@ public class NumberUtils {
 		return numerator.divide(denominator, 4, BigDecimal.ROUND_HALF_EVEN)
 		        .multiply(NumberUtils.HUNDRED)
 		        .setScale(2, BigDecimal.ROUND_HALF_EVEN);
-	}
-
-	public static double getPercent(final double numerator,
-	        final double denominator) {
-		if (denominator == 0) {
-			return 0;
-		}
-		return (numerator / denominator) * 100;
 	}
 
 	public static BigDecimal roundDecimal(final BigDecimal value) {
