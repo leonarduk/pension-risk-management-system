@@ -23,10 +23,8 @@ package com.leonarduk.finance.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -50,66 +48,6 @@ public class DateUtils {
 
 	public static final Logger			logger	= Logger
 	        .getLogger(DateUtils.class.getName());
-
-	public static Date addDays(final int days, final Calendar from) {
-		return DateUtils.addDays(days, from.getTimeInMillis());
-	}
-
-	public static Date addDays(final int days, final Date from) {
-		return DateUtils.addDays(days, from.getTime());
-	}
-
-	public static Date addDays(final int days, final long from) {
-		final GregorianCalendar date = new GregorianCalendar(Locale.US);
-		date.setTimeInMillis(from);
-		date.add(Calendar.DAY_OF_YEAR, days);
-		return date.getTime();
-	}
-
-	public static Date addMonths(final int months, final Calendar from) {
-		return DateUtils.addMonths(months, from.getTimeInMillis());
-	}
-
-	public static Date addMonths(final int months, final Date from) {
-		return DateUtils.addMonths(months, from.getTime());
-	}
-
-	public static Date addMonths(final int months, final long from) {
-		final GregorianCalendar date = new GregorianCalendar(Locale.US);
-		date.setTimeInMillis(from);
-		date.add(Calendar.MONTH, months);
-		return date.getTime();
-	}
-
-	public static Date addWeeks(final int weeks, final Calendar from) {
-		return DateUtils.addWeeks(weeks, from.getTimeInMillis());
-	}
-
-	public static Date addWeeks(final int weeks, final Date from) {
-		return DateUtils.addWeeks(weeks, from.getTime());
-	}
-
-	public static Date addWeeks(final int weeks, final long from) {
-		final GregorianCalendar date = new GregorianCalendar(Locale.US);
-		date.setTimeInMillis(from);
-		date.add(Calendar.WEEK_OF_YEAR, weeks);
-		return date.getTime();
-	}
-
-	public static Date addYears(final int years, final Calendar from) {
-		return DateUtils.addYears(years, from.getTimeInMillis());
-	}
-
-	public static Date addYears(final int years, final Date from) {
-		return DateUtils.addYears(years, from.getTime());
-	}
-
-	public static Date addYears(final int years, final long from) {
-		final GregorianCalendar date = new GregorianCalendar(Locale.US);
-		date.setTimeInMillis(from);
-		date.add(Calendar.YEAR, years);
-		return date.getTime();
-	}
 
 	public static Calendar dateToCalendar(final Date date) {
 		final Calendar calendar = Calendar.getInstance();
@@ -293,77 +231,4 @@ public class DateUtils {
 		}
 	}
 
-	public static Calendar parseHistDate(final String date) {
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",
-		        Locale.US);
-		try {
-			if (StringUtils.isParseable(date)) {
-				final Calendar c = Calendar.getInstance();
-				c.setTime(format.parse(date));
-				return c;
-			}
-		}
-		catch (final ParseException ex) {
-			DateUtils.logger.log(Level.WARNING,
-			        "Failed to parse hist date: " + date);
-			DateUtils.logger.log(Level.FINEST,
-			        "Failed to parse hist date: " + date, ex);
-		}
-		return null;
-	}
-
-	public static LocalDate skipWeekends(final LocalDate today) {
-		if (today.getDayOfWeek() == DayOfWeek.SUNDAY.ordinal()) {
-			return today.minusDays(2);
-		}
-		if (today.getDayOfWeek() == DayOfWeek.SATURDAY.ordinal()) {
-			return today.minusDays(1);
-		}
-
-		return today;
-	}
-
-	/**
-	 * Get today's date
-	 *
-	 * @return date
-	 */
-	public static Date today() {
-		return new Date();
-	}
-
-	/**
-	 * Get the date of the last day of the current year
-	 *
-	 * @return date
-	 */
-	public static Date yearEnd() {
-		final GregorianCalendar calendar = new GregorianCalendar(Locale.US);
-		calendar.add(Calendar.YEAR, 1);
-		calendar.set(Calendar.DAY_OF_YEAR, 1);
-		calendar.add(Calendar.DAY_OF_YEAR, -1);
-		return calendar.getTime();
-	}
-
-	/**
-	 * Get the date of the first day of the current year
-	 *
-	 * @return date
-	 */
-	public static Date yearStart() {
-		final GregorianCalendar calendar = new GregorianCalendar(Locale.US);
-		calendar.set(Calendar.DAY_OF_YEAR, 1);
-		return calendar.getTime();
-	}
-
-	/**
-	 * Get yesterday's date
-	 *
-	 * @return date
-	 */
-	public static Date yesterday() {
-		final GregorianCalendar calendar = new GregorianCalendar(Locale.US);
-		calendar.add(Calendar.DAY_OF_YEAR, -1);
-		return calendar.getTime();
-	}
 }
