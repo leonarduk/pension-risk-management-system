@@ -50,10 +50,8 @@
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-webmvc</artifactId>
 				</exclusion>
-<!-- 				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>-->
+				<!-- <exclusion> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-logging</artifactId> 
+					</exclusion> -->
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -103,7 +101,10 @@
 			<version>${rest.assured.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.leonarduk</groupId>
 			<artifactId>webscraper-core</artifactId>

@@ -98,7 +98,7 @@ public abstract class AbstractStockFeed implements StockFeed {
 			final LocalDate date = historicalQuote.getDate();
 			if ((date != null) && !dates.containsKey(date)
 			        && !historicalQuote.getClose().equals(Decimal.ZERO)) {
-				dates.put(date, historicalQuote);
+				dates.putIfAbsent(date, historicalQuote);
 			}
 		});
 

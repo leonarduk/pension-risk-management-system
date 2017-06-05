@@ -124,7 +124,9 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	@Override
 	public StockQuote getStockQuote(final Instrument instrument)
 	        throws IOException {
-		return this.getStockQuotesData(instrument).getQuote();
+		final StockQuotesData stockQuotesData = this
+		        .getStockQuotesData(instrument);
+		return stockQuotesData == null ? null : stockQuotesData.getQuote();
 	}
 
 	public StockQuotesData getStockQuotesData(final Instrument instrument)

@@ -52,10 +52,10 @@ public class IntelligentStockFeed extends AbstractStockFeed
 	public void addLatestQuoteToTheSeries(final Stock stock,
 	        final QuoteFeed dataFeed) throws IOException {
 		// Add latest price to the series
-		if (dataFeed.isAvailable()) {
+		if ((dataFeed != null) && dataFeed.isAvailable()) {
 			final StockQuote quote = dataFeed
 			        .getStockQuote(stock.getInstrument());
-			if (quote.isPopulated()) {
+			if ((quote != null) && quote.isPopulated()) {
 				stock.getHistory()
 				        .add(new HistoricalQuote(stock.getInstrument(),
 				                LocalDate.fromCalendarFields(
@@ -66,7 +66,7 @@ public class IntelligentStockFeed extends AbstractStockFeed
 				                Source.Yahoo.name()));
 			}
 			else {
-				throw new IOException(
+				IntelligentStockFeed.log.warning(
 				        String.format("Failed to populate quote for %s",
 				                stock.getInstrument()));
 			}
