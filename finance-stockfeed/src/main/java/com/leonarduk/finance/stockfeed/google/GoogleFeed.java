@@ -18,7 +18,7 @@ import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 import com.leonarduk.web.SeleniumUtils;
 
 public class GoogleFeed extends CsvStockFeed {
-	private static final String		BASE_URL			= "http://www.google.com/finance/historical";
+	public static final String		BASE_URL			= "http://www.google.com/finance/historical";
 	/** The logger */
 	public static final Logger		log					= Logger
 	        .getLogger(GoogleFeed.class.getName());

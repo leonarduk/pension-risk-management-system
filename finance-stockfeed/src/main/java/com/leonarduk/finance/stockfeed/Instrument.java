@@ -40,7 +40,7 @@ public class Instrument {
 	public static final Instrument	CASH			= new Instrument("CASH",
 	        AssetType.CASH, AssetType.CASH, Source.MANUAL, Instrument.CASH_TEXT,
 	        Instrument.CASH_TEXT, Exchange.London, Instrument.CASH_TEXT,
-	        Instrument.GBP, "");
+	        Instrument.GBP, "N/A");
 
 	private static final String		CASH_TEXT		= "Cash";
 
