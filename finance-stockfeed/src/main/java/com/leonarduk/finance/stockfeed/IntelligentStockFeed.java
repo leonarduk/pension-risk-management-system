@@ -79,6 +79,7 @@ public class IntelligentStockFeed extends AbstractStockFeed
 		        LocalDate.now(), false);
 	}
 
+	@Override
 	public Optional<Stock> get(final Instrument instrument, final int years,
 	        final boolean interpolate) throws IOException {
 		return this.get(instrument, LocalDate.now().minusYears(years),
@@ -108,9 +109,16 @@ public class IntelligentStockFeed extends AbstractStockFeed
 			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(
 			        instrument, fromDate, toDate, dataFeed, true);
 
+			// Yahoo often give 503 errors when downloading history
+			StockFeed webDataFeed = StockFeedFactory
+			        .getDataFeed(instrument.getSource());
+
 			// If we have the data already, don't bother to refresh
 			// Note will need to update today's live quote still though
-			boolean getWebData = IntelligentStockFeed.refresh;
+			boolean getWebData = IntelligentStockFeed.refresh
+			        && (webDataFeed.isAvailable() || StockFeedFactory
+			                .getDataFeed(Source.Google).isAvailable());
+
 			if (getWebData && cachedData.isPresent()) {
 				final List<HistoricalQuote> cachedHistory = cachedData.get()
 				        .getHistory();
@@ -119,37 +127,38 @@ public class IntelligentStockFeed extends AbstractStockFeed
 				                || quote.getDate().isEqual(fromDate))
 				        .collect(Collectors.toList()).size() != 2);
 			}
-			// Yahoo often give 503 errors when downloading history
-			StockFeed webDataFeed = StockFeedFactory
-			        .getDataFeed(instrument.getSource());
+
 			Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument,
 			        fromDate, toDate, webDataFeed,
 			        IntelligentStockFeed.refresh);
-			if (webDataFeed.isAvailable() && !liveData.isPresent()
+			if (getWebData && webDataFeed.isAvailable() && !liveData.isPresent()
 			        && webDataFeed.getSource().equals(Source.Yahoo)) {
 				webDataFeed = StockFeedFactory.getDataFeed(Source.Google);
 				liveData = this.getDataIfFeedAvailable(instrument, fromDate,
 				        toDate, webDataFeed, IntelligentStockFeed.refresh);
 			}
 
-			final Stock stock = liveData.get();
 			if (liveData.isPresent()) {
+				final Stock stock = liveData.get();
 				if (cachedData.isPresent()) {
 					this.mergeSeries(cachedData.get(), stock.getHistory(),
 					        cachedData.get().getHistory());
 				}
+				TimeseriesUtils.cleanUpSeries(liveData);
 				dataFeed.storeSeries(stock);
 			}
 			else {
-				return TimeseriesUtils.cleanUpSeries(fromDate, toDate,
-				        interpolate, cachedData);
+				TimeseriesUtils.cleanUpSeries(cachedData);
+				liveData = TimeseriesUtils.interpolateAndSortSeries(fromDate,
+				        toDate, interpolate, cachedData);
 			}
 
-			this.addLatestQuoteToTheSeries(stock,
+			this.addLatestQuoteToTheSeries(liveData.get(),
 			        StockFeedFactory.getQuoteFeed(Source.Yahoo));
 
-			return TimeseriesUtils.cleanUpSeries(fromDate, toDate, interpolate,
-			        liveData);
+			TimeseriesUtils.cleanUpSeries(liveData);
+			return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate,
+			        interpolate, liveData);
 		}
 		catch (final Exception e) {
 			IntelligentStockFeed.log.warning(e.getMessage());

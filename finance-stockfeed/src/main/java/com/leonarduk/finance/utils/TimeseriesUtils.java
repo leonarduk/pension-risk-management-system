@@ -24,29 +24,14 @@ import eu.verdelhan.ta4j.TimeSeries;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class TimeseriesUtils {
-	public static Optional<Stock> cleanUpSeries(final LocalDate fromDate,
-	        final LocalDate toDate, final boolean interpolate,
-	        final Optional<Stock> liveData) throws IOException {
-		List<HistoricalQuote> history = liveData.get().getHistory();
-
-		history = new BadDateRemover().clean(history);
-		if (interpolate) {
-			final LinearInterpolator linearInterpolator = new LinearInterpolator();
-			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
-
-			history = linearInterpolator.interpolate(
-			        flatLineInterpolator.extendToToDate(flatLineInterpolator
-			                .extendToFromDate(history, fromDate), toDate));
-		}
-		final List<HistoricalQuote> subSeries = history.stream()
-		        .filter(q -> (q.getDate().isAfter(fromDate)
-		                && q.getDate().isBefore(toDate))
-		                || q.getDate().isEqual(fromDate)
-		                || q.getDate().isEqual(toDate))
-		        .collect(Collectors.toList());
-		TimeseriesUtils.sortQuoteList(subSeries);
-		liveData.get().setHistory(subSeries);
-		return liveData;
+	public static int cleanUpSeries(final Optional<Stock> liveData)
+	        throws IOException {
+		final List<HistoricalQuote> history = liveData.get().getHistory();
+		final int original = history.size();
+		final List<HistoricalQuote> clean = new BadDateRemover().clean(history);
+		liveData.get().setHistory(clean);
+		final int fixed = clean.size();
+		return original - fixed;
 	}
 
 	private static Double ensureIsDouble(final Number bigDecimal) {
@@ -152,6 +137,30 @@ public class TimeseriesUtils {
 			return close;
 		}
 		return open;
+	}
+
+	public static Optional<Stock> interpolateAndSortSeries(
+	        final LocalDate fromDate, final LocalDate toDate,
+	        final boolean interpolate, final Optional<Stock> liveData)
+	        throws IOException {
+		List<HistoricalQuote> history = liveData.get().getHistory();
+		if (interpolate) {
+			final LinearInterpolator linearInterpolator = new LinearInterpolator();
+			final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
+
+			history = linearInterpolator.interpolate(
+			        flatLineInterpolator.extendToToDate(flatLineInterpolator
+			                .extendToFromDate(history, fromDate), toDate));
+		}
+		final List<HistoricalQuote> subSeries = history.stream()
+		        .filter(q -> (q.getDate().isAfter(fromDate)
+		                && q.getDate().isBefore(toDate))
+		                || q.getDate().isEqual(fromDate)
+		                || q.getDate().isEqual(toDate))
+		        .collect(Collectors.toList());
+		TimeseriesUtils.sortQuoteList(subSeries);
+		liveData.get().setHistory(subSeries);
+		return liveData;
 	}
 
 	public static StringBuilder seriesToCsv(

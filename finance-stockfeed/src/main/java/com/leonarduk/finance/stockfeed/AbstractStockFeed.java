@@ -69,8 +69,11 @@ public abstract class AbstractStockFeed implements StockFeed {
 	public Optional<Stock> get(final Instrument instrument,
 	        final LocalDate fromLocalDate, final LocalDate toLocalDate,
 	        final boolean interpolate) throws IOException {
-		return TimeseriesUtils.cleanUpSeries(fromLocalDate, toLocalDate,
-		        interpolate, this.get(instrument, fromLocalDate, toLocalDate));
+		final Optional<Stock> liveData = this.get(instrument, fromLocalDate,
+		        toLocalDate);
+		TimeseriesUtils.cleanUpSeries(liveData);
+		return TimeseriesUtils.interpolateAndSortSeries(fromLocalDate,
+		        toLocalDate, interpolate, liveData);
 	}
 
 	@Override
