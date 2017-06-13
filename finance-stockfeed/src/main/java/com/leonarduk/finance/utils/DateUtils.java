@@ -138,6 +138,15 @@ public class DateUtils {
 
 	}
 
+	public static LocalDate getPreviousDate(final LocalDate currentDate) {
+		final LocalDate returnDate = currentDate.minusDays(1);
+		if ((returnDate.getDayOfWeek() == DateTimeConstants.SATURDAY)
+		        || (returnDate.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
+			return DateUtils.getPreviousDate(returnDate);
+		}
+		return returnDate;
+	}
+
 	public static Date parseDate(final String fieldValue)
 	        throws ParseException {
 		if (null == DateUtils.dates) {

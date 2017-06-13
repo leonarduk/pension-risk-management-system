@@ -6,12 +6,13 @@ var xhr = new XMLHttpRequest();
 // Create XMLHttpRequest object
 
 xhr.onload = function() {// When readystate changes
+		var newContent = "here";
 	// The following conditional check will not work locally - only on a server
 	if (xhr.status === 200) {// If server status was ok
 		var responseObject = JSON.parse(xhr.responseText);
 
 		// BUILD UP STRING WITH NEW CONTENT (could also use DOM manipulation)
-		var newContent = "<table border="1"><tr><th>Name</th><th>ISIN</th><th>Code</th><th>Sector</th><th>Type</th>"//
+		newContent += "<table border="1"><tr><th>Name</th><th>ISIN</th><th>Code</th><th>Sector</th><th>Type</th>"//
 		+ "<th>Quantity Owned</th>" + "<th>Value Owned</th>" + "<th>Price</th>" + "<th>AsOf</th>"//
 		+ "<th>1D</th>" + "<th>5D</th>" + "<th>21D</th>" + "<th>63D</th>" + "<th>365D</th>"//
 		+ "<th>SMA (12days)</th>" + "<th>SMA (20days)</th>" + "<th>SMA (50days)</th>"//
@@ -62,14 +63,14 @@ xhr.onload = function() {// When readystate changes
 		+ "</td><td>"// MovingMomentun
 		+ "</td></tr></table>";
 
-		// Update the page with the new content
-		document.getElementById("content").innerHTML = newContent;
 
 	}
-};
+		// Update the page with the new content
+		document.getElementById("content").innerHTML = newContent;
+ };
 
-// xhr.open("GET", "http://localhost:8091/portfolio/api/report", true);
-xhr.open("GET", "http://leonarduk.ddns.info:8091/portfolio/api/report", true);
+ xhr.open("GET", "http://localhost:8091/portfolio/api/report", true);
+//xhr.open("GET", "http://leonarduk.ddns.info:8091/portfolio/api/display", true);
 // xhr.open("GET", "valuations.json", true);
 // Prepare the request
 xhr.send(null);

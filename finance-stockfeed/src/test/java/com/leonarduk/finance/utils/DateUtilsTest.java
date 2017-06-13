@@ -60,4 +60,13 @@ public class DateUtilsTest {
 		Assert.assertFalse(iter.hasNext());
 	}
 
+	@Test
+	public void testGetPreviousDate() throws Exception {
+		Assert.assertEquals(LocalDate.parse("2017-06-02"),
+		        DateUtils.getPreviousDate(LocalDate.parse("2017-06-05")));
+
+		Assert.assertEquals(LocalDate.parse("2017-06-01"),
+		        DateUtils.getPreviousDate(LocalDate.parse("2017-06-02")));
+
+	}
 }

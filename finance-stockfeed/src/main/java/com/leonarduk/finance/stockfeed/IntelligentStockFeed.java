@@ -5,11 +5,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
+import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import jersey.repackaged.com.google.common.collect.Lists;
@@ -109,28 +109,26 @@ public class IntelligentStockFeed extends AbstractStockFeed
 			final Optional<Stock> cachedData = this.getDataIfFeedAvailable(
 			        instrument, fromDate, toDate, dataFeed, true);
 
-			// Yahoo often give 503 errors when downloading history
 			StockFeed webDataFeed = StockFeedFactory
 			        .getDataFeed(instrument.getSource());
 
 			// If we have the data already, don't bother to refresh
-			// Note will need to update today's live quote still though
+			// Note will need to update today's live quote still though,
+			// so skip latest date point
 			boolean getWebData = IntelligentStockFeed.refresh
 			        && (webDataFeed.isAvailable() || StockFeedFactory
 			                .getDataFeed(Source.Google).isAvailable());
-
 			if (getWebData && cachedData.isPresent()) {
 				final List<HistoricalQuote> cachedHistory = cachedData.get()
 				        .getHistory();
-				getWebData = (cachedHistory.stream()
-				        .filter(quote -> quote.getDate().isEqual(toDate)
-				                || quote.getDate().isEqual(fromDate))
-				        .collect(Collectors.toList()).size() != 2);
+				getWebData = !TimeseriesUtils.containsDatePoints(cachedHistory,
+				        fromDate, DateUtils.getPreviousDate(toDate));
 			}
 
 			Optional<Stock> liveData = this.getDataIfFeedAvailable(instrument,
 			        fromDate, toDate, webDataFeed,
 			        IntelligentStockFeed.refresh);
+			// Yahoo often give 503 errors when downloading history
 			if (getWebData && webDataFeed.isAvailable() && !liveData.isPresent()
 			        && webDataFeed.getSource().equals(Source.Yahoo)) {
 				webDataFeed = StockFeedFactory.getDataFeed(Source.Google);

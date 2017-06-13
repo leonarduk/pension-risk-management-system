@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
@@ -21,6 +22,7 @@ import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
+import jersey.repackaged.com.google.common.collect.Sets;
 import yahoofinance.histquotes.HistoricalQuote;
 
 public class TimeseriesUtils {
@@ -32,6 +34,15 @@ public class TimeseriesUtils {
 		liveData.get().setHistory(clean);
 		final int fixed = clean.size();
 		return original - fixed;
+	}
+
+	public static boolean containsDatePoints(
+	        final List<HistoricalQuote> cachedHistory,
+	        final LocalDate... dates) {
+		final Set<LocalDate> dateSet = Sets.newHashSet(dates);
+		return (cachedHistory.stream()
+		        .filter(quote -> dateSet.contains(quote.getDate()))
+		        .collect(Collectors.toList()).size() == dateSet.size());
 	}
 
 	private static Double ensureIsDouble(final Number bigDecimal) {

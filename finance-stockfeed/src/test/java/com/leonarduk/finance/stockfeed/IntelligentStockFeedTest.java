@@ -65,7 +65,11 @@ public class IntelligentStockFeedTest {
 	}
 
 	@Test
-	public final void testIsAvailable() {
+	public final void testIsAvailable() throws IOException {
+		final boolean useFeed;
+		final StockFeed dataFeed = Mockito.mock(StockFeed.class);
+		this.feed.getDataIfFeedAvailable(Instrument.CASH, LocalDate.now(),
+		        LocalDate.now(), dataFeed, useFeed);
 	}
 
 }
