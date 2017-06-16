@@ -13,7 +13,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +62,7 @@ public class SnapshotAnalyser {
 
 	private final IntelligentStockFeed	feed;
 
-	private final static Logger			logger	= Logger
+	private final static Logger			logger	= LoggerFactory
 	        .getLogger(SnapshotAnalyser.class.getName());
 
 	private final static String			TYPE	= "Type";
@@ -206,7 +208,7 @@ public class SnapshotAnalyser {
 			return valuation;
 		}
 		catch (final Exception e) {
-			SnapshotAnalyser.logger.warning("Failed:" + e.getMessage());
+			SnapshotAnalyser.logger.warn("Failed:" + e.getMessage());
 			return new Valuation(stock2, BigDecimal.ZERO, LocalDate.now(),
 			        BigDecimal.ONE);
 		}

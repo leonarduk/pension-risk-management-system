@@ -6,7 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 import com.leonarduk.finance.utils.FileUtils;
@@ -18,7 +19,7 @@ import yahoofinance.histquotes.HistoricalQuote;
 public class CachedStockFeed extends CsvStockFeed {
 	private final String		storeLocation;
 
-	public static final Logger	log	= Logger
+	public static final Logger	log	= LoggerFactory
 	        .getLogger(CachedStockFeed.class.getName());
 
 	public CachedStockFeed(final String storeLocation) {

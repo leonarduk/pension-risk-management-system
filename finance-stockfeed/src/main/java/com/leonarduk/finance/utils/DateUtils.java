@@ -29,12 +29,12 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
 
@@ -46,7 +46,7 @@ import jersey.repackaged.com.google.common.collect.Maps;
 public class DateUtils {
 	private static Map<String, Date>	dates;
 
-	public static final Logger			logger	= Logger
+	public static final Logger			logger	= LoggerFactory
 	        .getLogger(DateUtils.class.getName());
 
 	public static Calendar dateToCalendar(final Date date) {
@@ -184,9 +184,9 @@ public class DateUtils {
 			}
 		}
 		catch (final ParseException ex) {
-			DateUtils.logger.log(Level.WARNING,
+			DateUtils.logger.warn(
 			        "Failed to parse datetime: " + datetime);
-			DateUtils.logger.log(Level.FINEST,
+			DateUtils.logger.trace(
 			        "Failed to parse datetime: " + datetime, ex);
 		}
 		return null;
@@ -232,9 +232,9 @@ public class DateUtils {
 			return parsedDate;
 		}
 		catch (final ParseException ex) {
-			DateUtils.logger.log(Level.WARNING,
+			DateUtils.logger.warn(
 			        "Failed to parse dividend date: " + date);
-			DateUtils.logger.log(Level.FINEST,
+			DateUtils.logger.trace(
 			        "Failed to parse dividend date: " + date, ex);
 			return null;
 		}

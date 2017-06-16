@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.stream.Collectors;
 
 import com.leonarduk.finance.portfolio.Position;
@@ -13,13 +15,13 @@ import com.leonarduk.finance.stockfeed.Stock;
 import com.leonarduk.finance.utils.ResourceTools;
 
 public class InvestmentsFileReader {
-	private final static Logger logger = Logger
+	private final static Logger logger = LoggerFactory
 	        .getLogger(InvestmentsFileReader.class.getName());
 
 	private static Position createPosition(final List<String> fields) {
 		if (fields.size() < 2) {
 			InvestmentsFileReader.logger
-			        .warning("not enough detsails: " + fields);
+			        .warn("not enough detsails: " + fields);
 			return null;
 		}
 		final int portfolioIdx = 0;

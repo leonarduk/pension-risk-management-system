@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -33,7 +33,7 @@ public class Stock {
 	private final Instrument		instrument;
 	private StockQuote				quote;
 
-	public static final Logger		logger	= Logger
+	public static final Logger		logger	= LoggerFactory
 	        .getLogger(Stock.class.getName());
 
 	public Stock(final Instrument instrument) {
@@ -276,11 +276,11 @@ public class Stock {
 				System.out.println(f.getName() + ": " + f.get(this));
 			}
 			catch (final IllegalArgumentException ex) {
-				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null,
+				LoggerFactory.getLogger(Stock.class.getName()).error(null,
 				        ex);
 			}
 			catch (final IllegalAccessException ex) {
-				Logger.getLogger(Stock.class.getName()).log(Level.SEVERE, null,
+				LoggerFactory.getLogger(Stock.class.getName()).error(null,
 				        ex);
 			}
 		}

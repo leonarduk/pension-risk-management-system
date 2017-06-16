@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
@@ -18,7 +18,7 @@ import yahoofinance.quotes.stock.StockQuote;
 
 public class IntelligentStockFeed extends AbstractStockFeed
         implements StockFeed {
-	public static final Logger	log		= Logger
+	public static final Logger	log		= LoggerFactory
 	        .getLogger(IntelligentStockFeed.class.getName());
 
 	public static boolean		refresh	= true;
@@ -66,7 +66,7 @@ public class IntelligentStockFeed extends AbstractStockFeed
 				                Source.Yahoo.name()));
 			}
 			else {
-				IntelligentStockFeed.log.warning(
+				IntelligentStockFeed.log.warn(
 				        String.format("Failed to populate quote for %s",
 				                stock.getInstrument()));
 			}
@@ -159,7 +159,7 @@ public class IntelligentStockFeed extends AbstractStockFeed
 			        interpolate, liveData);
 		}
 		catch (final Exception e) {
-			IntelligentStockFeed.log.warning(e.getMessage());
+			IntelligentStockFeed.log.warn(e.getMessage());
 			return Optional.empty();
 		}
 
@@ -182,7 +182,7 @@ public class IntelligentStockFeed extends AbstractStockFeed
 				data = dataFeed.get(instrument, fromDate, toDate);
 			}
 			else {
-				IntelligentStockFeed.log.warning(
+				IntelligentStockFeed.log.warn(
 				        dataFeed.getClass().getName() + " is not available");
 				data = Optional.empty();
 			}

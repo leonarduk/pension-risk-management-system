@@ -2,8 +2,8 @@ package com.leonarduk.finance.stockfeed.yahoo;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.AbstractStockFeed;
@@ -29,7 +29,7 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	public static final String	HISTQUOTES_BASE_URL		= System.getProperty(
 	        "baseurl.histquotes", "http://ichart.yahoo.com/table.csv");
 
-	public static final Logger	logger					= Logger
+	public static final Logger	logger					= LoggerFactory
 	        .getLogger(YahooFeed.class.getName());
 	public static final String	QUOTES_BASE_URL			= System.getProperty(
 	        "baseurl.quotes", "http://finance.yahoo.com/d/quotes.csv");
@@ -102,7 +102,7 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 			final Stock stock = new Stock(instrument);
 
 			if (!this.isAvailable()) {
-				YahooFeed.logger.warning("Cannot connect to Yahoo");
+				YahooFeed.logger.warn("Cannot connect to Yahoo");
 				return Optional.empty();
 			}
 			stock.getHistory(DateUtils.dateToCalendar(fromDate),
@@ -110,7 +110,7 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 			return Optional.of(stock);
 		}
 		catch (final Exception e) {
-			YahooFeed.logger.warning(
+			YahooFeed.logger.warn(
 			        "Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();
 		}

@@ -3,11 +3,12 @@ package com.leonarduk.finance.utils;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileUtils {
-	private static final Logger LOGGER = Logger
+	private static final Logger LOGGER = LoggerFactory
 	        .getLogger(FileUtils.class.getName());
 
 	public static void writeFile(final String fileName,
@@ -23,7 +24,7 @@ public class FileUtils {
 			FileUtils.LOGGER.info("Saved to " + fileName);
 		}
 		catch (final IOException ioe) {
-			FileUtils.LOGGER.log(Level.SEVERE, "Unable to write CSV file", ioe);
+			FileUtils.LOGGER.error("Unable to write CSV file", ioe);
 		}
 		finally {
 			try {

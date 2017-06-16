@@ -7,11 +7,11 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.chart.ChartDisplay;
 import com.leonarduk.finance.chart.PieChartFactory;
@@ -21,7 +21,7 @@ import com.leonarduk.finance.portfolio.Valuation;
 import eu.verdelhan.ta4j.Decimal;
 
 public class HtmlTools {
-	public static final Logger logger = Logger
+	public static final Logger logger = LoggerFactory
 	        .getLogger(HtmlTools.class.getName());
 
 	public static void addField(final Object value, final StringBuilder sb,
@@ -33,7 +33,7 @@ public class HtmlTools {
 		}
 		if (null == value) {
 			HtmlTools.logger
-			        .warning("Null value supplied - treat as empty string");
+			        .warn("Null value supplied - treat as empty string");
 		}
 		sb.append("<td bgcolor='"
 		        + HtmlTools.getColour(value == null ? "" : value) + "'>")
@@ -48,7 +48,7 @@ public class HtmlTools {
 		String name = nameRaw;
 		if (null == name) {
 			name = "";
-			HtmlTools.logger.warning(
+			HtmlTools.logger.warn(
 			        "Null field name supplied - treat as empty string");
 		}
 		sb.append("<th>").append(name).append("</th>");
@@ -129,7 +129,7 @@ public class HtmlTools {
 				value = URLEncoder.encode(value, "UTF-8");
 			}
 			catch (final UnsupportedEncodingException ex) {
-				HtmlTools.logger.log(Level.SEVERE, ex.getMessage(), ex);
+				HtmlTools.logger.error( ex.getMessage(), ex);
 				// Still try to continue with unencoded values
 			}
 			sb.append(String.format("%s=%s", key, value));

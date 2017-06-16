@@ -3,8 +3,9 @@ package com.leonarduk.finance.utils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.verdelhan.ta4j.Decimal;
 
@@ -15,7 +16,7 @@ public class NumberUtils {
 	private static DecimalFormat	format;
 	public static final BigDecimal	HUNDRED		= NumberUtils
 	        .getBigDecimal("100");
-	public static final Logger		logger		= Logger
+	public static final Logger		logger		= LoggerFactory
 	        .getLogger(NumberUtils.class.getName());
 
 	public static final BigDecimal	MILLION		= NumberUtils
@@ -63,9 +64,9 @@ public class NumberUtils {
 			return new BigDecimal(data).multiply(multiplier);
 		}
 		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING,
+			NumberUtils.logger.warn(
 			        "Failed to parse: " + dataRaw);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + dataRaw,
+			NumberUtils.logger.trace("Failed to parse: " + dataRaw,
 			        e);
 		}
 		return null;
@@ -105,8 +106,8 @@ public class NumberUtils {
 			result = Long.parseLong(NumberUtils.cleanNumberString(data));
 		}
 		catch (final NumberFormatException e) {
-			NumberUtils.logger.log(Level.WARNING, "Failed to parse: " + data);
-			NumberUtils.logger.log(Level.FINEST, "Failed to parse: " + data, e);
+			NumberUtils.logger.warn("Failed to parse: " + data);
+			NumberUtils.logger.trace("Failed to parse: " + data, e);
 		}
 		return result;
 	}

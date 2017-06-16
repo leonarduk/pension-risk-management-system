@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
@@ -48,7 +48,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 
 	private Optional<BigDecimal>	volume;
 
-	public static final Logger		log	= Logger
+	public static final Logger		log	= LoggerFactory
 	        .getLogger(CsvStockFeed.class.getName());
 
 	protected static String formatDate(final DateFormat formatter,
@@ -80,7 +80,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 	        final LocalDate fromDate, final LocalDate toDate)
 	        throws IOException {
 		if (!this.isAvailable()) {
-			CsvStockFeed.log.warning("Feed is not available");
+			CsvStockFeed.log.warn("Feed is not available");
 			return Optional.empty();
 		}
 		this.setInstrument(instrument);
@@ -99,7 +99,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 
 		}
 		catch (final IOException e) {
-			CsvStockFeed.log.warning("Failed:" + e.getMessage());
+			CsvStockFeed.log.warn("Failed:" + e.getMessage());
 			return Optional.empty();
 		}
 
@@ -228,7 +228,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			return Optional.of(NumberUtils.getBigDecimal(input));
 		}
 		catch (final NumberFormatException e) {
-			CsvStockFeed.log.warning("Failed to parse " + input);
+			CsvStockFeed.log.warn("Failed to parse " + input);
 			return Optional.empty();
 		}
 	}
@@ -247,7 +247,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			}
 			final String tab = "\t";
 			if (line.contains(tab)) {
-				CsvStockFeed.log.warning("Messed up Csv - found tabs");
+				CsvStockFeed.log.warn("Messed up Csv - found tabs");
 				line = line.replace(tab, ",");
 			}
 

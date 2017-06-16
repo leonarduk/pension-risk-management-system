@@ -8,7 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
@@ -20,7 +21,7 @@ import com.leonarduk.web.SeleniumUtils;
 public class GoogleFeed extends CsvStockFeed {
 	public static final String		BASE_URL			= "http://www.google.com/finance/historical";
 	/** The logger */
-	public static final Logger		log					= Logger
+	public static final Logger		log					= LoggerFactory
 	        .getLogger(GoogleFeed.class.getName());
 
 	private static final String		OUTPUT_CSV			= "csv";

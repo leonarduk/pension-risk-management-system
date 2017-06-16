@@ -11,10 +11,10 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
@@ -41,7 +41,7 @@ public class HistQuotesRequest {
 	public static final Interval	DEFAULT_INTERVAL	= Interval.MONTHLY;
 	public static final Calendar	DEFAULT_TO			= Calendar
 	        .getInstance();
-	public static final Logger		logger				= Logger
+	public static final Logger		logger				= LoggerFactory
 	        .getLogger(HistQuotesRequest.class.getName());
 
 	static {
@@ -127,7 +127,7 @@ public class HistQuotesRequest {
 		final List<HistoricalQuote> result = new ArrayList<>();
 
 		if (this.from.after(this.to)) {
-			YahooFeed.logger.log(Level.WARNING,
+			YahooFeed.logger.warn(
 			        "Unable to retrieve historical quotes. "
 			                + "From-date should not be after to-date. From: "
 			                + this.from.getTime() + ", to: "
@@ -139,7 +139,7 @@ public class HistQuotesRequest {
 		        this.from, this.to, this.interval);
 
 		// Get CSV from Yahoo
-		YahooFeed.logger.log(Level.INFO, ("Sending request: " + url));
+		YahooFeed.logger.info("Sending request: " + url);
 
 		final URL request = new URL(url);
 		final URLConnection connection = request.openConnection();
@@ -152,7 +152,7 @@ public class HistQuotesRequest {
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 
-			YahooFeed.logger.log(Level.INFO,
+			YahooFeed.logger.info(
 			        ("Parsing CSV line: " + StringUtils.unescape(line)));
 			final HistoricalQuote quote = this.parseCSVLine(line);
 			result.add(quote);

@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
@@ -29,7 +30,7 @@ public abstract class QuotesRequest<T> {
 	protected final Instrument		instrument;
 	protected List<QuotesProperty>	properties;
 
-	public static final Logger		logger	= Logger
+	public static final Logger		logger	= LoggerFactory
 	        .getLogger(QuotesRequest.class.getName());
 
 	public QuotesRequest(final Instrument instrument,
@@ -73,7 +74,7 @@ public abstract class QuotesRequest<T> {
 		        + HtmlTools.getURLParameters(params);
 
 		// Get CSV from Yahoo
-		QuotesRequest.logger.log(Level.INFO, ("Sending request: " + url));
+		QuotesRequest.logger.info("Sending request: " + url);
 
 		final URL request = new URL(url);
 		final URLConnection connection = request.openConnection();
@@ -86,11 +87,11 @@ public abstract class QuotesRequest<T> {
 		// Parse CSV
 		for (String line = br.readLine(); line != null; line = br.readLine()) {
 			if ("Missing Symbols List.".equals(line)) {
-				QuotesRequest.logger.log(Level.SEVERE,
+				QuotesRequest.logger.error(
 				        "The requested symbol was not recognized by Yahoo Finance");
 			}
 			else {
-				QuotesRequest.logger.log(Level.INFO,
+				QuotesRequest.logger.info(
 				        ("Parsing CSV line: " + StringUtils.unescape(line)));
 
 				final T data = this.parseCSVLine(line);

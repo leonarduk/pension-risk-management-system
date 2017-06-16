@@ -11,12 +11,11 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 import eu.verdelhan.ta4j.Tick;
@@ -117,12 +116,11 @@ public class QuandlTicksLoader {
 				}
 			}
 			catch (final IOException ioe) {
-				Logger.getLogger(QuandlTicksLoader.class.getName()).log(
-				        Level.SEVERE, "Unable to load ticks from CSV", ioe);
+				LoggerFactory.getLogger(QuandlTicksLoader.class.getName()).error( "Unable to load ticks from CSV", ioe);
 			}
 			catch (final NumberFormatException nfe) {
-				Logger.getLogger(QuandlTicksLoader.class.getName())
-				        .log(Level.SEVERE, "Error while parsing value", nfe);
+				LoggerFactory.getLogger(QuandlTicksLoader.class.getName())
+				        .error( "Error while parsing value", nfe);
 			}
 
 			return new TimeSeries(this.quandlCode + "_ticks", ticks);

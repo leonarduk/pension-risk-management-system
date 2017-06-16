@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 
 import com.leonarduk.finance.utils.DateUtils;
 
-import jersey.repackaged.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 

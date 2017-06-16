@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -46,7 +48,7 @@ public class Instrument {
 
 	public static final String		GBP				= "GBP";
 
-	private static final Logger		LOGGER			= Logger
+	private static final Logger		LOGGER			= LoggerFactory
 	        .getLogger(Instrument.class.getName());
 
 	public static final Instrument	UNKNOWN			= new Instrument(
@@ -65,7 +67,7 @@ public class Instrument {
 				return AssetType.valueOf(value.toUpperCase());
 			}
 			catch (final IllegalArgumentException e) {
-				Instrument.LOGGER.warning("Cannot map " + e + " to AssetType");
+				Instrument.LOGGER.warn("Cannot map " + e + " to AssetType");
 				return AssetType.UNKNOWN;
 			}
 		}
@@ -138,7 +140,7 @@ public class Instrument {
 			        .get(localSymbol.toUpperCase());
 		}
 
-		Instrument.LOGGER.warning("Could not map " + symbol);
+		Instrument.LOGGER.warn("Could not map " + symbol);
 		return Instrument.UNKNOWN;
 	}
 
