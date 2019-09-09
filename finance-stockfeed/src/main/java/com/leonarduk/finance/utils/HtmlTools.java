@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,27 +18,19 @@ import com.leonarduk.finance.chart.PieChartFactory;
 import com.leonarduk.finance.portfolio.RecommendedTrade;
 import com.leonarduk.finance.portfolio.Valuation;
 
-import eu.verdelhan.ta4j.Decimal;
-
 public class HtmlTools {
-	public static final Logger logger = LoggerFactory
-	        .getLogger(HtmlTools.class.getName());
+	public static final Logger logger = LoggerFactory.getLogger(HtmlTools.class.getName());
 
-	public static void addField(final Object value, final StringBuilder sb,
-	        final ValueFormatter formatterRaw) {
-		final ValueFormatter formatter = formatterRaw == null
-		        ? (Object::toString) : formatterRaw;
+	public static void addField(final Object value, final StringBuilder sb, final ValueFormatter formatterRaw) {
+		final ValueFormatter formatter = formatterRaw == null ? (Object::toString) : formatterRaw;
 		if (sb == null) {
 			throw new IllegalArgumentException("Passed in null StringBuilder");
 		}
 		if (null == value) {
-			HtmlTools.logger
-			        .warn("Null value supplied - treat as empty string");
+			HtmlTools.logger.warn("Null value supplied - treat as empty string");
 		}
-		sb.append("<td bgcolor='"
-		        + HtmlTools.getColour(value == null ? "" : value) + "'>")
-		        .append(formatter.format(value == null ? "" : value))
-		        .append("</td>");
+		sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : value) + "'>")
+				.append(formatter.format(value == null ? "" : value)).append("</td>");
 	}
 
 	public static void addHeader(final String nameRaw, final StringBuilder sb) {
@@ -48,68 +40,44 @@ public class HtmlTools {
 		String name = nameRaw;
 		if (null == name) {
 			name = "";
-			HtmlTools.logger.warn(
-			        "Null field name supplied - treat as empty string");
+			HtmlTools.logger.warn("Null field name supplied - treat as empty string");
 		}
 		sb.append("<th>").append(name).append("</th>");
 	}
 
-	public static void addPieChartAndTable(
-	        final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
-	        final List<Valuation> valuations, final String title,
-	        final String key, final String value) throws IOException {
+	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
+			final List<Valuation> valuations, final String title, final String key, final String value)
+			throws IOException {
 		final PieChartFactory pieChartFactory = new PieChartFactory(title);
 		pieChartFactory.addAll(assetTypeMap);
-		assetTypeMap.put("Total",
-		        NumberUtils
-		                .roundDecimal(
-		                        Decimal.valueOf(pieChartFactory.getTotal()))
-		                .toDouble());
+		assetTypeMap.put("Total", pieChartFactory.getTotal().doubleValue());
 		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
 		final String filename = title.replace(" ", "_");
-		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename,
-		        400, 400, pieChartFactory.buildChart()));
+		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
 	}
 
-	public static StringBuilder createHtmlText(final StringBuilder sbHead,
-	        final StringBuilder sbBody) {
+	public static StringBuilder createHtmlText(final StringBuilder sbHead, final StringBuilder sbBody) {
 		final StringBuilder buf = new StringBuilder("<html><head>")
-		        .append(sbHead == null ? new StringBuilder() : sbHead)
-		        .append("</head><body>");
-		buf.append(sbBody == null ? new StringBuilder() : sbBody)
-		        .append("</body></html>\n");
+				.append(sbHead == null ? new StringBuilder() : sbHead).append("</head><body>");
+		buf.append(sbBody == null ? new StringBuilder() : sbBody).append("</body></html>\n");
 		return buf;
 	}
 
 	public static String getColour(final Object value) {
 		String colour = "white";
-		if (((value != null)
-		        && (value
-		                .equals(RecommendedTrade.BUY
-		                        .name())
-		                || ((value instanceof LocalDate)
-		                        && (Decimal
-		                                .valueOf(Days
-		                                        .daysBetween(LocalDate.now(),
-		                                                ((LocalDate) value))
-		                                        .getDays()))
-		                                                .equals(Decimal.ZERO))
-		                || ((value instanceof BigDecimal)
-		                        && (((BigDecimal) value)
-		                                .compareTo(BigDecimal.ZERO) > 0))))
-		        || ((value instanceof Decimal)
-		                && ((Decimal) value).isGreaterThan(Decimal.ZERO))) {
+		if (((value != null) && (value.equals(RecommendedTrade.BUY.name())
+				|| ((value instanceof LocalDate)
+						&& (Double.valueOf(Duration.between(LocalDate.now(), ((LocalDate) value)).toDays()))
+								.equals(Double.valueOf(0)))
+				|| ((value instanceof BigDecimal) && (((BigDecimal) value).compareTo(BigDecimal.ZERO) > 0))))
+				|| ((value instanceof Double) && ((Double) value).compareTo(Double.valueOf(0)) > 0)) {
 			colour = "green";
 		}
 
-		if (((value != null) && value.equals(RecommendedTrade.SELL.name()))
-		        || ((value instanceof LocalDate) && (Decimal.valueOf(
-		                Days.daysBetween(LocalDate.now(), ((LocalDate) value))
-		                        .getDays())).isGreaterThan(Decimal.ONE))
-		        || ((value instanceof BigDecimal) && (((BigDecimal) value)
-		                .compareTo(BigDecimal.ZERO) < 0))
-		        || ((value instanceof Decimal)
-		                && ((Decimal) value).isLessThan(Decimal.ZERO))) {
+		if (((value != null) && value.equals(RecommendedTrade.SELL.name())) || ((value instanceof LocalDate)
+				&& (DateUtils.getDiffInWorkDays(LocalDate.now(), ((LocalDate) value))) > 1
+				|| ((value instanceof BigDecimal) && (((BigDecimal) value).compareTo(BigDecimal.ZERO) < 0))
+				|| ((value instanceof Double) && ((Double) value).compareTo(Double.valueOf(0)) < 0))) {
 			colour = "red";
 		}
 		return colour;
@@ -127,9 +95,8 @@ public class HtmlTools {
 			try {
 				key = URLEncoder.encode(key, "UTF-8");
 				value = URLEncoder.encode(value, "UTF-8");
-			}
-			catch (final UnsupportedEncodingException ex) {
-				HtmlTools.logger.error( ex.getMessage(), ex);
+			} catch (final UnsupportedEncodingException ex) {
+				HtmlTools.logger.error(ex.getMessage(), ex);
 				// Still try to continue with unencoded values
 			}
 			sb.append(String.format("%s=%s", key, value));
@@ -137,8 +104,7 @@ public class HtmlTools {
 		return sb.toString();
 	}
 
-	public static void printTable(final StringBuilder sb,
-	        final List<List<DataField>> records) {
+	public static void printTable(final StringBuilder sb, final List<List<DataField>> records) {
 		if (records.size() > 0) {
 			sb.append("<table border=\"1\"><tr>");
 			records.get(0).stream().forEach(f -> {

@@ -4,17 +4,21 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistQuotesRequest;
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoo.StockQuoteBuilder;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
+import yahoofinance.Stock;
 import yahoofinance.histquotes.HistQuotesRequest;
-import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.stock.StockDividend;
 import yahoofinance.quotes.stock.StockQuote;
@@ -23,34 +27,38 @@ import yahoofinance.quotes.stock.StockQuote;
  *
  * @author Stijn Strickx
  */
-public class Stock {
+public class StockV1 {
 
-	private String					currency;
+	private String currency;
 
-	private StockDividend			dividend;
+	private StockDividend dividend;
 
-	private List<HistoricalQuote>	history;
-	private final Instrument		instrument;
-	private StockQuote				quote;
+	private List<ExtendedHistoricalQuote> history;
+	private final Instrument instrument;
+	private StockQuote quote;
 
-	public static final Logger		logger	= LoggerFactory
-	        .getLogger(Stock.class.getName());
+	public static final Logger logger = LoggerFactory.getLogger(StockV1.class.getName());
 
-	public Stock(final Instrument instrument) {
+	public StockV1(final Instrument instrument) {
 		this.instrument = instrument;
+	}
+
+	public StockV1(Stock stock) throws IOException {
+		this.currency = stock.getCurrency();
+		this.dividend = stock.getDividend();
+		this.history=ExtendedHistoricalQuote.from(stock.getHistory());
+		this.instrument = Instrument.fromString(stock.getSymbol());
 	}
 
 	@Override
 	public boolean equals(final Object other) {
-		if (!(other instanceof Stock)) {
+		if (!(other instanceof StockV1)) {
 			return false;
 		}
-		final Stock castOther = (Stock) other;
-		return new EqualsBuilder().append(this.currency, castOther.currency)
-		        .append(this.dividend, castOther.dividend)
-		        .append(this.history, castOther.history)
-		        .append(this.instrument, castOther.instrument)
-		        .append(this.quote, castOther.quote).isEquals();
+		final StockV1 castOther = (StockV1) other;
+		return new EqualsBuilder().append(this.currency, castOther.currency).append(this.dividend, castOther.dividend)
+				.append(this.history, castOther.history).append(this.instrument, castOther.instrument)
+				.append(this.quote, castOther.quote).isEquals();
 	}
 
 	/**
@@ -73,12 +81,12 @@ public class Stock {
 	}
 
 	/**
-	 * This method will return historical quotes from this stock. If the
-	 * historical quotes are not available yet, they will be requested first
-	 * from Yahoo Finance.
+	 * This method will return historical quotes from this stock. If the historical
+	 * quotes are not available yet, they will be requested first from Yahoo
+	 * Finance.
 	 * <p>
-	 * If the historical quotes are not available yet, the following
-	 * characteristics will be used for the request:
+	 * If the historical quotes are not available yet, the following characteristics
+	 * will be used for the request:
 	 * <ul>
 	 * <li>from: 1 year ago (default)
 	 * <li>to: today (default)
@@ -90,8 +98,7 @@ public class Stock {
 	 * result in a new request being sent to Yahoo Finance.
 	 *
 	 * @return a list of historical quotes from this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory(yahoofinance.histquotes.Interval)
 	 * @see #getHistory(java.util.Calendar)
 	 * @see #getHistory(java.util.Calendar, java.util.Calendar)
@@ -99,7 +106,7 @@ public class Stock {
 	 * @see #getHistory(java.util.Calendar, java.util.Calendar,
 	 *      yahoofinance.histquotes.Interval)
 	 */
-	public List<HistoricalQuote> getHistory() throws IOException {
+	public List<ExtendedHistoricalQuote> getHistory() throws IOException {
 		if (this.history == null) {
 			return Lists.newArrayList();
 		}
@@ -115,15 +122,12 @@ public class Stock {
 	 * <li>interval: MONTHLY (default)
 	 * </ul>
 	 *
-	 * @param from
-	 *            start date of the historical data
+	 * @param from start date of the historical data
 	 * @return a list of historical quotes from this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from)
-	        throws IOException {
+	public List<ExtendedHistoricalQuote> getHistory(final Calendar from) throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO);
 	}
 
@@ -136,17 +140,13 @@ public class Stock {
 	 * <li>interval: MONTHLY (default)
 	 * </ul>
 	 *
-	 * @param from
-	 *            start date of the historical data
-	 * @param to
-	 *            end date of the historical data
+	 * @param from start date of the historical data
+	 * @param to   end date of the historical data
 	 * @return a list of historical quotes from this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from,
-	        final Calendar to) throws IOException {
+	public List<ExtendedHistoricalQuote> getHistory(final Calendar from, final Calendar to) throws IOException {
 		return this.getHistory(from, to, Interval.MONTHLY);
 	}
 
@@ -159,22 +159,17 @@ public class Stock {
 	 * <li>interval: specified value
 	 * </ul>
 	 *
-	 * @param from
-	 *            start date of the historical data
-	 * @param to
-	 *            end date of the historical data
-	 * @param interval
-	 *            the interval of the historical data
+	 * @param from     start date of the historical data
+	 * @param to       end date of the historical data
+	 * @param interval the interval of the historical data
 	 * @return a list of historical quotes from this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from,
-	        final Calendar to, final Interval interval) throws IOException {
-		final HistQuotesRequest hist = new HistQuotesRequest(this.instrument,
-		        from, to, interval);
-		this.setHistory(hist.getResult());
+	public List<ExtendedHistoricalQuote> getHistory(final Calendar from, final Calendar to, final Interval interval)
+			throws IOException {
+		final HistQuotesRequest hist = new ExtendedHistQuotesRequest(this.instrument.getCode(), from, to, interval);
+		this.setHistory(ExtendedHistoricalQuote.from(hist.getResult()));
 		return this.history;
 	}
 
@@ -187,17 +182,13 @@ public class Stock {
 	 * <li>interval: specified value
 	 * </ul>
 	 *
-	 * @param from
-	 *            start date of the historical data
-	 * @param interval
-	 *            the interval of the historical data
+	 * @param from     start date of the historical data
+	 * @param interval the interval of the historical data
 	 * @return a list of historical quotes from this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Calendar from,
-	        final Interval interval) throws IOException {
+	public List<ExtendedHistoricalQuote> getHistory(final Calendar from, final Interval interval) throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO, interval);
 	}
 
@@ -210,15 +201,12 @@ public class Stock {
 	 * <li>interval: specified value
 	 * </ul>
 	 *
-	 * @param interval
-	 *            the interval of the historical data
+	 * @param interval the interval of the historical data
 	 * @return a list of historical quotes from this stock
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<HistoricalQuote> getHistory(final Interval interval)
-	        throws IOException {
+	public List<ExtendedHistoricalQuote> getHistory(final Interval interval) throws IOException {
 		return this.getHistory(HistQuotesRequest.DEFAULT_FROM, interval);
 	}
 
@@ -243,7 +231,7 @@ public class Stock {
 	 */
 	public StockQuote getQuote() {
 		if (this.quote == null) {
-			return new StockQuote.StockQuoteBuilder(this.instrument).build();
+			return new StockQuoteBuilder(this.instrument).build();
 		}
 		return this.quote;
 	}
@@ -263,9 +251,8 @@ public class Stock {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.currency).append(this.dividend)
-		        .append(this.history).append(this.instrument).append(this.quote)
-		        .toHashCode();
+		return new HashCodeBuilder().append(this.currency).append(this.dividend).append(this.history)
+				.append(this.instrument).append(this.quote).toHashCode();
 	}
 
 	public void print() {
@@ -274,14 +261,10 @@ public class Stock {
 		for (final Field f : this.getClass().getDeclaredFields()) {
 			try {
 				System.out.println(f.getName() + ": " + f.get(this));
-			}
-			catch (final IllegalArgumentException ex) {
-				LoggerFactory.getLogger(Stock.class.getName()).error(null,
-				        ex);
-			}
-			catch (final IllegalAccessException ex) {
-				LoggerFactory.getLogger(Stock.class.getName()).error(null,
-				        ex);
+			} catch (final IllegalArgumentException ex) {
+				LoggerFactory.getLogger(StockV1.class.getName()).error(null, ex);
+			} catch (final IllegalAccessException ex) {
+				LoggerFactory.getLogger(StockV1.class.getName()).error(null, ex);
 			}
 		}
 		System.out.println("--------------------------------");
@@ -295,8 +278,8 @@ public class Stock {
 		this.dividend = dividend;
 	}
 
-	public void setHistory(final List<HistoricalQuote> history) {
-		this.history = history;
+	public void setHistory(final List<ExtendedHistoricalQuote> list) {
+		this.history = list;
 	}
 
 	public void setQuote(final StockQuote quote) {

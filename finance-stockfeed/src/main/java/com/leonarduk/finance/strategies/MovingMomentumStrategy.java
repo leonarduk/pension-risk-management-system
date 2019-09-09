@@ -23,18 +23,18 @@
  */
 package com.leonarduk.finance.strategies;
 
-import eu.verdelhan.ta4j.Decimal;
-import eu.verdelhan.ta4j.Rule;
-import eu.verdelhan.ta4j.Strategy;
-import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.indicators.oscillators.StochasticOscillatorKIndicator;
-import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.EMAIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.MACDIndicator;
-import eu.verdelhan.ta4j.trading.rules.CrossedDownIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.CrossedUpIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
+import org.ta4j.core.BaseStrategy;
+import org.ta4j.core.Rule;
+import org.ta4j.core.Strategy;
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.indicators.EMAIndicator;
+import org.ta4j.core.indicators.MACDIndicator;
+import org.ta4j.core.indicators.StochasticOscillatorKIndicator;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
+import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
+import org.ta4j.core.trading.rules.OverIndicatorRule;
+import org.ta4j.core.trading.rules.UnderIndicatorRule;
 
 /**
  * Moving momentum strategy.
@@ -71,22 +71,82 @@ public class MovingMomentumStrategy extends AbstractStrategy {
 		// Entry rule
 		final Rule entryRule = new OverIndicatorRule(shortEma, longEma) // Trend
 		        .and(new CrossedDownIndicatorRule(stochasticOscillK,
-		                Decimal.valueOf(20))) // Signal
+		                Double.valueOf(20))) // Signal
 		                                      // 1
 		        .and(new OverIndicatorRule(macd, emaMacd)); // Signal 2
 
 		// Exit rule
 		final Rule exitRule = new UnderIndicatorRule(shortEma, longEma) // Trend
 		        .and(new CrossedUpIndicatorRule(stochasticOscillK,
-		                Decimal.valueOf(80))) // Signal
+		                Double.valueOf(80))) // Signal
 		                                      // 1
 		        .and(new UnderIndicatorRule(macd, emaMacd)); // Signal 2
 
 		return new MovingMomentumStrategy("Moving Momentum",
-		        new Strategy(entryRule, exitRule));
+		        new BaseStrategy(entryRule, exitRule));
 	}
 
 	private MovingMomentumStrategy(final String name, final Strategy strategy) {
 		super(name, strategy);
+	}
+
+	@Override
+	public Rule getEntryRule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Rule getExitRule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy and(Strategy strategy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy or(Strategy strategy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy and(String name, Strategy strategy, int unstablePeriod) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy or(String name, Strategy strategy, int unstablePeriod) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy opposite() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUnstablePeriod(int unstablePeriod) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getUnstablePeriod() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isUnstableAt(int index) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

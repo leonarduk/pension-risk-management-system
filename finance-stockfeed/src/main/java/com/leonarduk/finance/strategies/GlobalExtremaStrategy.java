@@ -23,18 +23,18 @@
  */
 package com.leonarduk.finance.strategies;
 
-import eu.verdelhan.ta4j.Decimal;
-import eu.verdelhan.ta4j.Rule;
-import eu.verdelhan.ta4j.Strategy;
-import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.indicators.helpers.HighestValueIndicator;
-import eu.verdelhan.ta4j.indicators.helpers.LowestValueIndicator;
-import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
-import eu.verdelhan.ta4j.indicators.simple.MaxPriceIndicator;
-import eu.verdelhan.ta4j.indicators.simple.MinPriceIndicator;
-import eu.verdelhan.ta4j.indicators.simple.MultiplierIndicator;
-import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
+import org.ta4j.core.BaseStrategy;
+import org.ta4j.core.Rule;
+import org.ta4j.core.Strategy;
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.helpers.HighestValueIndicator;
+import org.ta4j.core.indicators.helpers.LowestValueIndicator;
+import org.ta4j.core.indicators.helpers.MaxPriceIndicator;
+import org.ta4j.core.indicators.helpers.MinPriceIndicator;
+import org.ta4j.core.indicators.helpers.MultiplierIndicator;
+import org.ta4j.core.trading.rules.OverIndicatorRule;
+import org.ta4j.core.trading.rules.UnderIndicatorRule;
 
 /**
  * Strategies which compares current price to global extrema over a week.
@@ -68,18 +68,78 @@ public class GlobalExtremaStrategy extends AbstractStrategy {
 
 		// Going long if the close price goes below the min price
 		final MultiplierIndicator downWeek = new MultiplierIndicator(
-		        weekMinPrice, Decimal.valueOf("1.004"));
+		        weekMinPrice, Double.valueOf("1.004"));
 		final Rule buyingRule = new UnderIndicatorRule(closePrices, downWeek);
 
 		// Going short if the close price goes above the max price
 		final MultiplierIndicator upWeek = new MultiplierIndicator(weekMaxPrice,
-		        Decimal.valueOf("0.996"));
+		        Double.valueOf("0.996"));
 		final Rule sellingRule = new OverIndicatorRule(closePrices, upWeek);
 
-		return new GlobalExtremaStrategy(new Strategy(buyingRule, sellingRule));
+		return new GlobalExtremaStrategy(new BaseStrategy(buyingRule, sellingRule));
 	}
 
 	public GlobalExtremaStrategy(final Strategy strategy) {
 		super("Global Extrema", strategy);
+	}
+
+	@Override
+	public Rule getEntryRule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Rule getExitRule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy and(Strategy strategy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy or(Strategy strategy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy and(String name, Strategy strategy, int unstablePeriod) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy or(String name, Strategy strategy, int unstablePeriod) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Strategy opposite() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUnstablePeriod(int unstablePeriod) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getUnstablePeriod() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isUnstableAt(int index) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

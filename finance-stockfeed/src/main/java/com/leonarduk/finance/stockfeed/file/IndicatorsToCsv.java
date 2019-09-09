@@ -23,21 +23,20 @@
  */
 package com.leonarduk.finance.stockfeed.file;
 
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.indicators.EMAIndicator;
+import org.ta4j.core.indicators.PPOIndicator;
+import org.ta4j.core.indicators.ROCIndicator;
+import org.ta4j.core.indicators.RSIIndicator;
+import org.ta4j.core.indicators.SMAIndicator;
+import org.ta4j.core.indicators.WilliamsRIndicator;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.helpers.PriceVariationIndicator;
+import org.ta4j.core.indicators.helpers.TypicalPriceIndicator;
+import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
+
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.StringUtils;
-
-import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.indicators.helpers.AverageTrueRangeIndicator;
-import eu.verdelhan.ta4j.indicators.oscillators.PPOIndicator;
-import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
-import eu.verdelhan.ta4j.indicators.simple.PriceVariationIndicator;
-import eu.verdelhan.ta4j.indicators.simple.TypicalPriceIndicator;
-import eu.verdelhan.ta4j.indicators.statistics.StandardDeviationIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.EMAIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.ROCIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.RSIIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.SMAIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
 
 /**
  * This class builds a CSV file containing values from indicators.
@@ -45,19 +44,16 @@ import eu.verdelhan.ta4j.indicators.trackers.WilliamsRIndicator;
 public class IndicatorsToCsv {
 
 	public static void exportIndicatorsToCsv(final TimeSeries series) {
-		final String fileName = "target/" + series.getName()
-		        + "_indicators.csv";
+		final String fileName = "target/" + series.getName() + "_indicators.csv";
 		/**
 		 * Creating indicators
 		 */
 		// Close price
 		final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 		// Typical price
-		final TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(
-		        series);
+		final TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(series);
 		// Price variation
-		final PriceVariationIndicator priceVariation = new PriceVariationIndicator(
-		        series);
+		final PriceVariationIndicator priceVariation = new PriceVariationIndicator(series);
 		// Simple moving averages
 		final SMAIndicator shortSma = new SMAIndicator(closePrice, 8);
 		final SMAIndicator longSma = new SMAIndicator(closePrice, 20);
@@ -73,24 +69,22 @@ public class IndicatorsToCsv {
 		// Williams %R
 		final WilliamsRIndicator williamsR = new WilliamsRIndicator(series, 20);
 		// Average true range
-		final AverageTrueRangeIndicator atr = new AverageTrueRangeIndicator(
-		        series, 20);
+//		final AverageTrueRangeIndicator atr = new AverageTrueRangeIndicator(series, 20);
 		// Standard deviation
-		final StandardDeviationIndicator sd = new StandardDeviationIndicator(
-		        closePrice, 14);
+		final StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, 14);
 
 		/**
 		 * Building header
 		 */
 		final StringBuilder sb = new StringBuilder(
-		        "timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1D,1W,1M,3M,6M1YR,3YR,5YR,10YR\n");
+				"timestamp,close,typical,variation,sma8,sma20,ema8,ema20,ppo,roc,rsi,williamsr,atr,sd,1D,1W,1M,3M,6M1YR,3YR,5YR,10YR\n");
 
 		/**
 		 * Adding indicators values
 		 */
-		final int nbTicks = series.getTickCount();
+		final int nbTicks = series.getBarCount();
 		for (int i = 0; i < nbTicks; i++) {
-			sb.append(series.getTick(i).getEndTime().toLocalDate()); //
+			sb.append(series.getBar(i).getEndTime().toLocalDate()); //
 			StringUtils.addValue(sb, (closePrice.getValue(i)));
 			StringUtils.addValue(sb, (typicalPrice.getValue(i)));
 			StringUtils.addValue(sb, (priceVariation.getValue(i)));
@@ -102,7 +96,7 @@ public class IndicatorsToCsv {
 			StringUtils.addValue(sb, (roc.getValue(i)));
 			StringUtils.addValue(sb, (rsi.getValue(i)));
 			StringUtils.addValue(sb, (williamsR.getValue(i)));
-			StringUtils.addValue(sb, (atr.getValue(i)));
+//			StringUtils.addValue(sb, (atr.getValue(i)));
 			StringUtils.addValue(sb, sd.getValue(i)); //
 			sb.append('\n');
 		}

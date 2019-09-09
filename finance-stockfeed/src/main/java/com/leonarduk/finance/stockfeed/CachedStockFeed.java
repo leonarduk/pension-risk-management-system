@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -26,11 +27,11 @@ public class CachedStockFeed extends CsvStockFeed {
 		this.storeLocation = storeLocation;
 	}
 
-	private void createSeries(final Stock stock) throws IOException {
+	private void createSeries(final StockV1 stock) throws IOException {
 
 		final File file = this.getFile(stock);
 		CachedStockFeed.log.info("Save stock to " + file.getAbsolutePath());
-		final List<HistoricalQuote> series = stock.getHistory();
+		final List<ExtendedHistoricalQuote> series = stock.getHistory();
 
 		/**
 		 * Building header
@@ -44,7 +45,7 @@ public class CachedStockFeed extends CsvStockFeed {
 		return new File(this.storeLocation, this.getQueryName(instrument));
 	}
 
-	protected File getFile(final Stock stock) throws IOException {
+	protected File getFile(final StockV1 stock) throws IOException {
 		final File folder = new File(this.storeLocation);
 		if (!folder.exists() && !folder.mkdir()) {
 			throw new IOException("Failed to create " + this.storeLocation);
@@ -71,17 +72,17 @@ public class CachedStockFeed extends CsvStockFeed {
 		        && store.canRead();
 	}
 
-	private List<HistoricalQuote> loadSeries(final Stock stock)
+	private List<ExtendedHistoricalQuote> loadSeries(final StockV1 stock)
 	        throws IOException {
-		final Optional<Stock> optional = this.get(stock.getInstrument(), 1000);
+		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000);
 		if (optional.isPresent()) {
 			return optional.get().getHistory();
 		}
 		return Lists.newArrayList();
 	}
 
-	private void mergeSeries(final Stock stock) throws IOException {
-		final List<HistoricalQuote> original = this.loadSeries(stock);
+	private void mergeSeries(final StockV1 stock) throws IOException {
+		final List<ExtendedHistoricalQuote> original = this.loadSeries(stock);
 		this.mergeSeries(stock, original);
 		this.createSeries(stock);
 	}
@@ -104,7 +105,7 @@ public class CachedStockFeed extends CsvStockFeed {
 		return br;
 	}
 
-	public void storeSeries(final Stock stock) throws IOException {
+	public void storeSeries(final StockV1 stock) throws IOException {
 		final File seriesFile = this.getFile(stock);
 		if (seriesFile.exists()) {
 			this.mergeSeries(stock);

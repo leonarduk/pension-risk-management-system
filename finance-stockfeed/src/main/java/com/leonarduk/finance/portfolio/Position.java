@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.StockV1;
 
 import jersey.repackaged.com.google.common.collect.Sets;
 
@@ -19,11 +19,11 @@ public class Position {
 	final private Instrument		instrument;
 
 	final private Set<String>		portfolios;
-	final private Optional<Stock>	stock;
+	final private Optional<StockV1>	stock;
 	private final String			symbol;
 
 	public Position(final String portfolio, final Instrument instrument,
-	        final BigDecimal amount, final Optional<Stock> stock2,
+	        final BigDecimal amount, final Optional<StockV1> stock2,
 	        final String symbol) {
 		this.portfolios = Sets.newHashSet(portfolio.split(":"));
 		this.instrument = instrument;
@@ -57,7 +57,7 @@ public class Position {
 		return this.portfolios;
 	}
 
-	public Optional<Stock> getStock() {
+	public Optional<StockV1> getStock() {
 		return this.stock;
 	}
 

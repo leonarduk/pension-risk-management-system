@@ -2,15 +2,14 @@ package com.leonarduk.finance.portfolio;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.joda.time.LocalDate;
-import org.joda.time.Period;
-
 import com.google.common.collect.Maps;
-import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.StockV1;
 // import com.leonarduk.finance.strategies.AbstractStrategy;
 
 public class Valuation {
@@ -29,7 +28,7 @@ public class Valuation {
 	public Valuation(final Position position, final BigDecimal valuation,
 	        final LocalDate valuationDate, final BigDecimal price) {
 		this.position = position;
-		final Optional<Stock> stock = this.position.getStock();
+		final Optional<StockV1> stock = this.position.getStock();
 		if (stock.isPresent()) {
 			try {
 				stock.get().getHistory().clear();

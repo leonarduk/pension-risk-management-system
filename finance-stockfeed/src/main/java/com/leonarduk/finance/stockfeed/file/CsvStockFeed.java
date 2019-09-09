@@ -5,24 +5,24 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.StockV1;
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
-
-import yahoofinance.histquotes.HistoricalQuote;
 
 public abstract class CsvStockFeed extends AbstractStockFeed {
 
@@ -58,9 +58,9 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 		}
 	}
 
-	public HistoricalQuote asHistoricalQuote() {
-		return new HistoricalQuote(this.instrument,
-		        LocalDate.fromDateFields(this.date),
+	public ExtendedHistoricalQuote asHistoricalQuote() {
+		return new ExtendedHistoricalQuote(this.instrument.code(),
+		        DateUtils.dateToCalendar(this.date),
 		        this.getOpen().orElse(null), this.getLow().orElse(null),
 		        this.getHigh().orElse(null), this.getClose().orElse(null),
 		        this.getClose().orElse(null),
@@ -69,14 +69,14 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final int years)
+	public Optional<StockV1> get(final Instrument instrument, final int years)
 	        throws IOException {
 		return this.get(instrument, LocalDate.now().minusYears(years),
 		        LocalDate.now());
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument,
+	public Optional<StockV1> get(final Instrument instrument,
 	        final LocalDate fromDate, final LocalDate toDate)
 	        throws IOException {
 		if (!this.isAvailable()) {
@@ -84,10 +84,10 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			return Optional.empty();
 		}
 		this.setInstrument(instrument);
-		this.setStartDate(fromDate.toDate());
-		this.setEndDate(toDate.toDate());
+		this.setStartDate(DateUtils.convertToDateViaInstant(fromDate));
+		this.setEndDate(DateUtils.convertToDateViaInstant(toDate));
 
-		final List<HistoricalQuote> quotes = new LinkedList<>();
+		final List<ExtendedHistoricalQuote> quotes = new LinkedList<>();
 		try {
 			while (this.next()) {
 				quotes.add(this.asHistoricalQuote());

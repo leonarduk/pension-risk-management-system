@@ -1,29 +1,34 @@
 package com.leonarduk.finance.analysis;
 
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.joda.time.LocalDate;
+import org.ta4j.core.Order;
+import org.ta4j.core.Strategy;
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.Trade;
+import org.ta4j.core.num.Num;
 
-import eu.verdelhan.ta4j.Decimal;
-import eu.verdelhan.ta4j.Order;
-import eu.verdelhan.ta4j.Strategy;
-import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.Trade;
 
 public class TraderOrderUtils {
 
 	public static class OrderWithDate extends Order {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private final LocalDate	date;
 
-		private final Decimal	price;
+		private final Num	price;
 
 		public OrderWithDate(final Order order, final TimeSeries series) {
 			super(order.getIndex(), order.getType(), order.getPrice(),
 			        order.getAmount());
 			final int index = order.getIndex();
-			this.date = series.getTick(index).getEndTime().toLocalDate();
-			this.price = series.getTick(index).getClosePrice();
+			this.date = series.getBar(index).getEndTime().toLocalDate();
+			this.price = series.getBar(index).getClosePrice();
 		}
 
 		public LocalDate getDate() {
@@ -31,7 +36,7 @@ public class TraderOrderUtils {
 		}
 
 		@Override
-		public Decimal getPrice() {
+		public Num getPrice() {
 			return this.price;
 		}
 
@@ -44,6 +49,10 @@ public class TraderOrderUtils {
 	}
 
 	public static class TradeWithStrategy extends Trade {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final Strategy	strategy;
 		private final String	strategyName;
 

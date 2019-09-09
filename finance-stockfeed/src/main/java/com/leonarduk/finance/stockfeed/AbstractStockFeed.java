@@ -1,6 +1,8 @@
 package com.leonarduk.finance.stockfeed;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -8,72 +10,59 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.joda.time.LocalDate;
-
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoo.StockQuoteBuilder;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
-import eu.verdelhan.ta4j.Decimal;
 import yahoofinance.histquotes.HistoricalQuote;
-import yahoofinance.quotes.stock.StockQuote;
-import yahoofinance.quotes.stock.StockQuote.StockQuoteBuilder;
 
 public abstract class AbstractStockFeed implements StockFeed {
 
-	public static void addQuoteToSeries(final Instrument instrument,
-	        final List<HistoricalQuote> quotes, final Stock stock) {
-		final StockQuoteBuilder quoteBuilder = new StockQuote.StockQuoteBuilder(
-		        instrument);
+	public static void addQuoteToSeries(final Instrument instrument, final List<ExtendedHistoricalQuote> quotes,
+			final StockV1 stock) {
+		final StockQuoteBuilder quoteBuilder = new StockQuoteBuilder(instrument);
 
 		if ((quotes != null) && !quotes.isEmpty()) {
-			final HistoricalQuote historicalQuote = quotes
-			        .get(quotes.size() - 1);
-			quoteBuilder.setDayHigh(historicalQuote.getHigh())
-			        .setDayLow(historicalQuote.getLow())
-			        .setOpen(historicalQuote.getOpen())
-			        .setAvgVolume(historicalQuote.getVolume())
-			        .setPrice(historicalQuote.getClose());
+			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
+			quoteBuilder.setDayHigh(historicalQuote.getHigh()).setDayLow(historicalQuote.getLow())
+					.setOpen(historicalQuote.getOpen()).setAvgVolume(historicalQuote.getVolume())
+					.setPrice(historicalQuote.getClose());
 			stock.setQuote(quoteBuilder.build());
 			stock.setHistory(quotes);
 		}
 	}
 
-	public static Stock createStock(final Instrument instrument) {
+	public static StockV1 createStock(final Instrument instrument) {
 		return AbstractStockFeed.createStock(instrument, null);
 	}
 
-	public static Stock createStock(final Instrument instrument,
-	        final List<HistoricalQuote> quotes) {
-		final Stock stock = new Stock(instrument);
+	public static StockV1 createStock(final Instrument instrument, final List<ExtendedHistoricalQuote> quotes) {
+		final StockV1 stock = new StockV1(instrument);
 		stock.setHistory(quotes);
 		AbstractStockFeed.addQuoteToSeries(instrument, quotes, stock);
 		return stock;
 	}
 
 	@Override
-	public abstract Optional<Stock> get(final Instrument instrument,
-	        final int years) throws IOException;
+	public abstract Optional<StockV1> get(final Instrument instrument, final int years) throws IOException;
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final int years,
-	        final boolean interpolate) throws IOException {
+	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate)
+			throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public abstract Optional<Stock> get(final Instrument instrument,
-	        final LocalDate fromDate, final LocalDate toDate)
-	        throws IOException;
+	public abstract Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
+			throws IOException;
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument,
-	        final LocalDate fromLocalDate, final LocalDate toLocalDate,
-	        final boolean interpolate) throws IOException {
-		final Optional<Stock> liveData = this.get(instrument, fromLocalDate,
-		        toLocalDate);
+	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromLocalDate, final LocalDate toLocalDate,
+			final boolean interpolate) throws IOException {
+		final Optional<StockV1> liveData = this.get(instrument, fromLocalDate, toLocalDate);
 		TimeseriesUtils.cleanUpSeries(liveData);
-		return TimeseriesUtils.interpolateAndSortSeries(fromLocalDate,
-		        toLocalDate, interpolate, liveData);
+		return TimeseriesUtils.interpolateAndSortSeries(fromLocalDate, toLocalDate, interpolate, liveData);
 	}
 
 	@Override
@@ -82,30 +71,25 @@ public abstract class AbstractStockFeed implements StockFeed {
 	@Override
 	public abstract boolean isAvailable();
 
-	public void mergeSeries(final Stock stock,
-	        final List<HistoricalQuote> original) throws IOException {
-		final List<HistoricalQuote> newSeries = stock.getHistory();
+	public void mergeSeries(final StockV1 stock, final List<ExtendedHistoricalQuote> original) throws IOException {
+		final List<ExtendedHistoricalQuote> newSeries = stock.getHistory();
 		this.mergeSeries(stock, original, newSeries);
 	}
 
-	public void mergeSeries(final Stock stock,
-	        final List<HistoricalQuote> original,
-	        final List<HistoricalQuote> newSeries) {
-		final Map<LocalDate, HistoricalQuote> dates = original.stream()
-		        .collect(Collectors.toMap(quote -> quote.getDate(),
-		                Function.identity()));
+	public void mergeSeries(final StockV1 stock, final List<ExtendedHistoricalQuote> original,
+			final List<ExtendedHistoricalQuote> newSeries) {
+		final Map<LocalDate, ExtendedHistoricalQuote> dates = original.stream()
+				.collect(Collectors.toMap(quote -> quote.getLocaldate(), Function.identity()));
 		newSeries.stream().forEach(historicalQuote -> {
-			final LocalDate date = historicalQuote.getDate();
+			final LocalDate date = historicalQuote.getLocaldate();
 			if ((date != null) && !dates.containsKey(date)
-			        && !historicalQuote.getClose().equals(Decimal.ZERO)) {
+					&& !historicalQuote.getClose().equals(BigDecimal.valueOf(0))) {
 				dates.putIfAbsent(date, historicalQuote);
 			}
 		});
 
-		final List<HistoricalQuote> sortedList = new LinkedList<>(
-		        dates.values());
-		sortedList.sort((quote1, quote2) -> quote1.getDate()
-		        .compareTo(quote2.getDate()));
+		final List<ExtendedHistoricalQuote> sortedList = new LinkedList<>(dates.values());
+		sortedList.sort((quote1, quote2) -> quote1.getDate().compareTo(quote2.getDate()));
 		stock.setHistory(sortedList);
 
 	}

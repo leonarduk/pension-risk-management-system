@@ -4,20 +4,22 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import eu.verdelhan.ta4j.Decimal;
+import org.ta4j.core.num.Num;
 
 public class StringUtils {
 	private static NumberFormat formatter = new DecimalFormat("#0.00");
 
-	public static void addValue(final StringBuilder buf,
-	        final BigDecimal value) {
-		final String format = StringUtils.formatter
-		        .format(value == null ? BigDecimal.ZERO : value);
+	public static void addValue(final StringBuilder buf, final Num num) {
+		final String format = StringUtils.formatter.format(num == null ? BigDecimal.ZERO : num);
 		StringUtils.addValue(buf, format);
 	}
 
-	public static void addValue(final StringBuilder buf, final Decimal value) {
-		StringUtils.addValue(buf, (BigDecimal.valueOf(value.toDouble())));
+	public static void addValue(final StringBuilder buf, final BigDecimal value) {
+		StringUtils.addValue(buf, value.doubleValue());
+	}
+
+	public static void addValue(final StringBuilder buf, final Double value) {
+		StringUtils.addValue(buf, String.valueOf(value));
 	}
 
 	public static void addValue(final StringBuilder buf, final long value) {
@@ -36,8 +38,7 @@ public class StringUtils {
 	}
 
 	public static boolean isParseable(final String data) {
-		return !((data == null) || data.equals("N/A") || data.equals("-")
-		        || data.equals("") || data.equals("nan"));
+		return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("") || data.equals("nan"));
 	}
 
 	public static String join(final String[] data, final String d) {
@@ -54,11 +55,10 @@ public class StringUtils {
 	}
 
 	/**
-	 * Strips the unwanted chars from a line returned in the CSV Used for
-	 * parsing the FX CSV lines
+	 * Strips the unwanted chars from a line returned in the CSV Used for parsing
+	 * the FX CSV lines
 	 *
-	 * @param line
-	 *            the original CSV line
+	 * @param line the original CSV line
 	 * @return the stripped line
 	 */
 	public static String stripOverhead(final String line) {
@@ -69,35 +69,25 @@ public class StringUtils {
 		final StringBuilder buffer = new StringBuilder(data.length());
 		for (int i = 0; i < data.length(); i++) {
 			if (data.charAt(i) > 256) {
-				buffer.append("\\u")
-				        .append(Integer.toHexString(data.charAt(i)));
-			}
-			else {
+				buffer.append("\\u").append(Integer.toHexString(data.charAt(i)));
+			} else {
 				if (data.charAt(i) == '\n') {
 					buffer.append("\\n");
-				}
-				else if (data.charAt(i) == '\t') {
+				} else if (data.charAt(i) == '\t') {
 					buffer.append("\\t");
-				}
-				else if (data.charAt(i) == '\r') {
+				} else if (data.charAt(i) == '\r') {
 					buffer.append("\\r");
-				}
-				else if (data.charAt(i) == '\b') {
+				} else if (data.charAt(i) == '\b') {
 					buffer.append("\\b");
-				}
-				else if (data.charAt(i) == '\f') {
+				} else if (data.charAt(i) == '\f') {
 					buffer.append("\\f");
-				}
-				else if (data.charAt(i) == '\'') {
+				} else if (data.charAt(i) == '\'') {
 					buffer.append("\\'");
-				}
-				else if (data.charAt(i) == '\"') {
+				} else if (data.charAt(i) == '\"') {
 					buffer.append("\\\"");
-				}
-				else if (data.charAt(i) == '\\') {
+				} else if (data.charAt(i) == '\\') {
 					buffer.append("\\\\");
-				}
-				else {
+				} else {
 					buffer.append(data.charAt(i));
 				}
 			}

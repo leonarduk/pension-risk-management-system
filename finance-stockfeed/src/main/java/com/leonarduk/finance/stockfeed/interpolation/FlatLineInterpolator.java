@@ -1,40 +1,38 @@
 package com.leonarduk.finance.stockfeed.interpolation;
 
-import org.joda.time.LocalDate;
+import java.io.IOException;
+import java.time.LocalDate;
 
-import eu.verdelhan.ta4j.Tick;
-import yahoofinance.histquotes.HistoricalQuote;
+import org.ta4j.core.Bar;
+
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 
 public class FlatLineInterpolator extends AbstractLineInterpolator {
 
 	@Override
-	protected HistoricalQuote calculateFutureValue(
-	        final HistoricalQuote lastQuote, final LocalDate today) {
-		return new HistoricalQuote(lastQuote, today, "FlatLineInterpolation");
+	protected ExtendedHistoricalQuote calculateFutureValue(final ExtendedHistoricalQuote lastQuote,
+			final LocalDate today) {
+		return new ExtendedHistoricalQuote(lastQuote, today, "FlatLineInterpolation");
 	}
 
 	@Override
-	protected HistoricalQuote calculatePastValue(
-	        final HistoricalQuote currentQuote, final LocalDate fromDate) {
-		return this.createSyntheticQuote(currentQuote, fromDate,
-		        currentQuote.getClose(), currentQuote.getOpen(),
-		        "Copied from " + currentQuote.getDate());
+	protected ExtendedHistoricalQuote calculatePastValue(final ExtendedHistoricalQuote currentQuote,
+			final LocalDate fromDate) throws IOException {
+		return this.createSyntheticQuote(currentQuote, fromDate, currentQuote.getClose(), currentQuote.getOpen(),
+				"Copied from " + currentQuote.getDate());
 	}
 
 	@Override
-	public HistoricalQuote createSyntheticQuote(
-	        final HistoricalQuote currentQuote, final LocalDate currentDate,
-	        final HistoricalQuote nextQuote) {
-		return this.createSyntheticQuote(currentQuote, currentDate,
-		        currentQuote.getClose(), currentQuote.getOpen(),
-		        "Copied from " + currentQuote.getDate());
+	public ExtendedHistoricalQuote createSyntheticQuote(final ExtendedHistoricalQuote currentQuote,
+			final LocalDate currentDate, final ExtendedHistoricalQuote nextQuote) throws IOException {
+		return this.createSyntheticQuote(currentQuote, currentDate, currentQuote.getClose(), currentQuote.getOpen(),
+				"Copied from " + currentQuote.getDate());
 	}
 
 	@Override
-	public Tick createSyntheticTick(final Tick currentQuote,
-	        final LocalDate currentDate, final Tick nextQuote) {
-		return this.createSyntheticTick(currentDate,
-		        currentQuote.getClosePrice(), currentQuote.getOpenPrice());
+	public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
+		return this.createSyntheticBar(currentDate, currentQuote.getClosePrice().doubleValue(),
+				currentQuote.getOpenPrice().doubleValue());
 	}
 
 }

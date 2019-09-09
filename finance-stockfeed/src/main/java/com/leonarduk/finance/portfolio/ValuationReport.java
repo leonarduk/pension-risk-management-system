@@ -2,7 +2,7 @@ package com.leonarduk.finance.portfolio;
 
 import java.util.List;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import com.google.common.collect.ImmutableList;
 

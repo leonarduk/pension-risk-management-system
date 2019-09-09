@@ -9,11 +9,11 @@ public class StockFeedFactory {
 		switch (source) {
 			case MANUAL:
 				return new CachedStockFeed("db");
+//			case Google:
+//				return new GoogleFeed();
 			case Yahoo:
-				return new YahooFeed();
-			case Google:
 			default:
-				return new GoogleFeed();
+				return new YahooFeed();
 		}
 	}
 

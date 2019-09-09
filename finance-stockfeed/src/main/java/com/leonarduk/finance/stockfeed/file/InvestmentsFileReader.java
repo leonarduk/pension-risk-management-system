@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.utils.ResourceTools;
 
 public class InvestmentsFileReader {
@@ -36,7 +36,7 @@ public class InvestmentsFileReader {
 			e.printStackTrace();
 			instrument = Instrument.UNKNOWN;
 		}
-		final Optional<Stock> stock = Optional.of(new Stock(instrument));
+		final Optional<StockV1> stock = Optional.of(new StockV1(instrument));
 		return new Position(fields.get(portfolioIdx), instrument,
 		        new BigDecimal(fields.get(amountIndex)), stock, symbol);
 	}

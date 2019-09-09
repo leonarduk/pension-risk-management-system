@@ -2,10 +2,10 @@ package com.leonarduk.finance.stockfeed.interpolation;
 
 import java.util.List;
 
-import yahoofinance.histquotes.HistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 
 public interface TimeSeriesCleaner {
 
-	List<HistoricalQuote> clean(List<HistoricalQuote> series);
+	List<ExtendedHistoricalQuote> clean(List<ExtendedHistoricalQuote> series);
 
 }

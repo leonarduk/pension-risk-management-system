@@ -2,11 +2,11 @@ package com.leonarduk.finance.stockfeed;
 
 import java.io.IOException;
 
-import yahoofinance.quotes.stock.StockQuote;
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedStockQuote;
 
 public interface QuoteFeed {
 
-	StockQuote getStockQuote(Instrument instrument) throws IOException;
+	ExtendedStockQuote getStockQuote(Instrument instrument) throws IOException;
 
 	boolean isAvailable();
 

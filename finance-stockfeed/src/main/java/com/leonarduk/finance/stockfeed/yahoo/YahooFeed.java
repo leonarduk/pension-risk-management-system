@@ -1,47 +1,49 @@
 package com.leonarduk.finance.stockfeed.yahoo;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.joda.time.LocalDate;
 
 import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.QuoteFeed;
 import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.Stock;
-import com.leonarduk.finance.utils.DateUtils;
+import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.web.SeleniumUtils;
 
-import yahoofinance.histquotes.Interval;
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
+import yahoofinance.quotes.csv.FxQuotesRequest;
+import yahoofinance.quotes.csv.StockQuotesData;
+import yahoofinance.quotes.csv.StockQuotesRequest;
 import yahoofinance.quotes.fx.FxQuote;
-import yahoofinance.quotes.fx.FxQuotesRequest;
 import yahoofinance.quotes.stock.StockQuote;
-import yahoofinance.quotes.stock.StockQuotesData;
-import yahoofinance.quotes.stock.StockQuotesRequest;
 
 public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
-	public static final int		CONNECTION_TIMEOUT		= Integer
-	        .parseInt(System.getProperty("connection.timeout", "10000"));
-
-	public static final String	HISTQUOTES_BASE_URL		= System.getProperty(
-	        "baseurl.histquotes", "http://ichart.yahoo.com/table.csv");
-
-	public static final Logger	logger					= LoggerFactory
-	        .getLogger(YahooFeed.class.getName());
-	public static final String	QUOTES_BASE_URL			= System.getProperty(
-	        "baseurl.quotes", "http://finance.yahoo.com/d/quotes.csv");
-	public static final String	QUOTES_CSV_DELIMITER	= ",";
-	public static final String	TIMEZONE				= "America/New_York";
+//	public static final int		CONNECTION_TIMEOUT		= Integer
+//	        .parseInt(System.getProperty("connection.timeout", "10000"));
+//
+//	public static final String	HISTQUOTES_BASE_URL		= System.getProperty(
+//	        "baseurl.histquotes", // "http://ichart.yahoo.com/table.csv");
+//	        "https://query1.finance.yahoo.com/v7/finance/download/");
+////	        https://query1.finance.yahoo.com/v7/finance/download/ISJP.L?period1=1536421350&period2=1567957350&interval=1d&events=history
+//// 			 http://ichart.yahoo.com/table.csv?s=ISJP.L&a=8&b=8&c=2017&d=8&e=8&f=2019&g=d&ignore=.csv
+	public static final Logger logger = LoggerFactory.getLogger(YahooFeed.class.getName());
+//	public static final String	QUOTES_BASE_URL			= System.getProperty(
+//	        "baseurl.quotes", "http://finance.yahoo.com/d/quotes.csv");
+	public static final String QUOTES_CSV_DELIMITER = ",";
+	public static final String TIMEZONE = "America/New_York";
 
 	private static String getCode(final Instrument instrument) {
 		switch (instrument.getAssetType()) {
-			case FUND:
-				return instrument.getIsin();
-			default:
-				return instrument.code();
+		case FUND:
+			return instrument.getIsin();
+		default:
+			return instrument.code();
 		}
 	}
 
@@ -55,24 +57,21 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	 * <li>CADUSD=X
 	 * </ul>
 	 *
-	 * @param symbol
-	 *            symbol for the FX rate you want to request
+	 * @param symbol symbol for the FX rate you want to request
 	 * @return a quote for the requested FX rate
-	 * @throws java.io.IOException
-	 *             when there's a connection problem
+	 * @throws java.io.IOException when there's a connection problem
 	 */
 	public static FxQuote getFx(final Instrument symbol) throws IOException {
-		final FxQuotesRequest request = new FxQuotesRequest(symbol);
+		final FxQuotesRequest request = new FxQuotesRequest(symbol.code());
 		return request.getSingleResult();
 	}
 
 	public static String getQueryName(final Instrument instrument) {
 		switch (instrument.getExchange()) {
-			case London:
-				return YahooFeed.getCode(instrument) + ".L";
-			default:
-				throw new IllegalArgumentException(
-				        "Don't know how to handle " + instrument.getExchange());
+		case London:
+			return YahooFeed.getCode(instrument) + ".L";
+		default:
+			throw new IllegalArgumentException("Don't know how to handle " + instrument.getExchange());
 		}
 	}
 
@@ -90,28 +89,16 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	// }
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument, final int years) {
-		return this.get(instrument, LocalDate.now().minusYears(years),
-		        LocalDate.now());
+	public Optional<StockV1> get(final Instrument instrument, final int years) {
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
 	}
 
 	@Override
-	public Optional<Stock> get(final Instrument instrument,
-	        final LocalDate fromDate, final LocalDate toDate) {
+	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
 		try {
-			final Stock stock = new Stock(instrument);
-
-			if (!this.isAvailable()) {
-				YahooFeed.logger.warn("Cannot connect to Yahoo");
-				return Optional.empty();
-			}
-			stock.getHistory(DateUtils.dateToCalendar(fromDate),
-			        DateUtils.dateToCalendar(toDate.toDate()), Interval.DAILY);
-			return Optional.of(stock);
-		}
-		catch (final Exception e) {
-			YahooFeed.logger.warn(
-			        "Error when fetching from Yahoo: " + e.getMessage());
+			return Optional.of(new StockV1(YahooFinance.get(instrument.code()+instrument.getExchange().getYahooSuffix())));
+		} catch (final Exception e) {
+			YahooFeed.logger.warn("Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();
 		}
 	}
@@ -122,22 +109,20 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	}
 
 	@Override
-	public StockQuote getStockQuote(final Instrument instrument)
-	        throws IOException {
-		final StockQuotesData stockQuotesData = this
-		        .getStockQuotesData(instrument);
-		return stockQuotesData == null ? null : stockQuotesData.getQuote();
+	public ExtendedStockQuote getStockQuote(final Instrument instrument) throws IOException {
+		Stock stock = YahooFinance.get(instrument.code() + instrument.getExchange().getYahooSuffix());
+		StockQuote price = stock.getQuote();
+		return new ExtendedStockQuote(price);
 	}
 
-	public StockQuotesData getStockQuotesData(final Instrument instrument)
-	        throws IOException {
-		final StockQuotesRequest request = new StockQuotesRequest(instrument);
+	public StockQuotesData getStockQuotesData(final Instrument instrument) throws IOException {
+		final StockQuotesRequest request = new StockQuotesRequest(instrument.code());
 		return request.getSingleResult();
 	}
 
 	@Override
 	public boolean isAvailable() {
-		return SeleniumUtils.isInternetAvailable(YahooFeed.QUOTES_BASE_URL);
+		return SeleniumUtils.isInternetAvailable("https://uk.yahoo.com");
 	}
 
 }

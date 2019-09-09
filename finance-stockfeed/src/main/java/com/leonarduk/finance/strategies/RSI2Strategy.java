@@ -25,26 +25,28 @@ package com.leonarduk.finance.strategies;
 
 import java.io.IOException;
 
+import org.ta4j.core.BaseStrategy;
+import org.ta4j.core.Rule;
+import org.ta4j.core.Strategy;
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.TimeSeriesManager;
+import org.ta4j.core.TradingRecord;
+import org.ta4j.core.analysis.criteria.TotalProfitCriterion;
+import org.ta4j.core.indicators.RSIIndicator;
+import org.ta4j.core.indicators.SMAIndicator;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
+import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
+import org.ta4j.core.trading.rules.OverIndicatorRule;
+import org.ta4j.core.trading.rules.UnderIndicatorRule;
+
 import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.Stock;
+import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
-import eu.verdelhan.ta4j.Decimal;
-import eu.verdelhan.ta4j.Rule;
-import eu.verdelhan.ta4j.Strategy;
-import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.TradingRecord;
-import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
-import eu.verdelhan.ta4j.indicators.simple.ClosePriceIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.RSIIndicator;
-import eu.verdelhan.ta4j.indicators.trackers.SMAIndicator;
-import eu.verdelhan.ta4j.trading.rules.CrossedDownIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.CrossedUpIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 
 /**
  * 2-Period RSI Strategy
@@ -70,7 +72,7 @@ public class RSI2Strategy {
 		// The long-term trend is up when a security is above its 200-period
 		// SMA.
 		final Rule entryRule = new OverIndicatorRule(shortSma, longSma) // Trend
-		        .and(new CrossedDownIndicatorRule(rsi, Decimal.valueOf(5))) // Signal
+		        .and(new CrossedDownIndicatorRule(rsi, Double.valueOf(5))) // Signal
 		                                                                    // 1
 		        .and(new OverIndicatorRule(shortSma, closePrice)); // Signal 2
 
@@ -78,27 +80,28 @@ public class RSI2Strategy {
 		// The long-term trend is down when a security is below its 200-period
 		// SMA.
 		final Rule exitRule = new UnderIndicatorRule(shortSma, longSma) // Trend
-		        .and(new CrossedUpIndicatorRule(rsi, Decimal.valueOf(95))) // Signal
+		        .and(new CrossedUpIndicatorRule(rsi, Double.valueOf(95))) // Signal
 		                                                                   // 1
 		        .and(new UnderIndicatorRule(shortSma, closePrice)); // Signal 2
 
 		// TODO: Finalize the strategy
 
-		return new Strategy(entryRule, exitRule);
+		return new BaseStrategy(entryRule, exitRule);
 	}
 
 	public static void main(final String[] args) throws IOException {
 
 		final StockFeed feed = new IntelligentStockFeed();
 		final String ticker = "PHGP";
-		final Stock stock = feed.get(Instrument.fromString(ticker), 20).get();
+		final StockV1 stock = feed.get(Instrument.fromString(ticker), 20).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 
 		// Building the trading strategy
 		final Strategy strategy = RSI2Strategy.buildStrategy(series);
 
 		// Running the strategy
-		final TradingRecord tradingRecord = series.run(strategy);
+		TimeSeriesManager manager = new TimeSeriesManager(series);
+		final TradingRecord tradingRecord = manager.run(strategy);
 		System.out.println("Number of trades for the strategy: "
 		        + tradingRecord.getTradeCount());
 		System.out.println(

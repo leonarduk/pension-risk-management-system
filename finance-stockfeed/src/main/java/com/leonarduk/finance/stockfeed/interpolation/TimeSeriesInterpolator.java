@@ -1,13 +1,15 @@
 package com.leonarduk.finance.stockfeed.interpolation;
 
+import java.io.IOException;
 import java.util.List;
 
-import eu.verdelhan.ta4j.TimeSeries;
-import yahoofinance.histquotes.HistoricalQuote;
+import org.ta4j.core.TimeSeries;
+
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 
 public interface TimeSeriesInterpolator {
 
-	List<HistoricalQuote> interpolate(List<HistoricalQuote> series);
+	List<ExtendedHistoricalQuote> interpolate(List<ExtendedHistoricalQuote> series) throws IOException;
 
 	TimeSeries interpolate(TimeSeries series);
 }

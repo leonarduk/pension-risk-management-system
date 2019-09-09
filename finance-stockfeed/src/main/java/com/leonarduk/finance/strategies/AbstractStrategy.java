@@ -1,8 +1,8 @@
 package com.leonarduk.finance.strategies;
 
-import eu.verdelhan.ta4j.Strategy;
+import org.ta4j.core.Strategy;
 
-abstract public class AbstractStrategy {
+abstract public class AbstractStrategy implements Strategy {
 	private final String	name;
 	private final Strategy	strategy;
 

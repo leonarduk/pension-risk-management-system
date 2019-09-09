@@ -23,13 +23,13 @@
  */
 package com.leonarduk.finance.strategies;
 
-import eu.verdelhan.ta4j.Decimal;
-import eu.verdelhan.ta4j.Rule;
-import eu.verdelhan.ta4j.Strategy;
-import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.indicators.oscillators.CCIIndicator;
-import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
+import org.ta4j.core.BaseStrategy;
+import org.ta4j.core.Rule;
+import org.ta4j.core.Strategy;
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.indicators.CCIIndicator;
+import org.ta4j.core.trading.rules.OverIndicatorRule;
+import org.ta4j.core.trading.rules.UnderIndicatorRule;
 
 /**
  * CCI Correction Strategy
@@ -45,8 +45,8 @@ public class CCICorrectionStrategy {
 
 		final CCIIndicator longCci = new CCIIndicator(series, 200);
 		final CCIIndicator shortCci = new CCIIndicator(series, 5);
-		final Decimal plus100 = Decimal.HUNDRED;
-		final Decimal minus100 = Decimal.valueOf(-100);
+		final Double plus100 = Double.valueOf(100);
+		final Double minus100 = Double.valueOf(-100);
 
 		final Rule entryRule = new OverIndicatorRule(longCci, plus100) // Bull
 		                                                               // trend
@@ -56,7 +56,7 @@ public class CCICorrectionStrategy {
 		                                                                // trend
 		        .and(new OverIndicatorRule(shortCci, plus100)); // Signal
 
-		final Strategy strategy = new Strategy(entryRule, exitRule);
+		final Strategy strategy = new BaseStrategy(entryRule, exitRule);
 		strategy.setUnstablePeriod(5);
 		return strategy;
 	}

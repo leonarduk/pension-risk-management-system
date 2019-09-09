@@ -23,6 +23,12 @@ package com.leonarduk.finance.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -30,9 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +47,13 @@ import jersey.repackaged.com.google.common.collect.Maps;
  * Helpers for common dates
  */
 public class DateUtils {
-	private static Map<String, Date>	dates;
+	private static Map<String, Date> dates;
 
-	public static final Logger			logger	= LoggerFactory
-	        .getLogger(DateUtils.class.getName());
+	public static final Logger logger = LoggerFactory.getLogger(DateUtils.class.getName());
+
+	public static LocalDate calendarToLocalDate(Calendar calendar) {
+		return LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
+	}
 
 	public static Calendar dateToCalendar(final Date date) {
 		final Calendar calendar = Calendar.getInstance();
@@ -56,13 +62,13 @@ public class DateUtils {
 	}
 
 	public static Calendar dateToCalendar(final LocalDate fromDate) {
-		return DateUtils.dateToCalendar(fromDate.toDate());
+		return DateUtils.dateToCalendar(convertToDateViaInstant(fromDate));
 	}
 
-	public static int getDiffInWorkDays(final LocalDate currentDate,
-	        final LocalDate nextDate) {
-		final int calendarDaysDiff = Math
-		        .abs(Days.daysBetween(nextDate, currentDate).getDays());
+	public static int getDiffInWorkDays(final LocalDate currentDate, final LocalDate nextDate) {
+		final int calendarDaysDiff = (int) Duration.between(nextDate.atStartOfDay(), currentDate.atStartOfDay())
+				.toDays();
+
 		final int weeks = Math.round(calendarDaysDiff / 7);
 		return Math.abs((5 * weeks) + Math.min(calendarDaysDiff % 7, 5));
 	}
@@ -70,34 +76,29 @@ public class DateUtils {
 	private static String getDividendDateFormat(final String date) {
 		if (date.matches("[0-9][0-9]-...-[0-9][0-9]")) {
 			return "dd-MMM-yy";
-		}
-		else if (date.matches("[0-9]-...-[0-9][0-9]")) {
+		} else if (date.matches("[0-9]-...-[0-9][0-9]")) {
 			return "d-MMM-yy";
-		}
-		else if (date.matches("...[ ]+[0-9]+")) {
+		} else if (date.matches("...[ ]+[0-9]+")) {
 			return "MMM d";
-		}
-		else {
+		} else {
 			return "M/d/yy";
 		}
 	}
 
-	public static Iterator<LocalDate> getLocalDateIterator(
-	        final LocalDate startDate, final LocalDate lastDate) {
+	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate startDate, final LocalDate lastDate) {
 		return new Iterator<LocalDate>() {
 
 			LocalDate nextDate = startDate;
 
 			@Override
 			public boolean hasNext() {
-				return this.nextDate.isBefore(lastDate)
-				        || this.nextDate.equals(lastDate);
+				return this.nextDate.isBefore(lastDate) || this.nextDate.equals(lastDate);
 			}
 
 			@Override
 			public LocalDate next() {
 				final LocalDate currentDate = this.nextDate;
-				if (this.nextDate.getDayOfWeek() == DateTimeConstants.FRIDAY) {
+				if (this.nextDate.getDayOfWeek() == DayOfWeek.FRIDAY) {
 					this.nextDate = this.nextDate.plusDays(2);
 				}
 				this.nextDate = this.nextDate.plusDays(1);
@@ -108,25 +109,23 @@ public class DateUtils {
 
 	}
 
-	public static Iterator<LocalDate> getLocalDateNewToOldIterator(
-	        final LocalDate startDate, final LocalDate lastDate) {
+	public static Iterator<LocalDate> getLocalDateNewToOldIterator(final LocalDate startDate,
+			final LocalDate lastDate) {
 		return new Iterator<LocalDate>() {
 
 			LocalDate nextDate = startDate;
 
 			@Override
 			public boolean hasNext() {
-				return this.nextDate.isAfter(lastDate)
-				        || this.nextDate.equals(lastDate);
+				return this.nextDate.isAfter(lastDate) || this.nextDate.equals(lastDate);
 			}
 
 			@Override
 			public LocalDate next() {
-				if (this.nextDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				if (this.nextDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
 					this.nextDate = this.nextDate.minusDays(2);
 				}
-				if (this.nextDate
-				        .getDayOfWeek() == DateTimeConstants.SATURDAY) {
+				if (this.nextDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
 					this.nextDate = this.nextDate.minusDays(1);
 				}
 				final LocalDate currentDate = this.nextDate;
@@ -140,104 +139,95 @@ public class DateUtils {
 
 	public static LocalDate getPreviousDate(final LocalDate currentDate) {
 		final LocalDate returnDate = currentDate.minusDays(1);
-		if ((returnDate.getDayOfWeek() == DateTimeConstants.SATURDAY)
-		        || (returnDate.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
+		if ((returnDate.getDayOfWeek() == DayOfWeek.SATURDAY) || (returnDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
 			return DateUtils.getPreviousDate(returnDate);
 		}
 		return returnDate;
 	}
 
-	public static Date parseDate(final String fieldValue)
-	        throws ParseException {
+	public static Date parseDate(final String fieldValue) throws ParseException {
 		if (null == DateUtils.dates) {
 			DateUtils.dates = Maps.newConcurrentMap();
 		}
 		return (DateUtils.dates.computeIfAbsent(fieldValue,
-		        v -> LocalDate.parse(v).toDate()));
+				v -> DateUtils.convertToDateViaInstant(LocalDate.parse(v))));
 	}
 
 	/**
 	 * Used to parse the last trade date / time. Returns null if the date / time
 	 * cannot be parsed.
 	 *
-	 * @param date
-	 *            String received that represents the date
-	 * @param time
-	 *            String received that represents the time
-	 * @param timeZone
-	 *            time zone to use for parsing the date time
+	 * @param date     String received that represents the date
+	 * @param time     String received that represents the time
+	 * @param timeZone time zone to use for parsing the date time
 	 * @return Calendar object with the parsed datetime
 	 */
-	public static Calendar parseDateTime(final String date, final String time,
-	        final TimeZone timeZone) {
+	public static Calendar parseDateTime(final String date, final String time, final TimeZone timeZone) {
 		final String datetime = date + " " + time;
-		final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma",
-		        Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", Locale.US);
 
 		format.setTimeZone(timeZone);
 		try {
-			if (StringUtils.isParseable(date)
-			        && StringUtils.isParseable(time)) {
+			if (StringUtils.isParseable(date) && StringUtils.isParseable(time)) {
 				final Calendar c = Calendar.getInstance();
 				c.setTime(format.parse(datetime));
 				return c;
 			}
-		}
-		catch (final ParseException ex) {
-			DateUtils.logger.warn(
-			        "Failed to parse datetime: " + datetime);
-			DateUtils.logger.trace(
-			        "Failed to parse datetime: " + datetime, ex);
+		} catch (final ParseException ex) {
+			DateUtils.logger.warn("Failed to parse datetime: " + datetime);
+			DateUtils.logger.trace("Failed to parse datetime: " + datetime, ex);
 		}
 		return null;
 	}
 
 	/**
-	 * Used to parse the dividend dates. Returns null if the date cannot be
-	 * parsed.
+	 * Used to parse the dividend dates. Returns null if the date cannot be parsed.
 	 *
-	 * @param date
-	 *            String received that represents the date
+	 * @param date String received that represents the date
 	 * @return Calendar object representing the parsed date
 	 */
 	public static Calendar parseDividendDate(final String date) {
 		if (!StringUtils.isParseable(date)) {
 			return null;
 		}
-		final SimpleDateFormat format = new SimpleDateFormat(
-		        DateUtils.getDividendDateFormat(date.trim()), Locale.US);
+		final SimpleDateFormat format = new SimpleDateFormat(DateUtils.getDividendDateFormat(date.trim()), Locale.US);
 		format.setTimeZone(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 		try {
-			final Calendar today = Calendar
-			        .getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
-			final Calendar parsedDate = Calendar
-			        .getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
+			final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
+			final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
 			parsedDate.setTime(format.parse(date.trim()));
 
 			if (parsedDate.get(Calendar.YEAR) == 1970) {
 				// Not really clear which year the dividend date is... making a
 				// reasonable guess.
-				final int monthDiff = parsedDate.get(Calendar.MONTH)
-				        - today.get(Calendar.MONTH);
+				final int monthDiff = parsedDate.get(Calendar.MONTH) - today.get(Calendar.MONTH);
 				int year = today.get(Calendar.YEAR);
 				if (monthDiff > 6) {
 					year -= 1;
-				}
-				else if (monthDiff < -6) {
+				} else if (monthDiff < -6) {
 					year += 1;
 				}
 				parsedDate.set(Calendar.YEAR, year);
 			}
 
 			return parsedDate;
-		}
-		catch (final ParseException ex) {
-			DateUtils.logger.warn(
-			        "Failed to parse dividend date: " + date);
-			DateUtils.logger.trace(
-			        "Failed to parse dividend date: " + date, ex);
+		} catch (final ParseException ex) {
+			DateUtils.logger.warn("Failed to parse dividend date: " + date);
+			DateUtils.logger.trace("Failed to parse dividend date: " + date, ex);
 			return null;
 		}
+	}
+
+	public static Date convertToDateViaInstant(LocalDate dateToConvert) {
+		return java.util.Date.from(dateToConvert.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
+		return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public LocalDate convertToLocalDateViaMilisecond(Date dateToConvert) {
+		return Instant.ofEpochMilli(dateToConvert.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 }

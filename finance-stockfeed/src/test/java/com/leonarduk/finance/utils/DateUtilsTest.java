@@ -2,7 +2,7 @@ package com.leonarduk.finance.utils;
 
 import java.util.Iterator;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 

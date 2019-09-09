@@ -1,23 +1,21 @@
 package com.leonarduk.finance.stockfeed.interpolation;
 
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.joda.time.LocalDate;
-
+import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-
-import yahoofinance.histquotes.HistoricalQuote;
 
 public class BadDateRemover implements TimeSeriesCleaner {
 
 	@Override
-	public List<HistoricalQuote> clean(final List<HistoricalQuote> series) {
+	public List<ExtendedHistoricalQuote> clean(final List<ExtendedHistoricalQuote> history) {
 		final int thisYear = LocalDate.now().getYear();
 		return TimeseriesUtils.sortQuoteList(
-		        series.stream().filter((q) -> q.getDate().getYear() > 1970)
-		                .filter((q) -> q.getDate().getYear() <= thisYear)
+		        history.stream().filter((q) -> q.getLocaldate().getYear() > 1970)
+		                .filter((q) -> q.getLocaldate().getYear() <= thisYear)
 		                .collect(Collectors.toCollection(LinkedList::new)));
 	}
 

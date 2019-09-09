@@ -2,6 +2,7 @@ package com.leonarduk.finance.api;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,16 +14,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.leonarduk.finance.SnapshotAnalyser;
 import com.leonarduk.finance.portfolio.Portfolio;
 import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.portfolio.ValuationReport;
-
-import com.google.common.collect.Sets;
 
 @Named
 @Path("/portfolio")

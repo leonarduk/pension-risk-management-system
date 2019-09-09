@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.leonarduk</groupId>
 	<artifactId>finance-stockfeed</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Finance-stockfeed</name>
@@ -27,6 +28,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<webscraper-core.version>1.0.17</webscraper-core.version>
 		<jacoco.version>0.8.4</jacoco.version>
+		<jahoo.finance.version>3.15.0</jahoo.finance.version>
 
 	</properties>
 
@@ -42,6 +44,13 @@
 	</repositories>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.yahoofinance-api/YahooFinanceAPI -->
+		<dependency>
+			<groupId>com.yahoofinance-api</groupId>
+			<artifactId>YahooFinanceAPI</artifactId>
+			<version>${jahoo.finance.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -125,9 +134,9 @@
 		</dependency>
 		<!-- ta4j -->
 		<dependency>
-			<groupId>eu.verdelhan</groupId>
-			<artifactId>ta4j</artifactId>
-			<version>0.8</version>
+			<groupId>org.ta4j</groupId>
+			<artifactId>ta4j-core</artifactId>
+			<version>0.12</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -169,7 +178,7 @@
 			<version>${jacoco.version}</version>
 			<type>maven-plugin</type>
 		</dependency>
-	
+
 	</dependencies>
 	<build>
 		<plugins>
