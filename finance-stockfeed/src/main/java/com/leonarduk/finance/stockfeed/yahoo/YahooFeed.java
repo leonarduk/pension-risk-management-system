@@ -22,6 +22,7 @@ import yahoofinance.quotes.csv.StockQuotesRequest;
 import yahoofinance.quotes.fx.FxQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
+// see https://financequotes-api.com/
 public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
 //	public static final int		CONNECTION_TIMEOUT		= Integer

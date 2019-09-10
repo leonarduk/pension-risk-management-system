@@ -100,6 +100,7 @@
 	</profiles>
   <modules>
     <module>finance-stockfeed</module>
+    <module></module>  <module>webservice</module>
   </modules>
 	<organization>
 		<name>Leonard UK Ltd</name>
