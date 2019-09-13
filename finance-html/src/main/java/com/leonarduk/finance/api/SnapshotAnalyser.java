@@ -1,4 +1,4 @@
-package com.leonarduk.finance;
+package com.leonarduk.finance.api;
 
 import java.io.IOException;
 import java.math.BigDecimal;

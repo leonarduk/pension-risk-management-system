@@ -1,19 +1,5 @@
 package com.leonarduk.finance.analysis;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
-import java.util.List;
-
-import org.jfree.chart.axis.Tick;
-import org.junit.Test;
-import org.ta4j.core.Order;
-import org.ta4j.core.Strategy;
-import org.ta4j.core.TimeSeries;
-import org.ta4j.core.Trade;
-
-import jersey.repackaged.com.google.common.collect.Lists;
-
 public class TraderOrderUtilsTest {
 
 //	@Test

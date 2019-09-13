@@ -39,9 +39,8 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
 import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
-
-import jersey.repackaged.com.google.common.collect.Maps;
 
 /**
  * Helpers for common dates

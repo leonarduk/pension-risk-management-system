@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
-import com.leonarduk.finance.SnapshotAnalyser;
 import com.leonarduk.finance.portfolio.Portfolio;
 import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.portfolio.ValuationReport;
@@ -56,6 +55,7 @@ public class PortfolioFeedEndpoint {
 		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate, interpolate, false, true).toString();
 	}
 
+	// http://localhost:8091/portfolio/api/listnames/
 	@Path("/api/listnames/")
 	public Set<String> getPortfolios() throws IOException {
 		PortfolioFeedEndpoint.logger.info("JSON query of positions");

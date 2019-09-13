@@ -6,16 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-
-import jersey.repackaged.com.google.common.collect.Lists;
-import yahoofinance.histquotes.HistoricalQuote;
 
 public class CachedStockFeed extends CsvStockFeed {
 	private final String		storeLocation;

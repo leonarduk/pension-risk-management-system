@@ -9,14 +9,13 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.yahoo.ExtendedStockQuote;
 import com.leonarduk.finance.stockfeed.yahoo.StockQuoteBuilder;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-
-import jersey.repackaged.com.google.common.collect.Lists;
 
 public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed {
 	public static final Logger log = LoggerFactory.getLogger(IntelligentStockFeed.class.getName());

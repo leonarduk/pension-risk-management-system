@@ -8,10 +8,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.google.common.collect.Sets;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockV1;
 
-import jersey.repackaged.com.google.common.collect.Sets;
 
 public class Position {
 	final private BigDecimal		amount;

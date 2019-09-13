@@ -22,14 +22,13 @@ import org.ta4j.core.TimeSeries;
 import org.ta4j.core.num.Num;
 import org.ta4j.core.num.PrecisionNum;
 
+import com.google.common.collect.Sets;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.stockfeed.interpolation.BadDateRemover;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
-
-import jersey.repackaged.com.google.common.collect.Sets;
 
 public class TimeseriesUtils {
 	public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {

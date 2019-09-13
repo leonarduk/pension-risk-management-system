@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Sets;
-import com.leonarduk.finance.SnapshotAnalyser;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 
 public class PortfolioFeedEndpointTest {
