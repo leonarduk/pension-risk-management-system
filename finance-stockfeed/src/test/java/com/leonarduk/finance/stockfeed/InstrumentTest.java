@@ -3,6 +3,7 @@ package com.leonarduk.finance.stockfeed;
 import java.io.IOException;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.leonarduk.finance.stockfeed.Instrument.AssetType;
@@ -10,6 +11,7 @@ import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
 public class InstrumentTest {
 
+	@Ignore
 	@Test
 	public void testFromString() throws IOException {
 		Assert.assertEquals(Instrument.CASH, Instrument.fromString("Cash"));

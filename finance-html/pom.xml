@@ -148,12 +148,6 @@
 			<groupId>org.ta4j</groupId>
 			<artifactId>ta4j-core</artifactId>
 			<version>0.12</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>au.com.bytecode</groupId>

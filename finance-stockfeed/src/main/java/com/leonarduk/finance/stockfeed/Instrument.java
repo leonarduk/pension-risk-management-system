@@ -72,7 +72,7 @@ public class Instrument {
 		}
 	}
 
-	static class InstrumentLoader {
+	public static class InstrumentLoader {
 		private Map<String, Instrument>	instruments	= null;
 
 		private static InstrumentLoader	instance;
@@ -80,12 +80,6 @@ public class Instrument {
 		public static InstrumentLoader getInstance() throws IOException {
 			if (InstrumentLoader.instance == null) {
 				InstrumentLoader.instance = new InstrumentLoader();
-				try {
-					InstrumentLoader.instance.init();
-				}
-				catch (final IOException | URISyntaxException e) {
-					throw new IOException(e);
-				}
 			}
 
 			return InstrumentLoader.instance;
@@ -101,10 +95,10 @@ public class Instrument {
 			        Exchange.valueOf(iter.next()), iter.next(), iter.next(),
 			        iter.next());
 		}
-
-		private void init() throws IOException, URISyntaxException {
+		
+		public void init(String filePath) throws IOException, URISyntaxException {
 			this.instruments = ResourceTools
-			        .getResourceAsLines("resources/data/instruments_list.csv")
+			        .getResourceAsLines(filePath)
 			        .stream().skip(1).map(line -> this.create(line))
 			        .collect(Collectors.toConcurrentMap(i -> i.getCode(),
 			                i -> i));

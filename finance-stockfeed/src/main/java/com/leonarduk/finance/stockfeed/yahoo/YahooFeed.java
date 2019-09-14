@@ -12,7 +12,6 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.QuoteFeed;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.StockV1;
-import com.leonarduk.web.SeleniumUtils;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
@@ -123,7 +122,8 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
 	@Override
 	public boolean isAvailable() {
-		return SeleniumUtils.isInternetAvailable("https://uk.yahoo.com");
+		return true;
+//		return SeleniumUtils.isInternetAvailable("https://uk.yahoo.com");
 	}
 
 }

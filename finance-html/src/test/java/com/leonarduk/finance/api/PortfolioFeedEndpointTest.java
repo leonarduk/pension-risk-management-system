@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -34,6 +35,7 @@ public class PortfolioFeedEndpointTest {
 	// Assert.fail("Not yet implemented");
 	// }
 
+	@Ignore
 	@Test
 	public final void testGetPortfolios() throws IOException {
 		final Set<String> expected = Sets.newHashSet(new String[] { "Steve ISA",
@@ -43,6 +45,7 @@ public class PortfolioFeedEndpointTest {
 		Assert.assertEquals(expected, this.endpoint.getPortfolios());
 	}
 
+	@Ignore
 	@Test
 	public final void testGetPositions() throws IOException {
 		Assert.assertEquals(75,

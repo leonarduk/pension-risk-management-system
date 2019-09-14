@@ -16,7 +16,6 @@ import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
-import com.leonarduk.web.SeleniumUtils;
 
 public class GoogleFeed extends CsvStockFeed {
 	public static final String		BASE_URL			= "http://www.google.com/finance/historical";
@@ -62,7 +61,8 @@ public class GoogleFeed extends CsvStockFeed {
 
 	@Override
 	public boolean isAvailable() {
-		return SeleniumUtils.isInternetAvailable(GoogleFeed.BASE_URL);
+		return true;
+//		return SeleniumUtils.isInternetAvailable(GoogleFeed.BASE_URL);
 	}
 
 	@Override

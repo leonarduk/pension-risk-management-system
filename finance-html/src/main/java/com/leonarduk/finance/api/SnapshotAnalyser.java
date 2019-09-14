@@ -42,8 +42,8 @@ import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.portfolio.ValuationReport;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.stockfeed.StockFeed;
+import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
 import com.leonarduk.finance.strategies.GlobalExtremaStrategy;
@@ -91,28 +91,24 @@ public class SnapshotAnalyser {
 		this.createValuationsTable(valuations2, sbBody, true, createSeriesLinks, fromDate, toDate, interpolate);
 		sbBody.append("<hr/>");
 
-		// final Map<String, Double> assetTypeMap = valuations.parallelStream()
-		// .collect(Collectors.groupingByConcurrent(
-		// v -> v.getPosition().getInstrument().assetType().name(), Collectors
-		// .summingDouble((v -> v.getValuation().doubleValue()))));
-		// final Map<String, Double> underlyingTypeMap =
-		// valuations.parallelStream()
-		// .collect(Collectors.groupingByConcurrent(
-		// v -> v.getPosition().getInstrument().underlyingType().name(),
-		// Collectors
-		// .summingDouble((v -> v.getValuation().doubleValue()))));
+		final Map<String, Double> assetTypeMap = valuations.parallelStream()
+				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().assetType().name(),
+						Collectors.summingDouble((v -> v.getValuation().doubleValue()))));
+		final Map<String, Double> underlyingTypeMap = valuations.parallelStream()
+				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().underlyingType().name(),
+						Collectors.summingDouble((v -> v.getValuation().doubleValue()))));
 
-		// try {
-		// HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations,
-		// "Owned Assets",
-		// SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
-		// HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations,
-		// "Underlying Assets", SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
-		//
-		// }
-		// catch (final IOException e) {
-		// sbBody.append("Failed to create images:" + e.getMessage());
-		// }
+		 try {
+		 HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations,
+		 "Owned Assets",
+		 SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+		 HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations,
+		 "Underlying Assets", SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+		
+		 }
+		 catch (final IOException e) {
+		 sbBody.append("Failed to create images:" + e.getMessage());
+		 }
 	}
 
 	public List<Valuation> analayzeAllEtfs(final List<Position> stocks, final LocalDate fromDate,
@@ -243,8 +239,8 @@ public class SnapshotAnalyser {
 	}
 
 	public void computeForStrategies(final Map<String, AtomicInteger> totalscores, final StockFeed feed,
-			final String Barer) throws IOException {
-		final StockV1 stock = feed.get(Instrument.fromString(Barer), 2).get();
+			final String Ticker) throws IOException {
+		final StockV1 stock = feed.get(Instrument.fromString(Ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
 //		final List<TimeSeries> subseries = series.getSubSeries(0, 20);
 
@@ -264,7 +260,7 @@ public class SnapshotAnalyser {
 			totalscores.putIfAbsent(timeSeries.getKey(), new AtomicInteger());
 			totalscores.get(timeSeries.getKey()).addAndGet(timeSeries.getValue().get());
 		}
-		System.out.println(Barer + scores);
+		System.out.println(Ticker + scores);
 	}
 
 	public Position createEmptyPortfolioPosition(final String name) {
@@ -345,10 +341,10 @@ public class SnapshotAnalyser {
 			SnapshotAnalyser.logger.info(valuation.toString());
 			final Instrument instrument = valuation.getPosition().getInstrument();
 
-			final String Barer = instrument.code();
+			final String Ticker = instrument.code();
 
 			final ValueFormatter formatter = (value -> {
-				return new StringBuilder("<a href=\"/stock/Barer/").append(Barer).append("?fromDate=").append(fromDate)
+				return new StringBuilder("<a href=\"/stock/ticker/").append(Ticker).append("?fromDate=").append(fromDate)
 						.append("&toDate=").append(toDate).append("&interpolate=").append(interpolate).append("\">")
 						.append(value).append("</a>").toString();
 			});
