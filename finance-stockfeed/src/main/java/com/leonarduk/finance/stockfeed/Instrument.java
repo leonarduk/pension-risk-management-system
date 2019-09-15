@@ -18,45 +18,40 @@ import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.ResourceTools;
 
 public class Instrument {
-	private final AssetType			assetType;
+	private final AssetType assetType;
 
-	private final String			category;
+	private final String category;
 
-	private final String			code;
+	private final String code;
 
-	private final String			currency;
+	private final String currency;
 
-	private final Exchange			exchange;
+	private final Exchange exchange;
 
-	private final String			googleCode;
+	private final String googleCode;
 
-	private final String			isin;
+	private final String isin;
 
-	private final String			name;
+	private final String name;
 
-	private final Source			source;
+	private final Source source;
 
-	private final AssetType			underlyingType;
+	private final AssetType underlyingType;
 
-	public static final Instrument	CASH			= new Instrument("CASH",
-	        AssetType.CASH, AssetType.CASH, Source.MANUAL, Instrument.CASH_TEXT,
-	        Instrument.CASH_TEXT, Exchange.London, Instrument.CASH_TEXT,
-	        Instrument.GBP, "N/A");
+	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
+			Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.London, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
 
-	private static final String		CASH_TEXT		= "Cash";
+	private static final String CASH_TEXT = "Cash";
 
-	public static final String		GBP				= "GBP";
+	public static final String GBP = "GBP";
 
-	private static final Logger		LOGGER			= LoggerFactory
-	        .getLogger(Instrument.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(Instrument.class.getName());
 
-	public static final Instrument	UNKNOWN			= new Instrument(
-	        Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN, AssetType.UNKNOWN,
-	        Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT,
-	        Exchange.London, Instrument.UNKNOWN_TEXT, Instrument.GBP,
-	        Instrument.UNKNOWN_TEXT);
+	public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
+			AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.London,
+			Instrument.UNKNOWN_TEXT, Instrument.GBP, Instrument.UNKNOWN_TEXT);
 
-	private static final String		UNKNOWN_TEXT	= "UNKNOWN";
+	private static final String UNKNOWN_TEXT = "UNKNOWN";
 
 	public enum AssetType {
 		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, UNKNOWN;
@@ -64,8 +59,7 @@ public class Instrument {
 		public static AssetType fromString(final String value) {
 			try {
 				return AssetType.valueOf(value.toUpperCase());
-			}
-			catch (final IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				Instrument.LOGGER.warn("Cannot map " + e + " to AssetType");
 				return AssetType.UNKNOWN;
 			}
@@ -73,64 +67,56 @@ public class Instrument {
 	}
 
 	public static class InstrumentLoader {
-		private Map<String, Instrument>	instruments	= null;
+		private Map<String, Instrument> instruments = null;
 
-		private static InstrumentLoader	instance;
+		private static InstrumentLoader instance;
 
 		public static InstrumentLoader getInstance() throws IOException {
 			if (InstrumentLoader.instance == null) {
 				InstrumentLoader.instance = new InstrumentLoader();
+
+				try {
+					instance.init("resources/data/instruments_list.csv");
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					throw new IOException(e);
+				}
 			}
 
 			return InstrumentLoader.instance;
 		}
 
 		private Instrument create(final String line) {
-			final Iterator<String> iter = Arrays.asList(line.split(","))
-			        .iterator();
-			return new Instrument(iter.next(),
-			        AssetType.fromString(iter.next().toUpperCase()),
-			        AssetType.fromString(iter.next().toUpperCase()),
-			        Source.valueOf(iter.next()), iter.next(), iter.next(),
-			        Exchange.valueOf(iter.next()), iter.next(), iter.next(),
-			        iter.next());
+			final Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
+			return new Instrument(iter.next(), AssetType.fromString(iter.next().toUpperCase()),
+					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(),
+					iter.next(), Exchange.valueOf(iter.next()), iter.next(), iter.next(), iter.next());
 		}
-		
+
 		public void init(String filePath) throws IOException, URISyntaxException {
-			this.instruments = ResourceTools
-			        .getResourceAsLines(filePath)
-			        .stream().skip(1).map(line -> this.create(line))
-			        .collect(Collectors.toConcurrentMap(i -> i.getCode(),
-			                i -> i));
-			this.instruments.values().stream().forEach(
-			        i -> this.instruments.put(i.getIsin().toUpperCase(), i));
-			this.instruments.values().stream().forEach(i -> this.instruments
-			        .put(i.getGoogleCode().toUpperCase(), i));
-			this.instruments.put(Instrument.CASH.isin.toUpperCase(),
-			        Instrument.CASH);
+			this.instruments = ResourceTools.getResourceAsLines(filePath).stream().skip(1)
+					.map(line -> this.create(line)).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
+			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
+			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
+			this.instruments.put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
 		}
 
 	}
 
 	public static Instrument createPortfolioInstrument(final String name) {
-		final Instrument PORTFOLIO = new Instrument(name, AssetType.PORTFOLIO,
-		        AssetType.UNKNOWN, Source.MANUAL, "Portfolio", "Portfolio",
-		        Exchange.London, "Portfolio", Instrument.GBP, "");
+		final Instrument PORTFOLIO = new Instrument(name, AssetType.PORTFOLIO, AssetType.UNKNOWN, Source.MANUAL,
+				"Portfolio", "Portfolio", Exchange.London, "Portfolio", Instrument.GBP, "");
 		return PORTFOLIO;
 	}
 
-	public static Instrument fromString(final String symbol)
-	        throws IOException {
+	public static Instrument fromString(final String symbol) throws IOException {
 		String localSymbol = symbol;
 		final String fullStop = ".";
 		if (localSymbol.contains(fullStop)) {
-			localSymbol = localSymbol.substring(0,
-			        localSymbol.indexOf(fullStop));
+			localSymbol = localSymbol.substring(0, localSymbol.indexOf(fullStop));
 		}
-		if (InstrumentLoader.getInstance().instruments
-		        .containsKey(localSymbol.toUpperCase())) {
-			return InstrumentLoader.getInstance().instruments
-			        .get(localSymbol.toUpperCase());
+		if (InstrumentLoader.getInstance().instruments.containsKey(localSymbol.toUpperCase())) {
+			return InstrumentLoader.getInstance().instruments.get(localSymbol.toUpperCase());
 		}
 
 		Instrument.LOGGER.warn("Could not map " + symbol);
@@ -141,10 +127,9 @@ public class Instrument {
 		return InstrumentLoader.getInstance().instruments.values();
 	}
 
-	Instrument(final String name, final AssetType type,
-	        final AssetType underlying, final Source source, final String isin,
-	        final String code, final Exchange exchange, final String category,
-	        final String currency, final String googleCode) {
+	Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
+			final String isin, final String code, final Exchange exchange, final String category, final String currency,
+			final String googleCode) {
 		this.assetType = type;
 		this.underlyingType = underlying;
 		this.source = source;
@@ -183,17 +168,11 @@ public class Instrument {
 			return false;
 		}
 		final Instrument castOther = (Instrument) other;
-		return new EqualsBuilder().append(this.assetType, castOther.assetType)
-		        .append(this.category, castOther.category)
-		        .append(this.code, castOther.code)
-		        .append(this.currency, castOther.currency)
-		        .append(this.exchange, castOther.exchange)
-		        .append(this.googleCode, castOther.googleCode)
-		        .append(this.isin, castOther.isin)
-		        .append(this.name, castOther.name)
-		        .append(this.source, castOther.source)
-		        .append(this.underlyingType, castOther.underlyingType)
-		        .isEquals();
+		return new EqualsBuilder().append(this.assetType, castOther.assetType).append(this.category, castOther.category)
+				.append(this.code, castOther.code).append(this.currency, castOther.currency)
+				.append(this.exchange, castOther.exchange).append(this.googleCode, castOther.googleCode)
+				.append(this.isin, castOther.isin).append(this.name, castOther.name)
+				.append(this.source, castOther.source).append(this.underlyingType, castOther.underlyingType).isEquals();
 	}
 
 	public AssetType getAssetType() {
@@ -234,11 +213,9 @@ public class Instrument {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(this.assetType)
-		        .append(this.category).append(this.code).append(this.currency)
-		        .append(this.exchange).append(this.googleCode).append(this.isin)
-		        .append(this.name).append(this.source)
-		        .append(this.underlyingType).toHashCode();
+		return new HashCodeBuilder().append(this.assetType).append(this.category).append(this.code)
+				.append(this.currency).append(this.exchange).append(this.googleCode).append(this.isin).append(this.name)
+				.append(this.source).append(this.underlyingType).toHashCode();
 	}
 
 	public String isin() {
@@ -251,13 +228,10 @@ public class Instrument {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("assetType", this.assetType)
-		        .append("category", this.category).append("code", this.code)
-		        .append("currency", this.currency)
-		        .append("exchange", this.exchange)
-		        .append("googleCode", this.googleCode).append("isin", this.isin)
-		        .append("name", this.name).append("source", this.source)
-		        .append("underlyingType", this.underlyingType).toString();
+		return new ToStringBuilder(this).append("assetType", this.assetType).append("category", this.category)
+				.append("code", this.code).append("currency", this.currency).append("exchange", this.exchange)
+				.append("googleCode", this.googleCode).append("isin", this.isin).append("name", this.name)
+				.append("source", this.source).append("underlyingType", this.underlyingType).toString();
 	}
 
 	public AssetType underlyingType() {
