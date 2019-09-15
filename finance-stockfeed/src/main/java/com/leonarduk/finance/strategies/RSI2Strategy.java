@@ -43,8 +43,8 @@ import org.ta4j.core.trading.rules.UnderIndicatorRule;
 import com.leonarduk.finance.analysis.TraderOrderUtils;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.stockfeed.StockFeed;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 

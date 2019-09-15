@@ -1,7 +1,7 @@
 package com.leonarduk.finance.stockfeed;
 
 import com.leonarduk.finance.stockfeed.google.GoogleFeed;
-import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
+import com.leonarduk.finance.stockfeed.yahoofinance.YahooFeed;
 
 public class StockFeedFactory {
 

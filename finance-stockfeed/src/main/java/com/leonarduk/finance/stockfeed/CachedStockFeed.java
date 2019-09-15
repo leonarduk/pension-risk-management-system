@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 

@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoo;
+package com.leonarduk.finance.stockfeed.yahoofinance;
 
 import java.io.IOException;
 import java.math.BigDecimal;

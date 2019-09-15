@@ -10,11 +10,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
-import com.leonarduk.finance.stockfeed.yahoo.StockQuoteBuilder;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockQuoteBuilder;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-
-import yahoofinance.histquotes.HistoricalQuote;
 
 public abstract class AbstractStockFeed implements StockFeed {
 
@@ -23,7 +22,7 @@ public abstract class AbstractStockFeed implements StockFeed {
 		final StockQuoteBuilder quoteBuilder = new StockQuoteBuilder(instrument);
 
 		if ((quotes != null) && !quotes.isEmpty()) {
-			final HistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
+			final ExtendedHistoricalQuote historicalQuote = quotes.get(quotes.size() - 1);
 			quoteBuilder.setDayHigh(historicalQuote.getHigh()).setDayLow(historicalQuote.getLow())
 					.setOpen(historicalQuote.getOpen()).setAvgVolume(historicalQuote.getVolume())
 					.setPrice(historicalQuote.getClose());

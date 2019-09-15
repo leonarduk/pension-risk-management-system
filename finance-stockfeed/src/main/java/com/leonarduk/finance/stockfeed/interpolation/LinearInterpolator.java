@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import org.ta4j.core.Bar;
 
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.DateUtils;
 
 public class LinearInterpolator extends AbstractLineInterpolator {

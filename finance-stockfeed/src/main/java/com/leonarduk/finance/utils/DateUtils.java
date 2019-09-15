@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
-import com.leonarduk.finance.stockfeed.yahoo.YahooFeed;
+import com.leonarduk.finance.stockfeed.yahoofinance.YahooFeed;
 
 /**
  * Helpers for common dates

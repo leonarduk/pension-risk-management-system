@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoo;
+package com.leonarduk.finance.stockfeed.yahoofinance;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -11,7 +11,6 @@ import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.QuoteFeed;
 import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.StockV1;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;

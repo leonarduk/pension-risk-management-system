@@ -24,11 +24,11 @@ import org.ta4j.core.num.PrecisionNum;
 
 import com.google.common.collect.Sets;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.StockV1;
 import com.leonarduk.finance.stockfeed.interpolation.BadDateRemover;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 
 public class TimeseriesUtils {
 	public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {
@@ -62,12 +62,12 @@ public class TimeseriesUtils {
 	}
 
 	public static ExtendedHistoricalQuote getMostRecentQuote(final List<ExtendedHistoricalQuote> history) {
-		final ExtendedHistoricalQuote firstQuote = history.get(0);
+		final ExtendedHistoricalQuote firstQuote = history.get(history.size() - 1);
 		return firstQuote;
 	}
 
 	public static ExtendedHistoricalQuote getOldestQuote(final List<ExtendedHistoricalQuote> history) {
-		final ExtendedHistoricalQuote lastQuote = history.get(history.size() - 1);
+		final ExtendedHistoricalQuote lastQuote = history.get(0);
 		return lastQuote;
 	}
 

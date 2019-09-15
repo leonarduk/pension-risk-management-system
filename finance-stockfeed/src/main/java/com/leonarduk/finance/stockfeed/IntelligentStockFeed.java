@@ -11,9 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedStockQuote;
-import com.leonarduk.finance.stockfeed.yahoo.StockQuoteBuilder;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedStockQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockQuoteBuilder;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -48,15 +49,20 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 		if ((dataFeed != null) && dataFeed.isAvailable()) {
 			final ExtendedStockQuote quote = dataFeed.getStockQuote(stock.getInstrument());
 			if ((quote != null) && quote.isPopulated()) {
-				stock.getHistory()
-						.add(new ExtendedHistoricalQuote(stock.getInstrument(),
-								DateUtils.calendarToLocalDate(quote.getLastTradeTime()), quote.getOpen(),
-								quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(),
-								quote.getVolume(), Source.Yahoo.name()));
-			} else {
-				IntelligentStockFeed.log.warn(String.format("Failed to populate quote for %s", stock.getInstrument()));
+				LocalDate calendarToLocalDate = DateUtils.calendarToLocalDate(quote.getLastTradeTime());
+				List<ExtendedHistoricalQuote> history = stock.getHistory();
+				ExtendedHistoricalQuote mostRecentQuote = TimeseriesUtils.getMostRecentQuote(history);
+				if (mostRecentQuote.getLocaldate().isEqual(calendarToLocalDate)) {
+					history.remove(mostRecentQuote);
+				}
+				history.add(new ExtendedHistoricalQuote(stock.getInstrument(), calendarToLocalDate, quote.getOpen(),
+						quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(), quote.getVolume(),
+						Source.Yahoo.name()));
 			}
+		} else {
+			IntelligentStockFeed.log.warn(String.format("Failed to populate quote for %s", stock.getInstrument()));
 		}
+
 	}
 
 	@Override

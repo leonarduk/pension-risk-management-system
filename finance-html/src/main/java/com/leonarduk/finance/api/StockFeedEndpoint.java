@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import com.leonarduk.finance.stockfeed.StockV1;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
 import com.leonarduk.finance.utils.TimeseriesUtils;
@@ -68,7 +68,7 @@ public class StockFeedEndpoint {
 		for (final ExtendedHistoricalQuote historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);
-			record.add(new DataField("Date", historicalQuote.getDate()));
+			record.add(new DataField("Date", historicalQuote.getLocaldate().toString()));
 			record.add(new DataField("Open", historicalQuote.getOpen()));
 			record.add(new DataField("High", historicalQuote.getHigh()));
 			record.add(new DataField("Low", historicalQuote.getLow()));

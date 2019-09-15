@@ -1,12 +1,10 @@
-package com.leonarduk.finance.stockfeed.yahoo;
+package com.leonarduk.finance.stockfeed.yahoofinance;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-
-import yahoofinance.quotes.stock.StockQuote;
 
 public class StockQuoteBuilder {
 		private BigDecimal			ask;
@@ -43,7 +41,7 @@ public class StockQuoteBuilder {
 		}
 
 		
-		public StockQuote build() {
+		public ExtendedStockQuote build() {
 			return new ExtendedStockQuote(this.ask, this.askSize, this.avgVolume,
 			        this.bid, this.bidSize, this.dayHigh, this.dayLow,
 			        this.instrument, this.lastTradeDateStr, this.lastTradeSize,

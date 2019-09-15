@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
 public class BadDateRemover implements TimeSeriesCleaner {

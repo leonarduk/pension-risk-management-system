@@ -9,8 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.google.common.collect.Maps;
-import com.leonarduk.finance.stockfeed.StockV1;
-// import com.leonarduk.finance.strategies.AbstractStrategy;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 
 public class Valuation {
 	private final Position					position;

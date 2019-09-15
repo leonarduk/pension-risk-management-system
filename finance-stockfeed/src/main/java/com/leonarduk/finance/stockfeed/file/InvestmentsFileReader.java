@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.leonarduk.finance.portfolio.Position;
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.StockV1;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.ResourceTools;
 
 public class InvestmentsFileReader {

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.google.common.collect.Sets;
 import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.StockV1;
+import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 
 
 public class Position {

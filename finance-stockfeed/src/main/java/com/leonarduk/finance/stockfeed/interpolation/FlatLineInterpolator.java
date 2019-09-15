@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import org.ta4j.core.Bar;
 
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
 
 public class FlatLineInterpolator extends AbstractLineInterpolator {
 

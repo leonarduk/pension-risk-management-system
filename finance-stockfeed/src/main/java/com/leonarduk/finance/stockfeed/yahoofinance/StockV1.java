@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed;
+package com.leonarduk.finance.stockfeed.yahoofinance;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -11,11 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistQuotesRequest;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
-import com.leonarduk.finance.stockfeed.yahoo.StockQuoteBuilder;
-import com.leonarduk.finance.utils.TimeseriesUtils;
 
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistQuotesRequest;

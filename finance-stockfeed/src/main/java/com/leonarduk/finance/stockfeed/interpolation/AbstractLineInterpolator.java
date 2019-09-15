@@ -18,7 +18,7 @@ import org.ta4j.core.num.Num;
 import org.ta4j.core.num.PrecisionNum;
 
 import com.google.common.collect.Lists;
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;

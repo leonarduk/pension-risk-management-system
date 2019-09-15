@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.ta4j.core.TimeSeries;
 
-import com.leonarduk.finance.stockfeed.yahoo.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
 
 public interface TimeSeriesInterpolator {
 
