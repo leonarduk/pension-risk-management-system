@@ -23,17 +23,7 @@ import yahoofinance.quotes.stock.StockQuote;
 // see https://financequotes-api.com/
 public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
-//	public static final int		CONNECTION_TIMEOUT		= Integer
-//	        .parseInt(System.getProperty("connection.timeout", "10000"));
-//
-//	public static final String	HISTQUOTES_BASE_URL		= System.getProperty(
-//	        "baseurl.histquotes", // "http://ichart.yahoo.com/table.csv");
-//	        "https://query1.finance.yahoo.com/v7/finance/download/");
-////	        https://query1.finance.yahoo.com/v7/finance/download/ISJP.L?period1=1536421350&period2=1567957350&interval=1d&events=history
-//// 			 http://ichart.yahoo.com/table.csv?s=ISJP.L&a=8&b=8&c=2017&d=8&e=8&f=2019&g=d&ignore=.csv
 	public static final Logger logger = LoggerFactory.getLogger(YahooFeed.class.getName());
-//	public static final String	QUOTES_BASE_URL			= System.getProperty(
-//	        "baseurl.quotes", "http://finance.yahoo.com/d/quotes.csv");
 	public static final String QUOTES_CSV_DELIMITER = ",";
 	public static final String TIMEZONE = "America/New_York";
 
@@ -74,19 +64,6 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 		}
 	}
 
-	// if (data != null) {
-	// this.setQuote(data.getQuote());
-	// this.setStats(data.getStats());
-	// this.setDividend(data.getDividend());
-	// Stock.logger.log(Level.INFO, "Updated Stock with symbol: {0}",
-	// this.instrument.isin());
-	// }
-	// else {
-	// Stock.logger.log(Level.SEVERE, "Failed to update Stock with symbol: {0}",
-	// this.instrument.isin());
-	// }
-	// }
-
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final int years) {
 		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
@@ -95,7 +72,8 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
 		try {
-			return Optional.of(new StockV1(YahooFinance.get(instrument.code()+instrument.getExchange().getYahooSuffix())));
+			return Optional
+					.of(new StockV1(YahooFinance.get(instrument.code() + instrument.getExchange().getYahooSuffix())));
 		} catch (final Exception e) {
 			YahooFeed.logger.warn("Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();

@@ -46,6 +46,12 @@ public class ExtendedHistoricalQuote extends HistoricalQuote {
 		this.setComment(string);
 	}
 
+	public ExtendedHistoricalQuote(Instrument instrument, LocalDate localDate, double open, double low, double high,
+			double close, double adjustedClose, long volume, String comment) {
+		this(instrument, localDate, BigDecimal.valueOf(open), BigDecimal.valueOf(low), BigDecimal.valueOf(high),
+				BigDecimal.valueOf(close), BigDecimal.valueOf(adjustedClose), Long.valueOf(volume), comment);
+	}
+
 	private void setComment(String string) {
 		this.comment = string;
 	}

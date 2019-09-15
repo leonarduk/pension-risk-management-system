@@ -35,6 +35,11 @@
 			<id>central.maven.org</id>
 			<url>http://central.maven.org/maven2/</url>
 		</repository>
+		<repository>
+			<id>patriques82</id>
+			<url>https://dl.bintray.com/patriques82/maven</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -43,6 +48,12 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>28.1-jre</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.patriques</groupId>
+			<artifactId>alphavantage4j</artifactId>
+			<version>1.4</version>
 		</dependency>
 
 		<dependency>

@@ -1,19 +1,20 @@
 package com.leonarduk.finance.stockfeed;
 
-import com.leonarduk.finance.stockfeed.google.GoogleFeed;
+import com.leonarduk.finance.stockfeed.alphavantage.AlphavantageFeed;
 import com.leonarduk.finance.stockfeed.yahoofinance.YahooFeed;
 
 public class StockFeedFactory {
 
 	public static StockFeed getDataFeed(final Source source) {
 		switch (source) {
-			case MANUAL:
-				return new CachedStockFeed("db");
+		case MANUAL:
+			return new CachedStockFeed("db");
 //			case Google:
 //				return new GoogleFeed();
-			case Yahoo:
-			default:
-				return new YahooFeed();
+		case Yahoo:
+			return new YahooFeed();
+		default:
+			return new AlphavantageFeed();
 		}
 	}
 

@@ -43,8 +43,15 @@ public class StockV1 {
 	public StockV1(Stock stock) throws IOException {
 		this.currency = stock.getCurrency();
 		this.dividend = stock.getDividend();
-		this.history=ExtendedHistoricalQuote.from(stock.getHistory());
+		this.history = ExtendedHistoricalQuote.from(stock.getHistory());
 		this.instrument = Instrument.fromString(stock.getSymbol());
+	}
+
+	public StockV1(Instrument instrument, List<ExtendedHistoricalQuote>  history) throws IOException {
+		this.currency = instrument.currency();
+		this.dividend = null;
+		this.history = history;
+		this.instrument = instrument;
 	}
 
 	@Override
