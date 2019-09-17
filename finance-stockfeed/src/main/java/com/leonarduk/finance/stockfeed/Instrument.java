@@ -120,7 +120,8 @@ public class Instrument {
 		}
 
 		Instrument.LOGGER.warn("Could not map " + symbol);
-		return Instrument.UNKNOWN;
+		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL, symbol, symbol,
+				Exchange.London, "", "GBP", symbol);
 	}
 
 	public static Collection<Instrument> values() throws IOException {
