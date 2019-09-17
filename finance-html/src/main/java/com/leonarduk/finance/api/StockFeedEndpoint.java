@@ -52,19 +52,24 @@ public class StockFeedEndpoint {
 		final List<List<DataField>> records = Lists.newArrayList();
 
 		final List<ExtendedHistoricalQuote> historyData;
+		LocalDate toLocalDate;
+		final LocalDate fromLocalDate;
+
 		if (!StringUtils.isEmpty(fromDate)) {
-			final LocalDate fromLocalDate = LocalDate.parse(fromDate);
-			LocalDate toLocalDate;
+			fromLocalDate = LocalDate.parse(fromDate);
 			if (StringUtils.isEmpty(fromDate)) {
 				toLocalDate = LocalDate.now();
 			} else {
 				toLocalDate = LocalDate.parse(toDate);
 			}
-			historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate);
 
 		} else {
-			historyData = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate);
+			toLocalDate = LocalDate.now();
+			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}
+
+		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate);
+
 		for (final ExtendedHistoricalQuote historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);
@@ -106,11 +111,7 @@ public class StockFeedEndpoint {
 
 	private List<ExtendedHistoricalQuote> getHistoryData(final Instrument instrument, final int years,
 			final boolean interpolate) throws IOException {
-		final Optional<StockV1> stock = this.stockFeed.get(instrument, years, interpolate);
-		if (stock.isPresent()) {
-			return stock.get().getHistory();
-		}
-		return Lists.newArrayList();
+		return getHistoryData(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now(), interpolate);
 	}
 
 	private List<ExtendedHistoricalQuote> getHistoryData(Instrument instrument, LocalDate fromLocalDate,

@@ -90,9 +90,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			if (instrument.equals(Instrument.CASH)) {
 				return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
 			}
-			final CachedStockFeed dataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
+			final CachedStockFeed cachedDataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
 
-			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, dataFeed,
+			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
 					true);
 
 			StockFeed webDataFeed = StockFeedFactory.getDataFeed(instrument.getSource());
@@ -108,8 +108,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 						DateUtils.getPreviousDate(toDate));
 			}
 
-			Optional<StockV1> liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
-					IntelligentStockFeed.refresh);
+			Optional<StockV1> liveData = Optional.empty();
 			// Yahoo often give 503 errors when downloading history
 			if (getWebData && webDataFeed.isAvailable() && !liveData.isPresent()
 					&& webDataFeed.getSource().equals(Source.Yahoo)) {
@@ -124,7 +123,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 					this.mergeSeries(cachedData.get(), stock.getHistory(), cachedData.get().getHistory());
 				}
 				TimeseriesUtils.cleanUpSeries(liveData);
-				dataFeed.storeSeries(stock);
+				cachedDataFeed.storeSeries(stock);
 			} else {
 				TimeseriesUtils.cleanUpSeries(cachedData);
 				liveData = TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, cachedData);
