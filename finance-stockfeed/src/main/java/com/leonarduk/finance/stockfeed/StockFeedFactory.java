@@ -1,7 +1,7 @@
 package com.leonarduk.finance.stockfeed;
 
-import com.leonarduk.finance.stockfeed.alphavantage.AlphavantageFeed;
-import com.leonarduk.finance.stockfeed.yahoofinance.YahooFeed;
+import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 
 public class StockFeedFactory {
 

@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoofinance;
+package com.leonarduk.finance.stockfeed.feed.yahoofinance;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -9,10 +9,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistQuotesRequest;
@@ -30,7 +32,7 @@ public class StockV1 {
 
 	private StockDividend dividend;
 
-	private List<ExtendedHistoricalQuote> history;
+	private List<Bar> history;
 	private final Instrument instrument;
 	private StockQuote quote;
 
@@ -47,7 +49,7 @@ public class StockV1 {
 		this.instrument = Instrument.fromString(stock.getSymbol());
 	}
 
-	public StockV1(Instrument instrument, List<ExtendedHistoricalQuote>  history) throws IOException {
+	public StockV1(Instrument instrument, List<Bar>  history) throws IOException {
 		this.currency = instrument.currency();
 		this.dividend = null;
 		this.history = history;
@@ -110,7 +112,7 @@ public class StockV1 {
 	 * @see #getHistory(java.util.Calendar, java.util.Calendar,
 	 *      yahoofinance.histquotes.Interval)
 	 */
-	public List<ExtendedHistoricalQuote> getHistory() throws IOException {
+	public List<Bar> getHistory() throws IOException {
 		if (this.history == null) {
 			return Lists.newArrayList();
 		}
@@ -131,7 +133,7 @@ public class StockV1 {
 	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<ExtendedHistoricalQuote> getHistory(final Calendar from) throws IOException {
+	public List<Bar> getHistory(final Calendar from) throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO);
 	}
 
@@ -150,7 +152,7 @@ public class StockV1 {
 	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<ExtendedHistoricalQuote> getHistory(final Calendar from, final Calendar to) throws IOException {
+	public List<Bar> getHistory(final Calendar from, final Calendar to) throws IOException {
 		return this.getHistory(from, to, Interval.MONTHLY);
 	}
 
@@ -170,7 +172,7 @@ public class StockV1 {
 	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<ExtendedHistoricalQuote> getHistory(final Calendar from, final Calendar to, final Interval interval)
+	public List<Bar> getHistory(final Calendar from, final Calendar to, final Interval interval)
 			throws IOException {
 		final HistQuotesRequest hist = new ExtendedHistQuotesRequest(this.instrument.getCode(), from, to, interval);
 		this.setHistory(ExtendedHistoricalQuote.from(hist.getResult()));
@@ -192,7 +194,7 @@ public class StockV1 {
 	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<ExtendedHistoricalQuote> getHistory(final Calendar from, final Interval interval) throws IOException {
+	public List<Bar> getHistory(final Calendar from, final Interval interval) throws IOException {
 		return this.getHistory(from, HistQuotesRequest.DEFAULT_TO, interval);
 	}
 
@@ -210,7 +212,7 @@ public class StockV1 {
 	 * @throws java.io.IOException when there's a connection problem
 	 * @see #getHistory()
 	 */
-	public List<ExtendedHistoricalQuote> getHistory(final Interval interval) throws IOException {
+	public List<Bar> getHistory(final Interval interval) throws IOException {
 		return this.getHistory(HistQuotesRequest.DEFAULT_FROM, interval);
 	}
 
@@ -282,7 +284,7 @@ public class StockV1 {
 		this.dividend = dividend;
 	}
 
-	public void setHistory(final List<ExtendedHistoricalQuote> list) {
+	public void setHistory(final List<Bar> list) {
 		this.history = list;
 	}
 

@@ -1,3 +1,4 @@
+package com.leonarduk.finance.stockfeed.feed.google;
 //package com.leonarduk.finance.stockfeed.google;
 //
 //import java.io.IOException;

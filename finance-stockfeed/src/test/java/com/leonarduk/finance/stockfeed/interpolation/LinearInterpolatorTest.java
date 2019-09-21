@@ -1,60 +1,58 @@
-//package com.leonarduk.finance.stockfeed.interpolation;
-//
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import java.time.LocalDate;
-//import org.junit.Assert;
-//import org.junit.Before;
-//import org.junit.Test;
-//
-//import eu.verdelhan.ta4j.Decimal;
-//import eu.verdelhan.ta4j.Tick;
-//import eu.verdelhan.ta4j.TimeSeries;
-//
-//public class LinearInterpolatorTest {
-//	private TimeSeriesInterpolator	interpolator;
-//	private TimeSeries				series;
-//
-//	@Before
-//	public void setUp() throws Exception {
-//		this.interpolator = new LinearInterpolator();
-//		final List<Tick> ticks = Arrays.asList(new Tick[] { //
-//		        new Tick(LocalDate.parse("2017-04-14").toDateTimeAtStartOfDay(),
-//		                105, 115, 95, 110, 2000),
-//		        new Tick(LocalDate.parse("2017-04-07").toDateTimeAtStartOfDay(),
-//		                100, 112, 92, 102, 5000),
-//		        new Tick(LocalDate.parse("2017-04-03").toDateTimeAtStartOfDay(),
-//		                100, 110, 90, 105, 1000) });
-//		this.series = new TimeSeries(ticks);
-//	}
-//
-//	@Test
-//	public void testInterpolate() {
-//		final TimeSeries actual = this.interpolator.interpolate(this.series);
-//		Assert.assertEquals(10, actual.getTickCount());
-//		Assert.assertEquals(LocalDate.parse("2017-04-03"),
-//		        actual.getTick(0).getEndTime().toLocalDate());
-//		Assert.assertEquals(LocalDate.parse("2017-04-04"),
-//		        actual.getTick(1).getEndTime().toLocalDate());
-//		Assert.assertEquals(LocalDate.parse("2017-04-05"),
-//		        actual.getTick(2).getEndTime().toLocalDate());
-//		Assert.assertEquals(LocalDate.parse("2017-04-07"),
-//		        actual.getTick(4).getEndTime().toLocalDate());
-//		Assert.assertEquals(LocalDate.parse("2017-04-14"),
-//		        actual.getTick(9).getEndTime().toLocalDate());
-//
-//		Assert.assertEquals(Decimal.valueOf(102.75),
-//		        actual.getTick(3).getClosePrice());
-//		Assert.assertEquals(Decimal.valueOf(103.5),
-//		        actual.getTick(2).getClosePrice());
-//		Assert.assertEquals(Decimal.valueOf(104.25),
-//		        actual.getTick(1).getClosePrice());
-//		Assert.assertEquals(Decimal.valueOf(102),
-//		        actual.getTick(4).getClosePrice());
-//		Assert.assertEquals(Decimal.valueOf(106.8).toDouble(),
-//		        actual.getTick(5).getClosePrice().toDouble(), 0.001);
-//
-//	}
-//
-//}
+package com.leonarduk.finance.stockfeed.interpolation;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.ta4j.core.Bar;
+import org.ta4j.core.BaseTimeSeries;
+import org.ta4j.core.TimeSeries;
+import org.ta4j.core.num.DoubleNum;
+
+import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+
+public class LinearInterpolatorTest {
+	private TimeSeriesInterpolator interpolator;
+	private TimeSeries series;
+	private List<ExtendedHistoricalQuote> quotes;
+
+	@Before
+	public void setUp() throws Exception {
+		this.interpolator = new LinearInterpolator();
+		quotes = Arrays.asList(
+				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-14"), 105.0, 115.0, 95.0,
+						110.0, 2000.0, 0, ""),
+				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-07"), 100.0, 112.0, 92.0,
+						102.0, 5000.0, 0, ""),
+				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-03"), 100.0, 110.0, 90.0,
+						105.0, 1000.0, 0, ""));
+
+		final List<Bar> ticks = quotes.stream().map(q -> new ExtendedHistoricalQuote(q)).collect(Collectors.toList());
+		this.series = new BaseTimeSeries(ticks);
+	}
+
+	@Test
+	public void testInterpolateTimeseries() {
+		final TimeSeries actual = this.interpolator.interpolate(this.series);
+		Assert.assertEquals(10, actual.getBarCount());
+		Assert.assertEquals(LocalDate.parse("2017-04-03"), actual.getBar(0).getEndTime().toLocalDate());
+		Assert.assertEquals(LocalDate.parse("2017-04-04"), actual.getBar(1).getEndTime().toLocalDate());
+		Assert.assertEquals(LocalDate.parse("2017-04-05"), actual.getBar(2).getEndTime().toLocalDate());
+		Assert.assertEquals(LocalDate.parse("2017-04-07"), actual.getBar(4).getEndTime().toLocalDate());
+		Assert.assertEquals(LocalDate.parse("2017-04-14"), actual.getBar(9).getEndTime().toLocalDate());
+
+		Assert.assertEquals(DoubleNum.valueOf(104.25), actual.getBar(1).getClosePrice());
+		Assert.assertEquals(DoubleNum.valueOf(103.5), actual.getBar(2).getClosePrice());
+		Assert.assertEquals(DoubleNum.valueOf(102.75), actual.getBar(3).getClosePrice());
+		Assert.assertEquals(DoubleNum.valueOf(102), actual.getBar(4).getClosePrice());
+		Assert.assertEquals(DoubleNum.valueOf(106.8).doubleValue(), actual.getBar(5).getClosePrice().doubleValue(),
+				0.001);
+
+	}
+
+}

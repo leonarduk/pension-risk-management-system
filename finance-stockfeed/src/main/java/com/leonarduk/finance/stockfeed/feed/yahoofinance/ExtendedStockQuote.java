@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoofinance;
+package com.leonarduk.finance.stockfeed.feed.yahoofinance;
 
 import java.math.BigDecimal;
 import java.util.Calendar;

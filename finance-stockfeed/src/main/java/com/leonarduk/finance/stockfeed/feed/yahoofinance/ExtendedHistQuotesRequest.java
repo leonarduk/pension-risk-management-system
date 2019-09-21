@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoofinance;
+package com.leonarduk.finance.stockfeed.feed.yahoofinance;
 
 import java.util.Calendar;
 

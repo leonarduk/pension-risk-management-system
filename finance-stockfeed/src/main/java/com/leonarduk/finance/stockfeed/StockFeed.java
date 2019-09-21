@@ -3,8 +3,9 @@ package com.leonarduk.finance.stockfeed;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 
+import java.time.LocalDate;
 import java.time.LocalDate;
 
 public interface StockFeed {

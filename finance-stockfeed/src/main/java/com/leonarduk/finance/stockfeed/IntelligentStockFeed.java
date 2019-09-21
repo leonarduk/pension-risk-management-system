@@ -8,13 +8,15 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ta4j.core.Bar;
+import org.ta4j.core.num.DoubleNum;
 
 import com.google.common.collect.Lists;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockQuoteBuilder;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedStockQuote;
-import com.leonarduk.finance.stockfeed.yahoofinance.StockQuoteBuilder;
-import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -30,13 +32,13 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 	public static Optional<StockV1> getFlatCashSeries(final Instrument instrument, final LocalDate fromDate,
 			final LocalDate toDate) throws IOException {
 		final StockV1 cash = new StockV1(instrument);
-		final List<ExtendedHistoricalQuote> history = Lists.newArrayList();
-		history.add(new ExtendedHistoricalQuote(instrument, toDate, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-				BigDecimal.ONE, BigDecimal.ONE, 0l, "Manually created"));
+		final List<Bar> history = Lists.newArrayList();
+		history.add(new ExtendedHistoricalQuote(instrument.getCode(), toDate, BigDecimal.ONE, BigDecimal.ONE,
+				BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, DoubleNum.valueOf(0l), "Manually created"));
 
 		final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 		cash.setHistory(flatLineInterpolator.extendToFromDate(history, fromDate));
-		cash.setQuote(new StockQuoteBuilder(instrument).setPrice(BigDecimal.ONE).build());
+		cash.setQuote(new StockQuoteBuilder(instrument).setPrice(DoubleNum.valueOf(1)).build());
 		return Optional.of(cash);
 	}
 
@@ -50,14 +52,16 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final ExtendedStockQuote quote = dataFeed.getStockQuote(stock.getInstrument());
 			if ((quote != null) && quote.isPopulated()) {
 				LocalDate calendarToLocalDate = DateUtils.calendarToLocalDate(quote.getLastTradeTime());
-				List<ExtendedHistoricalQuote> history = stock.getHistory();
-				ExtendedHistoricalQuote mostRecentQuote = TimeseriesUtils.getMostRecentQuote(history);
-				if (mostRecentQuote.getLocaldate().isEqual(calendarToLocalDate)) {
-					history.remove(mostRecentQuote);
+				List<Bar> history = stock.getHistory();
+				if (!history.isEmpty()) {
+					Bar mostRecentQuote = TimeseriesUtils.getMostRecentQuote(history);
+					if (mostRecentQuote.getEndTime().toLocalDate().isEqual(calendarToLocalDate)) {
+						history.remove(mostRecentQuote);
+					}
+					history.add(new ExtendedHistoricalQuote(stock.getInstrument().code(), calendarToLocalDate,
+							quote.getOpen(), quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(),
+							DoubleNum.valueOf(quote.getVolume()), Source.Yahoo.name()));
 				}
-				history.add(new ExtendedHistoricalQuote(stock.getInstrument(), calendarToLocalDate, quote.getOpen(),
-						quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(), quote.getVolume(),
-						Source.Yahoo.name()));
 			}
 		} else {
 			IntelligentStockFeed.log.warn(String.format("Failed to populate quote for %s", stock.getInstrument()));
@@ -92,8 +96,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			}
 			final CachedStockFeed cachedDataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
 
-			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
-					true);
+			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
+					cachedDataFeed, true);
 
 			StockFeed webDataFeed = StockFeedFactory.getDataFeed(instrument.getSource());
 
@@ -103,7 +107,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			boolean getWebData = IntelligentStockFeed.refresh
 					&& (webDataFeed.isAvailable() || StockFeedFactory.getDataFeed(Source.Google).isAvailable());
 			if (getWebData && cachedData.isPresent()) {
-				final List<ExtendedHistoricalQuote> cachedHistory = cachedData.get().getHistory();
+				final List<Bar> cachedHistory = cachedData.get().getHistory();
 				getWebData = !TimeseriesUtils.containsDatePoints(cachedHistory, fromDate,
 						DateUtils.getPreviousDate(toDate));
 			}

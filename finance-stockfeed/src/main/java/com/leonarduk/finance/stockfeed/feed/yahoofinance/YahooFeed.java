@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.yahoofinance;
+package com.leonarduk.finance.stockfeed.feed.yahoofinance;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -70,7 +70,8 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	}
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
+	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate,
+			final LocalDate toDate) {
 		try {
 			return Optional
 					.of(new StockV1(YahooFinance.get(instrument.code() + instrument.getExchange().getYahooSuffix())));

@@ -25,10 +25,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
-import com.leonarduk.finance.stockfeed.yahoofinance.YahooFeed;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 
 /**
  * Helpers for common dates
@@ -60,12 +60,12 @@ public class DateUtils {
 		return calendar;
 	}
 
-	public static Calendar dateToCalendar(final LocalDate fromDate) {
-		return DateUtils.dateToCalendar(convertToDateViaInstant(fromDate));
+	public static Calendar dateToCalendar(final ZonedDateTime fromDate) {
+		return DateUtils.dateToCalendar(convertToDateViaInstant(fromDate.toLocalDate()));
 	}
 
-	public static int getDiffInWorkDays(final LocalDate currentDate, final LocalDate nextDate) {
-		final int calendarDaysDiff = (int) Duration.between(nextDate.atStartOfDay(), currentDate.atStartOfDay())
+	public static int getDiffInWorkDays(final LocalDate localDate, final LocalDate localDate2) {
+		final int calendarDaysDiff = (int) Duration.between(localDate2.atStartOfDay(), localDate.atStartOfDay())
 				.toDays();
 
 		final int weeks = Math.round(calendarDaysDiff / 7);
@@ -84,14 +84,14 @@ public class DateUtils {
 		}
 	}
 
-	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate startDate, final LocalDate lastDate) {
+	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate localDate, final LocalDate localDate2) {
 		return new Iterator<LocalDate>() {
 
-			LocalDate nextDate = startDate;
+			LocalDate nextDate = localDate;
 
 			@Override
 			public boolean hasNext() {
-				return this.nextDate.isBefore(lastDate) || this.nextDate.equals(lastDate);
+				return this.nextDate.isBefore(localDate2) || this.nextDate.equals(localDate2);
 			}
 
 			@Override
@@ -108,11 +108,11 @@ public class DateUtils {
 
 	}
 
-	public static Iterator<LocalDate> getLocalDateNewToOldIterator(final LocalDate startDate,
-			final LocalDate lastDate) {
-		return new Iterator<LocalDate>() {
+	public static Iterator<ZonedDateTime> getLocalDateNewToOldIterator(final ZonedDateTime startDate,
+			final ZonedDateTime lastDate) {
+		return new Iterator<ZonedDateTime>() {
 
-			LocalDate nextDate = startDate;
+			ZonedDateTime nextDate = startDate;
 
 			@Override
 			public boolean hasNext() {
@@ -120,14 +120,14 @@ public class DateUtils {
 			}
 
 			@Override
-			public LocalDate next() {
+			public ZonedDateTime next() {
 				if (this.nextDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
 					this.nextDate = this.nextDate.minusDays(2);
 				}
 				if (this.nextDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
 					this.nextDate = this.nextDate.minusDays(1);
 				}
-				final LocalDate currentDate = this.nextDate;
+				final ZonedDateTime currentDate = this.nextDate;
 				this.nextDate = this.nextDate.minusDays(1);
 				return currentDate;
 			}
@@ -136,8 +136,8 @@ public class DateUtils {
 
 	}
 
-	public static LocalDate getPreviousDate(final LocalDate currentDate) {
-		final LocalDate returnDate = currentDate.minusDays(1);
+	public static LocalDate getPreviousDate(final LocalDate localDate) {
+		final LocalDate returnDate = localDate.minusDays(1);
 		if ((returnDate.getDayOfWeek() == DayOfWeek.SATURDAY) || (returnDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
 			return DateUtils.getPreviousDate(returnDate);
 		}
@@ -149,7 +149,7 @@ public class DateUtils {
 			DateUtils.dates = Maps.newConcurrentMap();
 		}
 		return (DateUtils.dates.computeIfAbsent(fieldValue,
-				v -> DateUtils.convertToDateViaInstant(LocalDate.parse(v))));
+				v -> DateUtils.convertToDateViaInstant(ZonedDateTime.parse(v).toLocalDate())));
 	}
 
 	/**
@@ -217,16 +217,20 @@ public class DateUtils {
 		}
 	}
 
-	public static Date convertToDateViaInstant(LocalDate dateToConvert) {
-		return java.util.Date.from(dateToConvert.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	public static Date convertToDateViaInstant(LocalDate fromDate) {
+		return java.util.Date.from(fromDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
 		return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
-	public LocalDate convertToLocalDateViaMilisecond(Date dateToConvert) {
-		return Instant.ofEpochMilli(dateToConvert.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+//	public ZonedDateTime convertToLocalDateViaMilisecond(Date dateToConvert) {
+//		return Instant.ofEpochMilli(dateToConvert.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+//	}
+
+	public static ZonedDateTime calendarToZonedDateTime(Calendar lastTradeTime) {
+		return lastTradeTime.toInstant().atZone(ZoneId.systemDefault());
 	}
 
 }

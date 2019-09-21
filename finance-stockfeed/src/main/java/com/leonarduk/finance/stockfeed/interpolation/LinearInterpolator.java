@@ -5,44 +5,47 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.ta4j.core.Bar;
+import org.ta4j.core.num.DoubleNum;
+import org.ta4j.core.num.Num;
 
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.DateUtils;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 public class LinearInterpolator extends AbstractLineInterpolator {
 
 	@Override
-	protected ExtendedHistoricalQuote calculateFutureValue(final ExtendedHistoricalQuote lastQuote,
-			final LocalDate today) {
+	protected Bar calculateFutureValue(final Bar lastQuote, final LocalDate today) {
 		// TODO maybe use a gradient from a few points before
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	protected ExtendedHistoricalQuote calculatePastValue(final ExtendedHistoricalQuote firstQuote,
-			final LocalDate fromDate) {
+	protected Bar calculatePastValue(final Bar firstQuote, final LocalDate fromDate) {
 		// TODO maybe use a gradient from a few points before
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ExtendedHistoricalQuote createSyntheticQuote(final ExtendedHistoricalQuote currentQuote,
-			final LocalDate currentDate, final ExtendedHistoricalQuote nextQuote) throws IOException {
-		final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getLocaldate(), currentQuote.getLocaldate());
-		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getLocaldate(), currentDate);
+	public Bar createSyntheticQuote(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote)
+			throws IOException {
+		final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getEndTime().toLocalDate(),
+				currentQuote.getEndTime().toLocalDate());
+		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(),
+				currentDate);
 		final double multiplier = dayCount / timeInteval;
 
-		final BigDecimal changeClosePrice = nextQuote.getClose().subtract(currentQuote.getClose());
-		final BigDecimal changeOpenPrice = nextQuote.getOpen().subtract(currentQuote.getOpen());
+		final Num changeClosePrice = nextQuote.getClosePrice().minus(currentQuote.getClosePrice());
+		final Num changeOpenPrice = nextQuote.getOpenPrice().minus(currentQuote.getOpenPrice());
 
-		final BigDecimal newClosePrice = currentQuote.getClose()
-				.add(changeClosePrice.multiply(BigDecimal.valueOf(multiplier)));
-		final BigDecimal newOpenPrice = currentQuote.getOpen()
-				.add(changeOpenPrice.multiply(BigDecimal.valueOf(multiplier)));
+		final Num newClosePrice = currentQuote.getClosePrice()
+				.plus(changeClosePrice.multipliedBy(DoubleNum.valueOf(multiplier)));
+		final Num newOpenPrice = currentQuote.getOpenPrice()
+				.plus(changeOpenPrice.multipliedBy(DoubleNum.valueOf(multiplier)));
 
-		return this.createSyntheticQuote(currentQuote, currentDate, newClosePrice, newOpenPrice,
-				"Interpolated from " + currentQuote.getDate() + "(" + currentQuote.getClose() + ") to "
-						+ nextQuote.getDate() + " (" + nextQuote.getClose() + ")");
+		return TimeseriesUtils.createSyntheticQuote(currentQuote, currentDate,
+				BigDecimal.valueOf(newClosePrice.doubleValue()), BigDecimal.valueOf(newOpenPrice.doubleValue()),
+				"Interpolated from " + currentQuote.getEndTime() + "(" + currentQuote.getClosePrice() + ") to "
+						+ nextQuote.getEndTime() + " (" + nextQuote.getClosePrice() + ")");
 	}
 
 	@Override
@@ -50,7 +53,8 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 
 		final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getEndTime().toLocalDate(),
 				currentQuote.getEndTime().toLocalDate());
-		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(), currentDate);
+		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(),
+				currentDate);
 		final double multiplier = dayCount / timeInteval;
 
 		final Double changeClosePrice = nextQuote.getClosePrice().doubleValue()
@@ -63,7 +67,7 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 		final Double newOpenPrice = currentQuote.getOpenPrice().doubleValue()
 				+ (changeOpenPrice * Double.valueOf(multiplier));
 
-		return this.createSyntheticBar(currentDate, newClosePrice, newOpenPrice);
+		return TimeseriesUtils.createSyntheticBar(currentDate, newClosePrice, newOpenPrice);
 	}
 
 }

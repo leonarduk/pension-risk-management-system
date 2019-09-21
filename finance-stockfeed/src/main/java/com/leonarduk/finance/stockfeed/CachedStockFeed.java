@@ -9,11 +9,11 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
-import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -31,7 +31,7 @@ public class CachedStockFeed extends CsvStockFeed {
 
 		final File file = this.getFile(stock);
 		CachedStockFeed.log.info("Save stock to " + file.getAbsolutePath());
-		final List<ExtendedHistoricalQuote> series = stock.getHistory();
+		final List<Bar> series = stock.getHistory();
 
 		/**
 		 * Building header
@@ -72,7 +72,7 @@ public class CachedStockFeed extends CsvStockFeed {
 		        && store.canRead();
 	}
 
-	private List<ExtendedHistoricalQuote> loadSeries(final StockV1 stock)
+	private List<Bar> loadSeries(final StockV1 stock)
 	        throws IOException {
 		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000);
 		if (optional.isPresent()) {
@@ -82,7 +82,7 @@ public class CachedStockFeed extends CsvStockFeed {
 	}
 
 	private void mergeSeries(final StockV1 stock) throws IOException {
-		final List<ExtendedHistoricalQuote> original = this.loadSeries(stock);
+		final List<Bar> original = this.loadSeries(stock);
 		this.mergeSeries(stock, original);
 		this.createSeries(stock);
 	}

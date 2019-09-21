@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.alphavantage;
+package com.leonarduk.finance.stockfeed.feed.alphavantage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -8,42 +8,27 @@ import java.util.stream.Collectors;
 
 import org.patriques.AlphaVantageConnector;
 import org.patriques.TimeSeries;
-import org.patriques.input.timeseries.Interval;
 import org.patriques.input.timeseries.OutputSize;
 import org.patriques.output.timeseries.DailyAdjusted;
-import org.patriques.output.timeseries.IntraDay;
 import org.patriques.output.timeseries.data.StockData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ta4j.core.Bar;
 
 import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.QuoteFeed;
 import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedStockQuote;
-import com.leonarduk.finance.stockfeed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.yahoofinance.YahooFeed;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 
-import yahoofinance.Stock;
-import yahoofinance.YahooFinance;
-import yahoofinance.quotes.csv.FxQuotesRequest;
-import yahoofinance.quotes.csv.StockQuotesData;
-import yahoofinance.quotes.csv.StockQuotesRequest;
-import yahoofinance.quotes.fx.FxQuote;
-import yahoofinance.quotes.stock.StockQuote;
-
-// see https://financequotes-api.com/
 public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 
 	public static final Logger logger = LoggerFactory.getLogger(AlphavantageFeed.class.getName());
 	public static final String QUOTES_CSV_DELIMITER = ",";
 	public static final String TIMEZONE = "America/New_York";
-
-	public static FxQuote getFx(final Instrument symbol) throws IOException {
-		final FxQuotesRequest request = new FxQuotesRequest(symbol.code());
-		return request.getSingleResult();
-	}
 
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final int years) {
@@ -61,7 +46,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 			String code = instrument.code() + instrument.getExchange().getYahooSuffix();
 			DailyAdjusted response = stockTimeSeries.dailyAdjusted(code, OutputSize.FULL);
 
-			List<ExtendedHistoricalQuote> series = convertSeries(instrument, response.getStockData());
+			List<Bar> series = convertSeries(instrument, response.getStockData());
 			return Optional.of(new StockV1(instrument, series));
 		} catch (final Exception e) {
 			YahooFeed.logger.warn("Error when fetching from Alphavantage: " + e.getMessage());
@@ -69,7 +54,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 		}
 	}
 
-	private List<ExtendedHistoricalQuote> convertSeries(Instrument instrument, List<StockData> stockData) {
+	private List<Bar> convertSeries(Instrument instrument, List<StockData> stockData) {
 		return stockData.stream()
 				.map(quote -> new ExtendedHistoricalQuote(instrument, quote.getDateTime().toLocalDate(),
 						quote.getOpen(), quote.getLow(), quote.getHigh(), quote.getClose(), quote.getAdjustedClose(),
@@ -79,19 +64,12 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 
 	@Override
 	public Source getSource() {
-		return Source.Yahoo;
+		return Source.Alphavantage;
 	}
 
 	@Override
 	public ExtendedStockQuote getStockQuote(final Instrument instrument) throws IOException {
-		Stock stock = YahooFinance.get(instrument.code() + instrument.getExchange().getYahooSuffix());
-		StockQuote price = stock.getQuote();
-		return new ExtendedStockQuote(price);
-	}
-
-	public StockQuotesData getStockQuotesData(final Instrument instrument) throws IOException {
-		final StockQuotesRequest request = new StockQuotesRequest(instrument.code());
-		return request.getSingleResult();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -1,37 +1,41 @@
 package com.leonarduk.finance.stockfeed.interpolation;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.ta4j.core.Bar;
 
-import com.leonarduk.finance.stockfeed.yahoofinance.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 public class FlatLineInterpolator extends AbstractLineInterpolator {
 
 	@Override
-	protected ExtendedHistoricalQuote calculateFutureValue(final ExtendedHistoricalQuote lastQuote,
-			final LocalDate today) {
+	protected Bar calculateFutureValue(final Bar lastQuote, final LocalDate today) {
 		return new ExtendedHistoricalQuote(lastQuote, today, "FlatLineInterpolation");
 	}
 
 	@Override
-	protected ExtendedHistoricalQuote calculatePastValue(final ExtendedHistoricalQuote currentQuote,
-			final LocalDate fromDate) throws IOException {
-		return this.createSyntheticQuote(currentQuote, fromDate, currentQuote.getClose(), currentQuote.getOpen(),
-				"Copied from " + currentQuote.getDate());
+	protected Bar calculatePastValue(final Bar currentQuote, final LocalDate fromDate) throws IOException {
+		return TimeseriesUtils.createSyntheticQuote(currentQuote, fromDate,
+				BigDecimal.valueOf(currentQuote.getClosePrice().doubleValue()),
+				BigDecimal.valueOf(currentQuote.getOpenPrice().doubleValue()),
+				"Copied from " + currentQuote.getEndTime());
 	}
 
 	@Override
-	public ExtendedHistoricalQuote createSyntheticQuote(final ExtendedHistoricalQuote currentQuote,
-			final LocalDate currentDate, final ExtendedHistoricalQuote nextQuote) throws IOException {
-		return this.createSyntheticQuote(currentQuote, currentDate, currentQuote.getClose(), currentQuote.getOpen(),
-				"Copied from " + currentQuote.getDate());
+	public Bar createSyntheticQuote(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote)
+			throws IOException {
+		return TimeseriesUtils.createSyntheticQuote(currentQuote, currentDate,
+				BigDecimal.valueOf(currentQuote.getClosePrice().doubleValue()),
+				BigDecimal.valueOf(currentQuote.getOpenPrice().doubleValue()),
+				"Copied from " + currentQuote.getEndTime());
 	}
 
 	@Override
 	public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
-		return this.createSyntheticBar(currentDate, currentQuote.getClosePrice().doubleValue(),
+		return TimeseriesUtils.createSyntheticBar(currentDate, currentQuote.getClosePrice().doubleValue(),
 				currentQuote.getOpenPrice().doubleValue());
 	}
 
