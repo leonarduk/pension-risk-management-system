@@ -91,11 +91,18 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			});
 
 		} catch (final IOException e) {
-			CsvStockFeed.log.warn("Failed:" + e.getMessage());
+			CsvStockFeed.log.warn("Failed:" + this.toString() + " : " + e.getMessage());
 			return Optional.empty();
 		}
 
 		return Optional.of(AbstractStockFeed.createStock(instrument, quotes));
+	}
+
+	@Override
+	public String toString() {
+		return "CsvStockFeed [close=" + close + ", comment=" + comment + ", date=" + date + ", endDate=" + endDate
+				+ ", high=" + high + ", instrument=" + instrument + ", low=" + low + ", open=" + open + ", reader="
+				+ reader + ", startDate=" + startDate + ", volume=" + volume + "]";
 	}
 
 	/**
