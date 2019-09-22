@@ -1,6 +1,7 @@
 package com.leonarduk.finance.api;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
+import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
@@ -73,13 +75,18 @@ public class StockFeedEndpoint {
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);
-			record.add(new DataField("Date", historicalQuote.getEndTime().toString()));
+			record.add(new DataField("Date", historicalQuote.getEndTime().toLocalDate().toString()));
 			record.add(new DataField("Open", historicalQuote.getOpenPrice()));
 			record.add(new DataField("High", historicalQuote.getMaxPrice()));
 			record.add(new DataField("Low", historicalQuote.getMinPrice()));
 			record.add(new DataField("Close", historicalQuote.getClosePrice()));
 			record.add(new DataField("Volume", historicalQuote.getVolume()));
-			record.add(new DataField("Comment", historicalQuote.getDateName()));
+
+			if (historicalQuote instanceof Commentable) {
+				Commentable commentable = (Commentable) historicalQuote;
+				record.add(new DataField("Comment", commentable.getComment()));
+
+			}
 		}
 
 		HtmlTools.printTable(sbBody, records);
@@ -114,6 +121,9 @@ public class StockFeedEndpoint {
 
 	private List<Bar> getHistoryData(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate,
 			boolean interpolate) throws IOException {
+//		while (toLocalDate.getDayOfWeek().ordinal() > DayOfWeek.FRIDAY.ordinal()) {
+//			toLocalDate = toLocalDate.minusDays(1);
+//		}
 		final Optional<StockV1> stock = this.stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();

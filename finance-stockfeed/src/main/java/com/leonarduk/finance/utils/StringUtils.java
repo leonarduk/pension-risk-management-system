@@ -10,7 +10,7 @@ public class StringUtils {
 	private static NumberFormat formatter = new DecimalFormat("#0.00");
 
 	public static void addValue(final StringBuilder buf, final Num num) {
-		final String format = StringUtils.formatter.format(num == null ? BigDecimal.ZERO : num);
+		final String format = StringUtils.formatter.format(num == null ? BigDecimal.ZERO : num.doubleValue());
 		StringUtils.addValue(buf, format);
 	}
 

@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -84,14 +85,14 @@ public class DateUtils {
 		}
 	}
 
-	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate localDate, final LocalDate localDate2) {
+	public static Iterator<LocalDate> getLocalDateIterator(final LocalDate oldestDate, final LocalDate mostRecentDate) {
 		return new Iterator<LocalDate>() {
 
-			LocalDate nextDate = localDate;
+			LocalDate nextDate = oldestDate;
 
 			@Override
 			public boolean hasNext() {
-				return this.nextDate.isBefore(localDate2) || this.nextDate.equals(localDate2);
+				return this.nextDate.isBefore(mostRecentDate) || this.nextDate.equals(mostRecentDate);
 			}
 
 			@Override
@@ -138,6 +139,10 @@ public class DateUtils {
 
 	public static LocalDate getPreviousDate(final LocalDate localDate) {
 		final LocalDate returnDate = localDate.minusDays(1);
+		return getLastWeekday(returnDate);
+	}
+
+	public static LocalDate getLastWeekday(final LocalDate returnDate) {
 		if ((returnDate.getDayOfWeek() == DayOfWeek.SATURDAY) || (returnDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
 			return DateUtils.getPreviousDate(returnDate);
 		}
@@ -149,7 +154,7 @@ public class DateUtils {
 			DateUtils.dates = Maps.newConcurrentMap();
 		}
 		return (DateUtils.dates.computeIfAbsent(fieldValue,
-				v -> DateUtils.convertToDateViaInstant(ZonedDateTime.parse(v).toLocalDate())));
+				v -> DateUtils.convertToDateViaInstant(LocalDate.parse(v, DateTimeFormatter.ISO_DATE))));
 	}
 
 	/**

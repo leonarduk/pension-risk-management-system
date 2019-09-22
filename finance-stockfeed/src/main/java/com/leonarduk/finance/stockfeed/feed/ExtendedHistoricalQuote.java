@@ -19,7 +19,14 @@ import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
-public class ExtendedHistoricalQuote implements Bar {
+public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
+	@Override
+	public String toString() {
+		return "ExtendedHistoricalQuote [symbol=" + symbol + ", date=" + date + ", open=" + open + ", low=" + low
+				+ ", high=" + high + ", close=" + close + ", adjClose=" + adjClose + ", volume=" + volume + ", comment="
+				+ comment + "]";
+	}
+
 	private String symbol;
 
 	private LocalDate date;
@@ -133,6 +140,7 @@ public class ExtendedHistoricalQuote implements Bar {
 		this.comment = string;
 	}
 
+	@Override
 	public String getComment() {
 		return this.comment;
 	}
@@ -209,6 +217,12 @@ public class ExtendedHistoricalQuote implements Bar {
 	@Override
 	public void addPrice(Num price) {
 		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	public int compareTo(ExtendedHistoricalQuote that) {
+		return this.getEndTime().compareTo(that.getEndTime());
 
 	}
 

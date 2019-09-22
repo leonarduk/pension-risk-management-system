@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
 import org.ta4j.core.TimeSeries;
 
+import com.google.inject.internal.util.Lists;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuoteTimeSeries;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
@@ -19,63 +19,67 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 
 	protected abstract Bar calculatePastValue(final Bar firstQuote, final LocalDate fromDate) throws IOException;
 
-	public List<Bar> extendToFromDate(final List<Bar> history, final LocalDate fromDate) throws IOException {
-		if (history.isEmpty()) {
-			return history;
+	public List<Bar> extendToFromDate(final List<Bar> series, final LocalDate fromDate) throws IOException {
+		if (series.isEmpty()) {
+			return series;
 		}
-		final Bar firstQuote = TimeseriesUtils.getOldestQuote(history);
+		final Bar firstQuote = TimeseriesUtils.getOldestQuote(series);
 		final LocalDate firstDateInSeries = firstQuote.getEndTime().toLocalDate();
 		if (firstDateInSeries.isAfter(fromDate)) {
-			history.add(this.calculatePastValue(firstQuote, fromDate));
+			series.add(this.calculatePastValue(firstQuote, fromDate));
+			interpolateRange(series, fromDate, firstDateInSeries);
 		}
 
-		return history;
+		return series;
 	}
 
-	public List<Bar> extendToToDate(final List<Bar> list, final LocalDate toLocalDate) throws IOException {
-		if (list.isEmpty()) {
-			return list;
+	public List<Bar> extendToToDate(final List<Bar> series, final LocalDate toLocalDate) throws IOException {
+		if (series.isEmpty()) {
+			return series;
 		}
-		final Bar lastQuote = TimeseriesUtils.getMostRecentQuote(list);
+		final Bar lastQuote = TimeseriesUtils.getMostRecentQuote(series);
 		final LocalDate lastDateInSeries = lastQuote.getEndTime().toLocalDate();
 		if (lastDateInSeries.isBefore(toLocalDate)) {
-			list.add(this.calculateFutureValue(lastQuote, toLocalDate));
+			series.add(this.calculateFutureValue(lastQuote, toLocalDate));
+			interpolateRange(series, lastDateInSeries, toLocalDate);
+
 		}
 
-		return list;
+		return series;
 	}
 
 	@Override
 	public List<Bar> interpolate(final List<Bar> series) throws IOException {
 		ExtendedHistoricalQuoteTimeSeries timeseries = new ExtendedHistoricalQuoteTimeSeries(series);
-		return ((ExtendedHistoricalQuoteTimeSeries) interpolate(timeseries, new ExtendedHistoricalQuoteTimeSeries()))
-				.getSeries();
+		return ((ExtendedHistoricalQuoteTimeSeries) interpolate(timeseries)).getSeries();
 
 	}
 
 	@Override
-	public TimeSeries interpolate(final TimeSeries series) {
-		return interpolate(series, new ExtendedHistoricalQuoteTimeSeries());
+	public TimeSeries interpolate(final TimeSeries timeseries) {
+		if (timeseries.getEndIndex() < 0) {
+			return timeseries;
+		}
+
+		List<Bar> series = timeseries.getBarData();
+		TimeseriesUtils.sortQuoteList(series);
+
+		final LocalDate oldestDate = TimeseriesUtils.getOldestQuote(series).getEndTime().toLocalDate();
+		final LocalDate mostRecentDate = TimeseriesUtils.getMostRecentQuote(series).getEndTime().toLocalDate();
+
+		return new ExtendedHistoricalQuoteTimeSeries(interpolateRange(series, oldestDate, mostRecentDate));
 	}
 
-	public TimeSeries interpolate(final TimeSeries series, TimeSeries newSeries) {
+	public List<Bar> interpolateRange(List<Bar> series, final LocalDate oldestDate, final LocalDate mostRecentDate) {
+		LocalDate currentDate = oldestDate;
 
-		if (series.getEndIndex() < 0) {
-			return series;
-		}
-		final Bar oldestQuote = series.getFirstBar();
-
-		final Iterator<Bar> seriesIter = TimeseriesUtils.getTimeSeriesIterator(series);
+		final Iterator<LocalDate> dateIter = DateUtils.getLocalDateIterator(oldestDate, mostRecentDate);
+		final Iterator<Bar> seriesIter = series.iterator();
 		Bar currentQuote = seriesIter.next();
 
-		final Iterator<LocalDate> dateIter = DateUtils.getLocalDateIterator(currentQuote.getEndTime().toLocalDate(),
-				oldestQuote.getEndTime().toLocalDate());
-		LocalDate currentDate = dateIter.next();
-
-		newSeries.addBar(series.getLastBar());
-
+		List<Bar> newseries = Lists.newArrayList();
 		// until the end
-		while (currentDate.isBefore(oldestQuote.getEndTime().toLocalDate())) {
+		while (currentDate.isBefore(mostRecentDate) && seriesIter.hasNext()) {
 			final Bar nextQuote = seriesIter.next();
 			currentDate = dateIter.next();
 
@@ -83,16 +87,16 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
 			// until we match this date
 			while (nextQuote.getEndTime().toLocalDate().isAfter(currentDate)) {
 				if (nextQuote.getEndTime().isAfter(currentQuote.getEndTime())) {
-					newSeries.addBar(this.createSyntheticBar(currentQuote, currentDate, nextQuote));
+					newseries.add(this.createSyntheticBar(currentQuote, currentDate, nextQuote));
 				}
 				currentDate = dateIter.next();
 			}
 
 			// matched next one
 			currentQuote = nextQuote;
-			newSeries.addBar(currentQuote);
+			newseries.add(currentQuote);
 		}
-		return newSeries;
+		return newseries;
 	}
 
 	public abstract Bar createSyntheticQuote(Bar currentQuote, LocalDate currentDate, Bar nextQuote) throws IOException;

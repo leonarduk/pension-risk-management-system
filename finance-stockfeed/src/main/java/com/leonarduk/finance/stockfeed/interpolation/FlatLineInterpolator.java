@@ -13,7 +13,7 @@ public class FlatLineInterpolator extends AbstractLineInterpolator {
 
 	@Override
 	protected Bar calculateFutureValue(final Bar lastQuote, final LocalDate today) {
-		return new ExtendedHistoricalQuote(lastQuote, today, "FlatLineInterpolation");
+		return new ExtendedHistoricalQuote(lastQuote, today, "Copied from " + lastQuote.getEndTime().toLocalDate());
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class FlatLineInterpolator extends AbstractLineInterpolator {
 		return TimeseriesUtils.createSyntheticQuote(currentQuote, fromDate,
 				BigDecimal.valueOf(currentQuote.getClosePrice().doubleValue()),
 				BigDecimal.valueOf(currentQuote.getOpenPrice().doubleValue()),
-				"Copied from " + currentQuote.getEndTime());
+				"Copied from " + currentQuote.getEndTime().toLocalDate());
 	}
 
 	@Override
@@ -30,13 +30,14 @@ public class FlatLineInterpolator extends AbstractLineInterpolator {
 		return TimeseriesUtils.createSyntheticQuote(currentQuote, currentDate,
 				BigDecimal.valueOf(currentQuote.getClosePrice().doubleValue()),
 				BigDecimal.valueOf(currentQuote.getOpenPrice().doubleValue()),
-				"Copied from " + currentQuote.getEndTime());
+				"Copied from " + currentQuote.getEndTime().toLocalDate());
 	}
 
 	@Override
 	public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
 		return TimeseriesUtils.createSyntheticBar(currentDate, currentQuote.getClosePrice().doubleValue(),
-				currentQuote.getOpenPrice().doubleValue());
+				currentQuote.getOpenPrice().doubleValue(), "Copied from " + currentQuote.getEndTime().toLocalDate());
+
 	}
 
 }

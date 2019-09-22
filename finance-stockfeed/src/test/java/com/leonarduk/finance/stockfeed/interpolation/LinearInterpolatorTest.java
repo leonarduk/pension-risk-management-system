@@ -25,12 +25,12 @@ public class LinearInterpolatorTest {
 	public void setUp() throws Exception {
 		this.interpolator = new LinearInterpolator();
 		quotes = Arrays.asList(
-				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-14"), 105.0, 115.0, 95.0,
-						110.0, 2000.0, 0, ""),
+				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-03"), 100.0, 110.0, 90.0,
+						105.0, 1000.0, 0, ""),
 				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-07"), 100.0, 112.0, 92.0,
 						102.0, 5000.0, 0, ""),
-				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-03"), 100.0, 110.0, 90.0,
-						105.0, 1000.0, 0, ""));
+				new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-14"), 105.0, 115.0, 95.0,
+						110.0, 2000.0, 0, ""));
 
 		final List<Bar> ticks = quotes.stream().map(q -> new ExtendedHistoricalQuote(q)).collect(Collectors.toList());
 		this.series = new BaseTimeSeries(ticks);

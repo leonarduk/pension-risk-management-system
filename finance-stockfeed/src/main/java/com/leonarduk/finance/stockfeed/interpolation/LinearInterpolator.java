@@ -30,8 +30,7 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 			throws IOException {
 		final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getEndTime().toLocalDate(),
 				currentQuote.getEndTime().toLocalDate());
-		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(),
-				currentDate);
+		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(), currentDate);
 		final double multiplier = dayCount / timeInteval;
 
 		final Num changeClosePrice = nextQuote.getClosePrice().minus(currentQuote.getClosePrice());
@@ -53,8 +52,7 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 
 		final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getEndTime().toLocalDate(),
 				currentQuote.getEndTime().toLocalDate());
-		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(),
-				currentDate);
+		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(), currentDate);
 		final double multiplier = dayCount / timeInteval;
 
 		final Double changeClosePrice = nextQuote.getClosePrice().doubleValue()
@@ -67,7 +65,8 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 		final Double newOpenPrice = currentQuote.getOpenPrice().doubleValue()
 				+ (changeOpenPrice * Double.valueOf(multiplier));
 
-		return TimeseriesUtils.createSyntheticBar(currentDate, newClosePrice, newOpenPrice);
+		return TimeseriesUtils.createSyntheticBar(currentDate, newClosePrice, newOpenPrice, "Interpolated from "
+				+ currentQuote.getEndTime().toLocalDate() + " - " + nextQuote.getEndTime().toLocalDate());
 	}
 
 }
