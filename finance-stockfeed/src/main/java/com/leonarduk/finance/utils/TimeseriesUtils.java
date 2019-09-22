@@ -34,6 +34,7 @@ public class TimeseriesUtils {
 			final int original = history.size();
 			final List<Bar> clean = new BadScalingCorrector().clean(new BadDateRemover().clean(history));
 
+			// TODO scale to/from USD to GBP or GBX
 			liveData.get().setHistory(clean);
 
 			final int fixed = clean.size();

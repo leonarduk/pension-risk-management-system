@@ -22,7 +22,6 @@ import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 
 public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 
@@ -49,7 +48,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 			List<Bar> series = convertSeries(instrument, response.getStockData());
 			return Optional.of(new StockV1(instrument, series));
 		} catch (final Exception e) {
-			YahooFeed.logger.warn("Error when fetching from Alphavantage: " + e.getMessage());
+			logger.warn("Error when fetching from Alphavantage: " + e.getMessage());
 			return Optional.empty();
 		}
 	}

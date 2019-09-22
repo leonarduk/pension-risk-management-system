@@ -28,7 +28,7 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
 			int SCALE = 80;
 			// 133.1
 			// 13232.5 <- /80 = 165.4 /120 = 110
-			// 133.2
+			// 191.46  -< 11997
 			if (current.getClosePrice().dividedBy(DoubleNum.valueOf(SCALE)).isGreaterThan(previous.getClosePrice())) {
 				try {
 					cleanedSeries.add(new ExtendedHistoricalQuote("", current.getEndTime().toLocalDate(),
