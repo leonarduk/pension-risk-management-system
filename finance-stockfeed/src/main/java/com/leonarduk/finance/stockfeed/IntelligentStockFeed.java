@@ -52,6 +52,12 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final ExtendedStockQuote quote = dataFeed.getStockQuote(stock.getInstrument());
 			if ((quote != null) && quote.isPopulated()) {
 				LocalDate calendarToLocalDate = DateUtils.calendarToLocalDate(quote.getLastTradeTime());
+
+				if (stock.getHistory().stream()
+						.filter(dataPoint -> dataPoint.getEndTime().toLocalDate().equals(calendarToLocalDate)).findAny()
+						.isPresent()) {
+					return;
+				}
 				List<Bar> history = stock.getHistory();
 				if (!history.isEmpty()) {
 					Bar mostRecentQuote = TimeseriesUtils.getMostRecentQuote(history);
@@ -94,11 +100,11 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			// Ignore weekends
 			LocalDate fromDate = DateUtils.getLastWeekday(fromDateRaw);
 			LocalDate toDate = DateUtils.getLastWeekday(toDateRaw);
-			
+
 			if (instrument.equals(Instrument.CASH)) {
 				return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
 			}
-			
+
 			final CachedStockFeed cachedDataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
 
 			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
