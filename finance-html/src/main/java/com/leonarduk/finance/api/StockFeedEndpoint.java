@@ -1,7 +1,6 @@
 package com.leonarduk.finance.api;
 
 import java.io.IOException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class StockFeedEndpoint {
 
 		if (!StringUtils.isEmpty(fromDate)) {
 			fromLocalDate = LocalDate.parse(fromDate);
-			if (StringUtils.isEmpty(fromDate)) {
+			if (StringUtils.isEmpty(toDate)) {
 				toLocalDate = LocalDate.now();
 			} else {
 				toLocalDate = LocalDate.parse(toDate);
