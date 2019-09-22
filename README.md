@@ -20,4 +20,7 @@ Uses:
 Simple Spring boot app to allow you to query the data.  Currently I use this to provide a web service for other applications such as [buchen/portfolio](https://github.com/buchen/portfolio) as that app suffers from data quality issues when using Yahoo or Alphavantage
 
 
+e.g. 
+http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
+
 
