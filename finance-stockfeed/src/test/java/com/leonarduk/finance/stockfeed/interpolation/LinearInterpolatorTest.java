@@ -14,6 +14,8 @@ import org.ta4j.core.TimeSeries;
 import org.ta4j.core.num.DoubleNum;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator;
+import com.leonarduk.finance.stockfeed.datatransformation.interpolation.TimeSeriesInterpolator;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 
 public class LinearInterpolatorTest {

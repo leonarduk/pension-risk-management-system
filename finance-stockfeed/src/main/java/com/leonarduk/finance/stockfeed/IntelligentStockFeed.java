@@ -12,11 +12,11 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 
 import com.google.common.collect.Lists;
+import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockQuoteBuilder;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
@@ -110,14 +110,13 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
 					cachedDataFeed, true);
 
-			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.Alphavantage);
+			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.Yahoo);
 
 			// If we have the data already, don't bother to refresh
 			// Note will need to update today's live quote still though,
 			// so skip latest date point
 			Optional<StockV1> liveData = Optional.empty();
-			boolean getWebData = IntelligentStockFeed.refresh
-					&& (webDataFeed.isAvailable() || StockFeedFactory.getDataFeed(Source.Google).isAvailable());
+			boolean getWebData = IntelligentStockFeed.refresh && webDataFeed.isAvailable();
 			if (getWebData) {
 				if (cachedData.isPresent()) {
 					final List<Bar> cachedHistory = cachedData.get().getHistory();

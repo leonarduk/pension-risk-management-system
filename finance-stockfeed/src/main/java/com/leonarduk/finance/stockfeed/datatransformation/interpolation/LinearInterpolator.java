@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.interpolation;
+package com.leonarduk.finance.stockfeed.datatransformation.interpolation;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -50,8 +50,8 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 	@Override
 	public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
 
-		final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getEndTime().toLocalDate(),
-				currentQuote.getEndTime().toLocalDate());
+		final double timeInteval = DateUtils.getDiffInWorkDays(
+				currentQuote.getEndTime().toLocalDate(), nextQuote.getEndTime().toLocalDate());
 		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(), currentDate);
 		final double multiplier = dayCount / timeInteval;
 

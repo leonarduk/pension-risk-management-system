@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.interpolation;
+package com.leonarduk.finance.stockfeed.datatransformation.correction;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -26,9 +26,6 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
 		while (iter.hasNext()) {
 			Bar current = iter.next();
 			int SCALE = 80;
-			// 133.1
-			// 13232.5 <- /80 = 165.4 /120 = 110
-			// 191.46  -< 11997
 			if (current.getClosePrice().dividedBy(DoubleNum.valueOf(SCALE)).isGreaterThan(previous.getClosePrice())) {
 				try {
 					cleanedSeries.add(new ExtendedHistoricalQuote("", current.getEndTime().toLocalDate(),

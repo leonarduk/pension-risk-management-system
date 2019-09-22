@@ -73,8 +73,9 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate,
 			final LocalDate toDate) {
 		try {
+			String symbol = instrument.code() + instrument.getExchange().getYahooSuffix();
 			return Optional
-					.of(new StockV1(YahooFinance.get(instrument.code() + instrument.getExchange().getYahooSuffix())));
+					.of(new StockV1(YahooFinance.get(symbol, true)));
 		} catch (final Exception e) {
 			YahooFeed.logger.warn("Error when fetching from Yahoo: " + e.getMessage());
 			return Optional.empty();

@@ -11,6 +11,7 @@ import org.ta4j.core.Bar;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.datatransformation.correction.BadDateRemover;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 
 public class BadDateRemoverTest {

@@ -13,6 +13,7 @@ public class StockFeedFactory {
 //				return new GoogleFeed();
 		case Yahoo:
 			return new YahooFeed();
+		case alphavantage:
 		default:
 			return new AlphavantageFeed();
 		}

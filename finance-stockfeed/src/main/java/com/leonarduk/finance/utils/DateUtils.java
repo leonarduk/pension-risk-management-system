@@ -24,7 +24,6 @@ package com.leonarduk.finance.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -33,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -40,6 +40,7 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 
@@ -65,12 +66,12 @@ public class DateUtils {
 		return DateUtils.dateToCalendar(convertToDateViaInstant(fromDate.toLocalDate()));
 	}
 
-	public static int getDiffInWorkDays(final LocalDate localDate, final LocalDate localDate2) {
-		final int calendarDaysDiff = (int) Duration.between(localDate2.atStartOfDay(), localDate.atStartOfDay())
-				.toDays();
+	public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate) {
+		return (int) daysBetween(startDate, endDate, ImmutableList.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+	}
 
-		final int weeks = Math.round(calendarDaysDiff / 7);
-		return Math.abs((5 * weeks) + Math.min(calendarDaysDiff % 7, 5));
+	static long daysBetween(LocalDate start, LocalDate end, List<DayOfWeek> ignore) {
+		return start.datesUntil(end).filter(d -> !ignore.contains(d.getDayOfWeek())).count();
 	}
 
 	private static String getDividendDateFormat(final String date) {

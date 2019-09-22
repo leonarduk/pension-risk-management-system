@@ -63,7 +63,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed {
 
 	@Override
 	public Source getSource() {
-		return Source.Alphavantage;
+		return Source.alphavantage;
 	}
 
 	@Override

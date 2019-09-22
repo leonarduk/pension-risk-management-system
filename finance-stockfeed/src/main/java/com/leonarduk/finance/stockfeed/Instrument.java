@@ -120,7 +120,7 @@ public class Instrument {
 		}
 
 		Instrument.LOGGER.warn("Could not map " + symbol);
-		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL, symbol, symbol,
+		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.alphavantage, symbol, symbol,
 				Exchange.London, "", "GBP", symbol);
 	}
 

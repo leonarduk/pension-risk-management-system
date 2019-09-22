@@ -19,13 +19,13 @@ import org.ta4j.core.TimeSeries;
 import org.ta4j.core.num.DoubleNum;
 
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.datatransformation.correction.BadDateRemover;
+import com.leonarduk.finance.stockfeed.datatransformation.correction.BadScalingCorrector;
+import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
+import com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.interpolation.BadDateRemover;
-import com.leonarduk.finance.stockfeed.interpolation.BadScalingCorrector;
-import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
-import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 
 public class TimeseriesUtils {
 	public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {

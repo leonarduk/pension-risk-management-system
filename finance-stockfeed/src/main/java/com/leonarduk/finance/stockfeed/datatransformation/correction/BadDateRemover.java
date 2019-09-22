@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.interpolation;
+package com.leonarduk.finance.stockfeed.datatransformation.correction;
 
 import java.time.LocalDate;
 import java.util.LinkedList;

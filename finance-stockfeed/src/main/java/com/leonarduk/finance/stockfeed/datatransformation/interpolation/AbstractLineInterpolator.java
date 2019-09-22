@@ -1,4 +1,4 @@
-package com.leonarduk.finance.stockfeed.interpolation;
+package com.leonarduk.finance.stockfeed.datatransformation.interpolation;
 
 import java.io.IOException;
 import java.time.LocalDate;
