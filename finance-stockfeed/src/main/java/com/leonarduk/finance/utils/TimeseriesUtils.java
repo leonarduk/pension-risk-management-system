@@ -23,6 +23,7 @@ import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.interpolation.BadDateRemover;
+import com.leonarduk.finance.stockfeed.interpolation.BadScalingCorrector;
 import com.leonarduk.finance.stockfeed.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.interpolation.LinearInterpolator;
 
@@ -31,8 +32,10 @@ public class TimeseriesUtils {
 		if (liveData.isPresent()) {
 			final List<Bar> history = liveData.get().getHistory();
 			final int original = history.size();
-			final List<Bar> clean = new BadDateRemover().clean(history);
+			final List<Bar> clean = new BadScalingCorrector().clean(new BadDateRemover().clean(history));
+
 			liveData.get().setHistory(clean);
+
 			final int fixed = clean.size();
 			return original - fixed;
 		}

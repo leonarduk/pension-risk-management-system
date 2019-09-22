@@ -19,6 +19,10 @@ import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
+/**
+ * @author steph
+ *
+ */
 public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
 	@Override
 	public String toString() {
@@ -91,6 +95,17 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 				BigDecimal.valueOf(original.getClosePrice().doubleValue()), original.getVolume(), "");
 	}
 
+	/**
+	 * @param symbol
+	 * @param date
+	 * @param open
+	 * @param low
+	 * @param high
+	 * @param close
+	 * @param adjClose
+	 * @param volume
+	 * @param comment
+	 */
 	public ExtendedHistoricalQuote(String symbol, LocalDate date, BigDecimal open, BigDecimal low, BigDecimal high,
 			BigDecimal close, BigDecimal adjClose, Num volume, final String comment) {
 		this.symbol = symbol;
@@ -134,6 +149,15 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 	public ExtendedHistoricalQuote(ExtendedHistoricalQuote original) {
 		this(original.getSymbol(), original.getDate(), original.getOpen(), original.getLow(), original.getHigh(),
 				original.getClose(), original.getAdjClose(), original.getVolume(), "");
+	}
+
+	
+	public ExtendedHistoricalQuote(String string, LocalDate localDate, Num open, Num low, Num high, Num close,
+			Num volume, String comment) throws IOException {
+		this(Instrument.fromString(string), localDate, BigDecimal.valueOf(open.doubleValue()),
+				BigDecimal.valueOf(low.doubleValue()), BigDecimal.valueOf(high.doubleValue()),
+				BigDecimal.valueOf(close.doubleValue()), BigDecimal.valueOf(close.doubleValue()),
+				Long.valueOf(volume.longValue()), comment);
 	}
 
 	private void setComment(String string) {
