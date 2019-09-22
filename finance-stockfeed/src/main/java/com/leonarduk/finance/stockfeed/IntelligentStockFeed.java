@@ -77,24 +77,24 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final int years) {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), false);
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), false, false);
 	}
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate)
-			throws IOException {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), interpolate);
+	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate,
+			final boolean cleanData) throws IOException {
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), interpolate, cleanData);
 	}
 
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
 			throws IOException {
-		return this.get(instrument, fromDate, toDate, false);
+		return this.get(instrument, fromDate, toDate, false, false);
 	}
 
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDateRaw, final LocalDate toDateRaw,
-			final boolean interpolate) {
+			final boolean interpolate, boolean cleanData) {
 		try {
 
 			// Ignore weekends
@@ -148,7 +148,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 				return Optional.empty();
 			}
 
-			TimeseriesUtils.cleanUpSeries(liveData);
+			if (cleanData) {
+				TimeseriesUtils.cleanUpSeries(liveData);
+			}
 			return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, liveData);
 		} catch (final Exception e) {
 			IntelligentStockFeed.log.warn(e.getMessage());
@@ -158,8 +160,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 	}
 
 	public Optional<StockV1> get(final Instrument instrument, final String fromDate, final String toDate,
-			final boolean interpolate) {
-		return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate), interpolate);
+			final boolean interpolate, boolean cleanData) {
+		return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate), interpolate, cleanData);
 	}
 
 	public Optional<StockV1> getDataIfFeedAvailable(final Instrument instrument, final LocalDate fromDate,

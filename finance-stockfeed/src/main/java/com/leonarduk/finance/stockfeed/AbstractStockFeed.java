@@ -46,9 +46,9 @@ public abstract class AbstractStockFeed implements StockFeed {
 	public abstract Optional<StockV1> get(final Instrument instrument, final int years) throws IOException;
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate)
+	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate, boolean cleanData)
 			throws IOException {
-		return get(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now(), interpolate);
+		return get(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now(), interpolate, cleanData);
 	}
 
 	@Override
@@ -57,9 +57,11 @@ public abstract class AbstractStockFeed implements StockFeed {
 
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromLocalDate,
-			final LocalDate toLocalDate, final boolean interpolate) throws IOException {
+			final LocalDate toLocalDate, final boolean interpolate, final boolean cleanData) throws IOException {
 		final Optional<StockV1> liveData = this.get(instrument, fromLocalDate, toLocalDate);
-		TimeseriesUtils.cleanUpSeries(liveData);
+		if (cleanData) {
+			TimeseriesUtils.cleanUpSeries(liveData);
+		}
 		return TimeseriesUtils.interpolateAndSortSeries(fromLocalDate, toLocalDate, interpolate, liveData);
 	}
 
