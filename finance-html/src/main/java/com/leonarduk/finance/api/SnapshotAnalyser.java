@@ -43,6 +43,7 @@ import com.leonarduk.finance.portfolio.ValuationReport;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuoteTimeSeries;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.InvestmentsFileReader;
 import com.leonarduk.finance.strategies.AbstractStrategy;
@@ -80,7 +81,7 @@ public class SnapshotAnalyser {
 
 	private void addPortfolioDetails(final LocalDate fromDate, final LocalDate toDate, final boolean interpolate,
 			final boolean createSeriesLinks, final StringBuilder sbBody, final List<Valuation> valuations,
-			final String portfolioName) {
+			final String portfolioName, final boolean clean) {
 		sbBody.append("Portfolio: " + portfolioName + "<br>");
 		final ValuationReport report = this.createValuationReport(fromDate, toDate, valuations, portfolioName);
 
@@ -98,32 +99,33 @@ public class SnapshotAnalyser {
 				.collect(Collectors.groupingByConcurrent(v -> v.getPosition().getInstrument().underlyingType().name(),
 						Collectors.summingDouble((v -> v.getValuation().doubleValue()))));
 
-		 try {
-		 HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations,
-		 "Owned Assets",
-		 SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
-		 HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations,
-		 "Underlying Assets", SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
-		
-		 }
-		 catch (final IOException e) {
-		 sbBody.append("Failed to create images:" + e.getMessage());
-		 }
+		try {
+			HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", SnapshotAnalyser.TYPE,
+					SnapshotAnalyser.VALUE);
+			HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
+					SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+
+		} catch (final IOException e) {
+			sbBody.append("Failed to create images:" + e.getMessage());
+		}
 	}
 
 	public List<Valuation> analayzeAllEtfs(final List<Position> stocks, final LocalDate fromDate,
-			final LocalDate toDate) throws IOException {
-		return stocks.parallelStream().map(s -> this.analyseStock(s, fromDate, toDate)).collect(Collectors.toList());
+			final LocalDate toDate, boolean interpolate, boolean clean) throws IOException {
+		return stocks.parallelStream().map(s -> this.analyseStock(s, fromDate, toDate, interpolate, clean))
+				.collect(Collectors.toList());
 	}
 
-	public Valuation analyseStock(final Position stock2, final LocalDate fromDate, final LocalDate toDate) {
+	public Valuation analyseStock(final Position stock2, final LocalDate fromDate, final LocalDate toDate,
+			boolean interpolate, boolean clean) {
 		TimeSeries series;
 		try {
 			Optional<StockV1> stock = stock2.getStock();
 			if (!stock.isPresent()) {
 				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), 1);
 			}
-			series = TimeseriesUtils.getTimeSeries(stock.get(), fromDate, toDate);
+			series = new ExtendedHistoricalQuoteTimeSeries(
+					this.feed.get(stock2.getInstrument(), fromDate, toDate, interpolate, clean).get().getHistory());
 			if ((null == series) || (series.getBarCount() < 1)) {
 				throw new IllegalArgumentException("No data");
 			}
@@ -272,7 +274,7 @@ public class SnapshotAnalyser {
 	}
 
 	public StringBuilder createPortfolioReport(final LocalDate fromDate, final LocalDate toDate,
-			final boolean interpolate, final boolean extendedReport, final boolean createSeriesLinks)
+			final boolean interpolate, final boolean extendedReport, final boolean createSeriesLinks, boolean clean)
 			throws IOException, URISyntaxException {
 
 		final List<Position> positions = this.getPositions();
@@ -288,13 +290,13 @@ public class SnapshotAnalyser {
 		final StringBuilder sbBody = new StringBuilder();
 		final StringBuilder sbHead = new StringBuilder();
 
-		final List<Valuation> valuations = this.analayzeAllEtfs(positions, fromDate, toDate);
+		final List<Valuation> valuations = this.analayzeAllEtfs(positions, fromDate, toDate, interpolate, clean);
 
 		this.getPortfolios().stream().forEach(portfolioName -> this.addPortfolioDetails(fromDate, toDate, interpolate,
-				createSeriesLinks, sbBody, valuations, portfolioName));
+				createSeriesLinks, sbBody, valuations, portfolioName, clean));
 
-		this.createValuationsTable(this.analayzeAllEtfs(emptyPositions, fromDate, toDate), sbBody, false,
-				createSeriesLinks, fromDate, toDate, interpolate);
+		this.createValuationsTable(this.analayzeAllEtfs(emptyPositions, fromDate, toDate, interpolate, clean), sbBody,
+				false, createSeriesLinks, fromDate, toDate, interpolate);
 
 		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
 
@@ -302,11 +304,13 @@ public class SnapshotAnalyser {
 	}
 
 	public StringBuilder createPortfolioReport(final String fromDate, final String toDate, final boolean interpolate,
-			final boolean extendedReport, final boolean createSeriesLinks) throws IOException, URISyntaxException {
+			final boolean extendedReport, final boolean createSeriesLinks, boolean clean)
+			throws IOException, URISyntaxException {
 		final LocalDate fromLocalDate = StringUtils.isEmpty(fromDate) ? LocalDate.now().minusYears(2)
 				: LocalDate.parse(fromDate);
 		final LocalDate toLocalDate = StringUtils.isEmpty(toDate) ? LocalDate.now() : LocalDate.parse(toDate);
-		return this.createPortfolioReport(fromLocalDate, toLocalDate, interpolate, extendedReport, createSeriesLinks);
+		return this.createPortfolioReport(fromLocalDate, toLocalDate, interpolate, extendedReport, createSeriesLinks,
+				clean);
 
 	}
 
@@ -344,9 +348,9 @@ public class SnapshotAnalyser {
 			final String Ticker = instrument.code();
 
 			final ValueFormatter formatter = (value -> {
-				return new StringBuilder("<a href=\"/stock/ticker/").append(Ticker).append("?fromDate=").append(fromDate)
-						.append("&toDate=").append(toDate).append("&interpolate=").append(interpolate).append("\">")
-						.append(value).append("</a>").toString();
+				return new StringBuilder("<a href=\"/stock/ticker/").append(Ticker).append("?fromDate=")
+						.append(fromDate).append("&toDate=").append(toDate).append("&interpolate=").append(interpolate)
+						.append("\">").append(value).append("</a>").toString();
 			});
 
 			fields.add(new DataField("Name", instrument.getName(), formatter));
@@ -428,7 +432,7 @@ public class SnapshotAnalyser {
 
 	public void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
 		final StringBuilder buf = this.createPortfolioReport(LocalDate.now(), LocalDate.now().minusYears(1), true, true,
-				false);
+				false, true);
 		FileUtils.writeFile("recommendations.html", buf);
 	}
 

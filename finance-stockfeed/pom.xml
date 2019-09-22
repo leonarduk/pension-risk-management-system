@@ -50,6 +50,7 @@
 			<version>28.1-jre</version>
 		</dependency>
 
+		<!-- https://dl.bintray.com/patriques82/maven/org/patriques/alphavantage4j/ -->
 		<dependency>
 			<groupId>org.patriques</groupId>
 			<artifactId>alphavantage4j</artifactId>

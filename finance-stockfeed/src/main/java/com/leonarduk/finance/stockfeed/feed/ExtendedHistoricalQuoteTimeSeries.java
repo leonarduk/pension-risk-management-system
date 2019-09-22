@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.ta4j.core.Bar;
 import org.ta4j.core.TimeSeries;
+import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
 import com.google.inject.internal.util.Lists;
@@ -130,7 +131,7 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
 
 	@Override
 	public Num numOf(Number number) {
-		throw new UnsupportedOperationException();
+		return DoubleNum.valueOf(number);
 	}
 
 	@Override
