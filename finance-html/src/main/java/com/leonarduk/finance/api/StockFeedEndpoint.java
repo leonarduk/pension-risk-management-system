@@ -19,10 +19,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
+import com.leonarduk.finance.stockfeed.FxFeed;
+import com.leonarduk.finance.stockfeed.FxInstrument;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
+import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
+import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
@@ -31,14 +35,16 @@ import com.leonarduk.finance.utils.TimeseriesUtils;
 @Named
 @Path("/stock")
 public class StockFeedEndpoint {
-	StockFeed stockFeed;
+	private StockFeed stockFeed;
+	private FxFeed fxFeed;
 
 	public StockFeedEndpoint() {
-		this(new IntelligentStockFeed());
+		this(new IntelligentStockFeed(), new AlphavantageFeed());
 	}
 
-	public StockFeedEndpoint(final StockFeed stockFeed) {
+	public StockFeedEndpoint(final StockFeed stockFeed, final FxFeed fxFeed) {
 		this.stockFeed = stockFeed;
+		this.fxFeed = fxFeed;
 	}
 
 	@GET
@@ -50,6 +56,26 @@ public class StockFeedEndpoint {
 			throws IOException {
 
 		final Instrument instrument = Instrument.fromString(ticker);
+
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument);
+	}
+
+	@GET
+	@Produces({ MediaType.TEXT_HTML })
+	@Path("/fx/{ccy1}/{ccy2}")
+	public String displayFxHistory(@PathParam("ccy1") final String currencyOne,
+			@PathParam("ccy2") final String currencyTwo, @QueryParam("years") final int years,
+			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
+			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
+			throws IOException {
+
+		final Instrument instrument = new FxInstrument(Source.alphavantage, currencyOne, currencyTwo);
+
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument);
+	}
+
+	private String generateResults(final int years, final String fromDate, final String toDate,
+			final boolean interpolate, final boolean cleanData, final Instrument instrument) throws IOException {
 		final StringBuilder sbBody = new StringBuilder();
 		final List<List<DataField>> records = Lists.newArrayList();
 
@@ -70,7 +96,13 @@ public class StockFeedEndpoint {
 			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}
 
-		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
+		// Slightly hacky
+		if (instrument instanceof FxInstrument) {
+			FxInstrument fxInstrument = (FxInstrument) instrument;
+			historyData = this.getFxHistoryData(fxInstrument, fromLocalDate, toLocalDate, interpolate, cleanData);
+		} else {
+			historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
+		}
 
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -124,9 +156,6 @@ public class StockFeedEndpoint {
 
 	private List<Bar> getHistoryData(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate,
 			boolean interpolate, boolean cleanData) throws IOException {
-//		while (toLocalDate.getDayOfWeek().ordinal() > DayOfWeek.FRIDAY.ordinal()) {
-//			toLocalDate = toLocalDate.minusDays(1);
-//		}
 		final Optional<StockV1> stock = this.stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate,
 				cleanData);
 		if (stock.isPresent()) {
@@ -135,4 +164,9 @@ public class StockFeedEndpoint {
 		return Lists.newArrayList();
 	}
 
+	private List<Bar> getFxHistoryData(FxInstrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate,
+			boolean interpolate, boolean cleanData) {
+		return this.fxFeed.getFxSeries(instrument.getCurrencyOne(), instrument.getCurrencyTwo(), fromLocalDate,
+				toLocalDate);
+	}
 }

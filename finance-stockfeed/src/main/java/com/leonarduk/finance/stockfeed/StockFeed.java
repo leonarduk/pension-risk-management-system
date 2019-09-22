@@ -8,7 +8,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 
 public interface StockFeed {
 	public enum Exchange {
-		London(".L");
+		London(".L"), NA("");
 
 		private String yahooSuffix;
 

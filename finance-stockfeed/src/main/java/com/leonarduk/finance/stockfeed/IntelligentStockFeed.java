@@ -110,7 +110,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
 					cachedDataFeed, true);
 
-			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.Yahoo);
+			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.alphavantage);
 
 			// If we have the data already, don't bother to refresh
 			// Note will need to update today's live quote still though,

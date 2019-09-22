@@ -128,7 +128,7 @@ public class Instrument {
 		return InstrumentLoader.getInstance().instruments.values();
 	}
 
-	Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
+	protected Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
 			final String isin, final String code, final Exchange exchange, final String category, final String currency,
 			final String googleCode) {
 		this.assetType = type;
