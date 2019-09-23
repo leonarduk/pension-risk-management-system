@@ -23,16 +23,15 @@ public class AppConfig {
 			this.register(CORSResponseFilter.class);
 			this.register(PortfolioFeedEndpoint.class);
 			this.register(StockFeedEndpoint.class);
+			this.register(ImageService.class);
 		}
 	}
 
 	@Bean
 	public DataSource dataSource() {
-		final DataSource dataSource = DataSourceBuilder
-		        .create(this.dataSourceProperties.getClassLoader())
-		        .url(this.dataSourceProperties.getUrl())
-		        .username(this.dataSourceProperties.getUsername())
-		        .password(this.dataSourceProperties.getPassword()).build();
+		final DataSource dataSource = DataSourceBuilder.create(this.dataSourceProperties.getClassLoader())
+				.url(this.dataSourceProperties.getUrl()).username(this.dataSourceProperties.getUsername())
+				.password(this.dataSourceProperties.getPassword()).build();
 		return new DataSourceSpy(dataSource);
 	}
 }
