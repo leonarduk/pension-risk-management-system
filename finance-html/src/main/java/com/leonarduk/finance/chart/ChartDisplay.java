@@ -53,9 +53,12 @@ public class ChartDisplay {
 
 		final String imageName = imageNamePrefix + ".png";
 		ChartDisplay.saveChartAsPng(imageName, chart, width, height);
-		final StringBuilder sb = new StringBuilder("<IMG SRC=\"").append(imageName).append("\" WIDTH=\"").append(width)
-				.append("\" HEIGHT=\"").append(height).append("\" BORDER=\"0\" USEMAP=\"#chart\"/>");
-		return sb;
+		return getImgLink(width, height, imageNamePrefix);
+	}
+
+	private static StringBuilder getImgLink(final int width, final int height, final String imageName) {
+		return new StringBuilder("<img src=\"/images/jpg/").append(imageName).append("\" WIDTH=\"").append(width)
+				.append("\" HEIGHT=\"").append(height).append("\" BORDER=\"0\" USEMAP=\"#chart\"/>").append("</img>");
 	}
 
 	public static StringBuilder saveImageAsSvgAndReturnHtmlLink(final String imageNamePrefix, final int width,
@@ -68,11 +71,7 @@ public class ChartDisplay {
 		final File f = new File("target", imageName);
 		SVGUtils.writeToSVG(f, g2.getSVGElement());
 
-		// <img src="data:image/jpg;base64,BASE64ENCODEDSTRINGHERE" />
-		final StringBuilder sb = new StringBuilder("<img src=\"/download/svg/").append(imageNamePrefix)
-//				.append("\" WIDTH=\"").append(width).append("\" HEIGHT=\"").append(height)
-//				.append("\" BORDER=\"0\" USEMAP=\"#chart\"/>")
-				.append("</img>");
-		return sb;
+		return getImgLink(width, height, imageNamePrefix);
+
 	}
 }
