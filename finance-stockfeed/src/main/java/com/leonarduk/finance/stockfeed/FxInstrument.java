@@ -6,7 +6,7 @@ public class FxInstrument extends Instrument {
 
 	public FxInstrument(Source source, String currencyOne, String currencyTwo) {
 		super(currencyTwo + "/" + currencyTwo, AssetType.FX, AssetType.FX, Source.alphavantage,
-				currencyTwo + currencyTwo, currencyTwo + currencyTwo, Exchange.NA, currencyTwo, currencyTwo,
+				currencyOne + currencyTwo, currencyOne + currencyTwo, Exchange.NA, currencyOne, currencyTwo,
 				currencyTwo);
 		this.currencyOne = currencyOne;
 		this.currencyTwo = currencyTwo;

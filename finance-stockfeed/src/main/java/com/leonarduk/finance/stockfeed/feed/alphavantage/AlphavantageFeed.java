@@ -51,6 +51,12 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
 		try {
+
+			if (instrument instanceof FxInstrument) {
+				FxInstrument fXInstrument = (FxInstrument) instrument;
+				return Optional.of(new StockV1(instrument, this.getFxSeries(fXInstrument.getCurrencyOne(),
+						fXInstrument.getCurrencyTwo(), fromDate, toDate)));
+			}
 			AlphaVantageConnector apiConnector = getConnection();
 			TimeSeries stockTimeSeries = new TimeSeries(apiConnector);
 

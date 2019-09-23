@@ -96,13 +96,7 @@ public class StockFeedEndpoint {
 			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}
 
-		// Slightly hacky
-		if (instrument instanceof FxInstrument) {
-			FxInstrument fxInstrument = (FxInstrument) instrument;
-			historyData = this.getFxHistoryData(fxInstrument, fromLocalDate, toLocalDate, interpolate, cleanData);
-		} else {
-			historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
-		}
+		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
 
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -164,9 +158,4 @@ public class StockFeedEndpoint {
 		return Lists.newArrayList();
 	}
 
-	private List<Bar> getFxHistoryData(FxInstrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate,
-			boolean interpolate, boolean cleanData) {
-		return this.fxFeed.getFxSeries(instrument.getCurrencyOne(), instrument.getCurrencyTwo(), fromLocalDate,
-				toLocalDate);
-	}
 }

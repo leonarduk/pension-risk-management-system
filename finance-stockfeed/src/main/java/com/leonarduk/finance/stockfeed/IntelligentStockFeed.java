@@ -97,65 +97,75 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final boolean interpolate, boolean cleanData) {
 		try {
 
-			// Ignore weekends
-			LocalDate fromDate = DateUtils.getLastWeekday(fromDateRaw);
-			LocalDate toDate = DateUtils.getLastWeekday(toDateRaw);
-
-			if (instrument.equals(Instrument.CASH)) {
-				return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
-			}
-
-			final CachedStockFeed cachedDataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
-
-			final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate,
-					cachedDataFeed, true);
-
 			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.alphavantage);
-
-			// If we have the data already, don't bother to refresh
-			// Note will need to update today's live quote still though,
-			// so skip latest date point
-			Optional<StockV1> liveData = Optional.empty();
-			boolean getWebData = IntelligentStockFeed.refresh && webDataFeed.isAvailable();
-			if (getWebData) {
-				if (cachedData.isPresent()) {
-					final List<Bar> cachedHistory = cachedData.get().getHistory();
-					List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
-							DateUtils.getPreviousDate(toDate));
-
-					if (!missingDates.isEmpty()) {
-						liveData = this.getDataIfFeedAvailable(instrument, missingDates.get(0),
-								missingDates.get(missingDates.size() - 1), webDataFeed, IntelligentStockFeed.refresh);
-					}
-				} else {
-					liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
-							IntelligentStockFeed.refresh);
-				}
-			}
-
-			if (liveData.isPresent()) {
-				final StockV1 stock = liveData.get();
-				if (cachedData.isPresent()) {
-					this.mergeSeries(cachedData.get(), stock.getHistory(), cachedData.get().getHistory());
-				}
-				cachedDataFeed.storeSeries(stock);
-				this.addLatestQuoteToTheSeries(liveData.get(), StockFeedFactory.getQuoteFeed(Source.Yahoo));
-			} else if (cachedData.isPresent()) {
-				liveData = cachedData;
-			} else {
-				IntelligentStockFeed.log.warn("No data for " + instrument);
-				return Optional.empty();
-			}
-
-			if (cleanData) {
-				TimeseriesUtils.cleanUpSeries(liveData);
-			}
-			return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, liveData);
+//			if (instrument instanceof FxInstrument) {
+//				webDataFeed = StockFeedFactory.getDataFeed(Source.alphavantage);
+//			}
+			return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, webDataFeed);
 		} catch (final Exception e) {
 			IntelligentStockFeed.log.warn(e.getMessage());
 			return Optional.empty();
 		}
 
+	}
+
+	private Optional<StockV1> getUsingCache(final Instrument instrument, final LocalDate fromDateRaw,
+			final LocalDate toDateRaw, final boolean interpolate, boolean cleanData, StockFeed webDataFeed)
+			throws IOException {
+		// Ignore weekends
+		LocalDate fromDate = DateUtils.getLastWeekday(fromDateRaw);
+		LocalDate toDate = DateUtils.getLastWeekday(toDateRaw);
+
+		if (instrument.equals(Instrument.CASH)) {
+			return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
+		}
+
+		final CachedStockFeed cachedDataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
+
+		final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
+				true);
+
+		// If we have the data already, don't bother to refresh
+		// Note will need to update today's live quote still though,
+		// so skip latest date point
+		Optional<StockV1> liveData = Optional.empty();
+		boolean getWebData = IntelligentStockFeed.refresh && webDataFeed.isAvailable();
+		if (getWebData) {
+			if (cachedData.isPresent()) {
+				final List<Bar> cachedHistory = cachedData.get().getHistory();
+				List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
+						DateUtils.getPreviousDate(toDate));
+
+				if (!missingDates.isEmpty()) {
+					liveData = this.getDataIfFeedAvailable(instrument, missingDates.get(0),
+							missingDates.get(missingDates.size() - 1), webDataFeed, IntelligentStockFeed.refresh);
+				}
+			} else {
+				liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
+						IntelligentStockFeed.refresh);
+			}
+		}
+
+		if (liveData.isPresent()) {
+			final StockV1 stock = liveData.get();
+			if (cachedData.isPresent()) {
+				this.mergeSeries(cachedData.get(), stock.getHistory(), cachedData.get().getHistory());
+			}
+			cachedDataFeed.storeSeries(stock);
+			if (!(instrument instanceof FxInstrument)) {
+				this.addLatestQuoteToTheSeries(liveData.get(), StockFeedFactory.getQuoteFeed(Source.Yahoo));
+			}
+		} else if (cachedData.isPresent()) {
+			liveData = cachedData;
+		} else {
+			IntelligentStockFeed.log.warn("No data for " + instrument);
+			return Optional.empty();
+		}
+
+		if (cleanData) {
+			TimeseriesUtils.cleanUpSeries(liveData);
+		}
+		return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, liveData);
 	}
 
 	public Optional<StockV1> get(final Instrument instrument, final String fromDate, final String toDate,
