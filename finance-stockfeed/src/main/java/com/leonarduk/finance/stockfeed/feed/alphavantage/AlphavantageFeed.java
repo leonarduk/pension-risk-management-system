@@ -87,7 +87,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
 	@Override
 	public Source getSource() {
-		return Source.alphavantage;
+		return Source.ALPHAVANTAGE;
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 		Daily fxResults = foreignExchange.daily(currencyOne.toUpperCase(), currencyTwo.toUpperCase(), OutputSize.FULL);
 		List<ForexData> fxData = fxResults.getForexData();
 
-		return convertFxSeries(new FxInstrument(Source.alphavantage, currencyOne, currencyTwo), fxData);
+		return convertFxSeries(new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo), fxData);
 
 	}
 

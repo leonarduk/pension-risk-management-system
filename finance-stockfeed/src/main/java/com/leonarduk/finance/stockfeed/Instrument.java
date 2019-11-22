@@ -89,8 +89,8 @@ public class Instrument {
 		private Instrument create(final String line) {
 			final Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
 			return new Instrument(iter.next(), AssetType.fromString(iter.next().toUpperCase()),
-					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next()), iter.next(),
-					iter.next(), Exchange.valueOf(iter.next()), iter.next(), iter.next(), iter.next());
+					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next().toUpperCase()),
+					iter.next(), iter.next(), Exchange.valueOf(iter.next()), iter.next(), iter.next(), iter.next());
 		}
 
 		public void init(String filePath) throws IOException, URISyntaxException {
@@ -120,7 +120,7 @@ public class Instrument {
 		}
 
 		Instrument.LOGGER.warn("Could not map " + symbol);
-		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.alphavantage, symbol, symbol,
+		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.ALPHAVANTAGE, symbol, symbol,
 				Exchange.London, "", "GBP", symbol);
 	}
 

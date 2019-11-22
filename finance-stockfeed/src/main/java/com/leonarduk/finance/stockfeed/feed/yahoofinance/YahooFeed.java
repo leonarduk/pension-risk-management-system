@@ -84,7 +84,7 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
 	@Override
 	public Source getSource() {
-		return Source.Yahoo;
+		return Source.YAHOO;
 	}
 
 	@Override

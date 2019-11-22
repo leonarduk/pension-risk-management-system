@@ -66,7 +66,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 					}
 					history.add(new ExtendedHistoricalQuote(stock.getInstrument().code(), calendarToLocalDate,
 							quote.getOpen(), quote.getDayLow(), quote.getDayHigh(), quote.getPrice(), quote.getPrice(),
-							DoubleNum.valueOf(quote.getVolume()), Source.Yahoo.name()));
+							DoubleNum.valueOf(quote.getVolume()), Source.YAHOO.name()));
 				}
 			}
 		} else {
@@ -97,7 +97,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final boolean interpolate, boolean cleanData) {
 		try {
 
-			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.alphavantage);
+			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.ALPHAVANTAGE);
 //			if (instrument instanceof FxInstrument) {
 //				webDataFeed = StockFeedFactory.getDataFeed(Source.alphavantage);
 //			}
@@ -153,7 +153,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			}
 			cachedDataFeed.storeSeries(stock);
 			if (!(instrument instanceof FxInstrument)) {
-				this.addLatestQuoteToTheSeries(liveData.get(), StockFeedFactory.getQuoteFeed(Source.Yahoo));
+				this.addLatestQuoteToTheSeries(liveData.get(), StockFeedFactory.getQuoteFeed(Source.YAHOO));
 			}
 		} else if (cachedData.isPresent()) {
 			liveData = cachedData;
@@ -197,8 +197,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 	@Override
 	public boolean isAvailable() {
 		return StockFeedFactory.getDataFeed(Source.MANUAL).isAvailable()
-				|| StockFeedFactory.getDataFeed(Source.Google).isAvailable()
-				|| StockFeedFactory.getDataFeed(Source.Yahoo).isAvailable();
+				|| StockFeedFactory.getDataFeed(Source.GOOGLE).isAvailable()
+				|| StockFeedFactory.getDataFeed(Source.YAHOO).isAvailable();
 	}
 
 }

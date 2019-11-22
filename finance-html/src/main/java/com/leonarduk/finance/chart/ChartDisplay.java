@@ -15,6 +15,8 @@ import org.jfree.graphics2d.svg.SVGUtils;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import com.leonarduk.finance.utils.HtmlTools;
+
 public class ChartDisplay {
 	public static void displayChartInFrame(final JFreeChart chart, final int width, final int height,
 			final String title) {
@@ -62,16 +64,24 @@ public class ChartDisplay {
 	}
 
 	public static StringBuilder saveImageAsSvgAndReturnHtmlLink(final String imageNamePrefix, final int width,
-			final int height, final JFreeChart chart) throws IOException {
+			final int height, final JFreeChart chart) throws Exception {
 
+		File svgFile = createSvgFile(imageNamePrefix, width, height, chart);
+
+		File jpegFile = new File(svgFile.getParentFile(), imageNamePrefix + ".jpg");
+		HtmlTools.convertSvgToJPG(svgFile, jpegFile);
+
+		return getImgLink(width, height, imageNamePrefix);
+	}
+
+	private static File createSvgFile(final String imageNamePrefix, final int width, final int height,
+			final JFreeChart chart) throws IOException {
 		final SVGGraphics2D g2 = new SVGGraphics2D(width, height);
 		final Rectangle r = new Rectangle(0, 0, width, height);
 		chart.draw(g2, r);
 		final String imageName = imageNamePrefix + ".svg";
 		final File f = new File("target", imageName);
 		SVGUtils.writeToSVG(f, g2.getSVGElement());
-
-		return getImgLink(width, height, imageNamePrefix);
-
+		return f;
 	}
 }

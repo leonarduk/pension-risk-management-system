@@ -52,12 +52,11 @@ public class StockFeedEndpoint {
 	@Path("/ticker/{ticker}/")
 	public String displayHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
 			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
-			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
-			throws IOException {
+			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
+			@QueryParam("fields") final String fields) throws IOException {
 
-		final Instrument instrument = Instrument.fromString(ticker);
-
-		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument);
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, Instrument.fromString(ticker),
+				fields.split(","));
 	}
 
 	@GET
@@ -66,16 +65,17 @@ public class StockFeedEndpoint {
 	public String displayFxHistory(@PathParam("ccy1") final String currencyOne,
 			@PathParam("ccy2") final String currencyTwo, @QueryParam("years") final int years,
 			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
-			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
-			throws IOException {
+			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
+			@QueryParam("fields") final String fields) throws IOException {
 
-		final Instrument instrument = new FxInstrument(Source.alphavantage, currencyOne, currencyTwo);
+		final Instrument instrument = new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo);
 
-		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument);
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument, fields.split(","));
 	}
 
 	private String generateResults(final int years, final String fromDate, final String toDate,
-			final boolean interpolate, final boolean cleanData, final Instrument instrument) throws IOException {
+			final boolean interpolate, final boolean cleanData, final Instrument instrument, String[] fields)
+			throws IOException {
 		final StringBuilder sbBody = new StringBuilder();
 		final List<List<DataField>> records = Lists.newArrayList();
 
@@ -98,6 +98,10 @@ public class StockFeedEndpoint {
 
 		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
 
+		if(fields.length > 0) {
+			
+		}
+		
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);

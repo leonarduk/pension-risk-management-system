@@ -58,7 +58,7 @@ public class GoogleFeed extends CsvStockFeed {
 
 	@Override
 	public Source getSource() {
-		return Source.Google;
+		return Source.GOOGLE;
 	}
 
 	@Override

@@ -11,9 +11,9 @@ public class StockFeedFactory {
 			return new CachedStockFeed("db");
 //			case Google:
 //				return new GoogleFeed();
-		case Yahoo:
+		case YAHOO:
 			return new YahooFeed();
-		case alphavantage:
+		case ALPHAVANTAGE:
 		default:
 			return new AlphavantageFeed();
 		}

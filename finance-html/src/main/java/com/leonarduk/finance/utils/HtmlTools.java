@@ -1,6 +1,8 @@
 package com.leonarduk.finance.utils;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -10,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +52,7 @@ public class HtmlTools {
 
 	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
 			final List<Valuation> valuations, final String title, final String key, final String value)
-			throws IOException {
+			throws Exception {
 		final PieChartFactory pieChartFactory = new PieChartFactory(title);
 		pieChartFactory.addAll(assetTypeMap);
 		assetTypeMap.put("Total", pieChartFactory.getTotal().doubleValue());
@@ -126,6 +131,24 @@ public class HtmlTools {
 			}
 			sb.append("</table>");
 		}
+	}
+
+	public static void convertSvgToJPG(File svgFile, File jpegFile) throws Exception {
+		// create a JPEG transcoder
+		JPEGTranscoder t = new JPEGTranscoder();
+		// set the transcoding hints
+		t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(.8));
+		// create the transcoder input
+		String svgURI = svgFile.toURL().toString();
+		TranscoderInput input = new TranscoderInput(svgURI);
+		// create the transcoder output
+		OutputStream ostream = new FileOutputStream(jpegFile);
+		TranscoderOutput output = new TranscoderOutput(ostream);
+		// save the image
+		t.transcode(input, output);
+		// flush and close the stream then exit
+		ostream.flush();
+		ostream.close();
 	}
 
 }

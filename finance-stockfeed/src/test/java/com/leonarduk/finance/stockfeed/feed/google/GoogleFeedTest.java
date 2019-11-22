@@ -34,7 +34,7 @@ public class GoogleFeedTest {
 
 	@Test
 	public final void testGetSource() {
-		Assert.assertEquals(Source.Google, this.feed.getSource());
+		Assert.assertEquals(Source.GOOGLE, this.feed.getSource());
 	}
 
 	@Test

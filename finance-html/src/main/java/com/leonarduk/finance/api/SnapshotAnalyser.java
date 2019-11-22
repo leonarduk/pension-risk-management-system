@@ -105,7 +105,7 @@ public class SnapshotAnalyser {
 			HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
 					SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
 
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			sbBody.append("Failed to create images:" + e.getMessage());
 		}
 	}
@@ -124,8 +124,12 @@ public class SnapshotAnalyser {
 			if (!stock.isPresent()) {
 				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), 1);
 			}
-			series = new ExtendedHistoricalQuoteTimeSeries(
-					this.feed.get(stock2.getInstrument(), fromDate, toDate, interpolate, clean).get().getHistory());
+			Optional<StockV1> optional = this.feed.get(stock2.getInstrument(), fromDate, toDate, interpolate, clean);
+			if (optional.isPresent()) {
+				series = new ExtendedHistoricalQuoteTimeSeries(optional.get().getHistory());
+			} else {
+				series = null;
+			}
 			if ((null == series) || (series.getBarCount() < 1)) {
 				throw new IllegalArgumentException("No data");
 			}
@@ -142,34 +146,12 @@ public class SnapshotAnalyser {
 
 			final Bar mostRecentBar = series.getLastBar();
 			final Valuation valuation = this.createValuation(stock2, mostRecentBar);
-			for (final AbstractStrategy strategy : strategies) {
+//			for (final AbstractStrategy strategy : strategies) {
+//
+//			}
 
-				final int endIndex = series.getEndIndex();
-				if (strategy.getStrategy().shouldEnter(endIndex)) {
-					// Our strategy should enter
-					valuation.addRecommendation(strategy.getName(),
-							new Recommendation(RecommendedTrade.BUY, strategy, stock2.getInstrument()));
-					final boolean entered = tradingRecord.enter(endIndex, mostRecentBar.getAmount(),
-							DoubleNum.valueOf(10));
-					if (entered) {
-						final Order entry = tradingRecord.getLastEntry();
-						this.showTradeAction(entry, "Enter");
-					}
-				} else if (strategy.getStrategy().shouldExit(endIndex)) {
-					// Our strategy should exit
-					valuation.addRecommendation(strategy.getName(),
-							new Recommendation(RecommendedTrade.SELL, strategy, stock2.getInstrument()));
-					final boolean exited = tradingRecord.exit(endIndex, mostRecentBar.getClosePrice(),
-							DoubleNum.valueOf(10));
-					if (exited) {
-						final Order exit = tradingRecord.getLastExit();
-						this.showTradeAction(exit, "Exit");
-					}
-				} else {
-					valuation.addRecommendation(strategy.getName(),
-							new Recommendation(RecommendedTrade.HOLD, strategy, stock2.getInstrument()));
-				}
-			}
+			strategies.parallelStream().forEach(
+					strategy -> valueStrategy(stock2, series, tradingRecord, mostRecentBar, valuation, strategy));
 
 			valuation.addReturn(Period.ofDays(1), this.calculateReturn(series, 1));
 			valuation.addReturn(Period.ofDays(5), this.calculateReturn(series, 5));
@@ -181,6 +163,33 @@ public class SnapshotAnalyser {
 		} catch (final Exception e) {
 			SnapshotAnalyser.logger.warn("Failed:" + e.getMessage());
 			return new Valuation(stock2, BigDecimal.ZERO, LocalDate.now(), BigDecimal.ONE);
+		}
+	}
+
+	private void valueStrategy(final Position stock2, TimeSeries series, final TradingRecord tradingRecord,
+			final Bar mostRecentBar, final Valuation valuation, final AbstractStrategy strategy) {
+		final int endIndex = series.getEndIndex();
+		if (strategy.getStrategy().shouldEnter(endIndex)) {
+			// Our strategy should enter
+			valuation.addRecommendation(strategy.getName(),
+					new Recommendation(RecommendedTrade.BUY, strategy, stock2.getInstrument()));
+			final boolean entered = tradingRecord.enter(endIndex, mostRecentBar.getAmount(), DoubleNum.valueOf(10));
+			if (entered) {
+				final Order entry = tradingRecord.getLastEntry();
+				this.showTradeAction(entry, "Enter");
+			}
+		} else if (strategy.getStrategy().shouldExit(endIndex)) {
+			// Our strategy should exit
+			valuation.addRecommendation(strategy.getName(),
+					new Recommendation(RecommendedTrade.SELL, strategy, stock2.getInstrument()));
+			final boolean exited = tradingRecord.exit(endIndex, mostRecentBar.getClosePrice(), DoubleNum.valueOf(10));
+			if (exited) {
+				final Order exit = tradingRecord.getLastExit();
+				this.showTradeAction(exit, "Exit");
+			}
+		} else {
+			valuation.addRecommendation(strategy.getName(),
+					new Recommendation(RecommendedTrade.HOLD, strategy, stock2.getInstrument()));
 		}
 	}
 
