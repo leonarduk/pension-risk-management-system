@@ -55,8 +55,13 @@ public class StockFeedEndpoint {
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
 			@QueryParam("fields") final String fields) throws IOException {
 
-		return generateResults(years, fromDate, toDate, interpolate, cleanData, Instrument.fromString(ticker),
-				fields.split(","));
+		Instrument instrument = Instrument.fromString(ticker);
+		String[] fieldArray = {};
+		if(fields != null) {
+			fieldArray = fields.split(",");
+		}
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument,
+				fieldArray);
 	}
 
 	@GET
@@ -70,7 +75,8 @@ public class StockFeedEndpoint {
 
 		final Instrument instrument = new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo);
 
-		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument, fields.split(","));
+		String[] fieldArray = fields.split(",");
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument, fieldArray);
 	}
 
 	private String generateResults(final int years, final String fromDate, final String toDate,
