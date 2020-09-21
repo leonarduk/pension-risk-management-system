@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collections;
@@ -83,7 +84,11 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 		final List<Bar> quotes = new LinkedList<>();
 		try {
 			while (this.next()) {
-				quotes.add(this.asHistoricalQuote());
+				ExtendedHistoricalQuote asHistoricalQuote = this.asHistoricalQuote();
+				if (asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SATURDAY
+						&& asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
+					quotes.add(asHistoricalQuote);
+				}
 			}
 
 			Collections.sort(quotes, (o1, o2) -> {

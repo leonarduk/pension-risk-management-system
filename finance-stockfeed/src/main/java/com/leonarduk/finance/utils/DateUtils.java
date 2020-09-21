@@ -26,9 +26,11 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -37,6 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.jfree.data.time.Day;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +74,7 @@ public class DateUtils {
 	}
 
 	static long daysBetween(LocalDate start, LocalDate end, List<DayOfWeek> ignore) {
-		return start.datesUntil(end).filter(d -> !ignore.contains(d.getDayOfWeek())).count();
+		return  Period.between(start, end).getDays();
 	}
 
 	private static String getDividendDateFormat(final String date) {
