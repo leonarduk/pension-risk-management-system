@@ -23,7 +23,7 @@
 		<webscraper-core.version>1.0.17</webscraper-core.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<jahoo.finance.version>3.15.0</jahoo.finance.version>
-		<junit.version>4.13-beta-2</junit.version>
+		<junit.version>4.13.1</junit.version>
 	</properties>
 
 	<repositories>
