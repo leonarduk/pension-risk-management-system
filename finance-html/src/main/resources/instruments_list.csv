@@ -174,10 +174,10 @@ iShares $ Treasury Bond 1-3yr GBP,ETF,BOND,Google,IE00B14X4S71,IBTS,IBTS.L,USD G
 iShares $ Treasury Bond 3-7yr USD Acc GBP,ETF,BOND,Google,IE00B3VWN393,CU71,CU71.L,USD Government Bond,GBX,LON:CU71
 iShares $ Treasury Bond 7-10yr GBP,ETF,BOND,Google,IE00B1FZS798,IBTM,IBTM.L,USD Government Bond,USD,LON:IBTM
 iShares $ Treasury Bond 7-10yr USD Acc GBP,ETF,BOND,Google,IE00B3VWN518,CU01,CU01.L,USD Government Bond,GBX,LON:CU01
-iShares ‡Corp Bond 0-5yr GBP Dist,ETF,BOND,Google,IE00B5L65R35,IS15,IS15.L,GBP Corporate Bond,EUR,LON:IS15
-iShares ‡Corp Bond ex-Fincls GBP Dist,ETF,BOND,Google,IE00B4L60H17,ISXF,ISXF.L,GBP Corporate Bond,EUR,LON:ISXF
-iShares ‡Index-Linked Gilts GBP Dist,ETF,BOND,Google,IE00B1FZSD53,INXG,INXG.L,GBP Inflation-Linked Bond,GBP,LON:INXG
-iShares ‡Ultrashort Bond GBP Dist,ETF,BOND,Google,IE00BCRY6441,ERNS,ERNS.L,GBP Diversified Bond - Short Term,GBP,LON:ERNS
+iShares √†Corp Bond 0-5yr GBP Dist,ETF,BOND,Google,IE00B5L65R35,IS15,IS15.L,GBP Corporate Bond,EUR,LON:IS15
+iShares √†Corp Bond ex-Fincls GBP Dist,ETF,BOND,Google,IE00B4L60H17,ISXF,ISXF.L,GBP Corporate Bond,EUR,LON:ISXF
+iShares √†Index-Linked Gilts GBP Dist,ETF,BOND,Google,IE00B1FZSD53,INXG,INXG.L,GBP Inflation-Linked Bond,GBP,LON:INXG
+iShares √†Ultrashort Bond GBP Dist,ETF,BOND,Google,IE00BCRY6441,ERNS,ERNS.L,GBP Diversified Bond - Short Term,GBP,LON:ERNS
 iShares  Aggregate Bond EUR Dist GBP,ETF,BOND,Google,IE00B3DKXQ41,SEAG,SEAG.L,EUR Diversified Bond,GBP,LON:SEAG
 iShares  Corp Bd ex-Fincls 1-5yr  Dist GBP,ETF,BOND,Google,IE00B4L5ZY03,EEX5,EEX5.L,EUR Corporate Bond - Short Term,GBP,LON:EEX5
 iShares  Corp Bond 1-5yr EUR Dist GBP,ETF,BOND,Google,IE00B4L60045,SE15,SE15.L,EUR Corporate Bond - Short Term,GBP,LON:SE15
@@ -193,7 +193,7 @@ iShares Asia Pacific Dividend GBP,ETF,EQUITY,Google,IE00B14X4T88,IAPD,IAPD.L,Asi
 iShares Asia Property Yield GBP,ETF,PROPERTY,Google,IE00B1FZS244,IASP,IASP.L,Property - Indirect Asia,USD,LON:IASP
 iShares BRIC 50 GBP,ETF,EQUITY,Google,IE00B1W57M07,BRIC,BRIC.L,BRIC Equity,USD,LON:BRIC
 iShares China Large Cap GBP,ETF,EQUITY,Google,IE00B02KXK85,FXC,FXC.L,China Equity,USD,LON:FXC
-iShares Core ‡Corp Bond GBP Dist,ETF,BOND,Google,IE00B00FV011,SLXX,SLXX.L,GBP Corporate Bond,GBP,LON:SLXX
+iShares Core √†Corp Bond GBP Dist,ETF,BOND,Google,IE00B00FV011,SLXX,SLXX.L,GBP Corporate Bond,GBP,LON:SLXX
 iShares Core  Govt Bond EUR Dist GBP,ETF,BOND,Google,IE00B4WXJJ64,SEGA,SEGA.L,EUR Government Bond,GBP,LON:SEGA
 iShares Core EURO STOXX 50 EUR Acc GBP,ETF,EQUITY,Google,IE00B53L3W79,CS51,CS51.L,Eurozone Large-Cap Equity,GBX,LON:CS51
 iShares Core FTSE 100 GBP Dist,ETF,EQUITY,Google,IE0005042456,ISF,ISF.L,UK Large-Cap Blend Equity,GBX,LON:ISF
@@ -436,6 +436,7 @@ Vanguard FTSE Japan ETF GBP,ETF,EQUITY,Google,IE00B95PGT31,VJPN,VJPN.L,Japan Lar
 Vanguard FTSE North America ETF GBP,ETF,EQUITY,Google,IE00BKX55R35,VNRT,VNRT.L,US Large-Cap Blend Equity,USD,LON:VNRT
 Vanguard S&P 500 ETF GBP,ETF,EQUITY,Google,IE00B3XXRP09,VUSA,VUSA.L,US Large-Cap Blend Equity,USD,LON:VUSA
 Vanguard UK Gilt UCITS ETF,ETF,BOND,Google,IE00B42WWV65,VGOV,VGOV.L,GBP Government Bond,GBP,LON:VGOV
+Vanguard Investments Funds ICVC-Vanguard U.K. Inflation-Linked Gilt Index Fund A GBP Gross Acc,FUND,BOND,Yahoo,GB00B45Q9038,GB00B45Q9038,0P0000SHY5.L,GBP Government Bond,GBP,LON:VGOV
 WisdomTree Emerg Mkts Eq Inc ETF GBP,ETF,EQUITY,Google,IE00BQQ3Q067,DEM,DEM.L,Global Emerging Markets Equity,USD,LON:DEM
 WisdomTree Europe Equity Income ETF GBP,ETF,EQUITY,Google,IE00BQZJBX31,EEI,EEI.L,Europe Equity Income,EUR,LON:EEI
 WisdomTree Europe SmallCap Div ETF GBP,ETF,EQUITY,Google,IE00BQZJC527,DFE,DFE.L,Europe Small-Cap Equity,EUR,LON:DFE
