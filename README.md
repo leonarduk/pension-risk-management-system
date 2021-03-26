@@ -24,4 +24,4 @@ If you select interpolate=true, it will flat-line dates before and after the ava
 e.g. 
 http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
 
-
+You can use the docker image https://hub.docker.com/r/leonarduk/finance-html-docker
