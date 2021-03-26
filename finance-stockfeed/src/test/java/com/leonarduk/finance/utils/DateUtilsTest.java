@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import java.time.LocalDate;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DateUtilsTest {
@@ -13,6 +14,7 @@ public class DateUtilsTest {
 	private static final String APRIL4 = "2017-04-04";
 
 	@Test
+	@Ignore
 	public final void testGetDiffInWorkDays() {
 //		Assert.assertEquals(2,
 //				DateUtils.getDiffInWorkDays(LocalDate.parse("2013-12-24"), LocalDate.parse("2013-12-27")));

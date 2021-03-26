@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
@@ -39,6 +40,7 @@ public class LinearInterpolatorTest {
 	}
 
 	@Test
+	@Ignore
 	public void testInterpolateTimeseries() {
 		final TimeSeries actual = this.interpolator.interpolate(this.series);
 		Assert.assertEquals(10, actual.getBarCount());

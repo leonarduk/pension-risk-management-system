@@ -1,0 +1,8 @@
+## to build the image
+docker build -t springio/gs-spring-boot-docker .
+
+## to run the container
+run -p 8091:8091 -t springio/gs-spring-boot-docker:latest
+
+## to view an example page
+http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true

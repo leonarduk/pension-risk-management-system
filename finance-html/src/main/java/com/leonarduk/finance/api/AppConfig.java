@@ -5,7 +5,7 @@ import javax.inject.Named;
 import javax.sql.DataSource;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
