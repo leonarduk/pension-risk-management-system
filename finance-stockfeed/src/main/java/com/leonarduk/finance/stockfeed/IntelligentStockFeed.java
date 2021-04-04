@@ -2,7 +2,10 @@ package com.leonarduk.finance.stockfeed;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,8 +55,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final ExtendedStockQuote quote = dataFeed.getStockQuote(stock.getInstrument());
 			if ((quote != null) && quote.isPopulated()) {
 				LocalDate calendarToLocalDate = DateUtils.calendarToLocalDate(quote.getLastTradeTime());
-
-				if (stock.getHistory().stream()
+			if (stock.getHistory().stream()
 						.filter(dataPoint -> dataPoint.getEndTime().toLocalDate().equals(calendarToLocalDate)).findAny()
 						.isPresent()) {
 					return;
