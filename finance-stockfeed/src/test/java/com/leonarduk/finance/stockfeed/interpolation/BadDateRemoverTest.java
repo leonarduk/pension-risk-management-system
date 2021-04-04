@@ -25,7 +25,8 @@ public class BadDateRemoverTest {
 
 	@Test
 	public final void testClean() throws IOException {
-		final List<Bar> series = IntelligentStockFeed
+		IntelligentStockFeed feed = new IntelligentStockFeed();
+		final List<Bar> series =feed
 		        .getFlatCashSeries(Instrument.CASH, 1).get().getHistory();
 		final int size = series.size();
 

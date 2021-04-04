@@ -122,7 +122,7 @@ public class SnapshotAnalyser {
 		try {
 			Optional<StockV1> stock = stock2.getStock();
 			if (!stock.isPresent()) {
-				stock = IntelligentStockFeed.getFlatCashSeries(stock2.getInstrument(), 1);
+				stock = feed.getFlatCashSeries(stock2.getInstrument(), 1);
 			}
 			Optional<StockV1> optional = this.feed.get(stock2.getInstrument(), fromDate, toDate, interpolate, clean);
 			if (optional.isPresent()) {

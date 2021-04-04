@@ -2,10 +2,7 @@ package com.leonarduk.finance.stockfeed;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,13 +23,28 @@ import com.leonarduk.finance.utils.TimeseriesUtils;
 public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed {
 	public static final Logger log = LoggerFactory.getLogger(IntelligentStockFeed.class.getName());
 
-	public static boolean refresh = true;
+	private final DataStore dataStore;
 
-	public static Optional<StockV1> getFlatCashSeries(final Instrument instrument, final int years) throws IOException {
-		return IntelligentStockFeed.getFlatCashSeries(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+	public IntelligentStockFeed(){
+		//TODO add details for non local DB
+		String bucket = "portfolio";
+		String org = "leonarduk";
+		String token = "fX6n4UJqXg7Aq2OY7MerSxPB-624Sqwua4LVyRadKHlT91q3Wf-RopTm7YHZroT0actf46RrfXs9lR4i08sA2w==";
+		String serverUrl = "http://localhost:8086";
+
+		dataStore = new InfluxDBDataStore(bucket, org, token, serverUrl);
+		stockFeedFactory = new StockFeedFactory(dataStore);
+
+	}
+	private final StockFeedFactory stockFeedFactory;
+
+	public boolean refresh = true;
+
+	public Optional<StockV1> getFlatCashSeries(final Instrument instrument, final int years) throws IOException {
+		return getFlatCashSeries(instrument, LocalDate.now().minusYears(years), LocalDate.now());
 	}
 
-	public static Optional<StockV1> getFlatCashSeries(final Instrument instrument, final LocalDate fromDate,
+	public Optional<StockV1> getFlatCashSeries(final Instrument instrument, final LocalDate fromDate,
 			final LocalDate toDate) throws IOException {
 		final StockV1 cash = new StockV1(instrument);
 		final List<Bar> history = Lists.newArrayList();
@@ -45,8 +57,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 		return Optional.of(cash);
 	}
 
-	public static void setRefresh(final boolean refresh) {
-		IntelligentStockFeed.refresh = refresh;
+	public void setRefresh(boolean refresh) {
+		this.refresh = refresh;
 	}
 
 	public void addLatestQuoteToTheSeries(final StockV1 stock, final QuoteFeed dataFeed) throws IOException {
@@ -99,9 +111,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final boolean interpolate, boolean cleanData) {
 		try {
 
-			StockFeed webDataFeed = StockFeedFactory.getDataFeed(Source.ALPHAVANTAGE);
+			StockFeed webDataFeed = stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE);
 //			if (instrument instanceof FxInstrument) {
-//				webDataFeed = StockFeedFactory.getDataFeed(Source.alphavantage);
+//				webDataFeed = stockFeedFactory.getDataFeed(Source.alphavantage);
 //			}
 			return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, webDataFeed);
 		} catch (final Exception e) {
@@ -119,10 +131,10 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 		LocalDate toDate = DateUtils.getLastWeekday(toDateRaw);
 
 		if (instrument.equals(Instrument.CASH)) {
-			return IntelligentStockFeed.getFlatCashSeries(instrument, fromDate, toDate);
+			return getFlatCashSeries(instrument, fromDate, toDate);
 		}
 
-		final CachedStockFeed cachedDataFeed = (CachedStockFeed) StockFeedFactory.getDataFeed(Source.MANUAL);
+		final CachedStockFeed cachedDataFeed = (CachedStockFeed) stockFeedFactory.getDataFeed(Source.MANUAL);
 
 		final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
 				true);
@@ -131,7 +143,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 		// Note will need to update today's live quote still though,
 		// so skip latest date point
 		Optional<StockV1> liveData = Optional.empty();
-		boolean getWebData = IntelligentStockFeed.refresh && webDataFeed.isAvailable();
+		boolean getWebData = refresh && webDataFeed.isAvailable();
 		if (getWebData) {
 			if (cachedData.isPresent()) {
 				final List<Bar> cachedHistory = cachedData.get().getHistory();
@@ -140,11 +152,11 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
 				if (!missingDates.isEmpty()) {
 					liveData = this.getDataIfFeedAvailable(instrument, missingDates.get(0),
-							missingDates.get(missingDates.size() - 1), webDataFeed, IntelligentStockFeed.refresh);
+							missingDates.get(missingDates.size() - 1), webDataFeed, refresh);
 				}
 			} else {
 				liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
-						IntelligentStockFeed.refresh);
+						refresh);
 			}
 		}
 
@@ -155,7 +167,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			}
 			cachedDataFeed.storeSeries(stock);
 			if (!(instrument instanceof FxInstrument)) {
-				this.addLatestQuoteToTheSeries(liveData.get(), StockFeedFactory.getQuoteFeed(Source.YAHOO));
+				this.addLatestQuoteToTheSeries(liveData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
 			}
 		} else if (cachedData.isPresent()) {
 			liveData = cachedData;
@@ -198,9 +210,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
 	@Override
 	public boolean isAvailable() {
-		return StockFeedFactory.getDataFeed(Source.MANUAL).isAvailable()
-				|| StockFeedFactory.getDataFeed(Source.GOOGLE).isAvailable()
-				|| StockFeedFactory.getDataFeed(Source.YAHOO).isAvailable();
+		return stockFeedFactory.getDataFeed(Source.MANUAL).isAvailable()
+				|| stockFeedFactory.getDataFeed(Source.GOOGLE).isAvailable()
+				|| stockFeedFactory.getDataFeed(Source.YAHOO).isAvailable();
 	}
 
 }
