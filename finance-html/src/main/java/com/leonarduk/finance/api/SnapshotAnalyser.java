@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.leonarduk.finance.stockfeed.DataStore;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +72,8 @@ public class SnapshotAnalyser {
 	private final static String VALUE = "Value";
 	private final static int years = 20;
 
-	public SnapshotAnalyser() {
-		this.feed = new IntelligentStockFeed();
+	public SnapshotAnalyser(final DataStore dataStore) {
+		this.feed = new IntelligentStockFeed(dataStore);
 	}
 
 	public SnapshotAnalyser(final IntelligentStockFeed intelligentStockFeed) {

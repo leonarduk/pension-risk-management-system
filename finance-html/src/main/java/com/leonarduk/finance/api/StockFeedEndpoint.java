@@ -15,16 +15,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.leonarduk.finance.stockfeed.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
-import com.leonarduk.finance.stockfeed.FxFeed;
-import com.leonarduk.finance.stockfeed.FxInstrument;
-import com.leonarduk.finance.stockfeed.Instrument;
-import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
@@ -34,17 +31,19 @@ import com.leonarduk.finance.utils.TimeseriesUtils;
 
 @Named
 @Path("/stock")
+@SpringBootApplication
 public class StockFeedEndpoint {
+
+    @Autowired
 	private StockFeed stockFeed;
-	private FxFeed fxFeed;
+
+	@Autowired
+    private FxFeed fxFeed;
+
+    @Autowired
+    private DataStore dataStore;
 
 	public StockFeedEndpoint() {
-		this(new IntelligentStockFeed(), new AlphavantageFeed());
-	}
-
-	public StockFeedEndpoint(final StockFeed stockFeed, final FxFeed fxFeed) {
-		this.stockFeed = stockFeed;
-		this.fxFeed = fxFeed;
 	}
 
 	@GET
@@ -105,9 +104,9 @@ public class StockFeedEndpoint {
 		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
 
 		if(fields.length > 0) {
-			
+
 		}
-		
+
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);

@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.leonarduk.finance.stockfeed.DataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +22,22 @@ import com.google.common.collect.Sets;
 import com.leonarduk.finance.portfolio.Portfolio;
 import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.portfolio.ValuationReport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Named
 @Path("/portfolio")
+@SpringBootApplication
 public class PortfolioFeedEndpoint {
-	private final SnapshotAnalyser snapshotAnalyzer;
+    @Autowired
+	private SnapshotAnalyser snapshotAnalyzer;
+
+	@Autowired
+	private DataStore dataStore;
 
 	private final static Logger logger = LoggerFactory.getLogger(PortfolioFeedEndpoint.class.getName());
 
 	public PortfolioFeedEndpoint() {
-		this.snapshotAnalyzer = new SnapshotAnalyser();
 	}
 
 	public PortfolioFeedEndpoint(final SnapshotAnalyser analyseSnapshot) {

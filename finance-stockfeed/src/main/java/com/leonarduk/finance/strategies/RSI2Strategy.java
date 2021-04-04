@@ -25,6 +25,7 @@ package com.leonarduk.finance.strategies;
 
 import java.io.IOException;
 
+import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import org.ta4j.core.BaseStrategy;
 import org.ta4j.core.Rule;
 import org.ta4j.core.Strategy;
@@ -91,7 +92,7 @@ public class RSI2Strategy {
 
 	public static void main(final String[] args) throws IOException {
 
-		final StockFeed feed = new IntelligentStockFeed();
+		final StockFeed feed = new IntelligentStockFeed(new FileBasedDataStore("db"));
 		final String ticker = "PHGP";
 		final StockV1 stock = feed.get(Instrument.fromString(ticker), 20).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);

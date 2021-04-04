@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class BadDateRemoverTest {
 
 	@Test
 	public final void testClean() throws IOException {
-		IntelligentStockFeed feed = new IntelligentStockFeed();
+		IntelligentStockFeed feed = new IntelligentStockFeed(new FileBasedDataStore("db"));
 		final List<Bar> series =feed
 		        .getFlatCashSeries(Instrument.CASH, 1).get().getHistory();
 		final int size = series.size();

@@ -25,16 +25,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
 	private final DataStore dataStore;
 
-	public IntelligentStockFeed(){
-		//TODO add details for non local DB
-		String bucket = "portfolio";
-		String org = "leonarduk";
-		String token = "fX6n4UJqXg7Aq2OY7MerSxPB-624Sqwua4LVyRadKHlT91q3Wf-RopTm7YHZroT0actf46RrfXs9lR4i08sA2w==";
-		String serverUrl = "http://localhost:8086";
-
-		dataStore = new InfluxDBDataStore(bucket, org, token, serverUrl);
+	public IntelligentStockFeed(final DataStore dataStore){
+		this.dataStore = dataStore;
 		stockFeedFactory = new StockFeedFactory(dataStore);
-
 	}
 	private final StockFeedFactory stockFeedFactory;
 
