@@ -2,14 +2,14 @@ package com.leonarduk.finance.stockfeed.feed;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.influxdb.annotations.Column;
+import com.influxdb.annotations.Measurement;
 import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
@@ -23,63 +23,35 @@ import yahoofinance.histquotes.HistoricalQuote;
  * @author steph
  *
  */
+@Measurement(name = "HistoricalQuote")
 public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
-	@Override
-	public String toString() {
-		return "ExtendedHistoricalQuote [symbol=" + symbol + ", date=" + date + ", open=" + open + ", low=" + low
-				+ ", high=" + high + ", close=" + close + ", adjClose=" + adjClose + ", volume=" + volume + ", comment="
-				+ comment + "]";
-	}
-
-	private String symbol;
-
-	private LocalDate date;
-
-	private BigDecimal open;
-	private BigDecimal low;
-	private BigDecimal high;
-	private BigDecimal close;
-
-	private BigDecimal adjClose;
-
-	public String getSymbol() {
-		return symbol;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public BigDecimal getOpen() {
-		return open;
-	}
-
-	public BigDecimal getLow() {
-		return low;
-	}
-
-	public BigDecimal getHigh() {
-		return high;
-	}
-
-	public BigDecimal getClose() {
-		return close;
-	}
-
-	public BigDecimal getAdjClose() {
-		return adjClose;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	private Num volume;
-
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6391604492688118701L;
+	@Column(tag = true)
+	private String symbol;
+
+	@Column(timestamp = true)
+	private Instant date;
+
+	@Column
+	private BigDecimal open;
+	@Column
+	private BigDecimal low;
+	@Column
+	private BigDecimal high;
+	@Column
+	private BigDecimal close;
+
+	@Column
+	private BigDecimal adjClose;
+
+	// Stored as String
+	@Column
+	private Num volume;
+
+	@Column(tag = true)
 	private String comment;
 
 	public ExtendedHistoricalQuote(HistoricalQuote original) {
@@ -109,7 +81,7 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 	public ExtendedHistoricalQuote(String symbol, LocalDate date, BigDecimal open, BigDecimal low, BigDecimal high,
 			BigDecimal close, BigDecimal adjClose, Num volume, final String comment) {
 		this.symbol = symbol;
-		this.date = date;
+		this.date = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
 		this.open = open;
 		this.low = low;
 		this.high = high;
@@ -132,12 +104,8 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 
 	public ExtendedHistoricalQuote(Bar lastQuote, LocalDate today, String string) {
 		this(lastQuote);
-		this.setDate(today);
+		this.setDate(today.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		this.setComment(string);
-	}
-
-	private void setDate(LocalDate today) {
-		this.date = today;
 	}
 
 	public ExtendedHistoricalQuote(Instrument instrument, LocalDate localDate, double open, double low, double high,
@@ -160,8 +128,66 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 				Long.valueOf(volume.longValue()), comment);
 	}
 
-	private void setComment(String string) {
-		this.comment = string;
+	public ExtendedHistoricalQuote(Instrument instrument, Map valuesMap) {
+			this.symbol = instrument.code();
+			this.date = (Instant) valuesMap.get("date");
+			this.open = BigDecimal.valueOf((Double) valuesMap.getOrDefault("open", 0.0));
+			this.low = BigDecimal.valueOf((Double) valuesMap.getOrDefault("low", 0.0));
+			this.high = BigDecimal.valueOf((Double) valuesMap.getOrDefault("high", 0.0));
+			this.close = BigDecimal.valueOf((Double) valuesMap.getOrDefault("close", 0.0));
+			this.adjClose = BigDecimal.valueOf((Double) valuesMap.getOrDefault("adjClose", 0.0));
+			this.volume = DoubleNum.valueOf((String) valuesMap.getOrDefault("volume", "0.0"));
+			this.comment =  "MAP" + valuesMap.getOrDefault("comment", "").toString();
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public static List<Bar> from(List<HistoricalQuote> original) {
+		return original.stream().map(o -> new ExtendedHistoricalQuote(o)).collect(Collectors.toList());
+	}
+
+	@Override
+	public String toString() {
+		return "ExtendedHistoricalQuote [symbol=" + symbol + ", date=" + date + ", open=" + open + ", low=" + low
+				+ ", high=" + high + ", close=" + close + ", adjClose=" + adjClose + ", volume=" + volume + ", comment="
+				+ comment + "]";
+	}
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public Instant getDateInstant() {
+		return date;
+	}
+	public LocalDate getDate() {
+		return LocalDate.ofInstant(date, ZoneId.systemDefault());
+	}
+
+	private void setDate(Instant today) {
+		this.date = today;
+	}
+
+	public BigDecimal getOpen() {
+		return open;
+	}
+
+	public BigDecimal getLow() {
+		return low;
+	}
+
+	public BigDecimal getHigh() {
+		return high;
+	}
+
+	public BigDecimal getClose() {
+		return close;
+	}
+
+	public BigDecimal getAdjClose() {
+		return adjClose;
 	}
 
 	@Override
@@ -169,16 +195,16 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 		return this.comment;
 	}
 
+	private void setComment(String string) {
+		this.comment = string;
+	}
+
 	public Instrument getInstrument() throws IOException {
 		return Instrument.fromString(getSymbol());
 	}
 
-	public LocalDate getLocaldate() {
+	public Instant getLocaldate() {
 		return this.date;
-	}
-
-	public static List<Bar> from(List<HistoricalQuote> original) {
-		return original.stream().map(o -> new ExtendedHistoricalQuote(o)).collect(Collectors.toList());
 	}
 
 	@Override

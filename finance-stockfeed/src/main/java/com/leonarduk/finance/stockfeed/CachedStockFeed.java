@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,62 +18,17 @@ import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 
-public class CachedStockFeed extends CsvStockFeed {
-	private final String		storeLocation;
+public class CachedStockFeed extends AbstractStockFeed {
 
 	public static final Logger	log	= LoggerFactory
 	        .getLogger(CachedStockFeed.class.getName());
+	private final DataStore dataStore;
 
-	public CachedStockFeed(final String storeLocation) {
-		this.storeLocation = storeLocation;
+	public CachedStockFeed(final DataStore dataStore) {
+		this.dataStore = dataStore;
 	}
 
-	private void createSeries(final StockV1 stock) throws IOException {
-
-		final File file = this.getFile(stock);
-		CachedStockFeed.log.info("Save stock to " + file.getAbsolutePath());
-		final List<Bar> series = stock.getHistory();
-
-		/**
-		 * Building header
-		 */
-		final StringBuilder sb = TimeseriesUtils.seriesToCsv(series);
-		FileUtils.writeFile(file.getAbsolutePath(), sb);
-
-	}
-
-	protected File getFile(final Instrument instrument) {
-		return new File(this.storeLocation, this.getQueryName(instrument));
-	}
-
-	protected File getFile(final StockV1 stock) throws IOException {
-		final File folder = new File(this.storeLocation);
-		if (!folder.exists() && !folder.mkdir()) {
-			throw new IOException("Failed to create " + this.storeLocation);
-		}
-
-		return this.getFile(stock.getInstrument());
-	}
-
-	@Override
-	protected String getQueryName(final Instrument instrument) {
-		return instrument.getExchange().name() + "_" + instrument.code()
-		        + ".csv";
-	}
-
-	@Override
-	public Source getSource() {
-		return Source.MANUAL;
-	}
-
-	@Override
-	public boolean isAvailable() {
-		final File store = new File(this.storeLocation);
-		return (store.exists() & store.isDirectory()) && store.canWrite()
-		        && store.canRead();
-	}
-
-	private List<Bar> loadSeries(final StockV1 stock)
+	public List<Bar> loadSeries(final StockV1 stock)
 	        throws IOException {
 		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000);
 		if (optional.isPresent()) {
@@ -84,35 +40,33 @@ public class CachedStockFeed extends CsvStockFeed {
 	private void mergeSeries(final StockV1 stock) throws IOException {
 		final List<Bar> original = this.loadSeries(stock);
 		this.mergeSeries(stock, original);
-		this.createSeries(stock);
+	}
+
+	public void storeSeries(final StockV1 stock) throws IOException{
+		if (this.dataStore.contains(stock)) {
+			this.mergeSeries(stock);
+		}
+		this.dataStore.storeSeries(stock);
 	}
 
 	@Override
-	protected BufferedReader openReader() throws IOException {
-		final File file = new File(this.storeLocation,
-		        this.getQueryName(this.getInstrument()));
-		CachedStockFeed.log.info("Read file from " + file.getAbsolutePath());
-
-		if (!file.exists()) {
-			throw new IOException(file.getAbsolutePath() + " not found");
-		}
-
-		final FileReader in = new FileReader(file);
-		final BufferedReader br = new BufferedReader(in);
-
-		// Skip first line that contains column names
-		br.readLine();
-		return br;
+	public Optional<StockV1> get(Instrument instrument, int years) throws IOException {
+		return this.dataStore.get(instrument, years);
 	}
 
-	public void storeSeries(final StockV1 stock) throws IOException {
-		final File seriesFile = this.getFile(stock);
-		if (seriesFile.exists()) {
-			this.mergeSeries(stock);
-		}
-		else {
-			this.createSeries(stock);
-		}
+	@Override
+	public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate) throws IOException {
+		return this.dataStore.get(instrument, fromDate,toDate);
 	}
 
+	@Override
+	public Source getSource() {
+		return Source.CACHE;
+	}
+
+
+	@Override
+	public boolean isAvailable() {
+		return this.dataStore.isAvailable();
+	}
 }

@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
+import com.influxdb.annotations.Column;
+import com.influxdb.annotations.Measurement;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
@@ -22,10 +24,6 @@ import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.stock.StockDividend;
 import yahoofinance.quotes.stock.StockQuote;
 
-/**
- *
- * @author Stijn Strickx
- */
 public class StockV1 {
 
 	private String currency;
@@ -33,7 +31,9 @@ public class StockV1 {
 	private StockDividend dividend;
 
 	private List<Bar> history;
+
 	private final Instrument instrument;
+
 	private StockQuote quote;
 
 	public static final Logger logger = LoggerFactory.getLogger(StockV1.class.getName());
