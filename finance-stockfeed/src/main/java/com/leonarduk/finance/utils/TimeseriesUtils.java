@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
 import org.ta4j.core.TimeSeries;
@@ -76,7 +77,7 @@ public class TimeseriesUtils {
 			throws IOException {
 		List<Bar> history = stock.getHistory();
 		if ((null == history) || history.isEmpty()) {
-			final Optional<StockV1> optional = new IntelligentStockFeed().get(stock.getInstrument(), fromDate, toDate);
+			final Optional<StockV1> optional = new IntelligentStockFeed(new FileBasedDataStore("db")).get(stock.getInstrument(), fromDate, toDate);
 			if (optional.isPresent()) {
 				history = optional.get().getHistory();
 			} else {
