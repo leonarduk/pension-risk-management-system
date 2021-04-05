@@ -27,6 +27,7 @@ import static com.leonarduk.finance.stockfeed.file.IndicatorsToCsv.exportIndicat
 
 import java.io.IOException;
 
+import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import org.ta4j.core.AnalysisCriterion;
 import org.ta4j.core.BaseStrategy;
 import org.ta4j.core.Rule;
@@ -63,7 +64,7 @@ public class Quickstart {
 	public static void main(final String[] args) throws IOException {
 
 		// Getting a time series (from any provider: CSV, web service, etc.)
-		final StockFeed feed = new IntelligentStockFeed();
+		final StockFeed feed = new IntelligentStockFeed(new FileBasedDataStore("db"));
 		final String ticker = "ISJP";
 		final StockV1 stock = feed.get(Instrument.fromString(ticker), 2).get();
 		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);

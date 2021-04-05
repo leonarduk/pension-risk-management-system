@@ -60,7 +60,8 @@ public class InfluxDBDataStore implements DataStore, AutoCloseable {
     public Optional<StockV1> get(Instrument instrument, int years) throws IOException {
         String query = String.format("from(bucket: \"%s\") |> range(start: -%dy)" +
                 "|> filter(fn: (r) => r[\"_measurement\"] == \"HistoricalQuote\")" +
-                "|> filter(fn: (r) => r[\"_field\"] == \"close\" or r[\"_field\"] == \"open\"" +
+                "|> filter(fn: (r) => r[\"comment\"] != \"\") " +
+                "|> filter(fn: (r) =>  r[\"_field\"] == \"close\" or r[\"_field\"] == \"open\"" +
                 " or r[\"_field\"] == \"low\" or r[\"_field\"] == \"high\"" +
                 " or r[\"_field\"] == \"comment\" or r[\"_field\"] == \"adjClose\"" +
                 " or r[\"_field\"] == \"symbol\" or r[\"_field\"] == \"volume\")" +
@@ -79,7 +80,8 @@ public class InfluxDBDataStore implements DataStore, AutoCloseable {
         final String timeSuffix = "T00:00:00.000Z";
         String query = String.format("from(bucket: \"%s\") |> range(start: %s, stop: %s)" +
                         "|> filter(fn: (r) => r[\"_measurement\"] == \"HistoricalQuote\")" +
-                        "|> filter(fn: (r) => r[\"_field\"] == \"close\" or r[\"_field\"] == \"open\"" +
+                        "|> filter(fn: (r) => r[\"comment\"] != \"\") "  +
+                        "|> filter(fn: (r) =>  r[\"_field\"] == \"close\" or r[\"_field\"] == \"open\"" +
                         " or r[\"_field\"] == \"low\" or r[\"_field\"] == \"high\"" +
                         " or r[\"_field\"] == \"comment\" or r[\"_field\"] == \"adjClose\"" +
                         " or r[\"_field\"] == \"symbol\" or r[\"_field\"] == \"volume\")" +
