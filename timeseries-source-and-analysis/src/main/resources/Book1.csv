@@ -1,0 +1,445 @@
+﻿Ticker,Cleaned symbols
+Amundi ETF MSCI China EUR A/I GBP,CC1
+Amundi ETF MSCI EM Latin America EUR A/I GBP,ALAT
+Amundi ETF MSCI Emerging Markets EUR A/I GBP,AEEM
+Amundi ETF MSCI Germany A/I GBP,CG1
+Amundi ETF MSCI Italy A/I GBP,CI1
+Amundi ETF MSCI Nordic A/I GBP,CN1
+Amundi ETF MSCI Spain A/I GBP,CS1
+Amundi ETF MSCI UK A/I GBP,CUK
+Amundi ETF MSCI USA EUR A/I GBP,CU2
+Amundi ETF MSCI World EUR A/I GBP,CW8
+Amundi ETF NASDAQ-100 EUR A/I GBP,ANX
+Boost FTSE 100 3x Short Daily ETP,3UKS
+Boost ShortDAX?3x Daily ETP GBP,3SDE
+Boost Silver 3x Short Daily ETP GBP,3SSI
+CSOP Source FTSE China A50 ETF GBP,CHNP
+db Physical Gold GBP Hedged ETC,XGLS
+db x-trackers DAX?(DR) Income 1D GBP,XDDX
+db x-trackers DBLCI OY Balanced 3C,XDBG
+db x-trackers Euro Stoxx 50 (DR) 1C GBP,XESC
+db x-trackers Euro Stoxx 50 (DR) 1D GBP,XESX
+db x-trackers Euro Stoxx SelDiv 30(DR)1D GBP,XD3E
+db x-trackers Euro Stoxx50 Short Dly 1C GBP,XSSX
+db x-trackers FTSE 100 (DR) 1C,XDUK
+db x-trackers FTSE 100 (DR) Income 1D,XUKX
+db x-trackers FTSE 100 Short Daily 1C,XUKS
+db x-trackers FTSE 250 (DR) 1D,XMCX
+db x-trackers FTSE All-Share (DR) 1D,XASX
+db x-trackers FTSE China 50 (DR) 1C GBP,XX25
+db x-trackers FTSE E/N Dev Eurp RE(DR)1C GBP,XDER
+db x-trackers FTSE Vietnam 1C GBP,XFVT
+db x-trackers Harvest CSI300 (DR) 1D GBP,RQFI
+db x-trackers II Global Sovereign 2D,XGSG
+db x-trackers II iBoxx Glbl Infl-Lnkd 3D,XGIG
+db x-trackers II Sterling Cash 1D,XSTR
+db x-trackers LPX MM Private Equity 1C GBP,XLPE
+db x-trackers Mittelstd&MidCap DEU(DR)1D GBP,XDGM
+db x-trackers MSCI AC Asia ex Japan 1C GBP,XAXJ
+db x-trackers MSCI AC AsiaExJpHiDivYld1D GBP,XAHG
+db x-trackers MSCI Brazil (DR) 1C GBP,XMBR
+db x-trackers MSCI Canada DR 1C GBP,XCAD
+db x-trackers MSCI China (DR) 1C GBP,XCX6
+db x-trackers MSCI EM Asia 1C GBP,XMAS
+db x-trackers MSCI EM EMEA 1C GBP,XMEA
+db x-trackers MSCI EM LatAm 1C GBP,XMLA
+db x-trackers MSCI Emerging Markets 1C GBP,XMMD
+db x-trackers MSCI Europe (DR) 1C GBP,XMED
+db x-trackers MSCI Europe Mid Cap(DR)1C GBP,XEUM
+db x-trackers MSCI Europe Sm Cap (DR) 1C GBP,XXSC
+db x-trackers MSCI India 1C GBP,XCX5
+db x-trackers MSCI Indonesia 1C GBP,XMID
+db x-trackers MSCI Japan (DR) 1C GBP,XMJP
+db x-trackers MSCI Japan (DR) 6C,XMJG
+db x-trackers MSCI Korea (DR) 1C GBP,XKS2
+db x-trackers MSCI Malaysia (DR) 1C GBP,XCX3
+db x-trackers MSCI Mexico (DR) 1C GBP,XMEX
+db x-trackers MSCI NA Hi Div Yld (DR)1C GBP,XDND
+db x-trackers MSCI Nordic (DR) 1D GBP,XDN0
+db x-trackers MSCI Pacific exJapan(DR)1C GBP,XPXJ
+db x-trackers MSCI Philippines IM (DR)1C GBP,XPHG
+db x-trackers MSCI Russia Capped 1C GBP,XMRC
+db x-trackers MSCI Taiwan (DR) 1C GBP,XMTW
+db x-trackers MSCI Thailand (DR) 1C GBP,XCX4
+db x-trackers MSCI USA (DR) 1C GBP,XD9U
+db x-trackers MSCI USA 1C GBP,XMUS
+db x-trackers MSCI World 1C GBP,XMWD
+db x-trackers Nifty 50 1C GBP,XNIF
+db x-trackers S&P 500 1C GBP,XSPX
+db x-trackers S&P 500 2x Inverse Dly 1C GBP,XT2D
+db x-trackers S&P 500 Inverse Daily 1C GBP,XSPS
+db x-trackers S&P Global Infras 1C GBP,XSGI
+db x-trackers S&P Select Frontier 1C GBP,XSFR
+db x-trackers S&P/ASX 200 (DR) 1D GBP,XAUS
+db x-trackers ShortDAX Daily 1C GBP,XSDX
+db x-trackers Stoxx Eurp600 (DR) 1C GBP,XSX6
+db x-trackers Stoxx Eurp600 Banks 1C GBP,XS7R
+db x-trackers Stoxx Eurp600 Bas Res 1C GBP,XSPR
+db x-trackers Stoxx Eurp600 Food&Bev 1C GBP,XS3R
+db x-trackers Stoxx Eurp600 HC 1C GBP,XSDR
+db x-trackers Stoxx Eurp600 IndlGds 1C GBP,XSNR
+db x-trackers Stoxx Eurp600 Oil&Gas 1C GBP,XSER
+db x-trackers Stoxx Eurp600 Tech 1C GBP,XS8R
+db x-trackers Stoxx Eurp600 Telecom 1C GBP,XSKR
+db x-trackers Stoxx Eurp600 Utilities 1C GBP,XS6R
+db x-trackers Stoxx Glbl Sel Div 100 1D GBP,XGSD
+ETFS 3x Short EUR Long GBP,SUP3
+ETFS 3x Short JPY Long GBP,SYP3
+ETFS Agriculture ETC GBP,AGAP
+ETFS All Commodities ETC GBP,AGCP
+ETFS Brent Oil 1 month ETC GBP,OLBP
+ETFS Carbon ETC GBP,CARP
+ETFS Crude Oil ETC,CRUD
+ETFS DAX Daily 2x Long GO ETF GBP,DL2P
+ETFS DAX Daily 2x Short GO ETF GBP,DS2P
+ETFS DAXglobal Gold Mining GO ETF GBP,AUCP
+ETFS FTSE 100 Leveraged Daily 2x GO ETF,LUK2
+ETFS FTSE 100 SuperShrtStratDly2x GO ETF,SUK2
+ETFS GBP Daily Hdg Brent Crude Oil ETC,PBRT
+ETFS GBP Daily Hdgd All Comm DJ-UBS ETC,PALL
+ETFS Gold Bullion Securities ETC GBP,GBSS
+ETFS Gold ETC GBP,BULP
+ETFS Grains ETC GBP,AGGP
+ETFS Long AUD Short GBP,GBAU
+ETFS Long AUD Short USD GBP,AUDP
+ETFS Long CAD Short GBP,GBCA
+ETFS Long CAD Short USD GBP,CADP
+ETFS Long CHF Short GBP,GBCH
+ETFS Long CHF Short USD GBP,CHFP
+ETFS Long EUR Short GBP,GBUR
+ETFS Long GBP Short USD GBP,GBPP
+ETFS Long JPY Short GBP,GBJP
+ETFS Long JPY Short USD GBP,JPYP
+ETFS Long NOK Short GBP,GBNO
+ETFS Long NOK Short USD GBP,NOKP
+ETFS Long NZD Short GBP,GBNZ
+ETFS Long NZD Short USD GBP,NZDP
+ETFS Long USD Short GBP,GBUS
+ETFS Longer Dated All Commodities GO ETF GBP,CMFP
+ETFS Natural Gas ETC GBP,NGSP
+ETFS Physical Gold GBP,PHGP
+ETFS Physical PM Basket ETC GBP,PHPP
+ETFS Physical Silver ETC GBP,PHSP
+ETFS Russell 2000 US Small Cap GO ETF GBP,RTWP
+ETFS Short AUD Long GBP,AUGB
+ETFS Short AUD Long USD GBP,SAUP
+ETFS Short CAD Long GBP,CAGB
+ETFS Short CAD Long USD GBP,SCDP
+ETFS Short CHF Long GBP,CHGB
+ETFS Short CHF Long USD GBP,SCHP
+ETFS Short EUR Long GBP,URGB
+ETFS Short EUR Long USD GBP,SEUP
+ETFS Short GBP Long USD GBP,USD2
+ETFS Short JPY Long GBP,JPGB
+ETFS Short JPY Long USD GBP,SJPP
+ETFS Short NZD Long GBP,NZGB
+ETFS Short SEK Long GBP,SKGB
+ETFS Short SEK Long USD GBP,SSEP
+ETFS Short USD Long GBP,USGB
+ETFS Silver ETC,SLVR
+ETFS US Energy Infrastructure MLP GO ETF GBP,MLPX
+ETFS WTI 2mth ETC GBP,OLWP
+First Trust UK AlphaDEX?A GBP,FKU
+First Trust US Lg Cp Cor AlphaDEX?A USD GBP,FEX
+FT Emerging Markets AlphaDEX?ETF A USD GBP,FEM
+HSBC EURO STOXX 50 ETF GBP,H50E
+HSBC FTSE 100 ETF,HUKX
+HSBC FTSE 250 ETF,HMCX
+HSBC FTSE EPRA/NAREIT Developed ETF GBP,HPRO
+HSBC MSCI AC FAR EAST ex JAPAN ETF GBP,HMAF
+HSBC MSCI Brazil ETF GBP,HBRL
+HSBC MSCI Canada ETF GBP,HCAN
+HSBC MSCI China ETF GBP,HMCH
+HSBC MSCI EM Far East ETF GBP,HMFE
+HSBC MSCI EM LA ETF GBP,HMLA
+HSBC MSCI Emerg Mkts ETF GBP,HMEF
+HSBC MSCI Europe ETF GBP,HMEU
+HSBC MSCI Indonesia ETF GBP,HIDR
+HSBC MSCI JAPAN ETF GBP,HMJP
+HSBC MSCI Korea ETF GBP,HKOR
+HSBC MSCI Malaysia ETF GBP,HMYR
+HSBC MSCI Mexico Capped ETF GBP,HMEX
+HSBC MSCI Pacific ex Japan ETF GBP,HMXJ
+HSBC MSCI Russia Capped ETF GBP,HRUB
+HSBC MSCI Turkey ETF GBP,HTRY
+HSBC MSCI USA ETF GBP,HMUS
+HSBC MSCI World ETF GBP,HMWO
+HSBC S&P 500 ETF GBP,HSPX
+iShares $ High Yld Corp Bd USD Dist JDR GBP,SHYU
+iShares $ TIPS GBP,ITPS
+iShares $ Treasury Bond 1-3yr GBP,IBTS
+iShares $ Treasury Bond 3-7yr USD Acc GBP,CU71
+iShares $ Treasury Bond 7-10yr GBP,IBTM
+iShares $ Treasury Bond 7-10yr USD Acc GBP,CU01
+iShares àCorp Bond 0-5yr GBP Dist,IS15
+iShares àCorp Bond ex-Fincls GBP Dist,ISXF
+iShares àIndex-Linked Gilts GBP Dist,INXG
+iShares àUltrashort Bond GBP Dist,ERNS
+iShares  Aggregate Bond EUR Dist GBP,SEAG
+iShares  Corp Bd ex-Fincls 1-5yr  Dist GBP,EEX5
+iShares  Corp Bond 1-5yr EUR Dist GBP,SE15
+iShares  Corp Bond ex-Fincls EUR Dist GBP,EEXF
+iShares  Covered Bond EUR Dist GBP,SCOV
+iShares  Govt Bond 10-15yr EUR Dist GBP,IBGZ
+iShares  Govt Bond 5-7yr EUR Dist GBP,IBGY
+iShares  High Yield Corp Bond EUR Dist GBP,SHYG
+iShares  Inflation Lnkd Govt Bd EUR Acc GBP,IBCI
+iShares AEX EUR Dist GBP,IAEX
+iShares Agribusiness USD Acc GBP,SPAG
+iShares Asia Pacific Dividend GBP,IAPD
+iShares Asia Property Yield GBP,IASP
+iShares BRIC 50 GBP,BRIC
+iShares China Large Cap GBP,FXC
+iShares Core àCorp Bond GBP Dist,SLXX
+iShares Core  Govt Bond EUR Dist GBP,SEGA
+iShares Core EURO STOXX 50 EUR Acc GBP,CS51
+iShares Core FTSE 100 GBP Dist,ISF
+iShares Core MSCI EM IMI USD Acc GBP,EMIM
+iShares Core MSCI Japan IMI USD Acc GBP,SJPA
+iShares Core MSCI Pacific ex-Jpn USD Acc GBP,CPJ1
+iShares Core MSCI World USD Acc GBP,SWDA
+iShares Core S&P 500 USD (Acc) GBP,CSP1
+iShares Core UK Gilts GBP Dist,IGLT
+iShares Developed Markets Property Yld GBP,IWDP
+iShares Dow Jones Glbl Sstnbty Scrnd$Acc GBP,IGSG
+iShares Dow Jones Industrial Avg USD Acc GBP,CID1
+iShares Edge MSCI EM Minimum Vol USD Acc GBP,EMV
+iShares Edge MSCI Europe Min Vol EUR Acc GBP,IMV
+iShares Edge MSCI Wld Mom Fctr USD Acc GBP,IWFM
+iShares Edge MSCI Wld Qual Fctr USD Acc GBP,IWFQ
+iShares Edge MSCI Wld Size Fctr USD Acc GBP,IWFS
+iShares Edge MSCI World Min Vol USD Acc GBP,MINV
+iShares Edge S&P 500 Min Vol USD (Acc) GBP,MVUS
+iShares EM Dividend USD Dist GBP,SEDY
+iShares EM Local Govt Bond USD Dist GBP,SEML
+iShares Emerg Asia Lcl Govt Bd USD Dist GBP,SGEA
+iShares Emerging Market Infrastructure GBP,IEMI
+iShares EURO Dividend GBP,IDVY
+iShares Euro Government Bond 1-3yr GBP,IBGS
+iShares Euro Government Bond 15-30yr GBP,IBGL
+iShares Euro Government Bond 3-5yr GBP,IBGX
+iShares Euro Government Bond 7-10yr GBP,IBGM
+iShares EURO STOXX 50 Dist GBP,EUE
+iShares EURO STOXX Mid GBP,DJMC
+iShares EURO STOXX Small GBP,DJSC
+iShares EURO Total Market Growth Large GBP,IDJG
+iShares EURO Total Market Value Large GBP,IDJV
+iShares European Property Yield GBP,IPRP
+iShares Finland Govt Bond EUR Dist GBP,SFIN
+iShares FTSE 100 GBP Acc GBP,CUKX
+iShares FTSE 250 GBP Dist,MIDD
+iShares FTSE MIB EUR Acc GBP,CMB1
+iShares FTSE MIB EUR Dist GBP,IMIB
+iShares FTSEurofirst 100 EUR Dist GBP,IEUT
+iShares FTSEurofirst 80 EUR Dist GBP,IEUR
+iShares Germany Govt Bond EUR Dist GBP,SDEU
+iShares Global AAA-AA Govt Bond USD Dist GBP,SAAA
+iShares Global Clean Energy GBP,INRG
+iShares Global Corp Bond USD Dist GBP,CRPS
+iShares Global Govt Bond USD Dist GBP,SGLO
+iShares Global Hi Yld Corp Bd GBP H Dist,GHYS
+iShares Global HY Corp Bd USD Dist GBP,IGHY
+iShares Global Infl Lnkd Govt Bd USD Acc GBP,SGIL
+iShares Global Infrastructure GBP,INFR
+iShares Global Timber & Forestry GBP,WOOD
+iShares Global Water GBP,IH2O
+iShares Gold Producers USD Acc GBP,SPGP
+iShares Italy Govt Bond EUR Dist GBP,SITB
+iShares JP Morgan $ EM Bond USD Dist GBP,SEMB
+iShares Listed Private Equity GBP,IPRV
+iShares MSCI AC Far East ex-Japan GBP,IFFF
+iShares MSCI AC FarEast ex-Jpn SmCap$Dit GBP,ISFE
+iShares MSCI ACWI USD Acc GBP,SSAC
+iShares MSCI Australia USD Acc GBP,SAUS
+iShares MSCI Brazil Dist GBP,IBZL
+iShares MSCI Canada USD Acc GBP,CSCA
+iShares MSCI Eastern Europe Capped GBP,IEER
+iShares MSCI EM Asia USD Acc GBP,CEA1
+iShares MSCI EM Latin America Dist GBP,LTAM
+iShares MSCI EM Small Cap USD Dist GBP,SEMS
+iShares MSCI Emerging Markets (Acc) GBP,SEMA
+iShares MSCI Emerging Markets Dist GBP,IEEM
+iShares MSCI EMU Small Cap EUR Acc GBP,CES1
+iShares MSCI Europe Dist GBP,IMEU
+iShares MSCI Europe EUR Acc GBP,SMEA
+iShares MSCI Europe ex-UK EUR Dist GBP,IEUX
+iShares MSCI Europe SRI EUR Acc GBP,IESG
+iShares MSCI GCC ex-Saudi Arabia GBP,SGCC
+iShares MSCI Japan GBP Hedged Acc,IJPN
+iShares MSCI Japan Small Cap USD Dist GBP,IJPH
+iShares MSCI Japan USD Acc GBP,ISJP
+iShares MSCI Japan USD Dist GBP,CSJP
+iShares MSCI Korea Dist GBP,IKOR
+iShares MSCI Korea USD Acc GBP,CKR1
+iShares MSCI Mexico Capped USD Acc GBP,CMX1
+iShares MSCI North America GBP,INAA
+iShares MSCI Pacific ex-Japan USD Dist GBP,SPXJ
+iShares MSCI Poland USD Acc GBP,SPOL
+iShares MSCI Russia ADR/GDR USD Acc GBP,CRU1
+iShares MSCI South Africa USD Acc GBP,SRSA
+iShares MSCI Taiwan USD Dist GBP,ITWN
+iShares MSCI Turkey GBP,ITKY
+iShares MSCI UK Small Cap GBP Acc GBP,CUKS
+iShares MSCI USA Small Cap USD Acc GBP,CUS1
+iShares MSCI World GBP Hedged Acc,IGWD
+iShares MSCI World USD Dist GBP,IWRD
+iShares NASDAQ 100 USD Acc GBP,CNX1
+iShares Nikkei 225 JPY Acc GBP,CNKY
+iShares Oil & Gas Explor&Prodtn USD Acc GBP,SPOG
+iShares S&P 500 GBP Hedged Acc,IGUS
+iShares S&P 500 USD (Dist) GBP,IUSA
+iShares S&P Small Cap 600 USD Dist GBP,ISP6
+iShares Spain Govt Bond EUR Dist GBP,SESP
+iShares STOXX Europe 50 GBP,EUN
+iShares UK Dividend GBP Dist,IUKD
+iShares UK Gilts 0-5yr GBP Dist,IGLS
+iShares UK Property GBP Dist,IUKP
+iShares US Aggregate Bond USD Dist GBP,SUAG
+iShares US Property Yield GBP,IUSP
+Lyxor Australia (S&P/ASX 200) ETF D USD GBP,LAUS
+Lyxor Brazil (Ibovespa) ETF C-USD GBP,RIOL
+Lyxor China Enterprise (HSCEI) ETF C-USD GBP,ASIL
+Lyxor Comd Thm R/C CRB exEngTR ETF C-$ GBP,CRNL
+Lyxor Commodit Thm R/C CRB TR ETF C-USD GBP,CRBL
+Lyxor East Eurp CECE NTR EUR ETF C GBP,CECL
+Lyxor ETF Dow Jones Industr Avrg D A/I GBP,DJEL
+Lyxor Euro Stoxx 50 (DR) ETF C EUR GBP,MSED
+Lyxor FTSE 100 ETF C-GBP,L100
+Lyxor FTSE 250 ETF A/I,L250
+Lyxor FTSE All Share ETF A/I,LFAS
+Lyxor Japan TOPIX DR ETF D-EUR A/I GBP,JPNL
+Lyxor JPX-Nikkei 400 DR ETF C-EUR GBP,JPXG
+Lyxor Kuwait FTSE Coast Kuwait40 ETF A/I GBP,LKUW
+Lyxor MSCI AC AsiaPac ex Jap ETF C-USD GBP,AEJL
+Lyxor MSCI All Country World ETF C-USD GBP,ACWL
+Lyxor MSCI EM Latin America ETF C-USD GBP,LTML
+Lyxor MSCI Emerging Markets ETF C-USD GBP,LEML
+Lyxor MSCI India ETF C-USD GBP,INRL
+Lyxor MSCI Indonesia ETF C-USD GBP,INDL
+Lyxor MSCI Korea ETF C-USD GBP,KRWL
+Lyxor MSCI Malaysia ETF USD A/I GBP,MALL
+Lyxor MSCI Taiwan ETF C-USD GBP,TWND
+Lyxor MSCI USA ETF D-USD A/I GBP,USAL
+Lyxor MSCI World Cnsmr Discret TR ETF C$ GBP,DISG
+Lyxor MSCI World ETF D-USD A/I GBP,WLDL
+Lyxor MSCI World Financials TR ETF C USD GBP,FING
+Lyxor MSCI World Hlth Care TR ETF C USD GBP,HLTG
+Lyxor MSCI World Indtls TR ETF C USD GBP,INUG
+Lyxor MSCI World Info Tech TR ETF C USD GBP,TNOG
+Lyxor MSCI World Materials TR ETF C USD GBP,MATG
+Lyxor MSCI World Telecom Svcs TR ETF C$ GBP,TELG
+Lyxor MSCI World Utilities TR ETF C USD GBP,UTIG
+Lyxor Nasdaq-100 ETF D-USD A/I GBP,UST
+Lyxor Russell 2000 ETF C-USD GBP,RU2K
+Lyxor Russia (DJ Russia GDR) ETF D-GBP,RUSL
+Lyxor SG European Qual Inc NTR ETF D EUR GBP,SGQG
+Lyxor SG Global Qual Inc NTR ETF C GBP,SGQL
+Lyxor SG Global Qual Inc NTR ETF D GBP,SGQP
+Lyxor South Afr (FTSEJSE Top40) ETF CEUR GBP,AFSL
+Lyxor Stoxx Europe 600 (DR) ETF C EUR GBP,MEUD
+Lyxor Thailand (SET50 Net TR) ETF C-USD GBP,THA
+Lyxor Turkey DJ Turkey Titans 20 ETF A/I GBP,TURL
+Lyxor World Water ETF D-EUR A/I GBP,WATL
+Market Access DAXglobal?Asia ETF GBP,ASDX
+Market Access DAXglobal?BRIC ETF GBP,BRDX
+Market Access NYSE Arca GoldBugs ETF GBP,GOLB
+Ossiam FTSE 100 Minimum Var ETF 1C GBP,UKMV
+Ossiam iSTOXX?EurMiniVar NR ETF 1C GBP,LEMV
+Ossiam STOXX?Eur600 EqWg NR ETF 1C GBP,L6EW
+PIMCO ST HY Corp Bd Sour ETF Inc GBP,SSHY
+PIMCO Sterling Short Maturity Source ETF,QUID
+PowerShares Dynamic US Market ETF GBP,PSWC
+PowerShares EQQQ Nasdaq-100 ETF GBP,EQQQ
+PowerShares FTSE RAFI All-World 3000 ETF GBP,PSRW
+PowerShares FTSE RAFI Emerging Mkts ETF GBP,PSRM
+PowerShares FTSE RAFI Europe ETF GBP,PSRE
+PowerShares FTSE RAFI Europe Md-Sm ETF GBP,PSES
+PowerShares FTSE RAFI UK 100 ETF,PSRU
+PowerShares FTSE RAFI US 1000 ETF GBP,PSRF
+Source Cnsmr Stapl S&P US Sel Sect ETF GBP,XLPP
+Source FTSE 100 ETF,S100
+Source FTSE 250 ETF,S250
+Source LGIM Commodity Composite ETF GBP,LGCF
+Source Mstar US Enrgy Infra MLP ETF B GBP,MLPP
+Source Physical Gold P-ETC GBP,SGLP
+Source Technology S&P US Select Sect ETF GBP,XLKQ
+SPDR?Barclays 0-3 Year US Corp Bd ETF GBP,SUSD
+SPDR?Barclays 0-5 Year Stlg Corp Bd ETF,SUKC
+SPDR?Barclays 1-5 Year Gilt ETF,GLTS
+SPDR?Barclays Emerging Mkts Lcl Bd ETF GBP,EMDL
+SPDR?Barclays Sterling Corporate Bd ETF,UKCO
+SPDR?Dow Jones Global Real Estate ETF GBP,GBRE
+SPDR?FTSE UK All Share ETF,FTAL
+SPDR?MSCI EM Asia ETF GBP,EMAS
+SPDR?MSCI EM Europe ETF GBP,EMEO
+SPDR?MSCI EM Latin America ETF GBP,EMLA
+SPDR?MSCI Emerging Markets SmallCap ETF GBP,EMSM
+SPDR?S&P 500 ETF GBP,SPX5
+SPDR?S&P 500 Low Volatility ETF GBP,USLV
+SPDR?S&P Emerging Markets Dividend ETF GBP,EMDV
+SPDR?S&P Euro Dividend Aristocrats ETF GBP,EUDV
+SPDR?S&P Global Div Aristocrats ETF GBP,GBDV
+SPDR?S&P Pan Asia Div Aristocrats ETF GBP,PADV
+SPDR?S&P UK Dividend Aristocrats ETF,UKDV
+SPDR?S&P US Dividend Aristocrats ETF GBP,USDV
+UBS ETF Barcl Cap US 1-3 Trea Bd USD A GBP,UB74
+UBS ETF Barcl Cap US 7-10 Trea Bd USD A GBP,UB82
+UBS ETF CMCI Composite SF USD A acc GBP,UC15
+UBS ETF EURO STOXX 50 EUR A dis GBP,UB01
+UBS ETF FTSE 100 GBP A dis GBP,UB03
+UBS ETF FTSE 100 SF GBP A acc GBP,UC17
+UBS ETF Markit iBoxx  Germ 1-3 A dis GBP,UB89
+UBS ETF Markit iBoxx  LiqCorp EUR A dis GBP,UB99
+UBS ETF MSCI Canada CAD A dis GBP,UB23
+UBS ETF MSCI Canada SF CAD A acc GBP,UC24
+UBS ETF MSCI Emerging Mkts SF USD A acc GBP,UC27
+UBS ETF MSCI Emerging Mkts USD A dis GBP,UB32
+UBS ETF MSCI EMU EUR A dis GBP,UB06
+UBS ETF MSCI EMU H GBP A acc GBP,UC60
+UBS ETF MSCI EMU H GBP A dis GBP,UC59
+UBS ETF MSCI EMU SF EUR A acc GBP,UC30
+UBS ETF MSCI EMU Small Cap EUR A dis GBP,UB69
+UBS ETF MSCI EMU SRI EUR A dis GBP,UB39
+UBS ETF MSCI EMU Value EUR A dis GBP,UB17
+UBS ETF MSCI Europe EUR A dis GBP,UB12
+UBS ETF MSCI Japan H GBP A acc,UC62
+UBS ETF MSCI Japan H GBP A dis,UC61
+UBS ETF MSCI Japan JPY A dis GBP,UB02
+UBS ETF MSCI Japan SF JPY A acc GBP,UC32
+UBS ETF MSCI Pacific ex Jpn USD A dis GBP,UB20
+UBS ETF MSCI Pacific SRI USD A dis GBP,UB45
+UBS ETF MSCI United Kingdom GBP A acc GBP,UC64
+UBS ETF MSCI United Kingdom GBP A dis GBP,UC63
+UBS ETF MSCI USA H GBP A acc GBP,UC74
+UBS ETF MSCI USA H GBP A dis GBP,UC73
+UBS ETF MSCI USA SF USD A acc GBP,UC38
+UBS ETF MSCI USA SRI USD A dis GBP,UC46
+UBS ETF MSCI USA USD A dis GBP,UC04
+UBS ETF MSCI USA Value USD A dis GBP,UC07
+UBS ETF MSCI World SRI USD A dis GBP,UC44
+UBS ETF MSCI World USD A dis GBP,UC10
+UBS ETF MSCI World USD A dis GBP,UC55
+UBS ETF S&P 500 SF USD A acc GBP,UC41
+UBS ETF S&P 500 USD A dis GBP,UC13
+UBS ETF Solactive Glbl Oil Eqs USD A dis GBP,UC51
+UBS ETF Solactive Glbl Pure Gld Mnrs USD GBP,UC53
+Vanguard FTSE 100 ETF,VUKE
+Vanguard FTSE 250 ETF,VMID
+Vanguard FTSE All-World ETF GBP,VWRL
+Vanguard FTSE All-World High Div Yld ETF GBP,VHYL
+Vanguard FTSE Dev Asia Pac exJpn ETF GBP,VAPX
+Vanguard FTSE Developed Europe ETF GBP,VEUR
+Vanguard FTSE Developed Europe ex UK ETF GBP,VERX
+Vanguard FTSE Developed World ETF GBP,VEVE
+Vanguard FTSE Emerging Markets ETF GBP,VFEM
+Vanguard FTSE Japan ETF GBP,VJPN
+Vanguard FTSE North America ETF GBP,VNRT
+Vanguard S&P 500 ETF GBP,VUSA
+Vanguard UK Gilt UCITS ETF,VGOV
+WisdomTree Emerg Mkts Eq Inc ETF GBP,DEM
+WisdomTree Europe Equity Income ETF GBP,EEI
+WisdomTree Europe SmallCap Div ETF GBP,DFE
+WisdomTree Germany Equity ETF GBP Hdg,DXGP
+WisdomTree UK Equity Income ETF,WUKD
+WisdomTree US Equity Income ETF GBP,DHS
+WisdomTree US SmallCap Dividend ETF GBP,DESE
