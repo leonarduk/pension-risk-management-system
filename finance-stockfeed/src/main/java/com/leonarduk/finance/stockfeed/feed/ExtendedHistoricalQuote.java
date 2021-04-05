@@ -137,7 +137,7 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 			this.close = BigDecimal.valueOf((Double) valuesMap.getOrDefault("close", 0.0));
 			this.adjClose = BigDecimal.valueOf((Double) valuesMap.getOrDefault("adjClose", 0.0));
 			this.volume = DoubleNum.valueOf((String) valuesMap.getOrDefault("volume", "0.0"));
-			this.comment =  "MAP" + valuesMap.getOrDefault("comment", "").toString();
+			this.comment = "MAP"+ valuesMap.getOrDefault("comment", "").toString();
 	}
 
 	public static long getSerialversionuid() {

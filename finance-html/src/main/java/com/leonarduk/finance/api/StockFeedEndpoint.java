@@ -43,9 +43,6 @@ public class StockFeedEndpoint {
     @Autowired
     private DataStore dataStore;
 
-	public StockFeedEndpoint() {
-	}
-
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
 	@Path("/ticker/{ticker}/")

@@ -22,10 +22,8 @@ public class AppConfig {
     @Named
     public static class JerseyConfig extends ResourceConfig {
         public JerseyConfig() {
-            this.register(CORSResponseFilter.class);
             this.register(PortfolioFeedEndpoint.class);
             this.register(StockFeedEndpoint.class);
-            this.register(ImageService.class);
         }
     }
 
