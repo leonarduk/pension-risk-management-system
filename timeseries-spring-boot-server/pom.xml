@@ -14,14 +14,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.4</version>
+		<version>2.5.3</version>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>com.leonarduk.finance.api.App</start-class>
 		<java.version>11</java.version>
-		<lombok.version>1.18.8</lombok.version>
 		<log4jdbc.log4j2.version>1.16</log4jdbc.log4j2.version>
 		<rest.assured.version>2.3.3</rest.assured.version>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -29,7 +28,6 @@
 		<webscraper-core.version>1.0.17</webscraper-core.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<jahoo.finance.version>3.15.0</jahoo.finance.version>
-
 	</properties>
 
 	<repositories>
@@ -80,12 +78,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -175,6 +167,16 @@
     </dependencies>
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>

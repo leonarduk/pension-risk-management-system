@@ -59,7 +59,7 @@ public class PortfolioFeedEndpoint {
 	public String getHistory(@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean clean)
 			throws IOException, URISyntaxException {
-		logger.info("getHistory:" + fromDate + " - " + toString());
+		logger.info("getHistory:" + fromDate + " - " + this);
 		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate, interpolate, false, true, clean)
 				.toString();
 	}

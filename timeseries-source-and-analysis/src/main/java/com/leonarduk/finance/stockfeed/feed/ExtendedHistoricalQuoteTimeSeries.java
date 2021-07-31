@@ -19,7 +19,7 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
 	 * 
 	 */
 	private static final long serialVersionUID = -4258117616509944879L;
-	private List<Bar> series;
+	private final List<Bar> series;
 
 	public ExtendedHistoricalQuoteTimeSeries() {
 		this(Lists.newArrayList());

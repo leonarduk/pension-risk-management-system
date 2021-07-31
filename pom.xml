@@ -12,13 +12,16 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <source>11</source>
                         <target>11</target>
+                        <fork>true</fork>
                     </configuration>
                 </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
@@ -141,6 +144,13 @@
             </url>
         </repository>
     </distributionManagement>
+    <repositories>
+    <repository>
+        <id>patriques82</id>
+        <name>patriques82</name>
+        <url>https://dl.bintray.com/patriques82/maven</url>
+    </repository>
+    </repositories>
     <scm>
         <connection>scm:git:git@github.com:leonarduk/pension-risk-management-system.git
         </connection>

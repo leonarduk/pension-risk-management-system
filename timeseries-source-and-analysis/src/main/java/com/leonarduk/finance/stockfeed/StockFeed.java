@@ -7,10 +7,10 @@ import java.util.Optional;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 
 public interface StockFeed {
-	public enum Exchange {
+	enum Exchange {
 		London(".L"), NA("");
 
-		private String yahooSuffix;
+		private final String yahooSuffix;
 
 		public String getYahooSuffix() {
 			return yahooSuffix;

@@ -20,7 +20,7 @@ public class ImageService {
 		String fullFilename = fileName + ".jpg";
 		final File jpgFile = new File("target", fullFilename);
 		if (jpgFile.canRead() && jpgFile.isFile()) {
-			ResponseBuilder response = Response.ok((Object) jpgFile);
+			ResponseBuilder response = Response.ok(jpgFile);
 			response.header("Content-Disposition", "attachment; filename=" + jpgFile.getName());
 			return response.build();
 

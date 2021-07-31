@@ -96,7 +96,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			});
 
 		} catch (final IOException e) {
-			CsvStockFeed.log.warn("Failed:" + this.toString() + " : " + e.getMessage());
+			CsvStockFeed.log.warn("Failed:" + this + " : " + e.getMessage());
 			return Optional.empty();
 		}
 

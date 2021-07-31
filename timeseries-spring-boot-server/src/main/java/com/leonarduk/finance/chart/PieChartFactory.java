@@ -91,7 +91,7 @@ public class PieChartFactory {
 
 		}
 		catch (final IOException e) {
-			System.out.println(e.toString());
+			System.out.println(e);
 		}
 
 	}

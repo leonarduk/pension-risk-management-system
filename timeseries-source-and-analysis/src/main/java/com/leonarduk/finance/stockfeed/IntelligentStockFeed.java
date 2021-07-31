@@ -104,10 +104,10 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			final boolean interpolate, boolean cleanData) {
 		try {
 
+			//TODO need to be able to read from multiple sources
 			StockFeed webDataFeed = stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE);
-//			if (instrument instanceof FxInstrument) {
-//				webDataFeed = stockFeedFactory.getDataFeed(Source.alphavantage);
-//			}
+//			StockFeed webDataFeed = stockFeedFactory.getDataFeed(Source.YAHOO);
+
 			return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, webDataFeed);
 		} catch (final Exception e) {
 			IntelligentStockFeed.log.warn(e.getMessage());

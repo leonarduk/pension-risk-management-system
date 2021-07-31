@@ -100,10 +100,6 @@ public class StockFeedEndpoint {
 
 		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
 
-		if(fields.length > 0) {
-
-		}
-
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
 			records.add(record);

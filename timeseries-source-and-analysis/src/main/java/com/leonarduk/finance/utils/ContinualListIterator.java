@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ContinualListIterator<T> implements Iterator<T> {
 
-	private LinkedList<T> underlyingCollection;
+	private final LinkedList<T> underlyingCollection;
 
 	public ContinualListIterator(List<T> list) {
 		this.underlyingCollection = new LinkedList<>(list);

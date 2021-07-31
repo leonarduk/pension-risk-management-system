@@ -21,8 +21,6 @@ public class StockFeedFactory {
                 // If db not available,  use local files
                 //TODO log
                 return new CachedStockFeed(new FileBasedDataStore("db"));
-//			case Google:
-//				return new GoogleFeed();
             case YAHOO:
                 return new YahooFeed();
             case ALPHAVANTAGE:

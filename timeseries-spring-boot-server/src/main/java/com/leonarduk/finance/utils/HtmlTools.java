@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
@@ -97,14 +98,9 @@ public class HtmlTools {
 			}
 			String key = entry.getKey();
 			String value = entry.getValue();
-			try {
-				key = URLEncoder.encode(key, "UTF-8");
-				value = URLEncoder.encode(value, "UTF-8");
-			} catch (final UnsupportedEncodingException ex) {
-				HtmlTools.logger.error(ex.getMessage(), ex);
-				// Still try to continue with unencoded values
-			}
-			sb.append(String.format("%s=%s", key, value));
+            key = URLEncoder.encode(key, StandardCharsets.UTF_8);
+            value = URLEncoder.encode(value, StandardCharsets.UTF_8);
+            sb.append(String.format("%s=%s", key, value));
 		}
 		return sb.toString();
 	}

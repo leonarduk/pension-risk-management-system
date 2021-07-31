@@ -38,10 +38,10 @@ public class PortfolioFeedEndpointTest {
 	@Ignore
 	@Test
 	public final void testGetPortfolios() throws IOException {
-		final Set<String> expected = Sets.newHashSet(new String[] { "Steve ISA",
-		        "Permanent", "Steve SIPP", "Lucy ISA", "Global Market",
-		        "Risk Parity", "Ivy", "All Seaons", "Marc Faber", "Swensen",
-		        "Family", "El-Erian", "Rob Arnott" });
+		final Set<String> expected = Sets.newHashSet("Steve ISA",
+            "Permanent", "Steve SIPP", "Lucy ISA", "Global Market",
+            "Risk Parity", "Ivy", "All Seaons", "Marc Faber", "Swensen",
+            "Family", "El-Erian", "Rob Arnott");
 		Assert.assertEquals(expected, this.endpoint.getPortfolios());
 	}
 

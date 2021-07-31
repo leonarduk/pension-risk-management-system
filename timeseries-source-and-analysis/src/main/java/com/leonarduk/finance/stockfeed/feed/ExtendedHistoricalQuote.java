@@ -30,26 +30,26 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 	 */
 	private static final long serialVersionUID = -6391604492688118701L;
 	@Column(tag = true)
-	private String symbol;
+	private final String symbol;
 
 	@Column(timestamp = true)
 	private Instant date;
 
 	@Column
-	private BigDecimal open;
+	private final BigDecimal open;
 	@Column
-	private BigDecimal low;
+	private final BigDecimal low;
 	@Column
-	private BigDecimal high;
+	private final BigDecimal high;
 	@Column
-	private BigDecimal close;
+	private final BigDecimal close;
 
 	@Column
-	private BigDecimal adjClose;
+	private final BigDecimal adjClose;
 
 	// Stored as String
 	@Column
-	private Num volume;
+	private final Num volume;
 
 	@Column(tag = true)
 	private String comment;

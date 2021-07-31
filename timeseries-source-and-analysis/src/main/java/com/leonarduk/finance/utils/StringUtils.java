@@ -7,7 +7,7 @@ import java.text.NumberFormat;
 import org.ta4j.core.num.Num;
 
 public class StringUtils {
-	private static NumberFormat formatter = new DecimalFormat("#0.00");
+	private static final NumberFormat formatter = new DecimalFormat("#0.00");
 
 	public static void addValue(final StringBuilder buf, final Num num) {
 		final String format = StringUtils.formatter.format(num == null ? BigDecimal.ZERO : num.doubleValue());

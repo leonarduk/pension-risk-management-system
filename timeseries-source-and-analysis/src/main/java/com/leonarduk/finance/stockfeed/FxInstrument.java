@@ -12,8 +12,8 @@ public class FxInstrument extends Instrument {
 		this.currencyTwo = currencyTwo;
 	}
 
-	private String currencyOne;
-	private String currencyTwo;
+	private final String currencyOne;
+	private final String currencyTwo;
 
 	public String getCurrencyOne() {
 		return currencyOne;
