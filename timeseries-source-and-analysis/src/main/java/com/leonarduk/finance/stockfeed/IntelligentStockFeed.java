@@ -127,31 +127,28 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
 		final CachedStockFeed cachedDataFeed = (CachedStockFeed) stockFeedFactory.getDataFeed(Source.MANUAL);
 
+		// we try to get from file cache first, then these sources in turn, then we might interpolate gaps
 		final Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
 				true, addLatestQuoteToTheSeries);
-
-		// If we have the data already, don't bother to refresh
-		// Note will need to update today's live quote still though,
-		// so skip latest date point
-		Optional<StockV1> alphaData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
-				 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
-
-		Optional<StockV1> liveData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+		getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
 				stockFeedFactory.getDataFeed(Source.YAHOO));
+		getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+				stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
 
 		if (addLatestQuoteToTheSeries) {
-			this.addLatestQuoteToTheSeries(liveData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
+			this.addLatestQuoteToTheSeries(cachedData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
 		}
 
-		if (liveData.isEmpty()) {
+		if (cachedData.isEmpty()) {
 			IntelligentStockFeed.log.warn("No data for " + instrument);
 			return Optional.empty();
 		}
 
 		if (cleanData) {
-			TimeseriesUtils.cleanUpSeries(liveData);
+			TimeseriesUtils.cleanUpSeries(cachedData);
 		}
-		return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, liveData);
+		cachedDataFeed.storeSeries(cachedData.get());
+		return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, cachedData);
 	}
 
 	private Optional<StockV1> getWebFeed(Instrument instrument, boolean addLatestQuoteToTheSeries, LocalDate fromDate,
