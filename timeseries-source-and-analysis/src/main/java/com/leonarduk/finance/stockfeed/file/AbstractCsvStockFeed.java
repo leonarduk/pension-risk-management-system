@@ -26,7 +26,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
 
-public abstract class CsvStockFeed extends AbstractStockFeed {
+public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
 
 	private Optional<BigDecimal> close;
 
@@ -50,7 +50,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 
 	private Optional<BigDecimal> volume;
 
-	public static final Logger log = LoggerFactory.getLogger(CsvStockFeed.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(AbstractCsvStockFeed.class.getName());
 
 	protected static String formatDate(final DateFormat formatter, final Date date) {
 		synchronized (formatter) {
@@ -71,10 +71,11 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 	}
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
+	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate,
+								 boolean addLatestQuoteToTheSeries)
 			throws IOException {
 		if (!this.isAvailable()) {
-			CsvStockFeed.log.warn("Feed is not available");
+			AbstractCsvStockFeed.log.warn("Feed is not available");
 			return Optional.empty();
 		}
 		this.setInstrument(instrument);
@@ -96,7 +97,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			});
 
 		} catch (final IOException e) {
-			CsvStockFeed.log.warn("Failed:" + this + " : " + e.getMessage());
+			AbstractCsvStockFeed.log.warn("Failed:" + this + " : " + e.getMessage());
 			return Optional.empty();
 		}
 
@@ -230,7 +231,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			}
 			return Optional.of(NumberUtils.getBigDecimal(input));
 		} catch (final NumberFormatException e) {
-			CsvStockFeed.log.warn("Failed to parse " + input);
+			AbstractCsvStockFeed.log.warn("Failed to parse " + input);
 			return Optional.empty();
 		}
 	}
@@ -248,7 +249,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 			}
 			final String tab = "\t";
 			if (line.contains(tab)) {
-				CsvStockFeed.log.warn("Messed up Csv - found tabs");
+				AbstractCsvStockFeed.log.warn("Messed up Csv - found tabs");
 				line = line.replace(tab, ",");
 			}
 
@@ -296,7 +297,7 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 		}
 	}
 
-	public CsvStockFeed release() {
+	public AbstractCsvStockFeed release() {
 		if (this.reader != null) {
 			try {
 				this.reader.close();
@@ -312,11 +313,11 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 		this.comment = comment;
 	}
 
-	public CsvStockFeed setEndDate(final Calendar endDate) {
+	public AbstractCsvStockFeed setEndDate(final Calendar endDate) {
 		return this.setEndDate(endDate != null ? endDate.getTime() : null);
 	}
 
-	public CsvStockFeed setEndDate(final Date endDate) {
+	public AbstractCsvStockFeed setEndDate(final Date endDate) {
 		this.endDate = endDate;
 		return this;
 	}
@@ -325,11 +326,11 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 		this.instrument = instrument;
 	}
 
-	public CsvStockFeed setStartDate(final Calendar startDate) {
+	public AbstractCsvStockFeed setStartDate(final Calendar startDate) {
 		return this.setStartDate(startDate != null ? startDate.getTime() : null);
 	}
 
-	public CsvStockFeed setStartDate(final Date startDate) {
+	public AbstractCsvStockFeed setStartDate(final Date startDate) {
 		this.startDate = startDate;
 		return this;
 	}
