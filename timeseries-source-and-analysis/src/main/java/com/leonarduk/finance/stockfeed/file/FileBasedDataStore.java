@@ -14,9 +14,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-public class FileBasedDataStore extends CsvStockFeed implements DataStore {
+public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStore {
 
     public static final Logger log	= LoggerFactory
             .getLogger(FileBasedDataStore.class.getName());
@@ -95,6 +97,8 @@ public class FileBasedDataStore extends CsvStockFeed implements DataStore {
         return (store.exists() & store.isDirectory()) && store.canWrite()
                 && store.canRead();
     }
+
+
 
 
 }

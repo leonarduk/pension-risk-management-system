@@ -43,12 +43,12 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
     }
 
     @Override
-    public Optional<StockV1> get(final Instrument instrument, final int years) {
-        return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+    public Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) {
+        return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), addLatestQuoteToTheSeries);
     }
 
     @Override
-    public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate) {
+    public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries) {
         logger.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
         try {
 

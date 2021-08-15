@@ -15,7 +15,7 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
+import com.leonarduk.finance.stockfeed.file.AbstractCsvStockFeed;
 
 /**
  * Google no longer supports this API
@@ -24,7 +24,7 @@ import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
  *
  */
 @Deprecated
-public class GoogleFeed extends CsvStockFeed {
+public class GoogleFeed extends AbstractCsvStockFeed {
 	public static final String BASE_URL = "http://www.google.com/finance/historical";
 	/** The logger */
 	public static final Logger log = LoggerFactory.getLogger(GoogleFeed.class.getName());
@@ -74,11 +74,11 @@ public class GoogleFeed extends CsvStockFeed {
 		params.put(GoogleFeed.PARAM_SYMBOL, Instrument.fromString(this.getSymbol()).getGoogleCode());
 		if (this.getStartDate() != null) {
 			params.put(GoogleFeed.PARAM_START_DATE,
-					CsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getStartDate()));
+					AbstractCsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getStartDate()));
 		}
 		if (this.getEndDate() != null) {
 			params.put(GoogleFeed.PARAM_END_DATE,
-					CsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getEndDate()));
+					AbstractCsvStockFeed.formatDate(GoogleFeed.PARAM_FORMATTER, this.getEndDate()));
 		}
 
 		final HttpRequest request = this.createRequest(HttpRequest.append(GoogleFeed.BASE_URL, params));

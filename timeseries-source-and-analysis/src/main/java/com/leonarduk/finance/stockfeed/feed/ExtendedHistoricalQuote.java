@@ -24,7 +24,9 @@ import yahoofinance.histquotes.HistoricalQuote;
  *
  */
 @Measurement(name = "HistoricalQuote")
-public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
+public class ExtendedHistoricalQuote extends HistoricalQuote
+		implements Bar, Commentable, Comparable<ExtendedHistoricalQuote>
+{
 	/**
 	 *
 	 */
@@ -54,9 +56,9 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 	@Column(tag = true)
 	private String comment;
 
-	public ExtendedHistoricalQuote(HistoricalQuote original) {
-		this(original.getSymbol(), original.getDate(), original.getOpen(), original.getLow(), original.getHigh(),
-				original.getClose(), original.getAdjClose(), original.getVolume(), "");
+	public ExtendedHistoricalQuote(HistoricalQuote original, String comment) {
+		this(original.getSymbol(), original.getDateAsCalendar(), original.getOpen(), original.getLow(), original.getHigh(),
+				original.getClose(), original.getAdjClose(), original.getVolumeAsLong(), comment);
 	}
 
 	public ExtendedHistoricalQuote(Bar original) {
@@ -80,6 +82,7 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 	 */
 	public ExtendedHistoricalQuote(String symbol, LocalDate date, BigDecimal open, BigDecimal low, BigDecimal high,
 			BigDecimal close, BigDecimal adjClose, Num volume, final String comment) {
+		super();
 		this.symbol = symbol;
 		this.date = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
 		this.open = open;
@@ -145,7 +148,7 @@ public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<Ext
 	}
 
 	public static List<Bar> from(List<HistoricalQuote> original) {
-		return original.stream().map(o -> new ExtendedHistoricalQuote(o)).collect(Collectors.toList());
+		return original.stream().map(o -> new ExtendedHistoricalQuote(o, "")).collect(Collectors.toList());
 	}
 
 	@Override

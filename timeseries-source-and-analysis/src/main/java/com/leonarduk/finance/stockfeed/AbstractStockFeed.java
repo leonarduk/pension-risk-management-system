@@ -43,22 +43,22 @@ public abstract class AbstractStockFeed implements StockFeed {
 	}
 
 	@Override
-	public abstract Optional<StockV1> get(final Instrument instrument, final int years) throws IOException;
+	public abstract Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) throws IOException;
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate, boolean cleanData)
+	public Optional<StockV1> get(final Instrument instrument, final int years, final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries)
 			throws IOException {
-		return get(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now(), interpolate, cleanData);
+		return get(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now(), interpolate, cleanData, addLatestQuoteToTheSeries);
 	}
 
 	@Override
-	public abstract Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
+	public abstract Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
 			throws IOException;
 
 	@Override
 	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromLocalDate,
-			final LocalDate toLocalDate, final boolean interpolate, final boolean cleanData) throws IOException {
-		final Optional<StockV1> liveData = this.get(instrument, fromLocalDate, toLocalDate);
+                                 final LocalDate toLocalDate, final boolean interpolate, final boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException {
+		final Optional<StockV1> liveData = this.get(instrument, fromLocalDate, toLocalDate, addLatestQuoteToTheSeries);
 		if (cleanData) {
 			TimeseriesUtils.cleanUpSeries(liveData);
 		}

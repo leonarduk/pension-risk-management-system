@@ -48,19 +48,19 @@ public class PortfolioFeedEndpoint {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("extended")
 	public String getExtendedAnalysis(@QueryParam("fromDate") final String fromDate,
-			@QueryParam("toDate") final String toDate, @QueryParam("interpolate") final boolean interpolate,
-			@QueryParam("clean") final boolean clean) throws IOException, URISyntaxException {
-		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate, interpolate, true, true, clean).toString();
+                                      @QueryParam("toDate") final String toDate, @QueryParam("interpolate") final boolean interpolate,
+                                      @QueryParam("clean") final boolean clean, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException, URISyntaxException {
+		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate, interpolate, true, true, clean, addLatestQuoteToTheSeries).toString();
 	}
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("analysis")
 	public String getHistory(@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
-			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean clean)
+			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean clean, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException, URISyntaxException {
 		logger.info("getHistory:" + fromDate + " - " + this);
-		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate, interpolate, false, true, clean)
+		return this.snapshotAnalyzer.createPortfolioReport(fromDate, toDate, interpolate, false, true, clean, addLatestQuoteToTheSeries)
 				.toString();
 	}
 
@@ -83,14 +83,16 @@ public class PortfolioFeedEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/api/report/")
 	public List<ValuationReport> getValuations(@QueryParam("interpolate") final boolean interpolate,
-			@QueryParam("clean") final boolean clean) throws IOException {
+                                               @QueryParam("clean") final boolean clean,
+                                               @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
+        throws IOException {
 		PortfolioFeedEndpoint.logger.info("JSON query of valuations");
 
 		final LocalDate fromDate = LocalDate.now().minusYears(2);
 		final LocalDate toDate = LocalDate.now();
 
 		final List<Valuation> valuations = this.snapshotAnalyzer.analayzeAllEtfs(this.snapshotAnalyzer.getPositions(),
-				fromDate, toDate, interpolate, clean);
+				fromDate, toDate, interpolate, clean, addLatestQuoteToTheSeries);
 
 		return this.snapshotAnalyzer.getPortfolios().stream().map(portfolioName -> this.snapshotAnalyzer
 				.createValuationReport(fromDate, toDate, valuations, portfolioName)).collect(Collectors.toList());

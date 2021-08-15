@@ -66,8 +66,9 @@ public class Quickstart {
 		// Getting a time series (from any provider: CSV, web service, etc.)
 		final StockFeed feed = new IntelligentStockFeed(new FileBasedDataStore("db"));
 		final String ticker = "ISJP";
-		final StockV1 stock = feed.get(Instrument.fromString(ticker), 2).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
+		boolean addLatestQuoteToTheSeries = true;
+		final StockV1 stock = feed.get(Instrument.fromString(ticker), 2, addLatestQuoteToTheSeries).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1, addLatestQuoteToTheSeries);
 
 		// Getting the close price of the ticks
 		final Num firstClosePrice = series.getBar(0).getClosePrice();

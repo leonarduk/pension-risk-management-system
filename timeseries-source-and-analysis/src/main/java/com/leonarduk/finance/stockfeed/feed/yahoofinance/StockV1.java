@@ -42,6 +42,12 @@ public class StockV1 {
 		this.instrument = instrument;
 	}
 
+	public StockV1(String currency, StockDividend dividend, List<Bar> history, final Instrument instrument) throws IOException {
+		this.currency = currency;
+		this.dividend = dividend;
+		this.history = history;
+		this.instrument = instrument;
+	}
 	public StockV1(Stock stock) throws IOException {
 		this.currency = stock.getCurrency();
 		this.dividend = stock.getDividend();

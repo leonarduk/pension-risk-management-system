@@ -12,9 +12,9 @@ public interface DataStore {
 
     boolean isAvailable();
 
-    Optional<StockV1> get(Instrument instrument, int years) throws  IOException;
+    Optional<StockV1> get(Instrument instrument, int years, boolean addLatest) throws  IOException;
 
-    Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate)  throws  IOException;
+    Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatest)  throws  IOException;
 
     boolean contains(StockV1 stock) throws IOException;
 }

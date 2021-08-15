@@ -50,10 +50,10 @@ public class LinearInterpolator extends AbstractLineInterpolator {
 	@Override
 	public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
 
-		final double timeInteval = DateUtils.getDiffInWorkDays(
+		final double timeInterval = DateUtils.getDiffInWorkDays(
 				currentQuote.getEndTime().toLocalDate(), nextQuote.getEndTime().toLocalDate());
 		final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(), currentDate);
-		final double multiplier = dayCount / timeInteval;
+		final double multiplier = dayCount / timeInterval;
 
 		final Double changeClosePrice = nextQuote.getClosePrice().doubleValue()
 				- currentQuote.getClosePrice().doubleValue();

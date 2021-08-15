@@ -1,8 +1,5 @@
 package com.leonarduk.finance.stockfeed;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,9 +11,6 @@ import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.file.CsvStockFeed;
-import com.leonarduk.finance.utils.FileUtils;
-import com.leonarduk.finance.utils.TimeseriesUtils;
 
 public class CachedStockFeed extends AbstractStockFeed {
 
@@ -30,7 +24,8 @@ public class CachedStockFeed extends AbstractStockFeed {
 
 	public List<Bar> loadSeries(final StockV1 stock)
 	        throws IOException {
-		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000);
+		boolean addLatestQuoteToTheSeries  =false;
+		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000, false);
 		if (optional.isPresent()) {
 			return optional.get().getHistory();
 		}
@@ -50,13 +45,13 @@ public class CachedStockFeed extends AbstractStockFeed {
 	}
 
 	@Override
-	public Optional<StockV1> get(Instrument instrument, int years) throws IOException {
-		return this.dataStore.get(instrument, years);
+	public Optional<StockV1> get(Instrument instrument, int years, boolean addLatestQuoteToTheSeries) throws IOException {
+		return this.dataStore.get(instrument, years, addLatestQuoteToTheSeries);
 	}
 
 	@Override
-	public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate) throws IOException {
-		return this.dataStore.get(instrument, fromDate,toDate);
+	public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException {
+		return this.dataStore.get(instrument, fromDate,toDate, addLatestQuoteToTheSeries);
 	}
 
 	@Override

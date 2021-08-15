@@ -21,14 +21,14 @@ public interface StockFeed {
 		}
 	}
 
-	Optional<StockV1> get(Instrument fromString, int i) throws IOException;
+	Optional<StockV1> get(Instrument fromString, int i, boolean addLatestQuoteToTheSeries) throws IOException;
 
-	Optional<StockV1> get(Instrument instrument, int years, boolean interpolate, boolean cleanData) throws IOException;
+	Optional<StockV1> get(Instrument instrument, int years, boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException;
 
-	Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate) throws IOException;
+	Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException;
 
 	Optional<StockV1> get(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate, boolean interpolate,
-			boolean cleanData) throws IOException;
+                          boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException;
 
 	Object getSource();
 

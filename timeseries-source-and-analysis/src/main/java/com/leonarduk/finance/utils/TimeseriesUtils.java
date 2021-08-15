@@ -69,15 +69,16 @@ public class TimeseriesUtils {
 		return history.get(0);
 	}
 
-	public static TimeSeries getTimeSeries(final StockV1 stock, final int i) throws IOException {
-		return TimeseriesUtils.getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now());
+	public static TimeSeries getTimeSeries(final StockV1 stock, final int i, boolean addLatestQuoteToTheSeries) throws IOException {
+		return TimeseriesUtils.getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now(), addLatestQuoteToTheSeries);
 	}
 
-	public static TimeSeries getTimeSeries(final StockV1 stock, final LocalDate fromDate, final LocalDate toDate)
+	public static TimeSeries getTimeSeries(final StockV1 stock, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
 			throws IOException {
 		List<Bar> history = stock.getHistory();
 		if ((null == history) || history.isEmpty()) {
-			final Optional<StockV1> optional = new IntelligentStockFeed(new FileBasedDataStore("db")).get(stock.getInstrument(), fromDate, toDate);
+			final Optional<StockV1> optional = new IntelligentStockFeed(new FileBasedDataStore("db")).get(stock.getInstrument(), fromDate, toDate,
+					addLatestQuoteToTheSeries);
 			if (optional.isPresent()) {
 				history = optional.get().getHistory();
 			} else {

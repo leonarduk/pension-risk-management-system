@@ -112,20 +112,20 @@ public class SnapshotAnalyser {
 	}
 
 	public List<Valuation> analayzeAllEtfs(final List<Position> stocks, final LocalDate fromDate,
-			final LocalDate toDate, boolean interpolate, boolean clean) throws IOException {
-		return stocks.parallelStream().map(s -> this.analyseStock(s, fromDate, toDate, interpolate, clean))
+                                           final LocalDate toDate, boolean interpolate, boolean clean, boolean addLatestQuoteToTheSeries) throws IOException {
+		return stocks.parallelStream().map(s -> this.analyseStock(s, fromDate, toDate, interpolate, clean, addLatestQuoteToTheSeries))
 				.collect(Collectors.toList());
 	}
 
 	public Valuation analyseStock(final Position stock2, final LocalDate fromDate, final LocalDate toDate,
-			boolean interpolate, boolean clean) {
+                                  boolean interpolate, boolean clean, boolean addLatestQuoteToTheSeries) {
 		TimeSeries series;
 		try {
 			Optional<StockV1> stock = stock2.getStock();
 			if (!stock.isPresent()) {
 				stock = feed.getFlatCashSeries(stock2.getInstrument(), 1);
 			}
-			Optional<StockV1> optional = this.feed.get(stock2.getInstrument(), fromDate, toDate, interpolate, clean);
+			Optional<StockV1> optional = this.feed.get(stock2.getInstrument(), fromDate, toDate, interpolate, clean, addLatestQuoteToTheSeries);
 			if (optional.isPresent()) {
 				series = new ExtendedHistoricalQuoteTimeSeries(optional.get().getHistory());
 			} else {
@@ -252,8 +252,9 @@ public class SnapshotAnalyser {
 
 	public void computeForStrategies(final Map<String, AtomicInteger> totalscores, final StockFeed feed,
 			final String Ticker) throws IOException {
-		final StockV1 stock = feed.get(Instrument.fromString(Ticker), 2).get();
-		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1);
+        boolean addLatestQuoteToTheSeries = false;
+        final StockV1 stock = feed.get(Instrument.fromString(Ticker), 2, addLatestQuoteToTheSeries).get();
+		final TimeSeries series = TimeseriesUtils.getTimeSeries(stock, 1, addLatestQuoteToTheSeries);
 //		final List<TimeSeries> subseries = series.getSubSeries(0, 20);
 
 		// Building the map of strategies
@@ -284,7 +285,7 @@ public class SnapshotAnalyser {
 	}
 
 	public StringBuilder createPortfolioReport(final LocalDate fromDate, final LocalDate toDate,
-			final boolean interpolate, final boolean extendedReport, final boolean createSeriesLinks, boolean clean)
+                                               final boolean interpolate, final boolean extendedReport, final boolean createSeriesLinks, boolean clean, boolean addLatestQuoteToTheSeries)
 			throws IOException, URISyntaxException {
 
 		final List<Position> positions = this.getPositions();
@@ -300,12 +301,12 @@ public class SnapshotAnalyser {
 		final StringBuilder sbBody = new StringBuilder();
 		final StringBuilder sbHead = new StringBuilder();
 
-		final List<Valuation> valuations = this.analayzeAllEtfs(positions, fromDate, toDate, interpolate, clean);
+		final List<Valuation> valuations = this.analayzeAllEtfs(positions, fromDate, toDate, interpolate, clean, addLatestQuoteToTheSeries);
 
 		this.getPortfolios().stream().forEach(portfolioName -> this.addPortfolioDetails(fromDate, toDate, interpolate,
 				createSeriesLinks, sbBody, valuations, portfolioName, clean));
 
-		this.createValuationsTable(this.analayzeAllEtfs(emptyPositions, fromDate, toDate, interpolate, clean), sbBody,
+		this.createValuationsTable(this.analayzeAllEtfs(emptyPositions, fromDate, toDate, interpolate, clean, addLatestQuoteToTheSeries), sbBody,
 				false, createSeriesLinks, fromDate, toDate, interpolate);
 
 		final StringBuilder buf = HtmlTools.createHtmlText(sbHead, sbBody);
@@ -314,13 +315,13 @@ public class SnapshotAnalyser {
 	}
 
 	public StringBuilder createPortfolioReport(final String fromDate, final String toDate, final boolean interpolate,
-			final boolean extendedReport, final boolean createSeriesLinks, boolean clean)
+                                               final boolean extendedReport, final boolean createSeriesLinks, boolean clean, boolean addLatestQuoteToTheSeries)
 			throws IOException, URISyntaxException {
 		final LocalDate fromLocalDate = StringUtils.isEmpty(fromDate) ? LocalDate.now().minusYears(2)
 				: LocalDate.parse(fromDate);
 		final LocalDate toLocalDate = StringUtils.isEmpty(toDate) ? LocalDate.now() : LocalDate.parse(toDate);
 		return this.createPortfolioReport(fromLocalDate, toLocalDate, interpolate, extendedReport, createSeriesLinks,
-				clean);
+				clean, addLatestQuoteToTheSeries);
 
 	}
 
@@ -395,7 +396,8 @@ public class SnapshotAnalyser {
 		final List<Instrument> emptyInstruments = Lists.newArrayList(Instrument.values());
 		emptyInstruments.removeAll(heldInstruments);
 		return emptyInstruments.stream().map(instrument -> {
-			return new Position("", instrument, BigDecimal.ZERO, this.feed.get(instrument, SnapshotAnalyser.years),
+            boolean addLatestQuoteToTheSeries = false;
+            return new Position("", instrument, BigDecimal.ZERO, this.feed.get(instrument, SnapshotAnalyser.years, false),
 					instrument.getIsin());
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
@@ -442,7 +444,7 @@ public class SnapshotAnalyser {
 
 	public void main(final String[] args) throws InterruptedException, IOException, URISyntaxException {
 		final StringBuilder buf = this.createPortfolioReport(LocalDate.now(), LocalDate.now().minusYears(1), true, true,
-				false, true);
+				false, true, false);
 		FileUtils.writeFile("recommendations.html", buf);
 	}
 

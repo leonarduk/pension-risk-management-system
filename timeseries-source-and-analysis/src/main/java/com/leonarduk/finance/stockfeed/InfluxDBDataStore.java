@@ -57,7 +57,7 @@ public class InfluxDBDataStore implements DataStore, AutoCloseable {
 
 
     @Override
-    public Optional<StockV1> get(Instrument instrument, int years) throws IOException {
+    public Optional<StockV1> get(Instrument instrument, int years, boolean addLatest) throws IOException {
         String query = String.format("from(bucket: \"%s\") |> range(start: -%dy)" +
                 "|> filter(fn: (r) => r[\"_measurement\"] == \"HistoricalQuote\")" +
                 "|> filter(fn: (r) => r[\"comment\"] != \"\") " +
@@ -74,7 +74,7 @@ public class InfluxDBDataStore implements DataStore, AutoCloseable {
     }
 
     @Override
-    public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate) throws IOException {
+    public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatest) throws IOException {
         // 2021-03-21T22:00:34.000Z,
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         final String timeSuffix = "T00:00:00.000Z";

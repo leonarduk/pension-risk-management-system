@@ -23,7 +23,6 @@ import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
-import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
@@ -49,7 +48,7 @@ public class StockFeedEndpoint {
 	public String displayHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
 			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
-			@QueryParam("fields") final String fields) throws IOException {
+			@QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
 
 		Instrument instrument = Instrument.fromString(ticker);
 		String[] fieldArray = {};
@@ -57,7 +56,7 @@ public class StockFeedEndpoint {
 			fieldArray = fields.split(",");
 		}
 		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument,
-				fieldArray);
+				fieldArray, addLatestQuoteToTheSeries);
 	}
 
 	@GET
@@ -67,16 +66,17 @@ public class StockFeedEndpoint {
 			@PathParam("ccy2") final String currencyTwo, @QueryParam("years") final int years,
 			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
-			@QueryParam("fields") final String fields) throws IOException {
+			@QueryParam("fields") final String fields,
+                                   @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
 
 		final Instrument instrument = new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo);
 
 		String[] fieldArray = fields.split(",");
-		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument, fieldArray);
+		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument, fieldArray, addLatestQuoteToTheSeries);
 	}
 
 	private String generateResults(final int years, final String fromDate, final String toDate,
-			final boolean interpolate, final boolean cleanData, final Instrument instrument, String[] fields)
+                                   final boolean interpolate, final boolean cleanData, final Instrument instrument, String[] fields, boolean addLatestQuoteToTheSeries)
 			throws IOException {
 		final StringBuilder sbBody = new StringBuilder();
 		final List<List<DataField>> records = Lists.newArrayList();
@@ -98,7 +98,7 @@ public class StockFeedEndpoint {
 			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}
 
-		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData);
+		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, addLatestQuoteToTheSeries);
 
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -125,10 +125,10 @@ public class StockFeedEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/download/ticker/{ticker}/")
 	public Response downloadHistoryCsv(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
-			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
+			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException {
 		final Instrument instrument = Instrument.fromString(ticker);
-		final List<Bar> series = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData);
+		final List<Bar> series = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData, addLatestQuoteToTheSeries);
 		final String fileName = instrument.getExchange().name() + "_" + instrument.code() + ".csv";
 		final String myCsvText = TimeseriesUtils.seriesToCsv(series).toString();
 		return Response.ok(myCsvText).header("Content-Disposition", "attachment; filename=" + fileName).build();
@@ -138,22 +138,24 @@ public class StockFeedEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/api/ticker/{ticker}/")
 	public List<Bar> getHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
-			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
+                                @QueryParam("interpolate") final boolean interpolate,
+                                @QueryParam("clean") final boolean cleanData,
+                                @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException {
 		final Instrument instrument = Instrument.fromString(ticker);
-		return this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData);
+		return this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData, addLatestQuoteToTheSeries);
 	}
 
 	private List<Bar> getHistoryData(final Instrument instrument, final int years, final boolean interpolate,
-			boolean cleanData) throws IOException {
+                                     boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException {
 		return getHistoryData(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now(), interpolate,
-				cleanData);
+				cleanData, addLatestQuoteToTheSeries);
 	}
 
 	private List<Bar> getHistoryData(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate,
-			boolean interpolate, boolean cleanData) throws IOException {
+                                     boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException {
 		final Optional<StockV1> stock = this.stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate,
-				cleanData);
+				cleanData, addLatestQuoteToTheSeries);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}

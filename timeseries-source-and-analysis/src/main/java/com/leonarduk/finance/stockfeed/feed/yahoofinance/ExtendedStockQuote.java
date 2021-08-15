@@ -37,7 +37,7 @@ public class ExtendedStockQuote extends StockQuote {
 		setYearLow(yearLow);
 	}
 
-	public ExtendedStockQuote(StockQuote quote) {
+	public ExtendedStockQuote(StockQuote quote, String comment) {
 		super(quote.getSymbol());
 		setAsk(quote.getAsk());
 		setAskSize(quote.getAskSize());
