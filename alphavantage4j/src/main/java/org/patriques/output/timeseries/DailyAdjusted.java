@@ -50,6 +50,9 @@ public class DailyAdjusted extends TimeSeriesResponse {
                           Map<String, Map<String, String>> stockData)  {
       List<StockData> stocks = new ArrayList<>();
       try {
+        if(stockData == null){
+          throw new NullPointerException("Received null data from AlphaVantage");
+        }
         stockData.forEach((key, values) -> stocks.add(new StockData(
                 LocalDate.parse(key, SIMPLE_DATE_FORMAT).atStartOfDay(),
                 Double.parseDouble(values.get("1. open")),
