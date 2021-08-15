@@ -46,7 +46,7 @@ public class TimeseriesUtilsTest {
 	@Test
 	public final void testSeriesToCsv() {
 		final StringBuilder actual = TimeseriesUtils.seriesToCsv(this.getQuotes());
-		Assert.assertEquals("date,open,high,low,close,volume\n" + "2017-01-01,12.30,9.30,10.00,12.20,23.00,TestCache\n",
+		Assert.assertEquals("date,open,high,low,close,volume,comment\n" + "2017-01-01,12.30,9.30,10.00,12.20,23.00,TestCache\n",
 				actual.toString());
 	}
 
