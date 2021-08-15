@@ -19,9 +19,9 @@ public class ContinualListIterator<T> implements Iterator<T> {
 
 	@Override
 	public T next() {
-		T last = this.underlyingCollection.removeLast();
-		this.underlyingCollection.addFirst(last);
-		return last;
+		T first = this.underlyingCollection.removeFirst();
+		this.underlyingCollection.addLast(first);
+		return first;
 	}
 
 }
