@@ -104,11 +104,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 								 final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) {
 		try {
 
-			//TODO need to be able to read from multiple sources
-//			StockFeed webDataFeed = stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE);
-			StockFeed webDataFeed = stockFeedFactory.getDataFeed(Source.YAHOO);
-
-			return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, webDataFeed, addLatestQuoteToTheSeries);
+			return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, addLatestQuoteToTheSeries);
 		} catch (final Exception e) {
 			IntelligentStockFeed.log.warn("Failed to get data", e.getMessage());
 			return Optional.empty();
@@ -118,8 +114,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
 	private Optional<StockV1> getUsingCache(final Instrument instrument, final LocalDate fromDateRaw,
 											final LocalDate toDateRaw, final boolean interpolate,
-											boolean cleanData, StockFeed webDataFeed, boolean addLatestQuoteToTheSeries)
+											boolean cleanData,  boolean addLatestQuoteToTheSeries)
 			throws IOException {
+
 		// Ignore weekends
 		LocalDate fromDate = DateUtils.getLastWeekday(fromDateRaw);
 		LocalDate toDate = DateUtils.getLastWeekday(toDateRaw);
@@ -136,23 +133,10 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 		// If we have the data already, don't bother to refresh
 		// Note will need to update today's live quote still though,
 		// so skip latest date point
-		Optional<StockV1> liveData = Optional.empty();
-		boolean getWebData = refresh && webDataFeed.isAvailable();
-		if (getWebData) {
-			if (cachedData.isPresent()) {
-				final List<Bar> cachedHistory = cachedData.get().getHistory();
-				List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
-						DateUtils.getPreviousDate(toDate));
-
-				if (!missingDates.isEmpty()) {
-					liveData = this.getDataIfFeedAvailable(instrument, missingDates.get(0),
-							missingDates.get(missingDates.size() - 1), webDataFeed, refresh, addLatestQuoteToTheSeries);
-				}
-			} else {
-				liveData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
-						refresh, addLatestQuoteToTheSeries);
-			}
-		}
+		Optional<StockV1> alphaData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+				 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
+		Optional<StockV1> liveData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, alphaData,
+				stockFeedFactory.getDataFeed(Source.YAHOO));
 
 		if (liveData.isPresent()) {
 			final StockV1 stock = liveData.get();
@@ -174,6 +158,31 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 			TimeseriesUtils.cleanUpSeries(liveData);
 		}
 		return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, liveData);
+	}
+
+	private Optional<StockV1> getWebFeed(Instrument instrument, boolean addLatestQuoteToTheSeries, LocalDate fromDate,
+										 LocalDate toDate, Optional<StockV1> cachedData,
+										 StockFeed webDataFeed) throws IOException {
+		boolean getWebData = refresh && webDataFeed.isAvailable();
+		if (getWebData) {
+			if (cachedData.isPresent()) {
+				final List<Bar> cachedHistory = cachedData.get().getHistory();
+				List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
+						DateUtils.getPreviousDate(toDate));
+
+				if (!missingDates.isEmpty()) {
+					LocalDate fromDate1 = missingDates.get(0);
+					LocalDate toDate1 = missingDates.get(missingDates.size() - 1);
+					log.info("Going to get missing data from " + fromDate1 + " to " + toDate1);
+					return this.getDataIfFeedAvailable(instrument, fromDate1,
+							toDate1, webDataFeed, refresh, addLatestQuoteToTheSeries);
+				}
+			} else {
+				return this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
+						refresh, addLatestQuoteToTheSeries);
+			}
+		}
+		return Optional.empty();
 	}
 
 	public Optional<StockV1> get(final Instrument instrument, final String fromDate, final String toDate,
@@ -205,7 +214,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 	@Override
 	public boolean isAvailable() {
 		return stockFeedFactory.getDataFeed(Source.MANUAL).isAvailable()
-				|| stockFeedFactory.getDataFeed(Source.GOOGLE).isAvailable()
+				|| stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE).isAvailable()
 				|| stockFeedFactory.getDataFeed(Source.YAHOO).isAvailable();
 	}
 

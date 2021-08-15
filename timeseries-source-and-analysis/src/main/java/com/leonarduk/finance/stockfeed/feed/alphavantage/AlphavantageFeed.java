@@ -60,9 +60,12 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
             AlphaVantageConnector apiConnector = getConnection();
             TimeSeries stockTimeSeries = new TimeSeries(apiConnector);
 
-            DailyAdjusted response = stockTimeSeries.dailyAdjusted(instrument.code(), OutputSize.FULL);
+            String symbol = instrument.code() + instrument.getExchange().getYahooSuffix();
+
+            DailyAdjusted response = stockTimeSeries.dailyAdjusted(symbol, OutputSize.FULL);
 
             List<Bar> series = convertSeries(instrument, response.getStockData());
+            logger.info("Returning series");
             return Optional.of(new StockV1(instrument, series));
         } catch (final Exception e) {
             logger.warn("Error when fetching from Alphavantage: " + e.getMessage());
