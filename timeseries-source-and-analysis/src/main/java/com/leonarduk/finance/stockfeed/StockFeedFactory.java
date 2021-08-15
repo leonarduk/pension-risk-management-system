@@ -1,6 +1,7 @@
 package com.leonarduk.finance.stockfeed;
 
 import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
+import com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 
@@ -23,6 +24,8 @@ public class StockFeedFactory {
                 return new CachedStockFeed(new FileBasedDataStore("db"));
             case YAHOO:
                 return new YahooFeed();
+            case STOOQ:
+                return new StooqFeed();
             case ALPHAVANTAGE:
             default:
                 return new AlphavantageFeed();

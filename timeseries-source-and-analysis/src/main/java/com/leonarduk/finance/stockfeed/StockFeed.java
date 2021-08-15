@@ -8,18 +8,24 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 
 public interface StockFeed {
 	enum Exchange {
-		London(".L"), NA("");
+		London(".L", ".UK"), NA("", "");
 
 		private final String yahooSuffix;
+		private final String stooqSuffix;
 
 		public String getYahooSuffix() {
 			return yahooSuffix;
 		}
 
-		Exchange(String yahooSuffix) {
+		Exchange(String yahooSuffix, String stooqSuffix) {
 			this.yahooSuffix = yahooSuffix;
+			this.stooqSuffix = stooqSuffix;
 		}
-	}
+
+        public String getStooqSuffix() {
+			return stooqSuffix;
+        }
+    }
 
 	Optional<StockV1> get(Instrument fromString, int i, boolean addLatestQuoteToTheSeries) throws IOException;
 

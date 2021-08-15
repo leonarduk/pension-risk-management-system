@@ -53,7 +53,8 @@ public class Instrument {
 
 	private static final String UNKNOWN_TEXT = "UNKNOWN";
 
-	public enum AssetType {
+
+    public enum AssetType {
 		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, UNKNOWN;
 
 		public static AssetType fromString(final String value) {

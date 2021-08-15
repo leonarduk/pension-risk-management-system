@@ -129,6 +129,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
                 true, addLatestQuoteToTheSeries);
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+                stockFeedFactory.getDataFeed(Source.STOOQ));
+        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.YAHOO));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
@@ -158,6 +160,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             Optional<StockV1> webdata = Optional.empty();
             if (cachedData.isPresent()) {
                 final List<Bar> cachedHistory = cachedData.get().getHistory();
+                //TODO fix this - has only one date
                 List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
                         DateUtils.getPreviousDate(toDate));
 
