@@ -3,4 +3,5 @@
 **/derby.log
 **/**.iml
 .idea
+**/target
 **/.settings

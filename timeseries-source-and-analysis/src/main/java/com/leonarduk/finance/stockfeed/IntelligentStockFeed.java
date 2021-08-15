@@ -135,21 +135,15 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 		// so skip latest date point
 		Optional<StockV1> alphaData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
 				 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
-		Optional<StockV1> liveData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, alphaData,
+
+		Optional<StockV1> liveData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
 				stockFeedFactory.getDataFeed(Source.YAHOO));
 
-		if (liveData.isPresent()) {
-			final StockV1 stock = liveData.get();
-			if (cachedData.isPresent()) {
-				this.mergeSeries(cachedData.get(), stock.getHistory(), cachedData.get().getHistory());
-			}
-			cachedDataFeed.storeSeries(stock);
-			if (addLatestQuoteToTheSeries) {
-				this.addLatestQuoteToTheSeries(liveData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
-			}
-		} else if (cachedData.isPresent()) {
-			liveData = cachedData;
-		} else {
+		if (addLatestQuoteToTheSeries) {
+			this.addLatestQuoteToTheSeries(liveData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
+		}
+
+		if (liveData.isEmpty()) {
 			IntelligentStockFeed.log.warn("No data for " + instrument);
 			return Optional.empty();
 		}
@@ -164,7 +158,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 										 LocalDate toDate, Optional<StockV1> cachedData,
 										 StockFeed webDataFeed) throws IOException {
 		boolean getWebData = refresh && webDataFeed.isAvailable();
+
 		if (getWebData) {
+			Optional<StockV1> webdata = Optional.empty();
 			if (cachedData.isPresent()) {
 				final List<Bar> cachedHistory = cachedData.get().getHistory();
 				List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
@@ -174,15 +170,24 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 					LocalDate fromDate1 = missingDates.get(0);
 					LocalDate toDate1 = missingDates.get(missingDates.size() - 1);
 					log.info("Going to get missing data from " + fromDate1 + " to " + toDate1);
-					return this.getDataIfFeedAvailable(instrument, fromDate1,
+					webdata = this.getDataIfFeedAvailable(instrument, fromDate1,
 							toDate1, webDataFeed, refresh, addLatestQuoteToTheSeries);
 				}
 			} else {
-				return this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
+				webdata = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
 						refresh, addLatestQuoteToTheSeries);
 			}
+			if(webdata.isPresent()){
+				final StockV1 stock = webdata.get();
+				if (cachedData.isPresent()) {
+					this.mergeSeries(cachedData.get(), stock.getHistory(), cachedData.get().getHistory());
+				}
+			}
+
 		}
-		return Optional.empty();
+
+
+		return cachedData;
 	}
 
 	public Optional<StockV1> get(final Instrument instrument, final String fromDate, final String toDate,
