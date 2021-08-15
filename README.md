@@ -11,7 +11,7 @@ This module has tools to acquire the timeseries information, interpolate where t
 
 Uses:
 
-* [patriques82/alphavantage4j](https://github.com/patriques82/alphavantage4j) - I had to include this in my code base, as the provided maven repo was unstale.  This also made it easier to make a small bug fix.
+* [patriques82/alphavantage4j](https://github.com/patriques82/alphavantage4j) - I had to include this in my code base, as the provided maven repo was unstable.  This also made it easier to make a small bug fix.
 * [sstrickx/yahoofinance-api](https://github.com/sstrickx/yahoofinance-api)  - copied to my code as this seems dead now, and I wanted to make a small change to fit the code into my code
 * [ta4j/ta4j](https://github.com/ta4j/ta4j)
 
