@@ -160,7 +160,7 @@ public class TimeseriesUtils {
 	}
 
 	public static StringBuilder seriesToCsv(final List<Bar> series) {
-		final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume\n");
+		final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment\n");
 		// TODO add comment field if necessary- look at how HTML tools does it
 		for (final Bar historicalQuote : series) {
 			sb.append(historicalQuote.getEndTime().toLocalDate().toString());
