@@ -1,4 +1,4 @@
-package com.leonarduk.finance.db;
+package com.leonarduk.finance.api;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;

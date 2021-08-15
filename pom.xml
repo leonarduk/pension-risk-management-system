@@ -106,6 +106,7 @@
         <module>alphavantage4j</module>
         <module>timeseries-source-and-analysis</module>
         <module>timeseries-spring-boot-server</module>
+        <module>timeseries-analysis-python</module>
     </modules>
     <organization>
         <name>Leonard UK Ltd</name>
