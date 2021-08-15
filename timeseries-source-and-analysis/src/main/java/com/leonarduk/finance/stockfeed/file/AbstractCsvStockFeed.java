@@ -66,12 +66,12 @@ public abstract class CsvStockFeed extends AbstractStockFeed {
 	}
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final int years) throws IOException {
-		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now());
+	public Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) throws IOException {
+		return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), addLatestQuoteToTheSeries);
 	}
 
 	@Override
-	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate)
+	public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
 			throws IOException {
 		if (!this.isAvailable()) {
 			CsvStockFeed.log.warn("Feed is not available");
