@@ -3,7 +3,6 @@ package com.leonarduk.finance.stockfeed.feed.stooq;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.feed.google.GoogleFeed;
 import com.leonarduk.finance.stockfeed.file.AbstractCsvStockFeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

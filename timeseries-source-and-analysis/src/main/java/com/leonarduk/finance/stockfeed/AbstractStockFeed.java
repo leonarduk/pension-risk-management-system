@@ -71,9 +71,8 @@ public abstract class AbstractStockFeed implements StockFeed {
 	@Override
 	public abstract boolean isAvailable();
 
-	public void mergeSeries(final StockV1 stock, final List<Bar> original) throws IOException {
-		final List<Bar> newSeries = stock.getHistory();
-		this.mergeSeries(stock, original, newSeries);
+	public void mergeSeries(final StockV1 stock, final List<Bar> newSeries) throws IOException {
+		this.mergeSeries(stock, stock.getHistory(), newSeries);
 	}
 
 	public void mergeSeries(final StockV1 stock, final List<Bar> original, final List<Bar> newSeries) {

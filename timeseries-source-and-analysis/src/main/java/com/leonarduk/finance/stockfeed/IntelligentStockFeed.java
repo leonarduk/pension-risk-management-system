@@ -131,9 +131,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.STOOQ));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
-                stockFeedFactory.getDataFeed(Source.YAHOO));
-        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
+        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+                stockFeedFactory.getDataFeed(Source.YAHOO));
 
         if (addLatestQuoteToTheSeries) {
             this.addLatestQuoteToTheSeries(cachedData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
@@ -161,7 +161,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             if (cachedData.isPresent()) {
                 final List<Bar> cachedHistory = cachedData.get().getHistory();
                 //TODO fix this - has only one date
-                List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate,
+                List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPointsForDateRange(cachedHistory, fromDate,
                         DateUtils.getPreviousDate(toDate));
 
                 if (!missingDates.isEmpty()) {

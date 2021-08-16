@@ -78,12 +78,12 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
 			AbstractCsvStockFeed.log.warn("Feed is not available");
 			return Optional.empty();
 		}
+		try {
 		this.setInstrument(instrument);
 		this.setStartDate(DateUtils.convertToDateViaInstant(fromDate));
 		this.setEndDate(DateUtils.convertToDateViaInstant(toDate));
 
 		final List<Bar> quotes = new LinkedList<>();
-		try {
 			while (this.next()) {
 				ExtendedHistoricalQuote asHistoricalQuote = this.asHistoricalQuote();
 				if (asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SATURDAY
@@ -95,13 +95,12 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
 			Collections.sort(quotes, (o1, o2) -> {
 				return o2.getEndTime().compareTo(o1.getEndTime());
 			});
-
-		} catch (final IOException e) {
+			return Optional.of(AbstractStockFeed.createStock(instrument, quotes));
+		} catch (final Exception e) {
 			AbstractCsvStockFeed.log.warn("Failed:" + this + " : " + e.getMessage());
 			return Optional.empty();
 		}
 
-		return Optional.of(AbstractStockFeed.createStock(instrument, quotes));
 	}
 
 	@Override

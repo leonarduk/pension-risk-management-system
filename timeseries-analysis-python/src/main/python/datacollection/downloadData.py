@@ -6,7 +6,7 @@ import pandas as pd
 
 
 def getDataFrame(ticker, years=1 ):
-    CSV_URL = 'http://localhost:8091/stock/download/ticker/' + ticker + '?years=' + str(years) + '&interpolate=true&clean=true'
+    CSV_URL = 'http://localhost:8092/stock/download/ticker/' + ticker + '?years=' + str(years) + '&interpolate=true&clean=true'
 
 
     df = pd.read_csv(CSV_URL, usecols=['date', 'close'], index_col='date')

@@ -21,7 +21,6 @@
  */
 package com.leonarduk.finance.utils;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -70,17 +68,19 @@ public class DateUtils {
         Predicate<LocalDate> isHoliday = date -> holidays.isPresent()
                 && holidays.get().contains(date);
 
-        // Predicate 2: Is a given date is a weekday
-        Predicate<LocalDate> isWeekend = date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
-                || date.getDayOfWeek() == DayOfWeek.SUNDAY;
-
         // Iterate over stream of all dates and check each day against any weekday or
         // holiday
         List<LocalDate> businessDays = startDate.datesUntil(endDate)
-                .filter(isWeekend.or(isHoliday).negate())
+                .filter(isWeekend().or(isHoliday).negate())
                 .collect(Collectors.toList());
 
         return businessDays.size();
+    }
+
+    public static Predicate<LocalDate> isWeekend() {
+        Predicate<LocalDate> isWeekend = date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
+                || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+        return isWeekend;
     }
 
     private static String getDividendDateFormat(final String date) {
