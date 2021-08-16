@@ -136,6 +136,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                 stockFeedFactory.getDataFeed(Source.YAHOO));
 
         if (addLatestQuoteToTheSeries) {
+            // or Source.ALPHAVANTAGE
             this.addLatestQuoteToTheSeries(cachedData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
         }
 

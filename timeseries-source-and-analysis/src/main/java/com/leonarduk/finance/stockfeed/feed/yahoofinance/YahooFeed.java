@@ -55,15 +55,6 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
         return request.getSingleResult();
     }
 
-    public static String getQueryName(final Instrument instrument) {
-        switch (instrument.getExchange()) {
-            case London:
-                return YahooFeed.getCode(instrument) + ".L";
-            default:
-                throw new IllegalArgumentException("Don't know how to handle " + instrument.getExchange());
-        }
-    }
-
     @Override
     public Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) {
         return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), addLatestQuoteToTheSeries);

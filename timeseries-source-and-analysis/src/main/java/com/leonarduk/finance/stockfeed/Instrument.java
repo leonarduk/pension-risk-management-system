@@ -121,13 +121,14 @@ public class Instrument {
 		}
 
 		Instrument.LOGGER.warn("Could not map " + symbol);
-		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.ALPHAVANTAGE, symbol, symbol,
+		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL,"", localSymbol,
 				Exchange.London, "", "GBP", symbol);
 	}
 
 	public static Collection<Instrument> values() throws IOException {
 		return InstrumentLoader.getInstance().instruments.values();
 	}
+
 
 	protected Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
 			final String isin, final String code, final Exchange exchange, final String category, final String currency,
