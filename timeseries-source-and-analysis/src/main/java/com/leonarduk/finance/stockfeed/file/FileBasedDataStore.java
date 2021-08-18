@@ -3,20 +3,26 @@ package com.leonarduk.finance.stockfeed.file;
 import com.leonarduk.finance.stockfeed.DataStore;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.ta4j.core.Bar;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStore {
 
@@ -99,6 +105,21 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
     }
 
 
+    public void storeCSVFile(InputStream inputFile, final Instrument instrument, String delimiter,
+                               int skipRows, int dateColIndex, int closeValueIndex , int adjcloseValueIndex ,
+                               int openIndex, int lowIndex,
+                               int highIndex, int volumeIndex
+    ) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputFile));
+        List<Bar> series = reader.lines().skip(skipRows).map(line -> {
+                    String[] arrSplit = line.split(delimiter);
+                    return new ExtendedHistoricalQuote(instrument, LocalDate.parse(arrSplit[dateColIndex]),
+                            Double.valueOf(arrSplit[openIndex]), Double.valueOf(arrSplit[lowIndex]), Double.valueOf(arrSplit[highIndex]),
+                            Double.valueOf(arrSplit[closeValueIndex]), Double.valueOf(arrSplit[adjcloseValueIndex]),
+                            Long.valueOf(arrSplit[volumeIndex]), "File");
+                })
+                .collect(Collectors.toList());
 
-
+        storeSeries(new StockV1(instrument, series));
+    }
 }

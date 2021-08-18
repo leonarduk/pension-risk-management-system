@@ -8,7 +8,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 
 public interface StockFeed {
 	enum Exchange {
-		London(".L", ".UK"), NA("", "");
+		L(".L", ".UK"), London(".L", ".UK"), NY("", ""), NA("", "");
 
 		private final String yahooSuffix;
 		private final String stooqSuffix;
@@ -21,6 +21,8 @@ public interface StockFeed {
 			this.yahooSuffix = yahooSuffix;
 			this.stooqSuffix = stooqSuffix;
 		}
+
+
 
         public String getStooqSuffix() {
 			return stooqSuffix;

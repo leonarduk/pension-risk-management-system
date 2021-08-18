@@ -64,8 +64,7 @@ public class GoogleFeed extends AbstractCsvStockFeed {
 
     @Override
     public boolean isAvailable() {
-        return true;
-//		return SeleniumUtils.isInternetAvailable(GoogleFeed.BASE_URL);
+        return false;
     }
 
     @Override

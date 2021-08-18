@@ -53,7 +53,7 @@ public class StooqFeed extends AbstractCsvStockFeed {
 
         final Map<Object, Object> params = new HashMap<>(4, 1);
         params.put(StooqFeed.PARAM_INTERFACE, StooqFeed.OUTPUT_DOWNLOAD);
-        params.put(StooqFeed.PARAM_SYMBOL, getQueryName(Instrument.fromString(this.getSymbol())));
+        params.put(StooqFeed.PARAM_SYMBOL, getQueryName(this.getInstrument()));
         if (this.getStartDate() != null) {
             params.put(StooqFeed.PARAM_START_DATE,
                     AbstractCsvStockFeed.formatDate(StooqFeed.PARAM_FORMATTER, this.getStartDate()));
@@ -75,7 +75,10 @@ public class StooqFeed extends AbstractCsvStockFeed {
             throw e.getCause();
         }
         // Skip first line that contains column names
-        reader.readLine();
+        String header = reader.readLine();
+        if(header.contains("Exceeded the daily hits limit")){
+            log.warn("Exceeded the daily hits limit for Stooq");
+        }
         return reader;
     }
 

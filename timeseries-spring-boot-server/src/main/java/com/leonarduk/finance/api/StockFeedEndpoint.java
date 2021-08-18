@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.ws.rs.GET;
@@ -15,10 +16,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.leonarduk.finance.db.InstrumentRepository;
 import com.leonarduk.finance.stockfeed.*;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
@@ -31,26 +36,56 @@ import com.leonarduk.finance.utils.TimeseriesUtils;
 @Named
 @Path("/stock")
 @SpringBootApplication
+@ComponentScan("com.leonarduk.finance.stockfeed")
 public class StockFeedEndpoint {
+
+    private final static Logger logger = LoggerFactory.getLogger(StockFeedEndpoint.class.getName());
+
+    @Autowired
+    private InstrumentRepository instrumentRepository;
 
     @Autowired
 	private StockFeed stockFeed;
 
-	@Autowired
-    private FxFeed fxFeed;
-
     @Autowired
     private DataStore dataStore;
 
-	@GET
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("instrument")
+    public String getInstrument(@QueryParam("ticker") final String ticker) {
+        return this.instrumentRepository.findById(ticker).get().toString();
+    }
+
+    @GET
+    @Path("instruments")
+    public String getInstruments() {
+        logger.info("JSON query of instruments");
+        return this.instrumentRepository.findAll().stream().map(i -> i.toString()).collect(Collectors.toSet()).toString();
+    }
+
+    @GET
+    @Produces({ MediaType.TEXT_HTML })
+    @Path("/ticker/{ticker}")
+    public String displayHistoryLondon(@PathParam("ticker") final String ticker,
+                                 @QueryParam("years") final int years,
+                                 @QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
+                                 @QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
+                                 @QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
+        return displayHistory(ticker, "L", years, fromDate, toDate, interpolate, cleanData, fields, addLatestQuoteToTheSeries);
+    }
+
+        @GET
 	@Produces({ MediaType.TEXT_HTML })
-	@Path("/ticker/{ticker}/")
-	public String displayHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
+	@Path("/ticker/{ticker}/{region}")
+	public String displayHistory(@PathParam("ticker") final String ticker,
+                                 @PathParam("region") final String region,
+                                 @QueryParam("years") final int years,
 			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
 			@QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
 
-		Instrument instrument = Instrument.fromString(ticker);
+		Instrument instrument = getInstrument(ticker, region);
 		String[] fieldArray = {};
 		if(fields != null) {
 			fieldArray = fields.split(",");
@@ -58,6 +93,18 @@ public class StockFeedEndpoint {
 		return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument,
 				fieldArray, addLatestQuoteToTheSeries);
 	}
+
+    private Instrument getInstrument(String ticker, String region) throws IOException {
+        Optional<Instrument> instrument = this.instrumentRepository.findById(ticker);
+        if (instrument.isEmpty()){
+            instrument = Optional.of(Instrument.fromString(ticker,region));
+            this.instrumentRepository.save(instrument.get());
+        }
+
+        return instrument.get();
+    }
+
+
 
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
@@ -127,7 +174,7 @@ public class StockFeedEndpoint {
 	public Response downloadHistoryCsv(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException {
-		final Instrument instrument = Instrument.fromString(ticker);
+		final Instrument instrument = getInstrument(ticker, "L");
 		final List<Bar> series = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData, addLatestQuoteToTheSeries);
 		final String fileName = instrument.getExchange().name() + "_" + instrument.code() + ".csv";
 		final String myCsvText = TimeseriesUtils.seriesToCsv(series).toString();
@@ -142,7 +189,7 @@ public class StockFeedEndpoint {
                                 @QueryParam("clean") final boolean cleanData,
                                 @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException {
-		final Instrument instrument = Instrument.fromString(ticker);
+		final Instrument instrument = getInstrument(ticker, "L");
 		return this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData, addLatestQuoteToTheSeries);
 	}
 

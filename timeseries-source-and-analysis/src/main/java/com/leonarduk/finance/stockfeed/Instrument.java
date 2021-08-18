@@ -17,26 +17,35 @@ import org.slf4j.LoggerFactory;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.ResourceTools;
 
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class Instrument {
-	private final AssetType assetType;
+	public Instrument(){}
 
-	private final String category;
+	private AssetType assetType;
 
-	private final String code;
+	private String category;
 
-	private final String currency;
+	@Id
+	@Basic(optional = false)
+	private String code;
 
-	private final Exchange exchange;
+	private String currency;
 
-	private final String googleCode;
+	private Exchange exchange;
 
-	private final String isin;
+	private String googleCode;
 
-	private final String name;
+	private String isin;
 
-	private final Source source;
+	private String name;
 
-	private final AssetType underlyingType;
+	private Source source;
+
+	private AssetType underlyingType;
 
 	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
 			Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.London, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
@@ -55,7 +64,7 @@ public class Instrument {
 
 
     public enum AssetType {
-		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, UNKNOWN;
+		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, INV_TRUST, UNKNOWN;
 
 		public static AssetType fromString(final String value) {
 			try {
@@ -111,6 +120,10 @@ public class Instrument {
 	}
 
 	public static Instrument fromString(final String symbol) throws IOException {
+    	return fromString(symbol, "L");
+	}
+
+	public static Instrument fromString(final String symbol, final String region) throws IOException {
 		String localSymbol = symbol;
 		final String fullStop = ".";
 		if (localSymbol.contains(fullStop)) {
@@ -120,10 +133,10 @@ public class Instrument {
 			return InstrumentLoader.getInstance().instruments.get(localSymbol.toUpperCase());
 		}
 
-		Instrument.LOGGER.warn("Could not map " + symbol);
 		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL,"", localSymbol,
-				Exchange.London, "", "GBP", symbol);
+				Exchange.valueOf(region), "", "GBP", symbol);
 	}
+
 
 	public static Collection<Instrument> values() throws IOException {
 		return InstrumentLoader.getInstance().instruments.values();

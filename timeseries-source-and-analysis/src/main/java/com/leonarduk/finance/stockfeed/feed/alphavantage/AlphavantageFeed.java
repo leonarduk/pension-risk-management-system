@@ -33,8 +33,6 @@ import com.leonarduk.finance.utils.ContinualListIterator;
 public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, FxFeed {
 
     public static final Logger logger = LoggerFactory.getLogger(AlphavantageFeed.class.getName());
-    public static final String QUOTES_CSV_DELIMITER = ",";
-    public static final String TIMEZONE = "America/New_York";
 
     private final static ContinualListIterator<String> apiKeyIterator = new ContinualListIterator<>(ImmutableList.of("KKYL9UZSTHIFAMS8", "TL8UNL556990PG7T",
             "PXEB3TPEWCB6AFJD", "V5NOKB67PQJL5XP4", "MVI3UZIM61YWSTGD", "QG7MP9WY7647G4MI", "PM3635D4OO11MC4M"));

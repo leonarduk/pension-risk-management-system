@@ -128,6 +128,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         // we try to get from file cache first, then these sources in turn, then we might interpolate gaps
         Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
                 true, addLatestQuoteToTheSeries);
+//        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+//                stockFeedFactory.getDataFeed(Source.FT));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.STOOQ));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
@@ -161,7 +163,6 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             Optional<StockV1> webdata = Optional.empty();
             if (cachedData.isPresent()) {
                 final List<Bar> cachedHistory = cachedData.get().getHistory();
-                //TODO fix this - has only one date
                 List<LocalDate> missingDates = TimeseriesUtils.getMissingDataPointsForDateRange(cachedHistory, fromDate,
                         DateUtils.getPreviousDate(toDate));
 
@@ -169,12 +170,21 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                     LocalDate fromDate1 = missingDates.get(0);
                     LocalDate toDate1 = missingDates.get(missingDates.size() - 1);
                     log.info("Going to get missing data from " + fromDate1 + " to " + toDate1);
-                    webdata = this.getDataIfFeedAvailable(instrument, fromDate1,
-                            toDate1, webDataFeed, refresh, addLatestQuoteToTheSeries);
+                    try {
+                        webdata = this.getDataIfFeedAvailable(instrument, fromDate1,
+                                toDate1, webDataFeed, refresh, addLatestQuoteToTheSeries);
+                    }catch(Exception e){
+                        log.warn("Exception from " + webDataFeed.getSource(), e);
+                    }
                 }
             } else {
-                webdata = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
+                try {
+
+                    webdata = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
                         refresh, addLatestQuoteToTheSeries);
+                }catch(Exception e){
+                    log.warn("Exception from " + webDataFeed.getSource(), e);
+                }
             }
             if(cachedData.isEmpty()){
                 cachedData = webdata;
