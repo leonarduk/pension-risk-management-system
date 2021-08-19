@@ -96,13 +96,15 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 
 	public ExtendedHistoricalQuote(String symbol, Calendar date, BigDecimal open, BigDecimal low, BigDecimal high,
 			BigDecimal close, BigDecimal adjClose, Long volume, final String comment) {
-		this(symbol, DateUtils.calendarToLocalDate(date), open, low, high, close, adjClose, DoubleNum.valueOf(volume),
+		this(symbol, DateUtils.calendarToLocalDate(date), open, low, high, close, adjClose,
+				DoubleNum.valueOf(volume == null ? 0 : volume),
 				comment);
 	}
 
 	public ExtendedHistoricalQuote(Instrument instrument, LocalDate date, BigDecimal open, BigDecimal low,
 			BigDecimal high, BigDecimal close, BigDecimal adjClose, Long volume, final String comment) {
-		this(instrument.getCode(), date, open, low, high, close, adjClose, DoubleNum.valueOf(volume), comment);
+		this(instrument.getCode(), date, open, low, high, close, adjClose,
+				DoubleNum.valueOf(volume == null ? 0 : volume), comment);
 	}
 
 	public ExtendedHistoricalQuote(Bar lastQuote, LocalDate today, String string) {
@@ -186,7 +188,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 	}
 
 	public BigDecimal getClose() {
-		return close;
+		return close == null ? BigDecimal.ZERO : close;
 	}
 
 	public BigDecimal getAdjClose() {

@@ -2,12 +2,10 @@ package com.leonarduk.finance.stockfeed;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -48,7 +46,7 @@ public class Instrument {
 	private AssetType underlyingType;
 
 	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
-			Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.London, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
+			Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.LONDON, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
 
 	private static final String CASH_TEXT = "Cash";
 
@@ -57,14 +55,14 @@ public class Instrument {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Instrument.class.getName());
 
 	public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
-			AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.London,
+			AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.LONDON,
 			Instrument.UNKNOWN_TEXT, Instrument.GBP, Instrument.UNKNOWN_TEXT);
 
 	private static final String UNKNOWN_TEXT = "UNKNOWN";
 
 
     public enum AssetType {
-		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, INV_TRUST, UNKNOWN;
+		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, INDEX, INVESTMENT_TRUST, UNKNOWN, OTHER;
 
 		public static AssetType fromString(final String value) {
 			try {
@@ -82,7 +80,7 @@ public class Instrument {
 		private static InstrumentLoader instance;
 
 		public static InstrumentLoader getInstance() throws IOException {
-			if (InstrumentLoader.instance == null) {
+//			if (InstrumentLoader.instance == null) {
 				InstrumentLoader.instance = new InstrumentLoader();
 
 				try {
@@ -91,16 +89,33 @@ public class Instrument {
 					// TODO Auto-generated catch block
 					throw new IOException(e);
 				}
-			}
+//			}
 
 			return InstrumentLoader.instance;
 		}
 
+		private final static Logger logger = LoggerFactory.getLogger(Instrument.class.getName());
+
 		private Instrument create(final String line) {
-			final Iterator<String> iter = Arrays.asList(line.split(",")).iterator();
-			return new Instrument(iter.next(), AssetType.fromString(iter.next().toUpperCase()),
-					AssetType.fromString(iter.next().toUpperCase()), Source.valueOf(iter.next().toUpperCase()),
-					iter.next(), iter.next(), Exchange.valueOf(iter.next()), iter.next(), iter.next(), iter.next());
+			try{
+				List<String> strings = Arrays.asList(line.split(","));
+
+				final Iterator<String> iter = strings.iterator();
+			return new Instrument(StringUtils.defaultIfEmpty(iter.next(), ""),
+					AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
+					AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
+					Source.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
+					StringUtils.defaultIfEmpty(iter.next(), ""),
+					StringUtils.defaultIfEmpty(iter.next(), ""),
+					Exchange.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
+					StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
+					StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
+					StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "")
+			);
+		}catch (Exception e){
+				logger.warn(String.format("Could not map %s to an instrument", line), e);
+				throw e;
+			}
 		}
 
 		public void init(String filePath) throws IOException, URISyntaxException {
@@ -115,7 +130,7 @@ public class Instrument {
 
 	public static Instrument createPortfolioInstrument(final String name) {
 		final Instrument PORTFOLIO = new Instrument(name, AssetType.PORTFOLIO, AssetType.UNKNOWN, Source.MANUAL,
-				"Portfolio", "Portfolio", Exchange.London, "Portfolio", Instrument.GBP, "");
+				"Portfolio", "Portfolio", Exchange.LONDON, "Portfolio", Instrument.GBP, "");
 		return PORTFOLIO;
 	}
 

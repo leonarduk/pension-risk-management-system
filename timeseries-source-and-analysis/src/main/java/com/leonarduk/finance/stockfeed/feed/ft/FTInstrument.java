@@ -16,14 +16,14 @@ public class FTInstrument {
     }
 
     public String getFTUrl() {
-        return String.format("https://markets.ft.com/data/%s/tearsheet/historical?s=%", getFTAssetType(), getFTCode());
+        return String.format("https://markets.ft.com/data/%s/tearsheet/historical?s=%s", getFTAssetType(), getFTCode());
     }
 
 
     private String getFTExchange() {
         switch (instrument.getExchange()) {
             case L:
-            case London:
+            case LONDON:
                 return "LSE";
             default:
                 throw new UnsupportedOperationException("FT feed does not support " + instrument.getExchange());
@@ -35,7 +35,7 @@ public class FTInstrument {
         switch (type) {
             case EQUITY:
                 return instrument.getCode() + ":" + getFTExchange();
-            case INV_TRUST:
+            case INVESTMENT_TRUST:
             case ETF:
                 return instrument.getCode() + ":" + getFTExchange() + ":" + instrument.getCurrency();
             case FUND:
@@ -50,7 +50,7 @@ public class FTInstrument {
         switch (type) {
             case EQUITY:
                 return "equities";
-            case INV_TRUST:
+            case INVESTMENT_TRUST:
                 return "investment-trust";
             case ETF:
                 return "etfs";

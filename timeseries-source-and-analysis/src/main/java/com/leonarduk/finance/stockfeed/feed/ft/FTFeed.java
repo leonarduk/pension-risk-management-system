@@ -4,6 +4,10 @@ import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +24,19 @@ import java.util.Optional;
 public class FTFeed  extends AbstractStockFeed {
     public static final Logger log = LoggerFactory.getLogger(FTFeed.class.getName());
 
+    final WebDriver webDriver;
+
+    public FTFeed() {
+        log.info("Start FireFoxDriver");
+        webDriver = new HtmlUnitDriver();
+    }
+
     @Override
     public Optional<StockV1> get(Instrument instrument, int years, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from " + ftInstrument.getFTUrl());
+        FTTimeSeriesPage page = new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl());
+        page.load();
         return Optional.empty();
     }
 
@@ -31,6 +44,8 @@ public class FTFeed  extends AbstractStockFeed {
     public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from " + ftInstrument.getFTUrl());
+        FTTimeSeriesPage page = new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl());
+        page.load();
         return Optional.empty();
     }
 

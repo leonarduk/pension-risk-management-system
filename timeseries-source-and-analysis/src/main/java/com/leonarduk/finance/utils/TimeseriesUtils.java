@@ -3,6 +3,7 @@ package com.leonarduk.finance.utils;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.datatransformation.correction.BadDateRemover;
 import com.leonarduk.finance.stockfeed.datatransformation.correction.BadScalingCorrector;
+import com.leonarduk.finance.stockfeed.datatransformation.correction.NullValueRemover;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
@@ -27,7 +28,7 @@ public class TimeseriesUtils {
         if (liveData.isPresent()) {
             final List<Bar> history = liveData.get().getHistory();
             final int original = history.size();
-            final List<Bar> clean = new BadScalingCorrector().clean(new BadDateRemover().clean(history));
+            final List<Bar> clean = new BadScalingCorrector().clean(new BadDateRemover().clean(new NullValueRemover().clean(history)));
 
             // TODO scale to/from USD to GBP or GBX
             liveData.get().setHistory(clean);
