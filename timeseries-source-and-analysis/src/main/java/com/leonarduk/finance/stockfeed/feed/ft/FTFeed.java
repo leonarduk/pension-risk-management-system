@@ -13,6 +13,8 @@ import org.ta4j.core.Bar;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,11 +35,7 @@ public class FTFeed  extends AbstractStockFeed {
 
     @Override
     public Optional<StockV1> get(Instrument instrument, int years, boolean addLatestQuoteToTheSeries) throws IOException {
-        FTInstrument ftInstrument = new FTInstrument(instrument);
-        log.info("Fetch from " + ftInstrument.getFTUrl());
-
-        return Optional.of(new StockV1(instrument,
-                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument)));
+        return get(instrument, LocalDate.now().minus(years, ChronoUnit.YEARS ),LocalDate.now(), addLatestQuoteToTheSeries);
     }
 
     @Override
@@ -45,7 +43,7 @@ public class FTFeed  extends AbstractStockFeed {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from " + ftInstrument.getFTUrl());
         return Optional.of(new StockV1(instrument,
-                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument)));
+                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument, fromDate, toDate)));
     }
 
     @Override

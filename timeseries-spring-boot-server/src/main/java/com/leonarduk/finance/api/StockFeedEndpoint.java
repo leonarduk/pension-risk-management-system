@@ -95,7 +95,7 @@ public class StockFeedEndpoint {
 	}
 
     private Instrument getInstrument(String ticker, String region) throws IOException {
-        Optional<Instrument> instrument = this.instrumentRepository.findById(ticker);
+        Optional<Instrument> instrument = Optional.empty(); //this.instrumentRepository.findById(ticker);
         if (instrument.isEmpty()){
             instrument = Optional.of(Instrument.fromString(ticker,region));
             this.instrumentRepository.save(instrument.get());

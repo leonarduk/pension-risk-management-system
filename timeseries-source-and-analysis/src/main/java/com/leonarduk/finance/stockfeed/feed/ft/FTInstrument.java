@@ -39,7 +39,7 @@ public class FTInstrument {
             case ETF:
                 return instrument.getCode() + ":" + getFTExchange() + ":" + instrument.getCurrency();
             case FUND:
-                return "funds";
+                return instrument.getIsin() + ":" + instrument.getCurrency();
             default:
                 throw new UnsupportedOperationException("FT feed does not support " + type);
         }

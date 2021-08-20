@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.patriques.output.timeseries.data.StockData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ta4j.core.Bar;
@@ -31,9 +30,22 @@ public class FTTimeSeriesPage extends BaseSeleniumPage{
 
     }
 
-    public List<Bar> getTimeseries(Instrument instrument) {
+    public List<Bar> getTimeseries(Instrument instrument, LocalDate fromDate, LocalDate toDate) {
         isLoaded();
-        String source = this.getWebDriver().getPageSource();
+
+        // e.g. 2021/04/01
+        DateTimeFormatter numericDateFormatter = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        // e.g. Fri, Aug 20, 2021
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d, yyyy");
+
+        //TODO set these
+        String fromDateString = fromDate.format(numericDateFormatter);
+        String toDateString = toDate.format(numericDateFormatter);
+
+        WebElement from = this.getWebDriver().findElement(By.className("mod-filter-ui-historical-prices-overlay__date--from")).findElement(By.tagName("input"));
+        String currentValue = from.getAttribute("data-value");
+        ///////////////
+
         WebElement table = this.getWebDriver().findElement(By. className("mod-tearsheet-historical-prices__results"));
 //        List<String> columns = table.findElement(By.tagName("tr")).findElements(By.tagName("th")).stream().map(WebElement::getText).collect(Collectors.toList());
         // date, open , high, low, close, volume
@@ -46,7 +58,6 @@ public class FTTimeSeriesPage extends BaseSeleniumPage{
                     String dateString = fieldsIter.next().findElements(By.tagName("span")).get(1).getAttribute("innerHTML");
 
                     // e.g. Fri, Aug 20, 2021
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d, yyyy");
                     LocalDate date = LocalDate.parse(dateString, formatter);
                     double  open = parseDouble(fieldsIter.next().getText());
                     double  high = parseDouble(fieldsIter.next().getText());
@@ -61,13 +72,18 @@ public class FTTimeSeriesPage extends BaseSeleniumPage{
                 .collect(Collectors.toList());
     }
 
-    private Double parseDouble(String text){
-        if (text.contains("k")) // 10.08k
-        {
-            return 1000 * parseDouble(text.replaceAll("k", ""));
+    private Double parseDouble(String text) {
+        try {
+            if (text.contains("k")) // 10.08k
+            {
+                return 1000 * parseDouble(text.replaceAll("k", ""));
+            }
+            return Double.valueOf(StringUtils.defaultIfBlank(text, "0.0").replaceAll(",", ""));
+        } catch (NumberFormatException e) {
+            return 0.0;
         }
-        return Double.valueOf(StringUtils.defaultIfBlank(text, "0.0").replaceAll(",",""));
     }
+
     private Long parseLong(String text){
         return parseDouble(text).longValue();
     }
