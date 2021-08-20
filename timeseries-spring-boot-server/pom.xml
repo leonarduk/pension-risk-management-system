@@ -15,6 +15,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.5.3</version>
+        <relativePath/>
 	</parent>
 
 	<properties>
@@ -25,7 +26,6 @@
 		<rest.assured.version>2.3.3</rest.assured.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<webscraper-core.version>1.0.17</webscraper-core.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<jahoo.finance.version>3.15.0</jahoo.finance.version>
 	</properties>
@@ -91,29 +91,13 @@
 			<artifactId>timeseries-source-and-analysis</artifactId>
 			<version>0.1.2-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.leonarduk</groupId>
-			<artifactId>webscraper-core</artifactId>
-			<version>${webscraper-core.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-entitymanager</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+
 		<!-- ta4j -->
 		<dependency>
 			<groupId>org.ta4j</groupId>

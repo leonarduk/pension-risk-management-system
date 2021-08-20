@@ -25,13 +25,18 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
 		cleanedSeries.add(previous);
 		while (iter.hasNext()) {
 			Bar current = iter.next();
+			String comment = "";
+			if (current instanceof  ExtendedHistoricalQuote)
+			{
+				comment = ((ExtendedHistoricalQuote) current).getComment();
+			}
 			int SCALE = 80;
 			if (current.getClosePrice().dividedBy(DoubleNum.valueOf(SCALE)).isGreaterThan(previous.getClosePrice())) {
 				try {
 					cleanedSeries.add(new ExtendedHistoricalQuote("", current.getEndTime().toLocalDate(),
 							scaleDown(current.getOpenPrice()), scaleDown(current.getMinPrice()),
 							scaleDown(current.getMaxPrice()), scaleDown(current.getClosePrice()), current.getVolume(),
-							"Scaled from " + current.getClosePrice() + " to " + scaleDown(current.getClosePrice())));
+							 comment + ": Scaled from " + current.getClosePrice() + " to " + scaleDown(current.getClosePrice())));
 				} catch (IOException e) {
 					cleanedSeries.add(current);
 					e.printStackTrace();

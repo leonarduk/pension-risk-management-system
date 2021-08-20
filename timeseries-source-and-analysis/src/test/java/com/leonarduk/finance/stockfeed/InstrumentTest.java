@@ -35,7 +35,7 @@ public class InstrumentTest {
                 actual.getName());
         Assert.assertEquals(AssetType.ETF, actual.assetType());
         Assert.assertEquals(AssetType.EQUITY, actual.underlyingType());
-        Assert.assertEquals(Source.ALPHAVANTAGE, actual.source());
+        Assert.assertEquals(Source.GOOGLE, actual.source());
         Assert.assertEquals(Exchange.LONDON, actual.getExchange());
         Assert.assertEquals("US Large-Cap Value Equity", actual.getCategory());
         Assert.assertEquals("GBX", actual.getCurrency());

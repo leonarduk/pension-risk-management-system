@@ -128,8 +128,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         // we try to get from file cache first, then these sources in turn, then we might interpolate gaps
         Optional<StockV1> cachedData = this.getDataIfFeedAvailable(instrument, fromDate, toDate, cachedDataFeed,
                 true, addLatestQuoteToTheSeries);
-//        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
-//                stockFeedFactory.getDataFeed(Source.FT));
+        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
+                stockFeedFactory.getDataFeed(Source.FT));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.STOOQ));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,

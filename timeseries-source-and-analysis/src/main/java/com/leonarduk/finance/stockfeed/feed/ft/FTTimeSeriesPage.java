@@ -1,20 +1,75 @@
 package com.leonarduk.finance.stockfeed.feed.ft;
+import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.web.BaseSeleniumPage;
+import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.WebElement;
+import org.patriques.output.timeseries.data.StockData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ta4j.core.Bar;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FTTimeSeriesPage extends BaseSeleniumPage{
     public static final Logger log = LoggerFactory.getLogger(FTTimeSeriesPage.class.getName());
 
     public FTTimeSeriesPage(WebDriver webDriver, String expectedUrl) {
         super(webDriver, expectedUrl);
-        log.info("Load " + this.getExpectedUrl());
-        this.get();
     }
 
     @Override
     protected void load() {
+        log.info("Load " + this.getExpectedUrl());
+        this.getWebDriver().get(getExpectedUrl());
+
     }
+
+    public List<Bar> getTimeseries(Instrument instrument) {
+        isLoaded();
+        String source = this.getWebDriver().getPageSource();
+        WebElement table = this.getWebDriver().findElement(By. className("mod-tearsheet-historical-prices__results"));
+//        List<String> columns = table.findElement(By.tagName("tr")).findElements(By.tagName("th")).stream().map(WebElement::getText).collect(Collectors.toList());
+        // date, open , high, low, close, volume
+        WebElement body = table.findElement(By.tagName("tbody"));
+        List<WebElement> rows = body.findElements(By.tagName("tr"));
+
+        return rows.stream()
+                .map(row -> {
+                    Iterator<WebElement> fieldsIter = row.findElements(By.tagName("td")).iterator();
+                    String dateString = fieldsIter.next().findElements(By.tagName("span")).get(1).getAttribute("innerHTML");
+
+                    // e.g. Fri, Aug 20, 2021
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d, yyyy");
+                    LocalDate date = LocalDate.parse(dateString, formatter);
+                    double  open = parseDouble(fieldsIter.next().getText());
+                    double  high = parseDouble(fieldsIter.next().getText());
+                    double  low = parseDouble(fieldsIter.next().getText());
+                    double  close = parseDouble(fieldsIter.next().getText());
+                    WebElement webElement = fieldsIter.next();
+                    long  volume = parseLong(webElement.findElements(By.tagName("span")).get(1).getAttribute("innerHTML"));
+                    return new ExtendedHistoricalQuote(instrument, date,
+                            open, low, high, close,close,
+                            volume, "FTFeed");
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Double parseDouble(String text){
+        if (text.contains("k")) // 10.08k
+        {
+            return 1000 * parseDouble(text.replaceAll("k", ""));
+        }
+        return Double.valueOf(StringUtils.defaultIfBlank(text, "0.0").replaceAll(",",""));
+    }
+    private Long parseLong(String text){
+        return parseDouble(text).longValue();
+    }
+
 }

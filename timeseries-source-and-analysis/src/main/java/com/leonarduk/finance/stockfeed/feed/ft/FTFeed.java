@@ -4,15 +4,16 @@ import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import org.apache.commons.io.input.BOMInputStream;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ta4j.core.Bar;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,26 +28,24 @@ public class FTFeed  extends AbstractStockFeed {
     final WebDriver webDriver;
 
     public FTFeed() {
-        log.info("Start FireFoxDriver");
-        webDriver = new HtmlUnitDriver();
+        webDriver = new HtmlUnitDriver(false);
     }
 
     @Override
     public Optional<StockV1> get(Instrument instrument, int years, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from " + ftInstrument.getFTUrl());
-        FTTimeSeriesPage page = new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl());
-        page.load();
-        return Optional.empty();
+
+        return Optional.of(new StockV1(instrument,
+                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument)));
     }
 
     @Override
     public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from " + ftInstrument.getFTUrl());
-        FTTimeSeriesPage page = new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl());
-        page.load();
-        return Optional.empty();
+        return Optional.of(new StockV1(instrument,
+                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument)));
     }
 
     @Override
