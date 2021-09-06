@@ -1,2 +1,5 @@
-package com.leonarduk.finance.stockfeed;public class DockerTest {
-}
+//package com.leonarduk.finance.stockfeed;
+//
+//@TestContainers
+//public class DockerTest {
+//}
