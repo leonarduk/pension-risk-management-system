@@ -1,9 +1,9 @@
 # fit a line to the economic data
 from numpy import sin
-from numpy import sqrt
 from numpy import arange
 from pandas import read_csv
-import pandas as pd
+from numpy import exp, pi, sqrt
+from datacollection.TimeSeriesAPI import getTimeSeriesWithIncremementingKey as getDataFrame
 
 from scipy.optimize import curve_fit
 from matplotlib import pyplot
@@ -17,6 +17,10 @@ def sinecurve(x, a, b, c, d):
 def curvedlinefit(x, a, b, c):
 	return a * x + b * x**2 + c
 
+def gaussian(x, amp, cen, wid):
+    """1-d gaussian: gaussian(x, amp, cen, wid)"""
+    return (amp / (sqrt(2*pi) * wid)) * exp(-(x-cen)**2 / (2*wid**2))
+
 # load the dataset
 def loadData():
     url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/longley.csv'
@@ -25,28 +29,12 @@ def loadData():
     dataframe = read_csv(url, header=None)
     return dataframe.values
 
-def getDataFrame(ticker, years=10 ):
-    CSV_URL = 'http://localhost:8091/stock/download/ticker/' + ticker + '?years=' + str(years) + '&interpolate=true&clean=true'
 
-    # df = pd.read_csv(CSV_URL, usecols=['date', 'close'], index_col='date')
-    df = read_csv(CSV_URL, header=0 )
-
-    # df['date'].str.replace("-", "").astype(int)
-    df["date"] = pd.to_datetime(df["date"]).dt.strftime("%Y%m%d").astype(int)
-    # df['date'].dt.strftime("%Y-%m-%d").astype(int)
-    df.insert(0, 'ID', range(1, 1 + len(df)))
-    print(CSV_URL + " " + str(df.size))
-
-    return df
-
-def plotdata(fittingmethod):
-    # choose the input and output variables
-    # data = loadData()
-
+def plotdata(fittingmethod, symbol, years):
     #   1           2       3       4       5       6       7
     # date,         open,   high, low,      close, volume, comment
     # 2020-09-02,   15.15, 15.15, 15.14,    15.15, 85.00, Alphavantage
-    data = getDataFrame("HMBR.L",1 )
+    data = getDataFrame(symbol, years )
     y = data["close"]
     x = data["ID"]
     # curve fit
@@ -69,6 +57,9 @@ def plotdata(fittingmethod):
     pyplot.plot(x_line, y_line, '--', color='red')
     pyplot.show()
 
-plotdata(sinecurve)
-# plotdata(straightlinefit)
-# plotdata(curvedlinefit)
+symbol = "XGLS.L"
+years = 1
+# curvedlinefit, sinecurve, straightlinefit, gaussian
+method = straightlinefit
+
+plotdata(method, symbol, years)

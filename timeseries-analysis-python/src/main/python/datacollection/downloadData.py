@@ -8,18 +8,10 @@ from functools import reduce
 from pypfopt import EfficientFrontier
 from pypfopt import risk_models
 from pypfopt import expected_returns
+from TimeSeriesAPI import getDateAndClose as getDataFrame
 
 
-def getDataFrame(ticker, years=10 ):
-    CSV_URL = 'http://localhost:8091/stock/download/ticker/' + ticker + '?years=' + str(years) + '&interpolate=true&clean=true'
-
-    df = pd.read_csv(CSV_URL, usecols=['date', 'close'], index_col='date')
-    newdf = df.rename(columns={"close": ticker}, errors='raise')
-    print(CSV_URL + " " + str(df.size))
-
-    return newdf
-
-def main():
+if __name__ == "__main__":
     # compile the list of dataframes you want to merge
     data_frames = [getDataFrame("REL.L"), getDataFrame("AZN.L"), getDataFrame("CTY.L"),
                getDataFrame("PHGP.L"), getDataFrame("RDSA.L"), getDataFrame("IMB.L"),
@@ -50,4 +42,5 @@ def main():
     allocation, leftover = da.greedy_portfolio()
     print("Discrete allocation:", allocation)
     print("Funds remaining: ${:.2f}".format(leftover))
+
 
