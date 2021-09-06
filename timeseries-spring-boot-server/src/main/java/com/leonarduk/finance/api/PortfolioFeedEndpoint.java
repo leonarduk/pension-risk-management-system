@@ -14,7 +14,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.leonarduk.finance.db.InstrumentRepository;
 import com.leonarduk.finance.stockfeed.DataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +24,6 @@ import com.leonarduk.finance.portfolio.Valuation;
 import com.leonarduk.finance.portfolio.ValuationReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-
-import javax.inject.Named;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Named
 @Path("/portfolio")

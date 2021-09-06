@@ -2,9 +2,7 @@ package com.leonarduk.finance.api;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Named;
@@ -16,7 +14,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.leonarduk.finance.db.InstrumentRepository;
 import com.leonarduk.finance.stockfeed.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -59,10 +56,27 @@ public class StockFeedEndpoint {
 
     @GET
     @Path("instruments")
-    public String getInstruments() {
+    public String getInstruments() throws IOException {
         logger.info("JSON query of instruments");
-        return this.instrumentRepository.findAll().stream().map(i -> i.toString()).collect(Collectors.toSet()).toString();
+        return getAllInstruments().stream().map(i -> i.toString()).collect(Collectors.toSet()).toString();
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("query")
+    public String queryInstruments(@QueryParam("instrument") final String query) throws IOException {
+        logger.info("JSON query of instruments");
+        return "[" + getAllInstruments().stream().filter(i -> i.code().contains(query))
+            .map(i -> {return "{\"name\":\"" + i.getName() + "\", \"code\":\"" + i.code()
+                + "\", \"type\":\"" +i.getAssetType().name() + "\"}";}).collect(Collectors.joining(",")) + "]";
+    }
+
+    private Set<Instrument> getAllInstruments() throws IOException {
+        Set<Instrument> instruments = new HashSet<>(Instrument.InstrumentLoader.getInstance().getInstruments().values());
+        instruments.addAll(this.instrumentRepository.findAll());
+        return instruments;
+    }
+
 
     @GET
     @Produces({ MediaType.TEXT_HTML })
@@ -75,7 +89,7 @@ public class StockFeedEndpoint {
         return displayHistory(ticker, "L", years, fromDate, toDate, interpolate, cleanData, fields, addLatestQuoteToTheSeries);
     }
 
-        @GET
+    @GET
 	@Produces({ MediaType.TEXT_HTML })
 	@Path("/ticker/{ticker}/{region}")
 	public String displayHistory(@PathParam("ticker") final String ticker,

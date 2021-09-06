@@ -5,7 +5,7 @@
     <groupId>com.leonarduk</groupId>
     <artifactId>pension-risk-management-system</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.3-SNAPSHOT</version>
+    <version>0.1.4-SNAPSHOT</version>
     <name>Parent pom</name>
     <url>http://maven.apache.org</url>
     <build>

@@ -41,7 +41,7 @@ public class FTFeed  extends AbstractStockFeed {
     @Override
     public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
-        log.info("Fetch from " + ftInstrument.getFTUrl());
+        log.info("Fetch from " + ftInstrument + " : " + instrument);
         return Optional.of(new StockV1(instrument,
                 new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument, fromDate, toDate)));
     }

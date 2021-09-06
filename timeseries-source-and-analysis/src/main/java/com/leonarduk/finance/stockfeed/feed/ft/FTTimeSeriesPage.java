@@ -42,8 +42,8 @@ public class FTTimeSeriesPage extends BaseSeleniumPage{
         String fromDateString = fromDate.format(numericDateFormatter);
         String toDateString = toDate.format(numericDateFormatter);
 
-        WebElement from = this.getWebDriver().findElement(By.className("mod-filter-ui-historical-prices-overlay__date--from")).findElement(By.tagName("input"));
-        String currentValue = from.getAttribute("data-value");
+//        WebElement from = this.getWebDriver().findElement(By.className("mod-filter-ui-historical-prices-overlay__date--from")).findElement(By.tagName("input"));
+//        String currentValue = from.getAttribute("data-value");
         ///////////////
 
         WebElement table = this.getWebDriver().findElement(By. className("mod-tearsheet-historical-prices__results"));

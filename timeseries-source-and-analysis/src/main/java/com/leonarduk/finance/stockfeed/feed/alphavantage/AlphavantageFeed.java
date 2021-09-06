@@ -34,7 +34,8 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
     public static final Logger logger = LoggerFactory.getLogger(AlphavantageFeed.class.getName());
 
-    private final static ContinualListIterator<String> apiKeyIterator = new ContinualListIterator<>(ImmutableList.of("KKYL9UZSTHIFAMS8", "TL8UNL556990PG7T",
+    private final static ContinualListIterator<String> apiKeyIterator = new ContinualListIterator<>(
+            ImmutableList.of("KZ8OTQ3KKAIRNRM0","KKYL9UZSTHIFAMS8", "TL8UNL556990PG7T",
             "PXEB3TPEWCB6AFJD", "V5NOKB67PQJL5XP4", "MVI3UZIM61YWSTGD", "QG7MP9WY7647G4MI", "PM3635D4OO11MC4M"));
 
     public AlphavantageFeed() {

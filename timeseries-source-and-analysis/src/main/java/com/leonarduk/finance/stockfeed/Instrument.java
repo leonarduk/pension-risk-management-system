@@ -121,11 +121,14 @@ public class Instrument {
 		public void init(String filePath) throws IOException, URISyntaxException {
 			this.instruments = ResourceTools.getResourceAsLines(filePath).stream().skip(1)
 					.map(line -> this.create(line)).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
-			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
-			this.instruments.values().stream().forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
-			this.instruments.put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
+			this.getInstruments().values().stream().forEach(i -> this.getInstruments().put(i.getIsin().toUpperCase(), i));
+			this.getInstruments().values().stream().forEach(i -> this.getInstruments().put(i.getGoogleCode().toUpperCase(), i));
+			this.getInstruments().put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
 		}
 
+		public Map<String, Instrument> getInstruments() {
+			return instruments;
+		}
 	}
 
 	public static Instrument createPortfolioInstrument(final String name) {
@@ -144,8 +147,8 @@ public class Instrument {
 		if (localSymbol.contains(fullStop)) {
 			localSymbol = localSymbol.substring(0, localSymbol.indexOf(fullStop));
 		}
-		if (InstrumentLoader.getInstance().instruments.containsKey(localSymbol.toUpperCase())) {
-			return InstrumentLoader.getInstance().instruments.get(localSymbol.toUpperCase());
+		if (InstrumentLoader.getInstance().getInstruments().containsKey(localSymbol.toUpperCase())) {
+			return InstrumentLoader.getInstance().getInstruments().get(localSymbol.toUpperCase());
 		}
 
 		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL,"", localSymbol,
@@ -154,7 +157,7 @@ public class Instrument {
 
 
 	public static Collection<Instrument> values() throws IOException {
-		return InstrumentLoader.getInstance().instruments.values();
+		return InstrumentLoader.getInstance().getInstruments().values();
 	}
 
 

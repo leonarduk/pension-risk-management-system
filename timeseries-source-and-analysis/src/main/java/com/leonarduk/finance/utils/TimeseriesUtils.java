@@ -146,8 +146,9 @@ public class TimeseriesUtils {
             final LinearInterpolator linearInterpolator = new LinearInterpolator();
             final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
 
+            List<Bar> series = history; //flatLineInterpolator.extendToFromDate(history, fromLocalDate);
             history = linearInterpolator.interpolate(flatLineInterpolator
-                    .extendToToDate(flatLineInterpolator.extendToFromDate(history, fromLocalDate), toLocalDate));
+                    .extendToToDate(series, toLocalDate));
         }
         final List<Bar> subSeries = history.stream()
                 .filter(q -> (q.getEndTime().toLocalDate().isAfter(fromLocalDate)

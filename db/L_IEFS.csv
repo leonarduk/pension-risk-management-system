@@ -1263,7 +1263,6 @@ date,open,high,low,close,volume,comment
 2020-10-28,547.80,550.45,547.80,550.45,2560.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-10-29,548.30,548.30,548.30,548.30,2560.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-10-30,548.50,548.80,547.80,548.80,700.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
-2020-11-01,553.30,634.85,553.30,630.20,20362.00,Yahoo
 2020-11-02,553.30,555.05,553.30,555.05,2600.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-11-03,568.05,568.05,568.05,568.05,2600.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-11-04,576.85,576.85,576.85,576.85,2600.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
@@ -1390,7 +1389,6 @@ date,open,high,low,close,volume,comment
 2021-04-28,701.80,701.80,701.80,701.80,792.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-04-29,698.30,698.30,696.60,698.00,112.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-04-30,698.10,698.10,698.10,698.10,112.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
-2021-05-01,698.10,706.70,683.50,706.70,322910.00,Yahoo
 2021-05-04,698.30,698.30,687.40,687.40,112.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-05-05,696.80,696.80,696.80,696.80,112.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-05-06,699.37,699.80,696.60,699.80,192581.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
@@ -1474,3 +1472,7 @@ date,open,high,low,close,volume,comment
 2021-08-25,742.11,742.11,740.60,741.20,5500.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-08-26,739.60,739.60,739.60,739.60,5500.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-08-27,743.20,743.20,743.20,743.20,5500.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-08-31,742.11,742.11,742.11,742.11,0.00,Alphavantage
+2021-09-01,742.11,742.11,742.11,742.11,0.00,Alphavantage
+2021-09-02,742.11,742.11,742.11,742.11,0.00,Alphavantage
+2021-09-03,742.11,742.11,742.11,742.11,0.00,Alphavantage

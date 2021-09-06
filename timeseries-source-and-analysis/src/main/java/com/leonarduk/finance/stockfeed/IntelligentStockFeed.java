@@ -16,8 +16,7 @@ import org.ta4j.core.num.DoubleNum;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed {
     public static final Logger log = LoggerFactory.getLogger(IntelligentStockFeed.class.getName());
@@ -25,10 +24,12 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
     private final DataStore dataStore;
     private final StockFeedFactory stockFeedFactory;
     public boolean refresh = true;
+    private Set<String> previousQueries;
 
     public IntelligentStockFeed(final DataStore dataStore) {
         this.dataStore = dataStore;
         stockFeedFactory = new StockFeedFactory(dataStore);
+        previousQueries = new HashSet<>();
     }
 
     public Optional<StockV1> getFlatCashSeries(final Instrument instrument, final int years) throws IOException {
@@ -157,7 +158,10 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
     private Optional<StockV1> getWebFeed(Instrument instrument, boolean addLatestQuoteToTheSeries, LocalDate fromDate,
                                          LocalDate toDate, Optional<StockV1> cachedData,
                                          StockFeed webDataFeed) throws IOException {
-        boolean getWebData = refresh && webDataFeed.isAvailable();
+        String key = getKey(instrument.getCode(), fromDate, toDate, webDataFeed.getSource().toString());
+
+        boolean getWebData = refresh && webDataFeed.isAvailable()
+                && !this.previousQueries.contains(key);
 
         if (getWebData) {
             Optional<StockV1> webdata = Optional.empty();
@@ -173,13 +177,13 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                     try {
                         webdata = this.getDataIfFeedAvailable(instrument, fromDate1,
                                 toDate1, webDataFeed, refresh, addLatestQuoteToTheSeries);
+
                     }catch(Exception e){
                         log.warn("Exception from " + webDataFeed.getSource(), e);
                     }
                 }
             } else {
                 try {
-
                     webdata = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
                         refresh, addLatestQuoteToTheSeries);
                 }catch(Exception e){
@@ -191,12 +195,19 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             }else if (webdata.isPresent()) {
                 final StockV1 stock = webdata.get();
                 this.mergeSeries(cachedData.get(), stock.getHistory());
+                if(webdata.isPresent()){
+                    this.previousQueries.add(key);
+                }
             }
 
         }
 
 
         return cachedData;
+    }
+
+    private String getKey(String code, LocalDate fromDate, LocalDate toDate, String source) {
+        return  code + "|" + fromDate.toString() + "|" + toDate.toString() + "|" + source;
     }
 
     public Optional<StockV1> get(final Instrument instrument, final String fromDate, final String toDate,
