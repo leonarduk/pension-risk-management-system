@@ -13,12 +13,7 @@ from TimeSeriesAPI import getDateAndClose as getDataFrame
 
 if __name__ == "__main__":
     # compile the list of dataframes you want to merge
-    data_frames = [getDataFrame("REL.L"), getDataFrame("AZN.L"), getDataFrame("CTY.L"),
-               getDataFrame("PHGP.L"), getDataFrame("RDSA.L"), getDataFrame("IMB.L"),
-               getDataFrame("ULVR.L"), getDataFrame("GSK.L"), getDataFrame("DGE.L"),
-               getDataFrame("EXPN.L"), getDataFrame("LGEN.L"), getDataFrame("GRG.L"),
-               getDataFrame("ISXF.L"), getDataFrame("JRS.L"), getDataFrame("XMCX.L"),
-              getDataFrame("IGUS.L"), getDataFrame("CGT.L"), getDataFrame("GILI.L"), getDataFrame("XLGS.L"), getDataFrame("WATL.L"), getDataFrame("XESW.L")]
+    data_frames = [getDataFrame("TRY.L"), getDataFrame("GB00B1TRHX07"), getDataFrame("SGLN.L"),  getDataFrame("SWDA.L")]
 
     df = reduce(lambda  left,right: pd.merge(left,right,on=['date'], how='outer'), data_frames)
 

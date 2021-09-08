@@ -12,7 +12,7 @@ from datacollection.TimeSeriesAPI import getTimeSeriesWithIncremementingKey as g
 seed(1)
 # prepare data
 symbol1 = "0P0001BLQI.L"
-symbol2 = "SONG.L"
+symbol2 = "SGLS.L"
 years = 3
 data1 = getDataFrame(symbol1, years)["close"]
 data2 = getDataFrame(symbol2, years)["close"]

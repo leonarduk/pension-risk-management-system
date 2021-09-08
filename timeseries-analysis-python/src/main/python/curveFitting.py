@@ -57,7 +57,7 @@ def plotdata(fittingmethod, symbol, years):
     pyplot.plot(x_line, y_line, '--', color='red')
     pyplot.show()
 
-symbol = "XGLS.L"
+symbol = "SGLS.L"
 years = 1
 # curvedlinefit, sinecurve, straightlinefit, gaussian
 method = straightlinefit
