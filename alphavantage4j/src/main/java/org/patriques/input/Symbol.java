@@ -4,7 +4,7 @@ package org.patriques.input;
  * The symbol parameter for the technical indicators/time series api call.
  */
 public class Symbol implements ApiParameter {
-  private String symbol;
+  private final String symbol;
 
   public Symbol(String symbol) {
     this.symbol = symbol;

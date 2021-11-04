@@ -27,7 +27,7 @@ public abstract class JsonParser<Data> {
   protected final String DATE_WITH_SIMPLE_TIME_PATTERN = "^\\d{4}-[01]\\d-[0-3]\\d\\s+[0-2]\\d:[0-5]\\d:[0-5]\\d";
   protected final String DATE_WITH_TIME_PATTERN = "^\\d{4}-[01]\\d-[0-3]\\d\\s+[0-2]\\d:[0-5]\\d:[0-5]\\d";
 
-  private static com.google.gson.JsonParser PARSER = new com.google.gson.JsonParser();
+  private static final com.google.gson.JsonParser PARSER = new com.google.gson.JsonParser();
 
   /**
    * Helper object to interpret the json.

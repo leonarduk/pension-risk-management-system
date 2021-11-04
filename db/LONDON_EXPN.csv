@@ -4001,7 +4001,6 @@ date,open,high,low,close,volume,comment
 2020-10-28,2876.52,2891.52,2796.53,2824.53,2265719.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-10-29,2807.53,2866.52,2802.53,2847.53,1269885.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-10-30,2825.53,2850.52,2816.53,2816.53,1243960.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
-2020-11-01,2827.00,3192.00,2555.00,2646.00,51736776.00,Yahoo
 2020-11-02,2826.53,2889.52,2818.53,2857.52,1016208.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-11-03,2890.52,2921.52,2877.52,2918.52,1394174.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2020-11-04,2921.52,3043.49,2915.52,3037.49,2146916.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
@@ -4128,7 +4127,6 @@ date,open,high,low,close,volume,comment
 2021-04-28,2800.67,2807.67,2771.67,2785.67,1722165.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-04-29,2790.67,2808.67,2764.67,2777.67,2667589.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-04-30,2785.67,2804.67,2767.67,2791.67,1971905.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
-2021-05-01,2792.00,2822.00,2528.00,2703.00,47530428.00,Yahoo
 2021-05-04,2804.67,2821.67,2739.68,2741.68,3252602.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-05-05,2749.68,2797.67,2749.68,2778.67,3045462.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-05-06,2784.67,2792.67,2762.68,2772.67,1505858.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
@@ -4192,7 +4190,6 @@ date,open,high,low,close,volume,comment
 2021-07-28,3110.00,3134.00,3104.00,3122.00,877363.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-07-29,3130.00,3180.00,3116.00,3170.00,1285251.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-07-30,3139.00,3185.00,3123.00,3168.00,1350678.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
-2021-08-01,3190.00,3288.00,3080.00,3204.00,20137791.00,Yahoo
 2021-08-02,3190.00,3232.00,3167.00,3213.00,952213.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-08-03,3207.00,3248.00,3185.00,3213.00,741271.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-08-04,3228.00,3263.00,3206.00,3251.00,952336.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
@@ -4242,3 +4239,9 @@ date,open,high,low,close,volume,comment
 2021-10-06,3072.00,3072.00,3011.00,3047.00,0.00,FTFeed
 2021-10-07,3105.00,3137.00,3078.00,3115.00,829370.00,FTFeed
 2021-10-08,3169.00,3181.00,3105.00,3113.00,956960.00,FTFeed
+2021-10-11,3101.00,3115.00,3051.40,3115.00,575920.00,FTFeed
+2021-10-12,3083.00,3132.00,3067.00,3114.00,194280.00,FTFeed
+2021-10-13,3105.00,3179.00,3088.00,3168.00,802020.00,FTFeed
+2021-10-14,3190.00,3233.00,3186.00,3220.00,522289.00,FTFeed
+2021-10-15,3228.00,3238.00,3189.00,3203.00,617020.00,FTFeed
+2021-10-18,3191.00,3239.00,3167.00,3229.00,667650.00,FTFeed

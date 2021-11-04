@@ -13,7 +13,7 @@ public enum FastMaType implements ApiParameter {
   KAMA(7),
   MAMA(8);
 
-  private int type;
+  private final int type;
 
   FastMaType(int type) {
     this.type = type;

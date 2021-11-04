@@ -1531,3 +1531,10 @@ date,open,high,low,close,volume,comment
 2021-10-05,22008.00,22008.00,22008.00,22008.00,139.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-10-06,21864.00,21864.00,21864.00,21864.00,139.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-10-07,22278.00,22278.00,22278.00,22278.00,0.00,Alphavantage
+2021-10-08,22190.50,22190.50,22190.50,22190.50,139.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-11,22097.00,22236.50,22096.00,22236.50,8.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-12,22062.00,22117.00,22062.00,22091.50,2327.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-13,22014.00,22014.00,22014.00,22014.00,2327.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-14,22337.50,22337.50,22337.50,22337.50,2327.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-15,22399.00,22399.00,22397.00,22397.00,56412.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-18,22399.00,22399.00,22399.00,22399.00,2.00,Alphavantage

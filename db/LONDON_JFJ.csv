@@ -4239,3 +4239,9 @@ date,open,high,low,close,volume,comment
 2021-10-06,646.00,648.00,631.00,637.00,378975.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-10-07,646.00,652.00,644.83,652.00,369988.00,Yahoo
 2021-10-08,653.00,656.00,646.00,646.00,187425.00,Yahoo
+2021-10-11,644.00,656.00,644.00,651.00,115783.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-12,643.00,651.00,643.00,647.06,40271.00,Yahoo
+2021-10-13,640.00,647.00,636.00,639.00,185085.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-14,655.00,655.00,645.00,647.00,175145.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-15,656.00,665.00,656.00,657.00,178121.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-18,660.80,660.80,649.00,654.00,116504.00,Yahoo

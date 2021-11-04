@@ -6,7 +6,7 @@ import org.patriques.input.ApiParameter;
  * The currency to be converted in the ForeignExchange converter
  */
 public class ToCurrency implements ApiParameter {
-  private String toCurrency;
+  private final String toCurrency;
 
   public ToCurrency(String toCurrency) {
     this.toCurrency = toCurrency;

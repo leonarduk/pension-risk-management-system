@@ -4,7 +4,7 @@ package org.patriques.input;
  * The symbols parameter for the batch stock quotes api call.
  */
 public class Symbols implements ApiParameter {
-  private String[] symbols;
+  private final String[] symbols;
 
   public Symbols(String... symbols) {
     this.symbols = symbols;

@@ -3677,3 +3677,9 @@ date,open,high,low,close,volume,comment
 2021-10-06,3510.00,3570.00,3500.00,3520.00,23717.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-10-07,3570.00,3640.00,3500.00,3580.00,47887.00,Yahoo
 2021-10-08,3581.00,3640.00,3560.00,3600.00,30227.00,Yahoo
+2021-10-11,3640.00,3660.00,3630.00,3630.00,42666.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-12,3650.00,3660.00,3619.70,3640.00,30315.00,Yahoo
+2021-10-13,3590.00,3670.00,3550.00,3570.00,56916.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-14,3660.00,3680.00,3630.00,3630.00,36855.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-15,3650.00,3660.00,3620.00,3620.00,19684.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-10-18,3680.00,3690.00,3610.00,3640.00,28209.00,Alphavantage

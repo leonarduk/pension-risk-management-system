@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Connection to Alpha Vantage API.
@@ -40,7 +41,7 @@ public class AlphaVantageConnector implements ApiConnector {
       connection.setConnectTimeout(timeOut);
       connection.setReadTimeout(timeOut);
 
-      InputStreamReader inputStream = new InputStreamReader(connection.getInputStream(), "UTF-8");
+      InputStreamReader inputStream = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
       BufferedReader bufferedReader = new BufferedReader(inputStream);
       StringBuilder responseBuilder = new StringBuilder();
 

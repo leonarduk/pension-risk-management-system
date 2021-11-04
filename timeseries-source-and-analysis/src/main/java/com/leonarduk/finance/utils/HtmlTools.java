@@ -19,8 +19,6 @@ import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.leonarduk.finance.chart.ChartDisplay;
-import com.leonarduk.finance.chart.PieChartFactory;
 import com.leonarduk.finance.portfolio.RecommendedTrade;
 import com.leonarduk.finance.portfolio.Valuation;
 
@@ -51,17 +49,17 @@ public class HtmlTools {
 		sb.append("<th>").append(name).append("</th>");
 	}
 
-	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
-			final List<Valuation> valuations, final String title, final String key, final String value)
-			throws Exception {
-		final PieChartFactory pieChartFactory = new PieChartFactory(title);
-		pieChartFactory.addAll(assetTypeMap);
-		assetTypeMap.put("Total", pieChartFactory.getTotal().doubleValue());
-		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
-		final String filename = title.replace(" ", "_");
-		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
-	}
-
+//	public static void addPieChartAndTable(final Map<String, Double> assetTypeMap, final StringBuilder sbBody,
+//			final List<Valuation> valuations, final String title, final String key, final String value)
+//			throws Exception {
+//		final PieChartFactory pieChartFactory = new PieChartFactory(title);
+//		pieChartFactory.addAll(assetTypeMap);
+//		assetTypeMap.put("Total", pieChartFactory.getTotal().doubleValue());
+//		sbBody.append(ChartDisplay.getTable(assetTypeMap, key, value));
+//		final String filename = title.replace(" ", "_");
+//		sbBody.append(ChartDisplay.saveImageAsSvgAndReturnHtmlLink(filename, 400, 400, pieChartFactory.buildChart()));
+//	}
+//
 	public static StringBuilder createHtmlText(final StringBuilder sbHead, final StringBuilder sbBody) {
 		final StringBuilder buf = new StringBuilder("<html><head>")
 				.append(sbHead == null ? new StringBuilder() : sbHead).append("</head><body>");

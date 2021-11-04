@@ -78,7 +78,7 @@ public class StockDividend {
             exDateStr = this.exDate.getTime().toString();
         }
         if(this.annualYieldPercent != null) {
-            annualYieldStr = this.annualYieldPercent.toString() + "%";
+            annualYieldStr = this.annualYieldPercent + "%";
         }
         return "Pay date: " + payDateStr + ", Ex date: " + exDateStr + ", Annual yield: " + annualYieldStr;
     }

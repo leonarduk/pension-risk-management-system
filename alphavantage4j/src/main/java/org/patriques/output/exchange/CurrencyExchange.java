@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class CurrencyExchange {
 
-  private CurrencyExchangeData data;
+  private final CurrencyExchangeData data;
 
   CurrencyExchange(final CurrencyExchangeData data) {
     this.data = data;

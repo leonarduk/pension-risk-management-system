@@ -24,7 +24,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
     private final DataStore dataStore;
     private final StockFeedFactory stockFeedFactory;
     public boolean refresh = true;
-    private Set<String> previousQueries;
+    private final Set<String> previousQueries;
 
     public IntelligentStockFeed(final DataStore dataStore) {
         this.dataStore = dataStore;

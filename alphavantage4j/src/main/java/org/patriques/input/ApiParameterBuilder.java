@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
  * Builder for api parameters.
  */
 public class ApiParameterBuilder {
-  private StringBuilder urlBuilder;
+  private final StringBuilder urlBuilder;
 
   public ApiParameterBuilder() {
     this.urlBuilder = new StringBuilder();

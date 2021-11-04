@@ -13,7 +13,7 @@ public enum MaType implements ApiParameter {
   KAMA(7),
   MAMA(8);
 
-  private int type;
+  private final int type;
 
   MaType(int type) {
     this.type = type;

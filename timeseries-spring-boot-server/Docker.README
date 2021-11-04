@@ -1,5 +1,11 @@
+# refetch base image
+docker pull amazon/aws-lambda-java:11
+
 ## to build the image
 docker build -t leonarduk/finance-html-docker .
+
+# to check for vulnerabilities
+docker scan leonarduk/finance-html-docker
 
 ## to run the container
 docker run -p 8091:8091 -t leonarduk/finance-html-docker
@@ -10,3 +16,4 @@ docker push leonarduk/finance-html-docker
 
 ## to view an example page
 http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
+doc

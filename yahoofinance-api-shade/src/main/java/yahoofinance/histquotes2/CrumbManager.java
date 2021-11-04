@@ -108,7 +108,7 @@ public class CrumbManager {
         	 connectionOath.setRequestProperty("Host",YahooFinance.HISTQUOTES2_COOKIE_OATH_HOST);
         	 connectionOath.setRequestProperty("Origin",YahooFinance.HISTQUOTES2_COOKIE_OATH_ORIGIN);
         	 connectionOath.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-        	 StringBuilder params=new StringBuilder("");
+        	 StringBuilder params=new StringBuilder();
         	
     		 for ( String key : datas.keySet() ) {
     			 if(params.length() == 0 ){
@@ -125,7 +125,7 @@ public class CrumbManager {
     		  }
         		 
         	      
-        	 log.debug("Params = "+ params.toString());      
+        	 log.debug("Params = "+ params);
         	 connectionOath.setRequestProperty("Content-Length",Integer.toString(params.toString().length()));
         	 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connectionOath.getOutputStream());
              outputStreamWriter.write(params.toString());

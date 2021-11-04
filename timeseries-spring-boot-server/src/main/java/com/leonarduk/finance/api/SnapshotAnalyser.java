@@ -101,10 +101,10 @@ public class SnapshotAnalyser {
 						Collectors.summingDouble((v -> v.getValuation().doubleValue()))));
 
 		try {
-			HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", SnapshotAnalyser.TYPE,
-					SnapshotAnalyser.VALUE);
-			HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
-					SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
+//			HtmlTools.addPieChartAndTable(assetTypeMap, sbBody, valuations, "Owned Assets", SnapshotAnalyser.TYPE,
+//					SnapshotAnalyser.VALUE);
+//			HtmlTools.addPieChartAndTable(underlyingTypeMap, sbBody, valuations, "Underlying Assets",
+//					SnapshotAnalyser.TYPE, SnapshotAnalyser.VALUE);
 
 		} catch (final Exception e) {
 			sbBody.append("Failed to create images:" + e.getMessage());
