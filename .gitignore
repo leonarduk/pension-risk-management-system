@@ -2,8 +2,10 @@
 /finance-html/output.log*
 **/derby.log
 **/**.iml
+**/**.pyc
 .idea
 **/target
 **/.settings
 /mydb/
 /.idea/
+__pycache__
