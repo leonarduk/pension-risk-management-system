@@ -86,20 +86,46 @@ public class StockFeedEndpoint {
                                  @QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
                                  @QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
                                  @QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
-        return displayHistory(ticker, "L", years, fromDate, toDate, interpolate, cleanData, fields, addLatestQuoteToTheSeries);
+        return displayHistory(ticker, "L", "UNKNOWN", years, fromDate, toDate, interpolate, cleanData, fields, addLatestQuoteToTheSeries);
     }
 
     @GET
+    @Produces({ MediaType.TEXT_HTML })
+    @Path("/ticker/{ticker}/{region}")
+    public String displayHistoryLondon(@PathParam("ticker") final String ticker,
+                                       @PathParam("region") final String region,
+                                       @QueryParam("years") final int years,
+                                       @QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
+                                       @QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
+                                       @QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
+        return displayHistory(ticker, region, "UNKNOWN", years, fromDate, toDate, interpolate, cleanData, fields, addLatestQuoteToTheSeries);
+    }
+
+    @GET
+    @Produces({ MediaType.TEXT_HTML })
+    @Path("/ticker/{ticker}/{region}/{type}")
+    public String displayHistory(@PathParam("ticker") final String ticker,
+                                 @PathParam("region") final String region,
+                                 @PathParam("type") final String type,
+                                 @QueryParam("years") final int years,
+                                 @QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
+                                 @QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
+                                 @QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
+        return displayHistory(ticker,region,type,"GBP", years,fromDate,toDate,interpolate,cleanData,fields,addLatestQuoteToTheSeries);
+    }
+        @GET
 	@Produces({ MediaType.TEXT_HTML })
-	@Path("/ticker/{ticker}/{region}")
+	@Path("/ticker/{ticker}/{region}/{type}/{currency}")
 	public String displayHistory(@PathParam("ticker") final String ticker,
                                  @PathParam("region") final String region,
+                                 @PathParam("type") final String type,
+                                 @PathParam("currency") final String currency,
                                  @QueryParam("years") final int years,
 			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
 			@QueryParam("fields") final String fields, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries) throws IOException {
 
-		Instrument instrument = getInstrument(ticker, region);
+		Instrument instrument = getInstrument(ticker, region, type, currency);
 		String[] fieldArray = {};
 		if(fields != null) {
 			fieldArray = fields.split(",");
@@ -108,10 +134,10 @@ public class StockFeedEndpoint {
 				fieldArray, addLatestQuoteToTheSeries);
 	}
 
-    private Instrument getInstrument(String ticker, String region) throws IOException {
+    private Instrument getInstrument(String ticker, String region, String type, String currency) throws IOException {
         Optional<Instrument> instrument = Optional.empty(); //this.instrumentRepository.findById(ticker);
         if (instrument.isEmpty()){
-            instrument = Optional.of(Instrument.fromString(ticker,region));
+            instrument = Optional.of(Instrument.fromString(ticker,region,type,currency));
             this.instrumentRepository.save(instrument.get());
         }
 
@@ -188,7 +214,7 @@ public class StockFeedEndpoint {
 	public Response downloadHistoryCsv(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
 			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData, @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException {
-		final Instrument instrument = getInstrument(ticker, "L");
+		final Instrument instrument = getInstrument(ticker, "L", "UNKNOWN", "GBP");
 		final List<Bar> series = this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData, addLatestQuoteToTheSeries);
 		final String fileName = instrument.getExchange().name() + "_" + instrument.code() + ".csv";
 		final String myCsvText = TimeseriesUtils.seriesToCsv(series).toString();
@@ -203,7 +229,7 @@ public class StockFeedEndpoint {
                                 @QueryParam("clean") final boolean cleanData,
                                 @QueryParam("addLatest")boolean addLatestQuoteToTheSeries)
 			throws IOException {
-		final Instrument instrument = getInstrument(ticker, "L");
+		final Instrument instrument = getInstrument(ticker, "L", "UNKNOWN", "GBP");
 		return this.getHistoryData(instrument, years == 0 ? 1 : years, interpolate, cleanData, addLatestQuoteToTheSeries);
 	}
 

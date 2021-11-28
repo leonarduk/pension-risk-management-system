@@ -102,9 +102,10 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
     public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDateRaw, final LocalDate toDateRaw,
                                  final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) {
         try {
-
             return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, addLatestQuoteToTheSeries);
         } catch (final Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getStackTrace());
             IntelligentStockFeed.log.warn("Failed to get data", e.getMessage());
             return Optional.empty();
         }

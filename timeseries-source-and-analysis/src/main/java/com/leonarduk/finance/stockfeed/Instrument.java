@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.ResourceTools;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Instrument {
@@ -45,6 +43,8 @@ public class Instrument {
 
 	private AssetType underlyingType;
 
+	@ManyToOne
+	@JoinColumn(name = "cash_code")
 	public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
 			Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.LONDON, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
 
@@ -54,14 +54,24 @@ public class Instrument {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Instrument.class.getName());
 
+	@ManyToOne
+	@JoinColumn(name = "unknown_code")
 	public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
 			AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.LONDON,
 			Instrument.UNKNOWN_TEXT, Instrument.GBP, Instrument.UNKNOWN_TEXT);
 
 	private static final String UNKNOWN_TEXT = "UNKNOWN";
 
+	public Instrument getCASH() {
+		return CASH;
+	}
 
-    public enum AssetType {
+	public Instrument getUNKNOWN() {
+		return UNKNOWN;
+	}
+
+
+	public enum AssetType {
 		BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, INDEX, INVESTMENT_TRUST, UNKNOWN, OTHER;
 
 		public static AssetType fromString(final String value) {
@@ -138,10 +148,10 @@ public class Instrument {
 	}
 
 	public static Instrument fromString(final String symbol) throws IOException {
-    	return fromString(symbol, "L");
+    	return fromString(symbol, "L", "UNKNOWN", "GBP");
 	}
 
-	public static Instrument fromString(final String symbol, final String region) throws IOException {
+	public static Instrument fromString(final String symbol, final String region, String type, String currency) throws IOException {
 		String localSymbol = symbol;
 		final String fullStop = ".";
 		if (localSymbol.contains(fullStop)) {
@@ -151,8 +161,8 @@ public class Instrument {
 			return InstrumentLoader.getInstance().getInstruments().get(localSymbol.toUpperCase());
 		}
 
-		return new Instrument(symbol, AssetType.UNKNOWN, AssetType.UNKNOWN, Source.MANUAL,"", localSymbol,
-				Exchange.valueOf(region), "", "GBP", symbol);
+		return new Instrument(symbol, AssetType.fromString(type), AssetType.fromString(type), Source.MANUAL,symbol, localSymbol,
+				Exchange.valueOf(region), "", currency, symbol);
 	}
 
 

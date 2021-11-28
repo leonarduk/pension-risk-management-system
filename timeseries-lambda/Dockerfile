@@ -1,9 +1,5 @@
 FROM adoptopenjdk/openjdk15:ubuntu-jre
 
-# (Optional) Install any additional package
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y wget
 
 COPY target/dependency/* /function/
 COPY target/timeseries-lambda.jar /function
