@@ -25,7 +25,7 @@ public class CachedStockFeed extends AbstractStockFeed {
 	public List<Bar> loadSeries(final StockV1 stock)
 	        throws IOException {
 		boolean addLatestQuoteToTheSeries  =false;
-		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000, false);
+		final Optional<StockV1> optional = this.get(stock.getInstrument(), 1000, addLatestQuoteToTheSeries);
 		if (optional.isPresent()) {
 			return optional.get().getHistory();
 		}

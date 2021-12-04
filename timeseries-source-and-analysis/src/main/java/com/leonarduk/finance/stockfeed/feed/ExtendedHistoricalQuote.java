@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 import org.ta4j.core.Bar;
@@ -19,42 +22,92 @@ import com.leonarduk.finance.utils.DateUtils;
 
 import yahoofinance.histquotes.HistoricalQuote;
 
-/**
- * @author steph
- *
- */
+
+@DynamoDBTable(tableName = "HistoricalQuote")
 @Measurement(name = "HistoricalQuote")
 public class ExtendedHistoricalQuote extends HistoricalQuote
 		implements Bar, Commentable, Comparable<ExtendedHistoricalQuote>
 {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -6391604492688118701L;
+
+	@DynamoDBHashKey(attributeName = "symbol")
 	@Column(tag = true)
 	private final String symbol;
+	public String getSymbol() {
+		return symbol;
+	}
 
+	@DynamoDBAttribute(attributeName="date")
 	@Column(timestamp = true)
 	private Instant date;
+	public LocalDate getDate() {
+		return LocalDate.ofInstant(date, ZoneId.systemDefault());
+	}
+	private void setDate(Instant today) {
+		this.date = today;
+	}
 
+	@DynamoDBAttribute(attributeName="open")
 	@Column
 	private final BigDecimal open;
+	public BigDecimal getOpen() {
+		return open;
+	}
+	@Override
+	public Num getOpenPrice() {
+		return DoubleNum.valueOf(getOpen());
+	}
+
+	@DynamoDBAttribute(attributeName="low")
 	@Column
 	private final BigDecimal low;
+	public BigDecimal getLow() {
+		return low;
+	}
+	@Override
+	public Num getMinPrice() {
+		return DoubleNum.valueOf(getLow());
+	}
+
+	@DynamoDBAttribute(attributeName="high")
 	@Column
 	private final BigDecimal high;
+	public BigDecimal getHigh() {
+		return high;
+	}
+
+	@DynamoDBAttribute(attributeName="close")
 	@Column
 	private final BigDecimal close;
+	public BigDecimal getClose() {
+		return close == null ? BigDecimal.ZERO : close;
+	}
 
+	@DynamoDBAttribute(attributeName="adjClose")
 	@Column
 	private final BigDecimal adjClose;
+	public BigDecimal getAdjClose() {
+		return adjClose;
+	}
 
 	// Stored as String
 	@Column
 	private final Num volume;
+	@DynamoDBAttribute
+	@Override
+	public Num getVolume() {
+		return this.volume;
+	}
 
 	@Column(tag = true)
 	private String comment;
+	@Override
+	public String getComment() {
+		return this.comment;
+	}
+	private void setComment(String string) {
+		this.comment = string;
+	}
 
 	public ExtendedHistoricalQuote(HistoricalQuote original, String comment) {
 		this(original.getSymbol(), original.getDateAsCalendar(), original.getOpen(), original.getLow(), original.getHigh(),
@@ -145,10 +198,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 			this.comment =  "MAP" + valuesMap.getOrDefault("comment", "").toString();
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
 	public static List<Bar> from(List<HistoricalQuote> original) {
 		return original.stream().map(o -> new ExtendedHistoricalQuote(o, "")).collect(Collectors.toList());
 	}
@@ -160,49 +209,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 				+ comment + "]";
 	}
 
-	public String getSymbol() {
-		return symbol;
-	}
 
-	public Instant getDateInstant() {
-		return date;
-	}
-	public LocalDate getDate() {
-		return LocalDate.ofInstant(date, ZoneId.systemDefault());
-	}
-
-	private void setDate(Instant today) {
-		this.date = today;
-	}
-
-	public BigDecimal getOpen() {
-		return open;
-	}
-
-	public BigDecimal getLow() {
-		return low;
-	}
-
-	public BigDecimal getHigh() {
-		return high;
-	}
-
-	public BigDecimal getClose() {
-		return close == null ? BigDecimal.ZERO : close;
-	}
-
-	public BigDecimal getAdjClose() {
-		return adjClose;
-	}
-
-	@Override
-	public String getComment() {
-		return this.comment;
-	}
-
-	private void setComment(String string) {
-		this.comment = string;
-	}
 
 	public Instrument getInstrument() throws IOException {
 		return Instrument.fromString(getSymbol());
@@ -213,28 +220,14 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 	}
 
 	@Override
-	public Num getOpenPrice() {
-		return DoubleNum.valueOf(getOpen());
-	}
-
-	@Override
-	public Num getMinPrice() {
-		return DoubleNum.valueOf(getLow());
-	}
-
-	@Override
 	public Num getMaxPrice() {
 		return DoubleNum.valueOf(getHigh());
 	}
 
+	@DynamoDBAttribute
 	@Override
 	public Num getClosePrice() {
 		return DoubleNum.valueOf(getClose());
-	}
-
-	@Override
-	public Num getVolume() {
-		return this.volume;
 	}
 
 	@Override

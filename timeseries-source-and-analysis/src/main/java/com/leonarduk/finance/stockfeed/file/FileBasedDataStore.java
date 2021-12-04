@@ -105,21 +105,4 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
     }
 
 
-    public void storeCSVFile(InputStream inputFile, final Instrument instrument, String delimiter,
-                               int skipRows, int dateColIndex, int closeValueIndex , int adjcloseValueIndex ,
-                               int openIndex, int lowIndex,
-                               int highIndex, int volumeIndex
-    ) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputFile));
-        List<Bar> series = reader.lines().skip(skipRows).map(line -> {
-                    String[] arrSplit = line.split(delimiter);
-                    return new ExtendedHistoricalQuote(instrument, LocalDate.parse(arrSplit[dateColIndex]),
-                            Double.valueOf(arrSplit[openIndex]), Double.valueOf(arrSplit[lowIndex]), Double.valueOf(arrSplit[highIndex]),
-                            Double.valueOf(arrSplit[closeValueIndex]), Double.valueOf(arrSplit[adjcloseValueIndex]),
-                            Long.valueOf(arrSplit[volumeIndex]), "File");
-                })
-                .collect(Collectors.toList());
-
-        storeSeries(new StockV1(instrument, series));
-    }
 }

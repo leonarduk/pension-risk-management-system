@@ -9,3 +9,4 @@
 /mydb/
 /.idea/
 __pycache__
+/timeseries-lambda/.aws-sam/
