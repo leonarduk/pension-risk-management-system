@@ -5,10 +5,10 @@ def getDateAndClose(ticker, years=10 ):
     CSV_URL = 'http://localhost:8091/stock/download/ticker/' + ticker + '?years=' + str(years) + '&interpolate=true&clean=true'
 
     df = pd.read_csv(CSV_URL, usecols=['date', 'close'], index_col='date')
-    newdf = df.rename(columns={"close": ticker}, errors='raise')
+    new_df = df.rename(columns={"close": ticker}, errors='raise')
     print(CSV_URL + " " + str(df.size))
 
-    return newdf
+    return new_df
 
 def getTimeSeriesWithIncremementingKey(ticker, years=10 ):
     CSV_URL = 'http://localhost:8091/stock/download/ticker/' + ticker + '?years=' + str(years) + '&interpolate=true&clean=true'

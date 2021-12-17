@@ -3600,3 +3600,14 @@ date,open,high,low,close,volume,comment
 2021-11-23,1023.00,1033.00,1004.50,1013.00,903736.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-11-24,1009.00,1019.50,1000.00,1018.00,292214.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-11-25,1025.46,1040.00,1021.00,1037.50,294001.00,Yahoo
+2021-11-26,1016.00,1021.00,1001.50,1003.50,749706.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-11-29,1010.00,1021.50,1006.50,1013.00,561409.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-11-30,1011.00,1022.50,1003.50,1008.00,589020.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-01,1015.50,1019.00,1005.50,1011.00,351316.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-02,988.00,988.00,961.50,973.00,806123.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-03,977.25,979.25,945.50,951.50,679821.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-06,955.75,957.75,931.00,952.25,694620.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-07,963.00,988.75,956.50,984.50,283642.00,Yahoo
+2021-12-08,991.50,996.25,986.50,991.25,277268.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-09,993.75,997.25,975.25,977.75,257357.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-10,966.00,971.25,951.50,954.25,414297.00,Yahoo

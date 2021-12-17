@@ -4273,3 +4273,11 @@ date,open,high,low,close,volume,comment
 2021-11-23,3016.00,3050.00,2992.00,3007.00,169042.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-11-24,2987.00,3056.00,2967.00,3031.00,132924.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2021-11-25,3049.00,3086.00,3025.00,3055.00,137426.00,Yahoo
+2021-11-26,3003.00,3031.00,2914.00,2985.00,211102.00,Alphavantage
+2021-11-29,3027.00,3081.00,3021.00,3023.00,234053.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-11-30,2990.00,3057.00,2986.00,2999.00,335748.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-01,3028.00,3087.00,3005.00,3083.00,212564.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-02,3053.00,3059.00,3013.00,3020.00,256539.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-03,2989.00,3074.00,2989.00,3037.00,242739.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-06,3060.00,3093.00,3041.00,3084.00,97396.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2021-12-07,3100.00,3130.67,3091.00,3100.00,95600.00,Yahoo
