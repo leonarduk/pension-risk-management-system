@@ -14,7 +14,6 @@ import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
 import org.apache.commons.lang3.StringUtils;
 import org.ta4j.core.Bar;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -32,14 +31,9 @@ import java.util.Optional;
 public class App
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>
 {
-    private final S3Client s3Client;
     private final StockFeed stockFeed;
 
     public App() {
-        // Initialize the SDK client outside of the handler method so that it can be reused for subsequent invocations.
-        // It is initialized when the class is loaded.
-        s3Client = DependencyFactory.s3Client();
-        // Consider invoking a simple api here to pre-warm up the application, eg: dynamodb#listTables
         stockFeed = DependencyFactory.stockFeed();
     }
 
@@ -70,24 +64,38 @@ public class App
         System.out.println(inputParams);
 
         String ticker = inputParams.get("ticker");
-        final int years = Integer.valueOf(StringUtils.defaultIfEmpty(inputParams.get("years"),"10"));
+        final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("years"),"10"));
         final String fromDate = inputParams.get("fromDate");
         final String toDate = inputParams.get("toDate");
-        final boolean interpolate = Boolean.valueOf(StringUtils.defaultIfEmpty(inputParams.get("interpolate"),"False"));
-        final boolean cleanData = Boolean.valueOf(StringUtils.defaultIfEmpty(inputParams.get("cleanData"),"False"));
+        final boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("interpolate"),"False"));
+        final boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("cleanData"),"False"));
 
-        final Instrument instrument = Instrument.fromString(ticker);
-        String[] fields = {};
-        boolean addLatestQuoteToTheSeries = false;
+        String region = StringUtils.defaultIfEmpty(inputParams.get("region"),"L");
+        String type = StringUtils.defaultIfEmpty(inputParams.get("type"),"UNKNOWN");
+        String currency = StringUtils.defaultIfEmpty(inputParams.get("type"),"GBP");
 
-        return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument, fields, addLatestQuoteToTheSeries);
+        if (ticker.contains("/")){
+            String[] parts = ticker.split("/");
+            ticker = parts[0];
+            region = parts[1];
+
+            if (parts.length > 2){
+                type = parts[2];
+            }
+            if (parts.length > 3){
+                currency = parts[3];
+            }
+        }
+        final Instrument instrument = Instrument.fromString(ticker, region,type,currency);
+
+        return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument);
     }
 
     private String generateResults(final int years, final String fromDate, final String toDate,
                                    final boolean interpolate, final boolean cleanData,
-                                   final Instrument instrument, String[] fields,
-                                   boolean addLatestQuoteToTheSeries)
+                                   final Instrument instrument)
             throws IOException {
+        boolean addLatestQuoteToTheSeries = false;
         final StringBuilder sbBody = new StringBuilder();
         final List<List<DataField>> records = Lists.newArrayList();
 
