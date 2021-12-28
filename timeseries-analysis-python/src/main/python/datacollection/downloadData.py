@@ -8,13 +8,15 @@ from functools import reduce
 from pypfopt import EfficientFrontier
 from pypfopt import risk_models
 from pypfopt import expected_returns
-from TimeSeriesAPI import getDateAndClose as getDataFrame
+from TimeSeriesAPI import getDateAndClose, getDateAndCloseFromS3 as getDataFrame
 
 
 if __name__ == "__main__":
     # compile the list of dataframes you want to merge
-    data_frames = [getDataFrame("TRY.L"), getDataFrame("GB00B1TRHX07"), getDataFrame("SGLN.L"),  getDataFrame("SWDA.L")]
+    # data_frames = [getDataFrame("TRY"), getDataFrame("GB00B1TRHX07"), getDataFrame("SGLN"),  getDataFrame("SWDA")]
+    data_frames = [getDataFrame("TRY"), getDataFrame("SGLN")]
 
+    print(data_frames)
     df = reduce(lambda  left,right: pd.merge(left,right,on=['date'], how='outer'), data_frames)
 
     # Calculate expected returns and sample covariance
