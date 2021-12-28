@@ -113,22 +113,28 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
     }
 
     private StringBuilder seriesToCsv(final List<Bar> series, final Instrument instrument) {
-        final StringBuilder sb = new StringBuilder(" date,open,high,low,close,volume,comment,ticker\n");
+        final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment,ticker\n");
         for (final Bar historicalQuote : series) {
-            sb.append(historicalQuote.getEndTime().toLocalDate().toString());
-            StringUtils.addValue(sb, historicalQuote.getOpenPrice());
-            StringUtils.addValue(sb, historicalQuote.getMaxPrice());
-            StringUtils.addValue(sb, historicalQuote.getMinPrice());
-            StringUtils.addValue(sb, historicalQuote.getClosePrice());
-            StringUtils.addValue(sb, historicalQuote.getVolume());
-            String comment = (historicalQuote instanceof Commentable) ?
-                    ((Commentable) historicalQuote).getComment()
-                    : "";
-            sb.append(",").append(comment);
-            sb.append(",").append(instrument.code());
-            sb.append("\n");
+            try {
+                sb.append(historicalQuote.getEndTime().toLocalDate().toString());
+                StringUtils.addValue(sb, historicalQuote.getOpenPrice());
+                StringUtils.addValue(sb, historicalQuote.getMaxPrice());
+                StringUtils.addValue(sb, historicalQuote.getMinPrice());
+                StringUtils.addValue(sb, historicalQuote.getClosePrice());
+                StringUtils.addValue(sb, historicalQuote.getVolume());
+                String comment = (historicalQuote instanceof Commentable) ?
+                        ((Commentable) historicalQuote).getComment()
+                        : "";
+                sb.append(",").append(comment);
+                sb.append(",").append(instrument.code());
+                sb.append("\n");
+            }catch (Exception e){
+                log.warn(String.format("Cannot add %s",
+                        historicalQuote.getEndTime().toLocalDate().toString()),e );
+            }
         }
         return sb;
     }
+
 
 }

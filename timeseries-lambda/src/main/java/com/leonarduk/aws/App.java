@@ -29,8 +29,7 @@ import java.util.Optional;
  * @see <a href=https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html>Lambda Java Handler</a> for more information
  */
 public class App
-        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>
-{
+        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final StockFeed stockFeed;
 
     public App() {
@@ -38,13 +37,14 @@ public class App
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println( new App().getResults(ImmutableMap.of(
+        System.out.println(new App().getResults(ImmutableMap.of(
                 "ticker", "PHGP.L",
                 "years", "1",
                 "interpolate", "true",
                 "cleanData", "true"
         )));
     }
+
     @Override
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         // TODO: invoking the api call using s3Client.
@@ -64,42 +64,40 @@ public class App
         System.out.println(inputParams);
 
         String ticker = inputParams.get("ticker");
-        final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("years"),"10"));
+        final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("years"), "10"));
+        final int months = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("months"), "0"));
+        final int weeks = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("weeks"), "0"));
+        final int days = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("days"), "0"));
+
         final String fromDate = inputParams.get("fromDate");
         final String toDate = inputParams.get("toDate");
-        final boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("interpolate"),"False"));
-        final boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("cleanData"),"False"));
+        final boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("interpolate"), "False"));
+        final boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("cleanData"), "False"));
 
-        String region = StringUtils.defaultIfEmpty(inputParams.get("region"),"L");
-        String type = StringUtils.defaultIfEmpty(inputParams.get("type"),"UNKNOWN");
-        String currency = StringUtils.defaultIfEmpty(inputParams.get("type"),"GBP");
+        String region = StringUtils.defaultIfEmpty(inputParams.get("region"), "L");
+        String type = StringUtils.defaultIfEmpty(inputParams.get("type"), "UNKNOWN");
+        String currency = StringUtils.defaultIfEmpty(inputParams.get("type"), "GBP");
 
-        if (ticker.contains("/")){
+        if (ticker.contains(".")) {
+            String[] parts = ticker.split("\\.");
+            ticker = parts[0];
+            region = parts[1];
+        }
+
+        if (ticker.contains("/")) {
             String[] parts = ticker.split("/");
             ticker = parts[0];
             region = parts[1];
 
-            if (parts.length > 2){
+            if (parts.length > 2) {
                 type = parts[2];
             }
-            if (parts.length > 3){
+            if (parts.length > 3) {
                 currency = parts[3];
             }
         }
-        final Instrument instrument = Instrument.fromString(ticker, region,type,currency);
+        final Instrument instrument = Instrument.fromString(ticker, region, type, currency);
 
-        return generateResults(years, fromDate, toDate, interpolate, cleanData, instrument);
-    }
-
-    private String generateResults(final int years, final String fromDate, final String toDate,
-                                   final boolean interpolate, final boolean cleanData,
-                                   final Instrument instrument)
-            throws IOException {
-        boolean addLatestQuoteToTheSeries = false;
-        final StringBuilder sbBody = new StringBuilder();
-        final List<List<DataField>> records = Lists.newArrayList();
-
-        final List<Bar> historyData;
         LocalDate toLocalDate;
         final LocalDate fromLocalDate;
 
@@ -110,11 +108,32 @@ public class App
             } else {
                 toLocalDate = LocalDate.parse(toDate);
             }
-
         } else {
             toLocalDate = LocalDate.now();
-            fromLocalDate = LocalDate.now().plusYears(-1 * years);
+            if (days > 0) {
+                fromLocalDate = LocalDate.now().plusDays(-1 * days);
+            } else if (weeks > 0) {
+                fromLocalDate = LocalDate.now().plusWeeks(-1 * weeks);
+            } else if (months > 0) {
+                fromLocalDate = LocalDate.now().plusMonths(-1 * months);
+            } else {
+                fromLocalDate = LocalDate.now().plusYears(-1 * years);
+            }
         }
+
+
+        return generateResults(fromLocalDate, toLocalDate, interpolate, cleanData, instrument);
+    }
+
+    private String generateResults(final LocalDate fromLocalDate, final LocalDate toLocalDate,
+                                   final boolean interpolate, final boolean cleanData,
+                                   final Instrument instrument)
+            throws IOException {
+        boolean addLatestQuoteToTheSeries = false;
+        final StringBuilder sbBody = new StringBuilder();
+        final List<List<DataField>> records = Lists.newArrayList();
+
+        final List<Bar> historyData;
 
         historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, addLatestQuoteToTheSeries);
 
