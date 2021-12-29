@@ -34,8 +34,8 @@ public class FTInstrument {
         Instrument.AssetType type = instrument.getAssetType();
         switch (type) {
             case EQUITY:
-                return instrument.getCode() + ":" + getFTExchange();
             case INVESTMENT_TRUST:
+                return instrument.getCode() + ":" + getFTExchange();
             case ETF:
                 return instrument.getCode() + ":" + getFTExchange() + ":" + instrument.getCurrency();
             case FUND:
