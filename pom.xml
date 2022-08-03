@@ -210,8 +210,6 @@
 
         <module>timeseries-spring-boot-server</module>
 
-        <module>timeseries-analysis-python</module>
-
         <module>timeseries-lambda</module>
 
     </modules>

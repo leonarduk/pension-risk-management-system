@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk15:ubuntu-jre
+FROM adoptopenjdk/openjdk17:ubuntu-jre
 
 
 COPY target/dependency/* /function/
