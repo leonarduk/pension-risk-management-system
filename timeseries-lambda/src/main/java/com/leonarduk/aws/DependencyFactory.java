@@ -1,4 +1,3 @@
-
 package com.leonarduk.aws;
 
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
@@ -13,17 +12,18 @@ import software.amazon.awssdk.services.s3.S3Client;
  */
 public class DependencyFactory {
 
-    private DependencyFactory() {}
+    private DependencyFactory() {
+    }
 
     /**
      * @return an instance of S3Client
      */
     public static S3Client s3Client() {
         return S3Client.builder()
-                       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                       .region(Region.EU_WEST_1)
-                       .httpClientBuilder(UrlConnectionHttpClient.builder())
-                       .build();
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .region(Region.EU_WEST_1)
+                .httpClientBuilder(UrlConnectionHttpClient.builder())
+                .build();
     }
 
     public static StockFeed stockFeed() {

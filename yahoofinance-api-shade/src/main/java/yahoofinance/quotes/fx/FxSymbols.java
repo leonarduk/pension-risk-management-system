@@ -1,11 +1,10 @@
 package yahoofinance.quotes.fx;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class FxSymbols {
-    
+
     public static final String USDGBP = "USDGBP=X";
     public static final String USDEUR = "USDEUR=X";
     public static final String USDAUD = "USDAUD=X";

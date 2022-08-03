@@ -206,7 +206,7 @@
 
         <module>alphavantage4j</module>
 
-        <module>timeseries-source-and-analysis</module>
+        <module>timeseries-sources</module>
 
         <module>timeseries-lambda</module>
 

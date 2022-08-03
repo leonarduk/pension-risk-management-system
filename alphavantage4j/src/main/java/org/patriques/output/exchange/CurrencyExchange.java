@@ -17,58 +17,58 @@ import java.util.Map;
  */
 public class CurrencyExchange {
 
-  private final CurrencyExchangeData data;
+    private final CurrencyExchangeData data;
 
-  CurrencyExchange(final CurrencyExchangeData data) {
-    this.data = data;
-  }
-
-  public CurrencyExchangeData getData() {
-    return data;
-  }
-
-  /**
-   * Create Currency Exchange data representation from json object
-   *
-   * @param json string to parse
-   * @return Currency Exchange data
-   */
-  public static CurrencyExchange from(String json) {
-    CurrencyExchangeParser parser = new CurrencyExchangeParser();
-    return parser.parseJson(json);
-  }
-
-  /**
-   * Helper class for parsing json to {@code Currency Exchange}
-   */
-  private static class CurrencyExchangeParser extends JsonParser<CurrencyExchange> {
-    public CurrencyExchange resolve(JsonObject rootObject) {
-      Type dataType = new TypeToken<Map<String, Map<String, String>>>() {
-      }.getType();
-      try {
-        Map<String, Map<String, String>> data = GSON.fromJson(rootObject, dataType);
-        CurrencyExchangeData exchangeData = createCurrencyExchangeData(data.values().stream()
-                .findFirst()
-                .orElse(Collections.emptyMap()));
-        return new CurrencyExchange(exchangeData);
-      } catch (JsonSyntaxException e) {
-        throw new AlphaVantageException("currency exchange api change", e);
-      }
+    CurrencyExchange(final CurrencyExchangeData data) {
+        this.data = data;
     }
 
-    private CurrencyExchangeData createCurrencyExchangeData(Map<String, String> values) throws JsonSyntaxException {
-      return new CurrencyExchangeData(
-              values.get("1. From_Currency Code"),
-              values.get("2. From_Currency Name"),
-              values.get("3. To_Currency Code"),
-              values.get("4. To_Currency Name"),
-              Float.parseFloat(values.get("5. Exchange Rate")),
-              LocalDateTime.parse(values.get("6. Last Refreshed"), DATE_WITH_TIME_FORMAT),
-              values.get("7. Time Zone")
-      );
+    public CurrencyExchangeData getData() {
+        return data;
     }
 
-  }
+    /**
+     * Create Currency Exchange data representation from json object
+     *
+     * @param json string to parse
+     * @return Currency Exchange data
+     */
+    public static CurrencyExchange from(String json) {
+        CurrencyExchangeParser parser = new CurrencyExchangeParser();
+        return parser.parseJson(json);
+    }
+
+    /**
+     * Helper class for parsing json to {@code Currency Exchange}
+     */
+    private static class CurrencyExchangeParser extends JsonParser<CurrencyExchange> {
+        public CurrencyExchange resolve(JsonObject rootObject) {
+            Type dataType = new TypeToken<Map<String, Map<String, String>>>() {
+            }.getType();
+            try {
+                Map<String, Map<String, String>> data = GSON.fromJson(rootObject, dataType);
+                CurrencyExchangeData exchangeData = createCurrencyExchangeData(data.values().stream()
+                        .findFirst()
+                        .orElse(Collections.emptyMap()));
+                return new CurrencyExchange(exchangeData);
+            } catch (JsonSyntaxException e) {
+                throw new AlphaVantageException("currency exchange api change", e);
+            }
+        }
+
+        private CurrencyExchangeData createCurrencyExchangeData(Map<String, String> values) throws JsonSyntaxException {
+            return new CurrencyExchangeData(
+                    values.get("1. From_Currency Code"),
+                    values.get("2. From_Currency Name"),
+                    values.get("3. To_Currency Code"),
+                    values.get("4. To_Currency Name"),
+                    Float.parseFloat(values.get("5. Exchange Rate")),
+                    LocalDateTime.parse(values.get("6. Last Refreshed"), DATE_WITH_TIME_FORMAT),
+                    values.get("7. Time Zone")
+            );
+        }
+
+    }
 
 
 }

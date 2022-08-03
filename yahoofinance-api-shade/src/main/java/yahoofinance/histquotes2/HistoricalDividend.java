@@ -8,18 +8,19 @@ import java.util.Calendar;
  * At the time of this writing Yahoo returns ADJUSTED dividends. Which means that as soon as
  * split occurs, all past dividends are divided by split factor.
  * All getters can return null in case the data is not available from Yahoo Finance.
- * 
+ *
  * @author Randle McMurphy
  */
 public class HistoricalDividend {
-	
+
     private String symbol;
-    
+
     private Calendar date;
-    
+
     private BigDecimal adjDividend;
-    
-    public HistoricalDividend() {}
+
+    public HistoricalDividend() {
+    }
 
     public HistoricalDividend(String symbol, Calendar date, BigDecimal adjDividend) {
         this.symbol = symbol;
@@ -34,7 +35,7 @@ public class HistoricalDividend {
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
-    
+
     public Calendar getDate() {
         return date;
     }
@@ -46,8 +47,8 @@ public class HistoricalDividend {
     /**
      * At the time of this writing Yahoo returns ADJUSTED dividends. Which means that as soon as
      * split occurs, all past dividends are divided by split factor.
-     * 
-     * @return      an adjusted dividend cash
+     *
+     * @return an adjusted dividend cash
      */
     public BigDecimal getAdjDividend() {
         return adjDividend;

@@ -18,10 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * @author Stijn Strickx
  * @param <T> Type of object that can contain the retrieved information from a
- * quotes request
+ *            quotes request
+ * @author Stijn Strickx
  */
 public abstract class QuotesRequest<T> {
 
@@ -73,9 +72,9 @@ public abstract class QuotesRequest<T> {
 
         InputStreamReader is = new InputStreamReader(connection.getInputStream());
         JsonNode node = objectMapper.readTree(is);
-        if(node.has("quoteResponse") && node.get("quoteResponse").has("result")) {
+        if (node.has("quoteResponse") && node.get("quoteResponse").has("result")) {
             node = node.get("quoteResponse").get("result");
-            for(int i = 0; i < node.size(); i++) {
+            for (int i = 0; i < node.size(); i++) {
                 result.add(this.parseJson(node.get(i)));
             }
         } else {

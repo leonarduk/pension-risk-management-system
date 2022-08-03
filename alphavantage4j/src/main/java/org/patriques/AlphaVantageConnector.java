@@ -17,57 +17,57 @@ import java.nio.charset.StandardCharsets;
  * @see ApiConnector
  */
 public class AlphaVantageConnector implements ApiConnector {
-  private static final String BASE_URL = "https://www.alphavantage.co/query?";
-  private final String apiKey;
-  private final int timeOut;
+    private static final String BASE_URL = "https://www.alphavantage.co/query?";
+    private final String apiKey;
+    private final int timeOut;
 
-  /**
-   * Creates an AlphaVantageConnector.
-   *
-   * @param apiKey the secret key to access the api.
-   * @param timeOut the timeout for when reading the connection should give up.
-   */
-  public AlphaVantageConnector(String apiKey, int timeOut) {
-    this.apiKey = apiKey;
-    this.timeOut = timeOut;
-  }
-
-  @Override
-  public String getRequest(ApiParameter... apiParameters) {
-    String params = getParameters(apiParameters);
-    try {
-      URL request = new URL(BASE_URL + params);
-      URLConnection connection = request.openConnection();
-      connection.setConnectTimeout(timeOut);
-      connection.setReadTimeout(timeOut);
-
-      InputStreamReader inputStream = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
-      BufferedReader bufferedReader = new BufferedReader(inputStream);
-      StringBuilder responseBuilder = new StringBuilder();
-
-      String line;
-      while ((line = bufferedReader.readLine()) != null) {
-        responseBuilder.append(line);
-      }
-      bufferedReader.close();
-      return responseBuilder.toString();
-    } catch (IOException e) {
-      throw new AlphaVantageException("failure sending request", e);
+    /**
+     * Creates an AlphaVantageConnector.
+     *
+     * @param apiKey  the secret key to access the api.
+     * @param timeOut the timeout for when reading the connection should give up.
+     */
+    public AlphaVantageConnector(String apiKey, int timeOut) {
+        this.apiKey = apiKey;
+        this.timeOut = timeOut;
     }
-  }
 
-  /**
-   * Builds up the url query from the api parameters used to append to the base url.
-   *
-   * @param apiParameters the api parameters used in the query
-   * @return the query string to use in the url
-   */
-  private String getParameters(ApiParameter... apiParameters) {
-    ApiParameterBuilder urlBuilder = new ApiParameterBuilder();
-    for (ApiParameter parameter : apiParameters) {
-      urlBuilder.append(parameter);
+    @Override
+    public String getRequest(ApiParameter... apiParameters) {
+        String params = getParameters(apiParameters);
+        try {
+            URL request = new URL(BASE_URL + params);
+            URLConnection connection = request.openConnection();
+            connection.setConnectTimeout(timeOut);
+            connection.setReadTimeout(timeOut);
+
+            InputStreamReader inputStream = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(inputStream);
+            StringBuilder responseBuilder = new StringBuilder();
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                responseBuilder.append(line);
+            }
+            bufferedReader.close();
+            return responseBuilder.toString();
+        } catch (IOException e) {
+            throw new AlphaVantageException("failure sending request", e);
+        }
     }
-    urlBuilder.append("apikey", apiKey);
-    return urlBuilder.getUrl();
-  }
+
+    /**
+     * Builds up the url query from the api parameters used to append to the base url.
+     *
+     * @param apiParameters the api parameters used in the query
+     * @return the query string to use in the url
+     */
+    private String getParameters(ApiParameter... apiParameters) {
+        ApiParameterBuilder urlBuilder = new ApiParameterBuilder();
+        for (ApiParameter parameter : apiParameters) {
+            urlBuilder.append(parameter);
+        }
+        urlBuilder.append("apikey", apiKey);
+        return urlBuilder.getUrl();
+    }
 }

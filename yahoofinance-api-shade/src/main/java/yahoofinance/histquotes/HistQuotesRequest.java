@@ -1,26 +1,19 @@
 package yahoofinance.histquotes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import yahoofinance.Utils;
+import yahoofinance.YahooFinance;
+import yahoofinance.util.RedirectableRequest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import yahoofinance.Utils;
-import yahoofinance.YahooFinance;
-import yahoofinance.util.RedirectableRequest;
+import java.util.*;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class HistQuotesRequest {
@@ -38,6 +31,7 @@ public class HistQuotesRequest {
     static {
         DEFAULT_FROM.add(Calendar.YEAR, -1);
     }
+
     public static final Calendar DEFAULT_TO = Calendar.getInstance();
     public static final Interval DEFAULT_INTERVAL = Interval.MONTHLY;
 
@@ -71,9 +65,10 @@ public class HistQuotesRequest {
         this.cleanHistCalendar(this.from);
         this.cleanHistCalendar(this.to);
     }
-    
+
     /**
      * Put everything smaller than days at 0
+     *
      * @param cal calendar to be cleaned
      */
     private Calendar cleanHistCalendar(Calendar cal) {
@@ -87,14 +82,14 @@ public class HistQuotesRequest {
     public List<HistoricalQuote> getResult() throws IOException {
 
         List<HistoricalQuote> result = new ArrayList<HistoricalQuote>();
-        
-        if(this.from.after(this.to)) {
+
+        if (this.from.after(this.to)) {
             log.warn("Unable to retrieve historical quotes. "
                     + "From-date should not be after to-date. From: "
                     + this.from.getTime() + ", to: " + this.to.getTime());
             return result;
         }
-        
+
         Map<String, String> params = new LinkedHashMap<String, String>();
         params.put("s", this.symbol);
 

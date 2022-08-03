@@ -7,19 +7,20 @@ import java.util.Calendar;
 
 /**
  * All getters can return null in case the data is not available from Yahoo Finance.
- * 
+ *
  * @author Randle McMurphy
  */
 public class HistoricalSplit {
-	
+
     private String symbol;
-    
+
     private Calendar date;
-    
+
     private BigDecimal numerator;
     private BigDecimal denominator;
-    
-    public HistoricalSplit() {}
+
+    public HistoricalSplit() {
+    }
 
     public HistoricalSplit(String symbol, Calendar date, BigDecimal numerator, BigDecimal denominator) {
         this.symbol = symbol;
@@ -35,7 +36,7 @@ public class HistoricalSplit {
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
-    
+
     public Calendar getDate() {
         return date;
     }
@@ -61,11 +62,10 @@ public class HistoricalSplit {
     }
 
     /**
-     * 
-     * @return      a calculated split factor value which is equal to numerator divided by denominator
+     * @return a calculated split factor value which is equal to numerator divided by denominator
      */
     public BigDecimal getSplitFactor() {
-        return numerator.divide(denominator, 10, RoundingMode.HALF_UP);  
+        return numerator.divide(denominator, 10, RoundingMode.HALF_UP);
     }
 
     @Override

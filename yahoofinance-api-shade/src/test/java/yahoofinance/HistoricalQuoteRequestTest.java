@@ -15,7 +15,6 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class HistoricalQuoteRequestTest extends MockedServersTest {
@@ -41,7 +40,7 @@ public class HistoricalQuoteRequestTest extends MockedServersTest {
         assertNotNull(goog.getHistory());
         assertEquals(13, goog.getHistory().size());
 
-        for(HistoricalQuote histQuote : goog.getHistory()) {
+        for (HistoricalQuote histQuote : goog.getHistory()) {
             assertEquals("GOOG", histQuote.getSymbol());
             assertTrue(histQuote.getAdjClose().compareTo(BigDecimal.ZERO) > 0);
             assertTrue(histQuote.getClose().compareTo(BigDecimal.ZERO) > 0);
@@ -101,7 +100,7 @@ public class HistoricalQuoteRequestTest extends MockedServersTest {
 
     @Test
     public void multiStockTest() throws IOException {
-        String[] symbols = new String[] {"INTC", "AIR.PA"};
+        String[] symbols = new String[]{"INTC", "AIR.PA"};
         Map<String, Stock> stocks = YahooFinance.get(symbols, from, today);
         Stock intel = stocks.get("INTC");
         Stock airbus = stocks.get("AIR.PA");

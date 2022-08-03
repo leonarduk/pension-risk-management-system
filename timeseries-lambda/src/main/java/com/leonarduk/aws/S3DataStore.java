@@ -128,9 +128,9 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
                 sb.append(",").append(comment);
                 sb.append(",").append(instrument.code());
                 sb.append("\n");
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.warn(String.format("Cannot add %s",
-                        historicalQuote.getEndTime().toLocalDate().toString()),e );
+                        historicalQuote.getEndTime().toLocalDate().toString()), e);
             }
         }
         return sb;

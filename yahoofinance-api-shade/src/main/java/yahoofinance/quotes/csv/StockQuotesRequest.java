@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
@@ -13,14 +12,13 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
      * Yahoo Finance is responding with formatted numbers in some cases. Because
      * of this, those number may contain commas. This will screw up the CSV
      * file.
-     *
+     * <p>
      * It's not possible to choose a different delimiter for the CSV or to
      * disable the number formatting
-     *
+     * <p>
      * To work around this, we surround the vulnerable values by the stock
      * symbol. This forces us to do manual parsing of the CSV lines instead of
      * using the easy String.split
-     *
      */
     public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<QuotesProperty>();
 
@@ -95,10 +93,10 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
         DEFAULT_PROPERTIES.add(QuotesProperty.Revenue);
         DEFAULT_PROPERTIES.add(QuotesProperty.EBITDA);
         DEFAULT_PROPERTIES.add(QuotesProperty.OneyrTargetPrice);
-        
+
         DEFAULT_PROPERTIES.add(QuotesProperty.ShortRatio);
     }
-    
+
     public StockQuotesRequest(String query) {
         super(query, StockQuotesRequest.DEFAULT_PROPERTIES);
     }
@@ -106,22 +104,22 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
     @Override
     protected StockQuotesData parseCSVLine(String line) {
         List<String> parsedLine = new ArrayList<String>();
-        
+
         // first get company name, symbol, currency and exchange
         // because we need the symbol and currency or exchange might be the same as the symbol!
         // pretty ugly code due to the bad format of the csv
         int pos1 = 0;
         int pos2 = 0;
         int skip = 2;
-        
-        if(line.startsWith("\"")) {
+
+        if (line.startsWith("\"")) {
             pos1 = 1; // skip first \"
             pos2 = line.indexOf('\"', 1);
         } else {
             pos2 = line.indexOf(",\""); // last comma before the first symbol (hopefully)
             skip = 1;
         }
-        
+
         String name = line.substring(pos1, pos2);
         pos1 = pos2 + skip; // skip \",
         pos2 = line.indexOf('\"', pos1 + 1);
@@ -139,7 +137,7 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
             skip = 1;
         }
         String currency = line.substring(pos1, pos2);
-        
+
         pos1 = pos2 + skip;
         if (line.charAt(pos1) == '\"') {
             pos1 += 1;
@@ -150,7 +148,7 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
             skip = 1;
         }
         String exchange = line.substring(pos1, pos2);
-        
+
         parsedLine.add(name);
         parsedLine.add(symbol);
         parsedLine.add(currency);

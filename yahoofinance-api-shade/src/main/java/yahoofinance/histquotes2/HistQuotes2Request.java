@@ -1,5 +1,7 @@
 package yahoofinance.histquotes2;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import yahoofinance.Utils;
 import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -12,13 +14,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
  * @author Stijn Strickx
  */
 public class HistQuotes2Request {
@@ -37,6 +36,7 @@ public class HistQuotes2Request {
     static {
         DEFAULT_FROM.add(Calendar.YEAR, -1);
     }
+
     public static final Calendar DEFAULT_TO = Calendar.getInstance();
     public static final QueryInterval DEFAULT_INTERVAL = QueryInterval.MONTHLY;
 
@@ -87,6 +87,7 @@ public class HistQuotes2Request {
 
     /**
      * Put everything smaller than days at 0
+     *
      * @param cal calendar to be cleaned
      */
     private Calendar cleanHistCalendar(Calendar cal) {
@@ -100,8 +101,8 @@ public class HistQuotes2Request {
     public List<HistoricalQuote> getResult() throws IOException {
 
         List<HistoricalQuote> result = new ArrayList<HistoricalQuote>();
-        
-        if(this.from.after(this.to)) {
+
+        if (this.from.after(this.to)) {
             log.warn("Unable to retrieve historical quotes. "
                     + "From-date should not be after to-date. From: "
                     + this.from.getTime() + ", to: " + this.to.getTime());
@@ -116,7 +117,7 @@ public class HistQuotes2Request {
 
         params.put("crumb", CrumbManager.getCrumb());
 
-        String url = YahooFinance.HISTQUOTES2_BASE_URL + URLEncoder.encode(this.symbol , "UTF-8") + "?" + Utils.getURLParameters(params);
+        String url = YahooFinance.HISTQUOTES2_BASE_URL + URLEncoder.encode(this.symbol, StandardCharsets.UTF_8) + "?" + Utils.getURLParameters(params);
 
         // Get CSV from Yahoo
         log.info("Sending request: " + url);

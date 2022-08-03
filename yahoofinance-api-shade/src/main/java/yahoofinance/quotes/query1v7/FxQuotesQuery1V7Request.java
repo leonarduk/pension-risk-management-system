@@ -7,7 +7,6 @@ import yahoofinance.quotes.fx.FxQuote;
 import java.math.BigDecimal;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class FxQuotesQuery1V7Request extends QuotesRequest<FxQuote> {

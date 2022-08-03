@@ -6,17 +6,17 @@ package org.patriques.input;
  */
 public interface ApiParameter {
 
-  /**
-   * Get key for parameter.
-   *
-   * @return the key
-   */
-  String getKey();
+    /**
+     * Get key for parameter.
+     *
+     * @return the key
+     */
+    String getKey();
 
-  /**
-   * Get value for parameter.
-   *
-   * @return the value
-   */
-  String getValue();
+    /**
+     * Get value for parameter.
+     *
+     * @return the value
+     */
+    String getValue();
 }

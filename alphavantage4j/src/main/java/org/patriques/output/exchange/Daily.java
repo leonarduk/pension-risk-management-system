@@ -11,9 +11,8 @@ import java.util.Map;
 /**
  * Representation of daily response from api.
  *
- * @see ForexResponse
- *
  * @author ilker Kopan
+ * @see ForexResponse
  */
 public class Daily extends ForexResponse<ForexData> {
 
@@ -28,7 +27,7 @@ public class Daily extends ForexResponse<ForexData> {
      * @param json string to parse
      * @return Daily instance
      */
-    public static Daily from(String json)  {
+    public static Daily from(String json) {
         Parser parser = new Parser();
         return parser.parseJson(json);
     }
@@ -41,7 +40,7 @@ public class Daily extends ForexResponse<ForexData> {
 
         @Override
         Daily resolve(Map<String, String> metaData,
-                      Map<String, Map<String, String>> stockData)  {
+                      Map<String, Map<String, String>> stockData) {
             List<ForexData> prices = new ArrayList<>();
             try {
                 stockData.forEach((key, values) -> prices.add(new ForexData(

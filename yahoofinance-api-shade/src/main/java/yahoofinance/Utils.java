@@ -1,8 +1,12 @@
 package yahoofinance;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,22 +15,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
  * @author Stijn Strickx
  */
 public class Utils {
 
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
-  
+
     public static final BigDecimal HUNDRED = new BigDecimal(100);
     public static final BigDecimal THOUSAND = new BigDecimal(1000);
     public static final BigDecimal MILLION = new BigDecimal(1000000);
     public static final BigDecimal BILLION = new BigDecimal(1000000000);
-        
+
     public static String join(String[] data, String d) {
         if (data.length == 0) {
             return "";
@@ -45,17 +45,17 @@ public class Utils {
     }
 
     private static boolean isParseable(String data) {
-        return !(data == null || data.equals("N/A") || data.equals("-") 
+        return !(data == null || data.equals("N/A") || data.equals("-")
                 || data.equals("") || data.equals("nan"));
     }
 
     public static String getString(String data) {
-        if(!Utils.isParseable(data)) {
+        if (!Utils.isParseable(data)) {
             return null;
         }
         return data;
     }
-    
+
     public static BigDecimal getBigDecimal(String data) {
         BigDecimal result = null;
         if (!Utils.isParseable(data)) {
@@ -86,11 +86,11 @@ public class Utils {
         }
         return result;
     }
-    
+
     public static BigDecimal getBigDecimal(String dataMain, String dataSub) {
         BigDecimal main = getBigDecimal(dataMain);
         BigDecimal sub = getBigDecimal(dataSub);
-        if(main == null || main.compareTo(BigDecimal.ZERO) == 0) {
+        if (main == null || main.compareTo(BigDecimal.ZERO) == 0) {
             return sub;
         }
         return main;
@@ -164,7 +164,7 @@ public class Utils {
         return numerator.divide(denominator, 4, BigDecimal.ROUND_HALF_EVEN)
                 .multiply(HUNDRED).setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
-    
+
     public static double getPercent(double numerator, double denominator) {
         if (denominator == 0) {
             return 0;
@@ -227,15 +227,15 @@ public class Utils {
      * Used to parse the last trade date / time. Returns null if the date / time
      * cannot be parsed.
      *
-     * @param date String received that represents the date
-     * @param time String received that represents the time
+     * @param date     String received that represents the date
+     * @param time     String received that represents the time
      * @param timeZone time zone to use for parsing the date time
      * @return Calendar object with the parsed datetime
      */
     public static Calendar parseDateTime(String date, String time, TimeZone timeZone) {
         String datetime = date + " " + time;
         SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", Locale.US);
-        
+
         format.setTimeZone(timeZone);
         try {
             if (Utils.isParseable(date) && Utils.isParseable(time)) {
@@ -281,20 +281,15 @@ public class Utils {
             }
             String key = entry.getKey();
             String value = entry.getValue();
-            try {
-                key = URLEncoder.encode(key, "UTF-8");
-                value = URLEncoder.encode(value, "UTF-8");
-            } catch (UnsupportedEncodingException ex) {
-                log.error(ex.getMessage(), ex);
-                // Still try to continue with unencoded values
-            }
+            key = URLEncoder.encode(key, StandardCharsets.UTF_8);
+            value = URLEncoder.encode(value, StandardCharsets.UTF_8);
             sb.append(String.format("%s=%s", key, value));
         }
         return sb.toString();
     }
 
     /**
-     * Strips the unwanted chars from a line returned in the CSV 
+     * Strips the unwanted chars from a line returned in the CSV
      * Used for parsing the FX CSV lines
      *
      * @param line the original CSV line

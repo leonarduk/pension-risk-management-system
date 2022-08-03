@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 /**
  * Representation of json object, i.e:
  * "2018-12-25": {
- *             "1. open": "1.1413",
- *             "2. high": "1.1422",
- *             "3. low": "1.1364",
- *             "4. close": "1.1377"
- *         }
+ * "1. open": "1.1413",
+ * "2. high": "1.1422",
+ * "3. low": "1.1364",
+ * "4. close": "1.1377"
+ * }
  *
  * @author ilker Kopan
  */

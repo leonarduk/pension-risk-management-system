@@ -12,13 +12,13 @@
             <directory>${project.basedir}/conf</directory>
         </fileSet>
     </fileSets>
-<!--    <files>
-        <file>
-            <source> ${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
-            <outputDirectory>java/lib</outputDirectory>
-        </file>
-    </files>
-    -->
+    <!--    <files>
+            <file>
+                <source> ${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
+                <outputDirectory>java/lib</outputDirectory>
+            </file>
+        </files>
+        -->
     <dependencySets>
         <dependencySet>
             <outputDirectory>java/lib</outputDirectory>

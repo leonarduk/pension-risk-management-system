@@ -1,5 +1,15 @@
 package yahoofinance.query2v8;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import yahoofinance.Utils;
+import yahoofinance.YahooFinance;
+import yahoofinance.histquotes.HistoricalQuote;
+import yahoofinance.histquotes2.QueryInterval;
+import yahoofinance.util.RedirectableRequest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,24 +17,8 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import yahoofinance.Utils;
-import yahoofinance.YahooFinance;
-import yahoofinance.histquotes.HistoricalQuote;
-import yahoofinance.histquotes2.QueryInterval;
-import yahoofinance.util.RedirectableRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * @author Stijn Strickx
@@ -44,6 +38,7 @@ public class HistQuotesQuery2V8Request {
     static {
         DEFAULT_FROM.add(Calendar.YEAR, -1);
     }
+
     public static final Calendar DEFAULT_TO = Calendar.getInstance();
     public static final QueryInterval DEFAULT_INTERVAL = QueryInterval.MONTHLY;
 
@@ -81,6 +76,7 @@ public class HistQuotesQuery2V8Request {
 
     /**
      * Put everything smaller than days at 0
+     *
      * @param cal calendar to be cleaned
      */
     private Calendar cleanHistCalendar(Calendar cal) {
@@ -117,14 +113,14 @@ public class HistQuotesQuery2V8Request {
             BigDecimal close = closes.get(i).decimalValue();
 
             HistoricalQuote quote = new HistoricalQuote(
-                symbol,
-                calendar,
-                open,
-                low,
-                high,
-                close,
-                adjClose,
-                volume);
+                    symbol,
+                    calendar,
+                    open,
+                    low,
+                    high,
+                    close,
+                    adjClose,
+                    volume);
             result.add(quote);
         }
 
@@ -133,7 +129,7 @@ public class HistQuotesQuery2V8Request {
 
     public String getJson() throws IOException {
 
-        if(this.from.after(this.to)) {
+        if (this.from.after(this.to)) {
             log.warn("Unable to retrieve historical quotes. "
                     + "From-date should not be after to-date. From: "
                     + this.from.getTime() + ", to: " + this.to.getTime());
@@ -146,7 +142,7 @@ public class HistQuotesQuery2V8Request {
         params.put("interval", this.interval.getTag());
         params.put("events", "div|split");
 
-        String url = YahooFinance.HISTQUOTES_QUERY2V8_BASE_URL + URLEncoder.encode(this.symbol , "UTF-8") + "?" + Utils.getURLParameters(params);
+        String url = YahooFinance.HISTQUOTES_QUERY2V8_BASE_URL + URLEncoder.encode(this.symbol, StandardCharsets.UTF_8) + "?" + Utils.getURLParameters(params);
 
         // Get CSV from Yahoo
         log.info("Sending request: " + url);

@@ -10,27 +10,27 @@ import java.time.LocalDateTime;
  * }
  */
 public class STOCHDataSlow {
-  private final LocalDateTime datetime;
-  private final double slowD;
-  private final double slowK;
+    private final LocalDateTime datetime;
+    private final double slowD;
+    private final double slowK;
 
-  public STOCHDataSlow(LocalDateTime datetime,
-                       double slowD,
-                       double slowK) {
-    this.datetime = datetime;
-    this.slowD = slowD;
-    this.slowK = slowK;
-  }
+    public STOCHDataSlow(LocalDateTime datetime,
+                         double slowD,
+                         double slowK) {
+        this.datetime = datetime;
+        this.slowD = slowD;
+        this.slowK = slowK;
+    }
 
-  public LocalDateTime getDateTime() {
-    return datetime;
-  }
+    public LocalDateTime getDateTime() {
+        return datetime;
+    }
 
-  public double getSlowD() {
-    return slowD;
-  }
+    public double getSlowD() {
+        return slowD;
+    }
 
-  public double getSlowK() {
-    return slowK;
-  }
+    public double getSlowK() {
+        return slowK;
+    }
 }

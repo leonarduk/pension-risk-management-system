@@ -2,16 +2,13 @@ package yahoofinance.mock;
 
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockWebServer;
-
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import yahoofinance.YahooFinance;
 
 import java.io.IOException;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class MockedServersTest {
@@ -25,7 +22,7 @@ public class MockedServersTest {
 
     @BeforeClass
     public static void startServers() {
-        if(started) {
+        if (started) {
             return;
         }
         started = true;

@@ -15,49 +15,49 @@ import java.util.Map;
  */
 public class TRIX extends TechnicalIndicatorResponse<IndicatorData> {
 
-  private TRIX(final Map<String, String> metaData,
-               final List<IndicatorData> indicators) {
-    super(metaData, indicators);
-  }
-
-  /**
-   * Creates {@code TRIX} instance from json.
-   *
-   * @param interval specifies how to interpret the date key to the data json object
-   * @param json string to parse
-   * @return TRIX instance
-   */
-  public static TRIX from(Interval interval, String json) {
-    Parser parser = new Parser(interval);
-    return parser.parseJson(json);
-  }
-
-  /**
-   * Helper class for parsing json to {@code TRIX}.
-   *
-   * @see TechnicalIndicatorParser
-   * @see JsonParser
-   */
-  private static class Parser extends TechnicalIndicatorParser<TRIX> {
-
-    public Parser(Interval interval) {
-      super(interval);
+    private TRIX(final Map<String, String> metaData,
+                 final List<IndicatorData> indicators) {
+        super(metaData, indicators);
     }
 
-    @Override
-    String getIndicatorKey() {
-      return "Technical Analysis: TRIX";
+    /**
+     * Creates {@code TRIX} instance from json.
+     *
+     * @param interval specifies how to interpret the date key to the data json object
+     * @param json     string to parse
+     * @return TRIX instance
+     */
+    public static TRIX from(Interval interval, String json) {
+        Parser parser = new Parser(interval);
+        return parser.parseJson(json);
     }
 
-    @Override
-    TRIX resolve(Map<String, String> metaData,
-                Map<String, Map<String, String>> indicatorData) {
-      List<IndicatorData> indicators = new ArrayList<>();
-      indicatorData.forEach((key, values) -> indicators.add(new IndicatorData(
-              resolveDate(key),
-              Double.parseDouble(values.get("TRIX"))
-      )));
-      return new TRIX(metaData, indicators);
+    /**
+     * Helper class for parsing json to {@code TRIX}.
+     *
+     * @see TechnicalIndicatorParser
+     * @see JsonParser
+     */
+    private static class Parser extends TechnicalIndicatorParser<TRIX> {
+
+        public Parser(Interval interval) {
+            super(interval);
+        }
+
+        @Override
+        String getIndicatorKey() {
+            return "Technical Analysis: TRIX";
+        }
+
+        @Override
+        TRIX resolve(Map<String, String> metaData,
+                     Map<String, Map<String, String>> indicatorData) {
+            List<IndicatorData> indicators = new ArrayList<>();
+            indicatorData.forEach((key, values) -> indicators.add(new IndicatorData(
+                    resolveDate(key),
+                    Double.parseDouble(values.get("TRIX"))
+            )));
+            return new TRIX(metaData, indicators);
+        }
     }
-  }
 }

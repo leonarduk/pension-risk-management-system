@@ -1,5 +1,7 @@
 package yahoofinance.histquotes2;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import yahoofinance.Utils;
 import yahoofinance.YahooFinance;
 import yahoofinance.util.RedirectableRequest;
@@ -10,13 +12,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
  * @author Stijn Strickx (modified by Randle McMurphy)
  */
 public class HistDividendsRequest {
@@ -33,6 +32,7 @@ public class HistDividendsRequest {
     static {
         DEFAULT_FROM.add(Calendar.YEAR, -1);
     }
+
     public static final Calendar DEFAULT_TO = Calendar.getInstance();
 
     // Interval has no meaning here and is not used here
@@ -59,6 +59,7 @@ public class HistDividendsRequest {
 
     /**
      * Put everything smaller than days at 0
+     *
      * @param cal calendar to be cleaned
      */
     private Calendar cleanHistCalendar(Calendar cal) {
@@ -72,8 +73,8 @@ public class HistDividendsRequest {
     public List<HistoricalDividend> getResult() throws IOException {
 
         List<HistoricalDividend> result = new ArrayList<HistoricalDividend>();
-        
-        if(this.from.after(this.to)) {
+
+        if (this.from.after(this.to)) {
             log.warn("Unable to retrieve historical dividends. "
                     + "From-date should not be after to-date. From: "
                     + this.from.getTime() + ", to: " + this.to.getTime());
@@ -87,13 +88,13 @@ public class HistDividendsRequest {
         // Interval has no meaning here and is not used here
         // But it's better to leave it because Yahoo's standard query URL still contains it
         params.put("interval", DEFAULT_INTERVAL.getTag());
-        
+
         // This will instruct Yahoo to return dividends
         params.put("events", "div");
 
         params.put("crumb", CrumbManager.getCrumb());
 
-        String url = YahooFinance.HISTQUOTES2_BASE_URL + URLEncoder.encode(this.symbol , "UTF-8") + "?" + Utils.getURLParameters(params);
+        String url = YahooFinance.HISTQUOTES2_BASE_URL + URLEncoder.encode(this.symbol, StandardCharsets.UTF_8) + "?" + Utils.getURLParameters(params);
 
         // Get CSV from Yahoo
         log.info("Sending request: " + url);

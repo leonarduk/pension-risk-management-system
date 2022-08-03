@@ -1,7 +1,6 @@
 package yahoofinance;
 
 import org.junit.Test;
-
 import yahoofinance.mock.MockedServersTest;
 
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.util.TimeZone;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class SimpleQuoteRequestTest extends MockedServersTest {

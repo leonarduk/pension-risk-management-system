@@ -3,15 +3,13 @@ package yahoofinance.mock;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import okhttp3.mockwebserver.MockResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
  * @author Stijn Strickx
  */
 public class ResponseResource {

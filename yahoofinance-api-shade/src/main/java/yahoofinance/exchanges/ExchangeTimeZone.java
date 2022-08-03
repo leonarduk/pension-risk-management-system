@@ -1,15 +1,13 @@
-
 package yahoofinance.exchanges;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
  * @author Stijn Strickx
  */
 public class ExchangeTimeZone {
@@ -18,7 +16,7 @@ public class ExchangeTimeZone {
 
     public static final Map<String, TimeZone> SUFFIX_TIMEZONES = new HashMap<String, TimeZone>();
     public static final Map<String, TimeZone> INDEX_TIMEZONES = new HashMap<String, TimeZone>();
-    
+
     static {
         SUFFIX_TIMEZONES.put("", TimeZone.getTimeZone("America/New_York"));
         SUFFIX_TIMEZONES.put("CBT", TimeZone.getTimeZone("America/New_York"));
@@ -82,7 +80,7 @@ public class ExchangeTimeZone {
         SUFFIX_TIMEZONES.put("ME", TimeZone.getTimeZone("Europe/Moscow"));
         SUFFIX_TIMEZONES.put("AT", TimeZone.getTimeZone("Europe/Athens"));
         SUFFIX_TIMEZONES.put("LS", TimeZone.getTimeZone("Europe/Lisbon"));
-        
+
         INDEX_TIMEZONES.put("^FTSE", TimeZone.getTimeZone("Europe/London"));
         INDEX_TIMEZONES.put("^GDAXI", TimeZone.getTimeZone("Europe/Berlin"));
         INDEX_TIMEZONES.put("^FCHI", TimeZone.getTimeZone("Europe/Paris"));
@@ -158,35 +156,35 @@ public class ExchangeTimeZone {
         INDEX_TIMEZONES.put("^SOX", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^BKX", TimeZone.getTimeZone("America/New_York"));
     }
-    
+
     /**
      * Get the time zone for a specific exchange suffix
-     * 
+     *
      * @param suffix suffix for the exchange in YahooFinance
      * @return time zone of the exchange
      */
     public static TimeZone get(String suffix) {
-        if(SUFFIX_TIMEZONES.containsKey(suffix)) {
+        if (SUFFIX_TIMEZONES.containsKey(suffix)) {
             return SUFFIX_TIMEZONES.get(suffix);
         }
         log.warn("Cannot find time zone for exchange suffix: '{}'. Using default: America/New_York", suffix);
         return SUFFIX_TIMEZONES.get("");
     }
-    
+
     /**
      * Get the time zone for a specific stock or index.
      * For stocks, the exchange suffix is extracted from the stock symbol to retrieve the time zone.
-     * 
+     *
      * @param symbol stock symbol in YahooFinance
      * @return time zone of the exchange on which this stock is traded
      */
     public static TimeZone getStockTimeZone(String symbol) {
         // First check if it's a known stock index
-        if(INDEX_TIMEZONES.containsKey(symbol)) {
+        if (INDEX_TIMEZONES.containsKey(symbol)) {
             return INDEX_TIMEZONES.get(symbol);
         }
-        
-        if(!symbol.contains(".")) {
+
+        if (!symbol.contains(".")) {
             return ExchangeTimeZone.get("");
         }
         String[] split = symbol.split("\\.");

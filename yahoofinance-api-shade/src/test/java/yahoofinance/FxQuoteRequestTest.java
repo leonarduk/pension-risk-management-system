@@ -9,10 +9,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class FxQuoteRequestTest extends MockedServersTest {

@@ -11,7 +11,7 @@ public class ForexResponse<Data> {
     private final List<Data> forexData;
 
     public ForexResponse(Map<String, String> metaData,
-                                   List<Data> forexData) {
+                         List<Data> forexData) {
         this.metaData = metaData;
         this.forexData = forexData;
     }

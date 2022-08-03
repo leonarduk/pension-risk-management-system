@@ -11,35 +11,35 @@ import java.time.LocalDateTime;
  * }
  */
 public class BBANDSData {
-  private final LocalDateTime datetime;
-  private final double lowerBand;
-  private final double upperBand;
-  private final double midBand;
+    private final LocalDateTime datetime;
+    private final double lowerBand;
+    private final double upperBand;
+    private final double midBand;
 
-  public BBANDSData(LocalDateTime datetime,
-                    double lowerBand,
-                    double upperBand,
-                    double midBand) {
-    this.datetime = datetime;
-    this.lowerBand = lowerBand;
-    this.upperBand = upperBand;
-    this.midBand = midBand;
-  }
+    public BBANDSData(LocalDateTime datetime,
+                      double lowerBand,
+                      double upperBand,
+                      double midBand) {
+        this.datetime = datetime;
+        this.lowerBand = lowerBand;
+        this.upperBand = upperBand;
+        this.midBand = midBand;
+    }
 
-  public LocalDateTime getDateTime() {
-    return datetime;
-  }
+    public LocalDateTime getDateTime() {
+        return datetime;
+    }
 
-  public double getLowerBand() {
-    return lowerBand;
-  }
+    public double getLowerBand() {
+        return lowerBand;
+    }
 
-  public double getUpperBand() {
-    return upperBand;
-  }
+    public double getUpperBand() {
+        return upperBand;
+    }
 
-  public double getMidBand() {
-    return midBand;
-  }
+    public double getMidBand() {
+        return midBand;
+    }
 
 }

@@ -1,49 +1,48 @@
-
 package yahoofinance.quotes.stock;
+
+import yahoofinance.Utils;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 
-import yahoofinance.Utils;
-
 /**
  * All getters can return null in case the data is not available from Yahoo Finance.
- * 
+ *
  * @author Stijn Strickx
  */
 public class StockStats {
-    
+
     private final String symbol;
-    
+
     private BigDecimal marketCap;
     private Long sharesFloat;
     private Long sharesOutstanding;
     private Long sharesOwned;
-    
+
     private BigDecimal eps;
     private BigDecimal pe;
     private BigDecimal peg;
-    
+
     private BigDecimal epsEstimateCurrentYear;
     private BigDecimal epsEstimateNextQuarter;
     private BigDecimal epsEstimateNextYear;
-    
+
     private BigDecimal priceBook;
     private BigDecimal priceSales;
     private BigDecimal bookValuePerShare;
-    
+
     private BigDecimal revenue; // ttm
     private BigDecimal EBITDA; // ttm
     private BigDecimal oneYearTargetPrice;
-    
+
     private BigDecimal shortRatio;
 
     private Calendar earningsAnnouncement;
-    
+
     public StockStats(String symbol) {
         this.symbol = symbol;
     }
-    
+
     public BigDecimal getROE() {
         return Utils.getPercent(this.EBITDA, this.marketCap);
     }
@@ -51,7 +50,7 @@ public class StockStats {
     public String getSymbol() {
         return symbol;
     }
-    
+
     public BigDecimal getMarketCap() {
         return marketCap;
     }
@@ -199,10 +198,10 @@ public class StockStats {
     @Override
     public String toString() {
         String earningsStr = "/";
-        if(this.earningsAnnouncement != null) {
+        if (this.earningsAnnouncement != null) {
             earningsStr = this.earningsAnnouncement.getTime().toString();
         }
         return "EPS: " + this.eps + ", PE: " + this.pe + ", Earnings announcement: " + earningsStr;
     }
-    
+
 }

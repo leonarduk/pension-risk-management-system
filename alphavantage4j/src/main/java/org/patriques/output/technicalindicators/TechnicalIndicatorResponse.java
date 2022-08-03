@@ -11,29 +11,29 @@ import java.util.Map;
  */
 public class TechnicalIndicatorResponse<Data> {
 
-  private final Map<String, String> metaData;
-  private final List<Data> indicatorData;
+    private final Map<String, String> metaData;
+    private final List<Data> indicatorData;
 
-  TechnicalIndicatorResponse(final Map<String, String> metaData, final List<Data> indicatorData) {
-    this.metaData = metaData;
-    this.indicatorData = indicatorData;
-  }
+    TechnicalIndicatorResponse(final Map<String, String> metaData, final List<Data> indicatorData) {
+        this.metaData = metaData;
+        this.indicatorData = indicatorData;
+    }
 
-  /**
-   * Meta data for response.
-   *
-   * @return map of keys and values in json representation of metadata.
-   */
-  public Map<String, String> getMetaData() {
-    return metaData;
-  }
+    /**
+     * Meta data for response.
+     *
+     * @return map of keys and values in json representation of metadata.
+     */
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
 
-  /**
-   * List of generic Data
-   *
-   * @return list of Data
-   */
-  public List<Data> getData() {
-    return indicatorData;
-  }
+    /**
+     * List of generic Data
+     *
+     * @return list of Data
+     */
+    public List<Data> getData() {
+        return indicatorData;
+    }
 }

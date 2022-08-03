@@ -1,12 +1,10 @@
 package yahoofinance.quotes.csv;
 
 /**
- *
  * @author Stijn Strickx
  */
 public enum QuotesProperty {
-    
-    
+
 
     AfterHoursChangeRealtime("c8"), // After Hours Change (Realtime)
     AnnualizedGain("g3"), // Annualized Gain
@@ -98,12 +96,12 @@ public enum QuotesProperty {
     YearRange("w"); // Year Range
 
     private final String tag;
-    
+
 
     QuotesProperty(String tag) {
         this.tag = tag;
     }
-    
+
     public String getTag() {
         return this.tag;
     }

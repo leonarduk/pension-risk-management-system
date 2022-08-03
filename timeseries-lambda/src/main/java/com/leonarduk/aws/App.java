@@ -129,13 +129,12 @@ public class App
                                    final boolean interpolate, final boolean cleanData,
                                    final Instrument instrument)
             throws IOException {
-        boolean addLatestQuoteToTheSeries = false;
         final StringBuilder sbBody = new StringBuilder();
         final List<List<DataField>> records = Lists.newArrayList();
 
         final List<Bar> historyData;
 
-        historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, addLatestQuoteToTheSeries);
+        historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
 
         for (final Bar historicalQuote : historyData) {
             final ArrayList<DataField> record = Lists.newArrayList();
