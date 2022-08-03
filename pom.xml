@@ -208,8 +208,6 @@
 
         <module>timeseries-source-and-analysis</module>
 
-        <module>timeseries-spring-boot-server</module>
-
         <module>timeseries-lambda</module>
 
     </modules>
