@@ -202,9 +202,9 @@
 
     <modules>
 
-        <module>yahoofinance-api-shade</module>
+        <module>timeseries-sources/yahoofinance-api-shade</module>
 
-        <module>alphavantage4j</module>
+        <module>timeseries-sources/alphavantage4j</module>
 
         <module>timeseries-sources</module>
 
