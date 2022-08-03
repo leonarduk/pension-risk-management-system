@@ -19,12 +19,11 @@ import java.util.stream.Collectors;
 public class FlatLineInterpolatorTest {
     private TimeSeriesInterpolator interpolator;
     private TimeSeries series;
-    private List<ExtendedHistoricalQuote> quotes;
 
     @Before
     public void setUp() throws Exception {
         this.interpolator = new FlatLineInterpolator();
-        quotes = Arrays.asList(
+        List<ExtendedHistoricalQuote> quotes = Arrays.asList(
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-14"), 105.0, 115.0, 95.0,
                         110.0, 2000.0, 0, ""),
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-07"), 100.0, 112.0, 92.0,
