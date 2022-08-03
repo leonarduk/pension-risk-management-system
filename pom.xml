@@ -201,15 +201,8 @@
     </profiles>
 
     <modules>
-
-        <module>timeseries-sources/yahoofinance-api-shade</module>
-
-        <module>timeseries-sources/alphavantage4j</module>
-
         <module>timeseries-sources</module>
-
         <module>timeseries-lambda</module>
-
     </modules>
 
     <organization>
