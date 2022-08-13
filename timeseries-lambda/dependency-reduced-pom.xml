@@ -78,7 +78,7 @@
   </dependencyManagement>
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
-    <aws.java.sdk.version>2.17.246</aws.java.sdk.version>
+    <aws.java.sdk.version>2.17.252</aws.java.sdk.version>
     <maven.compiler.source>11</maven.compiler.source>
     <junit5.version>5.9.0</junit5.version>
     <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
