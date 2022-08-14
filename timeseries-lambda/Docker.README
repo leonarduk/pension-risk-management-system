@@ -1,7 +1,7 @@
 docker login
 
 # refetch base image
-docker pull amazon/aws-lambda-java:11
+docker pull openjdk:18-jdk
 
 ## to build the image
 docker build -t leonarduk/timeseries-lambda .
