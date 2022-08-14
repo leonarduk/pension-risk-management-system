@@ -10,13 +10,13 @@ docker build -t leonarduk/timeseries-lambda .
 docker scan leonarduk/timeseries-lambda
 
 ## to run the container
-docker run -p 8092:8092 -t leonarduk/timeseries-lambda
+#docker run -p 8092:8092 -t leonarduk/timeseries-lambda
 
 ## to publish
 docker push leonarduk/timeseries-lambda
 
 aws configure
-aws ecr create-repository --repository-name leonarduk/timeseries-lambda --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
-docker tag  leonarduk/timeseries-lambda:latest 580582638314.dkr.ecr.eu-west-1.amazonaws.com/leonarduk/timeseries-lambda:latest
-aws ecr get-login-password | docker login --username AWS --password-stdin 580582638314.dkr.ecr.eu-west-1.amazonaws.com
-docker push 580582638314.dkr.ecr.eu-west-1.amazonaws.com/leonarduk/timeseries-lambda:latest
+aws ecr create-repository --repository-name leonarduk-575836911148/timeseries-lambda --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
+docker tag  leonarduk/timeseries-lambda:latest 575836911148.dkr.ecr.eu-west-1.amazonaws.com/leonarduk-575836911148/timeseries-lambda:latest
+aws ecr get-login-password | docker login --username AWS --password-stdin 575836911148.dkr.ecr.eu-west-1.amazonaws.com
+docker push 575836911148.dkr.ecr.eu-west-1.amazonaws.com/leonarduk-575836911148/timeseries-lambda:latest
