@@ -5,6 +5,7 @@ FROM openjdk:18-jdk
 COPY target/dependency/* /function/
 COPY target/timeseries-lambda-1.0-SNAPSHOT.jar /function
 
-ENTRYPOINT [ "java", "-cp", "/function/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+# https://github.com/aws/aws-lambda-java-libs/issues/261
+ENTRYPOINT [ "java", "--add-opens", "java.base/java.util=ALL-UNNAMED", "-cp", "/function/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 CMD ["com.leonarduk.aws.App::handleRequest"]
 
