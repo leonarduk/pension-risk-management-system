@@ -61,7 +61,13 @@ public class App
     }
 
     private String getResults(Map<String, String> inputParams) throws IOException {
+
+        if (inputParams == null)
+        {
+            throw new IllegalArgumentException("No parameters provided. Expect at least ticker");
+        }
         System.out.println(inputParams);
+
 
         String ticker = inputParams.get("ticker");
         final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("years"), "10"));
