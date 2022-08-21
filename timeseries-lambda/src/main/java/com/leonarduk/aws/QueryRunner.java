@@ -1,9 +1,5 @@
 package com.leonarduk.aws;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.Instrument;
@@ -22,45 +18,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Lambda function entry point. You can change to use other pojo type or implement
- * a different RequestHandler.
- *
- * @see <a href=https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html>Lambda Java Handler</a> for more information
- */
-public class App
-        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class QueryRunner {
+    public static final String INTERPOLATE = "interpolate";
+    public static final String CLEAN_DATA = "cleanData";
+    public static final String YEARS = "years";
+    public static final String TICKER = "ticker";
     private final StockFeed stockFeed;
 
-    public App() {
-        stockFeed = DependencyFactory.stockFeed();
+    public QueryRunner() {
+        this.stockFeed = DependencyFactory.stockFeed();
+
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println(new App().getResults(ImmutableMap.of(
-                "ticker", "PHGP.L",
-                "years", "1",
+        System.out.println(new QueryRunner().getResults(ImmutableMap.of(
+                TICKER, "PHGP.L",
+                YEARS, "1",
                 "interpolate", "true",
-                "cleanData", "true"
+                CLEAN_DATA, "true"
         )));
     }
 
-    @Override
-    public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
-        // TODO: invoking the api call using s3Client.
-        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-        try {
-            responseEvent.setBody(getResults(input.getQueryStringParameters()));
-            responseEvent.setStatusCode(200);
-        } catch (IOException e) {
-            e.printStackTrace();
-            responseEvent.setBody("FAILED: " + e.getMessage());
-            responseEvent.setStatusCode(500);
-        }
-        return responseEvent;
-    }
-
-    private String getResults(Map<String, String> inputParams) throws IOException {
+    public String getResults(Map<String, String> inputParams) throws IOException {
 
         if (inputParams == null)
         {
@@ -69,16 +48,17 @@ public class App
         System.out.println(inputParams);
 
 
-        String ticker = inputParams.get("ticker");
-        final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("years"), "10"));
+        String ticker = inputParams.get(TICKER);
+
+        final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get(YEARS), "10"));
         final int months = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("months"), "0"));
         final int weeks = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("weeks"), "0"));
         final int days = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("days"), "0"));
 
         final String fromDate = inputParams.get("fromDate");
         final String toDate = inputParams.get("toDate");
-        final boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("interpolate"), "False"));
-        final boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get("cleanData"), "False"));
+        final boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(INTERPOLATE), "False"));
+        final boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(CLEAN_DATA), "False"));
 
         String region = StringUtils.defaultIfEmpty(inputParams.get("region"), "L");
         String type = StringUtils.defaultIfEmpty(inputParams.get("type"), "UNKNOWN");

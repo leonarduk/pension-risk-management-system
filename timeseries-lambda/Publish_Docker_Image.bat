@@ -1,4 +1,4 @@
-set IMAGE_VERSION_TAG=2
+set IMAGE_VERSION_TAG=3
 
 set DOCKER_REPO=leonarduk
 set PROJECT=timeseries-lambda

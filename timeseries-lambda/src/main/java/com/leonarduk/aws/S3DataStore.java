@@ -2,8 +2,6 @@ package com.leonarduk.aws;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.leonarduk.finance.stockfeed.DataStore;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
@@ -11,7 +9,6 @@ import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.AbstractCsvStockFeed;
 import com.leonarduk.finance.utils.StringUtils;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ta4j.core.Bar;
@@ -55,24 +52,9 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
         );
     }
 
-    public File getStock(final Instrument instrument) throws IOException {
-        log.info(String.format("getStock: %s", instrument.code()));
-
-        S3Object s3object = s3.getObject(bucketName, getS3Filepath(instrument));
-        S3ObjectInputStream inputStream = s3object.getObjectContent();
-
-        File destination = new File(this.getQueryName(this.getInstrument()));
-        FileUtils.copyInputStreamToFile(inputStream, destination);
-        return destination;
-    }
-
     @Override
     public boolean contains(StockV1 stock) {
         return s3.doesBucketExistV2(getS3Filepath(stock.getInstrument()));
-    }
-
-    protected File getStock(final StockV1 stock) throws IOException {
-        return this.getStock(stock.getInstrument());
     }
 
     @Override

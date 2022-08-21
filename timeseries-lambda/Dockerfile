@@ -7,5 +7,6 @@ COPY target/timeseries-lambda-1.0-SNAPSHOT.jar /function
 
 # https://github.com/aws/aws-lambda-java-libs/issues/261
 ENTRYPOINT [ "java", "--add-opens", "java.base/java.util=ALL-UNNAMED", "-cp", "/function/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
-CMD ["com.leonarduk.aws.App::handleRequest"]
+#CMD ["com.leonarduk.aws.apigateway.ApiGatewayHandler::handleRequest"]
+CMD ["com.leonarduk.aws.sqs.SqsHandler::handleRequest"]
 

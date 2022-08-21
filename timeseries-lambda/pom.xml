@@ -101,7 +101,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
-                            <mainClass>com.leonarduk.aws.App</mainClass>
+                            <mainClass>com.leonarduk.aws.ApiGatewayHandler</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
