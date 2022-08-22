@@ -1,4 +1,4 @@
-set IMAGE_VERSION_TAG=3
+set IMAGE_VERSION_TAG=6
 
 set DOCKER_REPO=leonarduk
 set PROJECT=timeseries-lambda
@@ -9,29 +9,30 @@ set REGION=eu-west-1
 
 set BASE_IMAGE=openjdk:18-jdk
 
-set DOCKER_IMAGE=%DOCKER_REPO%/%PROJECT%
 set AWS_REPO=%DOCKER_REPO%-%AWS_ACCOUNT_ID%/%PROJECT%
 set AWS_ECR=%AWS_ACCOUNT_ID%.dkr.ecr.%REGION%.amazonaws.com
 
-set AWS_VERSION=%AWS_ECR%/%AWS_REPO%:%IMAGE_VERSION_TAG%
-
 docker login
 
-@REM refetch base image
+echo refetch base image
 docker pull %BASE_IMAGE%
 
-@REM to build the image
-docker build -t %DOCKER_IMAGE% .
+@REM Inspect your images and find two or more with the same tag:
+@REM docker images
+@REM Delete them:
+@REM docker rmi --force 'image id'
 
-@REM to check for vulnerabilities
-docker scan %DOCKER_IMAGE%
+echo log into AWS ECR
+@REM aws ecr get-login-password | docker login --username AWS --password-stdin %AWS_ECR%
+aws ecr get-login-password --region %REGION% | docker login --username AWS --password-stdin %AWS_ECR%
+docker build -t %AWS_REPO%:%IMAGE_VERSION_TAG% .
 
-@REM to publish
-docker push %DOCKER_IMAGE%
-
+@REM echo create repository
 aws ecr create-repository --repository-name %AWS_REPO% --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
-docker tag  %DOCKER_IMAGE%:latest %AWS_VERSION%
-aws ecr get-login-password | docker login --username AWS --password-stdin %AWS_ECR%
-docker push %AWS_VERSION%
 
-echo "%AWS_VERSION% is ready for use"
+docker tag %AWS_REPO%:%IMAGE_VERSION_TAG% %AWS_ECR%/%AWS_REPO%:%IMAGE_VERSION_TAG%
+
+echo Push to ECR - stage 1 - Preparing - count how many layers.
+docker push %AWS_ECR %/%AWS_REPO%:%IMAGE_VERSION_TAG%
+
+echo "%IMAGE_VERSION_TAG% is ready for use"
