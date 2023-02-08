@@ -8,7 +8,11 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
 import com.google.common.collect.ImmutableMap;
 import com.leonarduk.aws.QueryRunner;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
+@Slf4j
 public class SqsHandler implements RequestHandler<SQSEvent, Void> {
     private final QueryRunner queryRunner;
 
@@ -18,21 +22,29 @@ public class SqsHandler implements RequestHandler<SQSEvent, Void> {
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
+        if (event == null || event.getRecords() == null || event.getRecords().isEmpty()){
+            log.info("SQS Message has no records");
+        }
+
         for (SQSMessage msg : event.getRecords()) {
             String messageBody = msg.getBody();
-            Gson gson = new Gson();
             try {
-                QueryRequest request = gson.fromJson(messageBody, QueryRequest.class);
-                ImmutableMap<String, String> parameters = ImmutableMap.of(
-                        QueryRunner.TICKER, request.ticker(),
-                        QueryRunner.YEARS, String.valueOf(request.years()),
-                        QueryRunner.CLEAN_DATA, String.valueOf(request.cleanData()),
-                        QueryRunner.INTERPOLATE, String.valueOf(request.interpolate()));
-                this.queryRunner.getResults(parameters);
+                this.queryRunner.getResults(getParameterMap(messageBody));
             } catch (Exception e) {
                 System.err.println(String.format("Error parsing message \n %s. \n %s", messageBody));
             }
         }
         return null;
+    }
+
+    public Map<String, String> getParameterMap(String messageBody) {
+        Gson gson = new Gson();
+        QueryRequest request = gson.fromJson(messageBody, QueryRequest.class);
+        ImmutableMap<String, String> parameters = ImmutableMap.of(
+                QueryRunner.TICKER, request.getTicker(),
+                QueryRunner.YEARS, String.valueOf(request.getYears()),
+                QueryRunner.CLEAN_DATA, String.valueOf(request.isCleanData()),
+                QueryRunner.INTERPOLATE, String.valueOf(request.isInterpolate()));
+        return parameters;
     }
 }

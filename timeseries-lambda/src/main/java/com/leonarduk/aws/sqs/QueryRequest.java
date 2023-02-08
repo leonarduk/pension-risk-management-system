@@ -1,5 +1,18 @@
 package com.leonarduk.aws.sqs;
 
-public record QueryRequest(String ticker, int years, boolean cleanData, boolean interpolate) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class QueryRequest {
+
+    private  String ticker;
+    private  int years;
+    private  boolean cleanData;
+    private  boolean interpolate;
 }
