@@ -6,9 +6,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
-import com.google.common.collect.ImmutableMap;
 import com.leonarduk.aws.QueryRunner;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.util.Map;
 

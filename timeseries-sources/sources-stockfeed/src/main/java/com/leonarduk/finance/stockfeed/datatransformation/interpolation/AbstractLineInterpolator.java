@@ -1,6 +1,6 @@
 package com.leonarduk.finance.stockfeed.datatransformation.interpolation;
 
-import com.google.inject.internal.util.Lists;
+import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuoteTimeSeries;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;

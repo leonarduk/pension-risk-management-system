@@ -1,7 +1,5 @@
 package com.leonarduk.aws;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
@@ -9,7 +7,9 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Lists;
 import org.ta4j.core.Bar;
+import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.io.IOException;
 import java.time.LocalDate;

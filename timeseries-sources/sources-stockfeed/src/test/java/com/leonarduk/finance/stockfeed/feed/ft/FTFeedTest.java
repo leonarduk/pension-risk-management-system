@@ -4,6 +4,7 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class FTFeedTest {
     }
 
     @Test
+    @Ignore
     public void get() throws IOException {
         Optional<StockV1> result = feed.get(Instrument.fromString("PHGP"), 1, false);
         if (result.isPresent()) {

@@ -1,6 +1,6 @@
 package com.leonarduk.finance.stockfeed.feed;
 
-import com.google.inject.internal.util.Lists;
+import com.google.common.collect.Lists;
 import org.ta4j.core.Bar;
 import org.ta4j.core.TimeSeries;
 import org.ta4j.core.num.DoubleNum;
