@@ -125,8 +125,13 @@
                 <target>${maven.compiler.target}</target>
                 <fork>true</fork>
 
-                <!-- Disable annotation processing for ourselves. -->
-                <compilerArgument>-proc:none</compilerArgument>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>com.google.auto.service</groupId>
+                        <artifactId>auto-service</artifactId>
+                        <version>1.0</version>
+                    </path>
+                </annotationProcessorPaths>
             </configuration>
         </plugin>
         </plugins></pluginManagement>
