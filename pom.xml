@@ -23,7 +23,7 @@
         <junit.version>4.13.2</junit.version>
         <junit5.version>5.9.0</junit5.version>
         <log4jdbc.log4j2.version>1.16</log4jdbc.log4j2.version>
-        <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
@@ -42,11 +42,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>${maven.compiler.plugin.version}</version>
                     <configuration>
-                        <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.target}</target>
-                        <fork>true</fork>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>com.google.auto.service</groupId>
+                                <artifactId>auto-service</artifactId>
+                                <version>1.0</version>
+                            </path>
+
+                            <!-- This is needed when using Lombok 1.18.16 and above -->
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>0.2.0</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
