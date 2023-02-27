@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.leonarduk</groupId>
@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <version>0.1.4-SNAPSHOT</version>
     <name>Parent pom</name>
-    <url>http://maven.apache.org</url>
+    <url>https://maven.apache.org</url>
 
 
     <properties>
@@ -160,13 +160,13 @@
     </modules>
     <organization>
         <name>Leonard UK Ltd</name>
-        <url>http://leonarduk.com</url>
+        <url>https://leonarduk.com</url>
     </organization>
     <inceptionYear>2017</inceptionYear>
     <licenses>
         <license>
             <name>GNU General Public License v3.0 or later</name>
-            <url>http://www.spdx.org/licenses/GPL-3.0+</url>
+            <url>https://www.spdx.org/licenses/GPL-3.0+</url>
         </license>
     </licenses>
     <developers>
@@ -180,9 +180,9 @@
                 <role>Developer</role>
             </roles>
             <organization>Leonard UK Ltd</organization>
-            <organizationUrl>http://leonarduk.com</organizationUrl>
+            <organizationUrl>https://leonarduk.com</organizationUrl>
             <timezone>0</timezone>
-            <url>http://uk.linkedin.com/in/steveleonard/</url>
+            <url>https://uk.linkedin.com/in/steveleonard/</url>
         </developer>
     </developers>
     <!-- to get to sona type and onto maven central -->
