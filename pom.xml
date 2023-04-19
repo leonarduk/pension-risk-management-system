@@ -27,7 +27,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
-        <org.slf4j.version>2.0.6</org.slf4j.version>
+        <org.slf4j.version>2.0.7</org.slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rest.assured.version>2.3.3</rest.assured.version>
         <org.ta4j.version>0.12</org.ta4j.version>
