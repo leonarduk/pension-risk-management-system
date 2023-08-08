@@ -21,7 +21,7 @@
 		<aws-java-sdk-bom.version>1.12.281</aws-java-sdk-bom.version>
 		<start-class>com.leonarduk.finance.api.App</start-class>
 		<jakarta.persistence.version>2.2.3</jakarta.persistence.version>
-		<org.seleniumhq.selenium.version>4.10.0</org.seleniumhq.selenium.version>
+		<org.seleniumhq.selenium.version>4.11.0</org.seleniumhq.selenium.version>
 		<org.junit.jupiter.version>5.9.0</org.junit.jupiter.version>
 		<org.jfree.version>3.4.3</org.jfree.version>
 		<org.apache.xmlgraphics.version>1.16</org.apache.xmlgraphics.version>
