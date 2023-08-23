@@ -24,7 +24,7 @@
 		<org.seleniumhq.selenium.version>4.11.0</org.seleniumhq.selenium.version>
 		<org.junit.jupiter.version>5.9.0</org.junit.jupiter.version>
 		<org.jfree.version>3.4.3</org.jfree.version>
-		<org.apache.xmlgraphics.version>1.16</org.apache.xmlgraphics.version>
+		<org.apache.xmlgraphics.version>1.17</org.apache.xmlgraphics.version>
 	</properties>
 
 	<repositories>
