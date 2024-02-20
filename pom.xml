@@ -32,7 +32,7 @@
         <rest.assured.version>2.3.3</rest.assured.version>
         <org.ta4j.version>0.12</org.ta4j.version>
         <webscraper-core.version>1.0.23</webscraper-core.version>
-        <org.apache.commons.version>3.13.0</org.apache.commons.version>
+        <org.apache.commons.version>3.14.0</org.apache.commons.version>
         <javax.xml.bind.version>2.4.0-b180830.0359</javax.xml.bind.version>
     </properties>
 
