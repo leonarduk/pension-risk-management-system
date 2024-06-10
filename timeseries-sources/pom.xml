@@ -18,7 +18,7 @@
 	<name>timeseries-sources</name>
 
 	<properties>
-		<aws-java-sdk-bom.version>1.12.281</aws-java-sdk-bom.version>
+		<aws-java-sdk-bom.version>1.12.738</aws-java-sdk-bom.version>
 		<start-class>com.leonarduk.finance.api.App</start-class>
 		<jakarta.persistence.version>2.2.3</jakarta.persistence.version>
 		<org.seleniumhq.selenium.version>4.13.0</org.seleniumhq.selenium.version>
@@ -61,11 +61,6 @@
 	</dependencyManagement>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-dynamodb</artifactId>
-		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>

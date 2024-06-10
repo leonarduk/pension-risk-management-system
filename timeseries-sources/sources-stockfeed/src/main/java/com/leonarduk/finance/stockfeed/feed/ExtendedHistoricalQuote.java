@@ -1,8 +1,5 @@
 package com.leonarduk.finance.stockfeed.feed;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 import com.leonarduk.finance.stockfeed.Instrument;
@@ -21,13 +18,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-@DynamoDBTable(tableName = "HistoricalQuote")
 @Measurement(name = "HistoricalQuote")
 public class ExtendedHistoricalQuote extends HistoricalQuote
         implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
     private static final long serialVersionUID = -6391604492688118701L;
 
-    @DynamoDBHashKey(attributeName = "symbol")
     @Column(tag = true)
     private final String symbol;
 
@@ -35,7 +30,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return symbol;
     }
 
-    @DynamoDBAttribute(attributeName = "date")
     @Column(timestamp = true)
     private Instant date;
 
@@ -47,7 +41,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         this.date = today;
     }
 
-    @DynamoDBAttribute(attributeName = "open")
     @Column
     private final BigDecimal open;
 
@@ -60,7 +53,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return DoubleNum.valueOf(getOpen());
     }
 
-    @DynamoDBAttribute(attributeName = "low")
     @Column
     private final BigDecimal low;
 
@@ -73,7 +65,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return DoubleNum.valueOf(getLow());
     }
 
-    @DynamoDBAttribute(attributeName = "high")
     @Column
     private final BigDecimal high;
 
@@ -81,7 +72,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return high;
     }
 
-    @DynamoDBAttribute(attributeName = "close")
     @Column
     private final BigDecimal close;
 
@@ -89,7 +79,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return close == null ? BigDecimal.ZERO : close;
     }
 
-    @DynamoDBAttribute(attributeName = "adjClose")
     @Column
     private final BigDecimal adjClose;
 
@@ -101,7 +90,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     @Column
     private final Num volume;
 
-    @DynamoDBAttribute
     @Override
     public Num getVolume() {
         return this.volume;
@@ -233,7 +221,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return DoubleNum.valueOf(getHigh());
     }
 
-    @DynamoDBAttribute
     @Override
     public Num getClosePrice() {
         return DoubleNum.valueOf(getClose());
