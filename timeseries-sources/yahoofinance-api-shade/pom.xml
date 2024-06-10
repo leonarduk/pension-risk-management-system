@@ -7,10 +7,9 @@
     <parent>
         <artifactId>timeseries-sources</artifactId>
         <groupId>com.leonarduk</groupId>
-        <version>0.1.3-SNAPSHOT</version>
+        <version>0.1.3</version>
     </parent>
 
-    <groupId>com.yahoofinance-api</groupId>
     <artifactId>YahooFinanceAPI</artifactId>
     <version>3.17.0</version>
     <packaging>jar</packaging>

@@ -6,7 +6,7 @@
     <groupId>com.leonarduk</groupId>
     <artifactId>pension-risk-management-system</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.4</version>
     <name>Parent pom</name>
     <url>http://maven.apache.org</url>
 
@@ -184,14 +184,17 @@
         </developer>
     </developers>
     <!-- to get to sona type and onto maven central -->
-         
-  <distributionManagement>
-    <repository>
-      <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/leonarduk/pension-risk-management-system</url>
-    </repository>
-  </distributionManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <scm>
         <connection>scm:git:git@github.com:leonarduk/pension-risk-management-system.git
