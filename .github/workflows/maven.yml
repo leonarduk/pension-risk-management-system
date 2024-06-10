@@ -30,19 +30,17 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: Build with Maven
-      run: mvn package --file pom.xml
-    - name: Nexus Repo Publish
-      uses: sonatype-nexus-community/nexus-repo-github-action@master
-      with:
-        serverUrl: http://163c6cdd.ngrok.io
-        username: ${{ env.SONATYPE_USER }}
-        password: ${{ secrets.SONATYPE_PWD }}
-        format: maven2
-        repository: maven-releases
-        coordinates: groupId=com.example artifactId=app version=1.0.0
-        assets: extension=jar
-        filename: ./target/app-1.0.0.jar
+#    - name: Nexus Repo Publish
+#      uses: sonatype-nexus-community/nexus-repo-github-action@master
+#      with:
+#        serverUrl: http://163c6cdd.ngrok.io
+#        username: ${{ env.SONATYPE_USER }}
+#        password: ${{ secrets.SONATYPE_PWD }}
+#        format: maven2
+#        repository: maven-releases
+#        coordinates: groupId=com.leonarduk artifactId=pension-risk-management-system version=1.0.0
+#        assets: extension=jar
+#        filename: ./target/app-1.0.0.jar
 
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
