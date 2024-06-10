@@ -32,6 +32,10 @@ jobs:
 
     - name: Deploy with Maven
       run: mvn -B deploy --file pom.xml
+      uses: s4u/maven-settings-action@v2.5.0
+      with:
+        servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.MVN_TOKEN }}"}}}}]'
+
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
