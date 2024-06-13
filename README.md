@@ -18,3 +18,12 @@ Uses:
 * [ta4j/ta4j](https://github.com/ta4j/ta4j)
 * [leonarduk/webscraper-core](https://github.com/leonarduk/webscraper-core)
 
+# timeseries-spring-boot-server
+
+Simple Spring boot app to allow you to query the data.  Currently I use this to provide a web service for other applications such as [buchen/portfolio](https://github.com/buchen/portfolio) as that app suffers from data quality issues when using Yahoo or Alphavantage
+
+If you select interpolate=true, it will flat-line dates before and after the available date, and will linearly interpolate for points missing within the series.  clean=true will try to detect and fix errors were the price flips between GBX and GBP.
+
+e.g.
+http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
+

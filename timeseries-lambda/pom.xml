@@ -93,7 +93,7 @@
         </dependency>
         <dependency>
             <groupId>com.leonarduk</groupId>
-            <artifactId>sources-stockfeed</artifactId>
+            <artifactId>timeseries-stockfeed</artifactId>
             <version>0.1.3</version>
             <scope>compile</scope>
         </dependency>
