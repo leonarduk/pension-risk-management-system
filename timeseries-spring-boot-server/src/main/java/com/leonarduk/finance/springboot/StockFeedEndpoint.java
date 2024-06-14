@@ -75,7 +75,7 @@ public class StockFeedEndpoint {
 //		return generateResults(years, fromDate, toDate, instrument, fieldArray);
 //	}
 
-	private String generateResults(final int years, final String fromDate, final String toDate,
+	private String generateResults(Integer years, final String fromDate, final String toDate,
                                    final Instrument instrument, String[] fields)
 			throws IOException {
 		final StringBuilder sbBody = new StringBuilder();
@@ -94,6 +94,9 @@ public class StockFeedEndpoint {
 			}
 
 		} else {
+            if (years == null){
+                years = 10;
+            }
 			toLocalDate = LocalDate.now();
 			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}

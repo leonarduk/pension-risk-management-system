@@ -6,6 +6,7 @@ import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,9 +22,10 @@ public class AppConfig {
         return new AlphavantageFeed();
     }
 
+    @Value("${filestore.path}")
     @Bean
-    DataStore dataStore(){
-        return  new FileBasedDataStore("C:\\Users\\steph\\workspaces\\luk\\data\\timeseries");
+    DataStore dataStore(String fileLocation){
+        return  new FileBasedDataStore(fileLocation);
     }
 
 }
