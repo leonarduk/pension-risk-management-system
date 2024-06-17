@@ -30,40 +30,30 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
             }
             int SCALE = 80;
             if (current.getClosePrice().dividedBy(DoubleNum.valueOf(SCALE)).isGreaterThan(previous.getClosePrice())) {
-                try {
-                    ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
-                            current.getEndTime().toLocalDate(),
+                ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
+                        current.getEndTime().toLocalDate(),
 
-                            scaleDown(current.getOpenPrice()),
-                            scaleDown(current.getMinPrice()),
-                            scaleDown(current.getMaxPrice()),
-                            scaleDown(current.getClosePrice()),
+                        scaleDown(current.getOpenPrice()),
+                        scaleDown(current.getMinPrice()),
+                        scaleDown(current.getMaxPrice()),
+                        scaleDown(current.getClosePrice()),
 
-                            current.getVolume(),
-                            comment + ": Scaled from " + current.getClosePrice() + " to " + scaleDown(current.getClosePrice()));
-                    cleanedSeries.add(cleanedQuote);
-                } catch (IOException e) {
-                    cleanedSeries.add(current);
-                    e.printStackTrace();
-                }
+                        current.getVolume(),
+                        comment + ": Scaled from " + current.getClosePrice() + " to " + scaleDown(current.getClosePrice()));
+                cleanedSeries.add(cleanedQuote);
             } else if (current.getClosePrice().multipliedBy(DoubleNum.valueOf(SCALE))
                     .isLessThan(previous.getClosePrice())) {
-                try {
-                    ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
-                            current.getEndTime().toLocalDate(),
+                ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
+                        current.getEndTime().toLocalDate(),
 
-                            scaleUp(current.getOpenPrice()),
-                            scaleUp(current.getMinPrice()),
-                            scaleUp(current.getMaxPrice()),
-                            scaleUp(current.getClosePrice()),
+                        scaleUp(current.getOpenPrice()),
+                        scaleUp(current.getMinPrice()),
+                        scaleUp(current.getMaxPrice()),
+                        scaleUp(current.getClosePrice()),
 
-                            current.getVolume(),
-                            "Scaled from " + current.getClosePrice() + " to " + scaleUp(current.getClosePrice()));
-                    cleanedSeries.add(cleanedQuote);
-                } catch (IOException e) {
-                    cleanedSeries.add(current);
-                    e.printStackTrace();
-                }
+                        current.getVolume(),
+                        "Scaled from " + current.getClosePrice() + " to " + scaleUp(current.getClosePrice()));
+                cleanedSeries.add(cleanedQuote);
             } else {
                 cleanedSeries.add(current);
             }

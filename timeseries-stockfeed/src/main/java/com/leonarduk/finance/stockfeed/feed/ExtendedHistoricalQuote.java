@@ -177,7 +177,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 
 
     public ExtendedHistoricalQuote(String string, LocalDate localDate, Num open, Num low, Num high, Num close,
-                                   Num volume, String comment) throws IOException {
+                                   Num volume, String comment)  {
         this(Instrument.fromString(string), localDate, BigDecimal.valueOf(open.doubleValue()),
                 BigDecimal.valueOf(low.doubleValue()), BigDecimal.valueOf(high.doubleValue()),
                 BigDecimal.valueOf(close.doubleValue()), BigDecimal.valueOf(close.doubleValue()),

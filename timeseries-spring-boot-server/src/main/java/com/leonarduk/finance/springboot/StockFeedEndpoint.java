@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import com.leonarduk.finance.stockfeed.*;
 
+import com.leonarduk.finance.stockfeed.datatransformation.correction.ValueScalingTransformer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,18 +51,20 @@ public class StockFeedEndpoint {
                                  @RequestParam(name = "fromDate", required = false) String fromDate,
                                  @RequestParam(name = "toDate", required = false)  String toDate,
                                  @RequestParam(name = "fields", required = false)  String fields,
+                                 @RequestParam(name = "scaling", required = false)  Double scaling,
                                  @RequestParam(name = "interpolate", required = false)  boolean interpolate,
                                  @RequestParam(name = "cleanDate", required = false)  boolean cleanDate
     ) throws IOException {
 
 		Instrument instrument = Instrument.fromString(ticker);
+
 		String[] fieldArray = {};
 		if(fields != null) {
 			fieldArray = fields.split(",");
 		}
 
 		return generateResults(years, fromDate, toDate, instrument,
-				fieldArray, interpolate, cleanDate);
+				fieldArray, interpolate, cleanDate, scaling);
 	}
 
 	private String generateResults(Integer years,
@@ -70,7 +73,8 @@ public class StockFeedEndpoint {
                                    final Instrument instrument,
                                    String[] fields,
                                    boolean interpolate,
-                                   boolean cleanDate )
+                                   boolean cleanDate,
+                                   Double scaling)
 			throws IOException {
 
 		final StringBuilder sbBody = new StringBuilder();
@@ -96,7 +100,7 @@ public class StockFeedEndpoint {
 			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}
 
-		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanDate);
+		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanDate, scaling);
 
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -123,13 +127,18 @@ public class StockFeedEndpoint {
                                      LocalDate fromLocalDate,
                                      LocalDate toLocalDate,
                                      boolean interpolate,
-                                     boolean clearData) throws IOException {
+                                     boolean clearData,
+                                     Double scaling) throws IOException {
 		final Optional<StockV1> stock = this.stockFeed.get(instrument,
             fromLocalDate, toLocalDate, interpolate, clearData,
             false);
 
 		if (stock.isPresent()) {
-			return stock.get().getHistory();
+            List<Bar> history = stock.get().getHistory();
+            if (scaling != null){
+                return new ValueScalingTransformer(instrument, scaling).clean(history);
+            }
+            return history;
 		}
 		return Lists.newArrayList();
 	}

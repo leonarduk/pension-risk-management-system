@@ -61,14 +61,6 @@ public class Instrument {
 
     private static final String UNKNOWN_TEXT = "UNKNOWN";
 
-    public Instrument getCASH() {
-        return CASH;
-    }
-
-    public Instrument getUNKNOWN() {
-        return UNKNOWN;
-    }
-
 
     public enum AssetType {
         BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, INDEX, INVESTMENT_TRUST, UNKNOWN, OTHER;
@@ -140,33 +132,31 @@ public class Instrument {
         }
     }
 
-    public static Instrument createPortfolioInstrument(final String name) {
-        final Instrument PORTFOLIO = new Instrument(name, AssetType.PORTFOLIO, AssetType.UNKNOWN, Source.MANUAL,
-                "Portfolio", "Portfolio", Exchange.LONDON, "Portfolio", Instrument.GBP, "");
-        return PORTFOLIO;
-    }
-
-    public static Instrument fromString(final String symbol) throws IOException {
+    public static Instrument fromString(final String symbol)  {
+        if(symbol.contains(":")){
+            String[] parts = symbol.split(":");
+            return fromString(parts[0], parts[1], parts[2], parts[3]);
+        }
         return fromString(symbol, "L", "UNKNOWN", "GBP");
     }
 
-    public static Instrument fromString(final String symbol, final String region, String type, String currency) throws IOException {
+    public static Instrument fromString(final String symbol, final String region,
+                                        String type, String currency)  {
         String localSymbol = symbol;
         final String fullStop = ".";
         if (localSymbol.contains(fullStop)) {
             localSymbol = localSymbol.substring(0, localSymbol.indexOf(fullStop));
         }
-        if (InstrumentLoader.getInstance().getInstruments().containsKey(localSymbol.toUpperCase())) {
-            return InstrumentLoader.getInstance().getInstruments().get(localSymbol.toUpperCase());
+        try {
+            if (InstrumentLoader.getInstance().getInstruments().containsKey(localSymbol.toUpperCase())) {
+                return InstrumentLoader.getInstance().getInstruments().get(localSymbol.toUpperCase());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return new Instrument(symbol, AssetType.fromString(type), AssetType.fromString(type), Source.MANUAL, symbol, localSymbol,
                 Exchange.valueOf(region), "", currency, symbol);
-    }
-
-
-    public static Collection<Instrument> values() throws IOException {
-        return InstrumentLoader.getInstance().getInstruments().values();
     }
 
 

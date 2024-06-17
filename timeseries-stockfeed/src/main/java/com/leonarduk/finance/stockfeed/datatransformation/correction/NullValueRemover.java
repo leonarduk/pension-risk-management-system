@@ -12,7 +12,6 @@ public class NullValueRemover implements TimeSeriesCleaner {
 
     @Override
     public List<Bar> clean(final List<Bar> history) {
-        final int thisYear = LocalDate.now().getYear();
         return TimeseriesUtils.sortQuoteList(
                 history.stream().filter((q) -> !q.getClosePrice().isZero())
                         .collect(Collectors.toCollection(LinkedList::new)));
