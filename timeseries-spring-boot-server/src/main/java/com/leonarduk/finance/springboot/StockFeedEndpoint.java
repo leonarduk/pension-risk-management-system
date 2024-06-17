@@ -49,35 +49,30 @@ public class StockFeedEndpoint {
                                  @RequestParam (name = "years", required = false)  Integer years,
                                  @RequestParam(name = "fromDate", required = false) String fromDate,
                                  @RequestParam(name = "toDate", required = false)  String toDate,
-                                 @RequestParam(name = "fields", required = false)  String fields) throws IOException {
+                                 @RequestParam(name = "fields", required = false)  String fields,
+                                 @RequestParam(name = "interpolate", required = false)  boolean interpolate,
+                                 @RequestParam(name = "cleanDate", required = false)  boolean cleanDate
+    ) throws IOException {
 
 		Instrument instrument = Instrument.fromString(ticker);
 		String[] fieldArray = {};
 		if(fields != null) {
 			fieldArray = fields.split(",");
 		}
+
 		return generateResults(years, fromDate, toDate, instrument,
-				fieldArray);
+				fieldArray, interpolate, cleanDate);
 	}
 
-//	@GET
-//	@Produces({ MediaType.TEXT_HTML })
-//	@Path("/fx/{ccy1}/{ccy2}")
-//	public String displayFxHistory(@PathParam("ccy1") final String currencyOne,
-//			@PathParam("ccy2") final String currencyTwo, @QueryParam("years") final int years,
-//			@QueryParam("fromDate") final String fromDate, @QueryParam("toDate") final String toDate,
-//			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData,
-//			@QueryParam("fields") final String fields) throws IOException {
-//
-//		final Instrument instrument = new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo);
-//
-//		String[] fieldArray = fields.split(",");
-//		return generateResults(years, fromDate, toDate, instrument, fieldArray);
-//	}
-
-	private String generateResults(Integer years, final String fromDate, final String toDate,
-                                   final Instrument instrument, String[] fields)
+	private String generateResults(Integer years,
+                                   final String fromDate,
+                                   final String toDate,
+                                   final Instrument instrument,
+                                   String[] fields,
+                                   boolean interpolate,
+                                   boolean cleanDate )
 			throws IOException {
+
 		final StringBuilder sbBody = new StringBuilder();
 		final List<List<DataField>> records = Lists.newArrayList();
 
@@ -101,7 +96,7 @@ public class StockFeedEndpoint {
 			fromLocalDate = LocalDate.now().plusYears(-1 * years);
 		}
 
-		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate);
+		historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanDate);
 
 		for (final Bar historicalQuote : historyData) {
 			final ArrayList<DataField> record = Lists.newArrayList();
@@ -124,36 +119,15 @@ public class StockFeedEndpoint {
 		return HtmlTools.createHtmlText(null, sbBody).toString();
 	}
 
-//	@GET
-//	@Produces(MediaType.APPLICATION_JSON)
-//	@Path("/download/ticker/{ticker}/")
-//	public Response downloadHistoryCsv(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
-//			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
-//			throws IOException {
-//		final Instrument instrument = Instrument.fromString(ticker);
-//		final List<Bar> series = this.getHistoryData(instrument, years == 0 ? 1 : years);
-//		final String fileName = instrument.getExchange().name() + "_" + instrument.code() + ".csv";
-//		final String myCsvText = TimeseriesUtils.seriesToCsv(series).toString();
-//		return Response.ok(myCsvText).header("Content-Disposition", "attachment; filename=" + fileName).build();
-//	}
+	private List<Bar> getHistoryData(Instrument instrument,
+                                     LocalDate fromLocalDate,
+                                     LocalDate toLocalDate,
+                                     boolean interpolate,
+                                     boolean clearData) throws IOException {
+		final Optional<StockV1> stock = this.stockFeed.get(instrument,
+            fromLocalDate, toLocalDate, interpolate, clearData,
+            false);
 
-//	@GET
-//	@Produces({ MediaType.APPLICATION_JSON })
-//	@Path("/api/ticker/{ticker}/")
-//	public List<Bar> getHistory(@PathParam("ticker") final String ticker, @QueryParam("years") final int years,
-//			@QueryParam("interpolate") final boolean interpolate, @QueryParam("clean") final boolean cleanData)
-//			throws IOException {
-//		final Instrument instrument = Instrument.fromString(ticker);
-//		return this.getHistoryData(instrument, years == 0 ? 1 : years);
-//	}
-
-	private List<Bar> getHistoryData(final Instrument instrument, final int years) throws IOException {
-		return getHistoryData(instrument, LocalDate.now().plusYears(-1 * years), LocalDate.now()
-        );
-	}
-
-	private List<Bar> getHistoryData(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate) throws IOException {
-		final Optional<StockV1> stock = this.stockFeed.get(instrument, fromLocalDate, toLocalDate, false);
 		if (stock.isPresent()) {
 			return stock.get().getHistory();
 		}

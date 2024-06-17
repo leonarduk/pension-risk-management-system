@@ -159,7 +159,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         return TimeseriesUtils.interpolateAndSortSeries(fromDate, toDate, interpolate, cachedData);
     }
 
-    private Optional<StockV1> getWebFeed(Instrument instrument, boolean addLatestQuoteToTheSeries, LocalDate fromDate,
+    private Optional<StockV1> getWebFeed(Instrument instrument,
+                                         boolean addLatestQuoteToTheSeries,
+                                         LocalDate fromDate,
                                          LocalDate toDate, Optional<StockV1> cachedData,
                                          StockFeed webDataFeed) throws IOException {
         String key = getKey(instrument.getCode(), fromDate, toDate, webDataFeed.getSource().toString());
