@@ -40,7 +40,7 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
     @Override
     public void storeSeries(final StockV1 stock) throws IOException {
         final String filepath = getQueryName(stock.getInstrument());
-        log.info("Save stock to " + filepath);
+        log.info("Save stock to {}", filepath);
 
         final StringBuilder sb = seriesToCsv(stock.getHistory(), stock.getInstrument());
         com.leonarduk.finance.utils.FileUtils.writeFile(filepath, sb);

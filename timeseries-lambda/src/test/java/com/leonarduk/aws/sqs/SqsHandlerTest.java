@@ -22,7 +22,7 @@ class SqsHandlerTest {
                 }
                 """;
         Map<String, String> actualMap = this.handler.getParameterMap(message);
-        Map<String,String> expectedMap = ImmutableMap.of();
+        Map<String,String> expectedMap = ImmutableMap.of("ticker","PHGP", "interpolate","false", "cleanData","false", "years","0");
         Assertions.assertEquals(expectedMap, actualMap);
     }
 }
