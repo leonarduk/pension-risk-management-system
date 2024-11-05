@@ -1,25 +1,17 @@
-name: ChatGPT Automated Code Review
-
+name: Magic Review
 on:
   pull_request:
     types: [opened, synchronize]
-
 jobs:
-  code-review:
+  review:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out code
+      - name: Checkout Repo
         uses: actions/checkout@v3
-
-      - name: Set Pull Request Number
-        run: echo "GITHUB_PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-
-      - name: Run ChatGPT Code Review
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Magic Review
+        uses: your-username/magic-review@main
+        with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_PR_NUMBER: ${{ env.GITHUB_PR_NUMBER }}
-        run: |
-          python3 .github/scripts/code_review.py
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_MODEL: "gpt-4" # Optional: defaults to "gpt-4"
+          exclude: "**/*.json, **/*.md" # Optional: exclude patterns separated by commas
