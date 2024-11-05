@@ -18,12 +18,6 @@
 	<url>https://github.com/patriques82/alphavantage4j</url>
 	<inceptionYear>2017</inceptionYear>
 
-	<developers>
-		<developer>
-			<name>Patrik Nygren</name>
-		</developer>
-	</developers>
-
 	<licenses>
 		<license>
 			<name>MIT License</name>

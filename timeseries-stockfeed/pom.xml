@@ -6,6 +6,7 @@
         <artifactId>timeseries-sources</artifactId>
         <groupId>com.leonarduk</groupId>
         <version>0.1.3</version>
+        <relativePath>../timeseries-sources/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
