@@ -30,6 +30,14 @@ public class QueryRunner {
 
     }
 
+    /**
+     * Run this class as a command line application to test the functionality
+     * of this class.
+     * <p>
+     * This method is not intended to be called from outside this class.
+     * @param args command line args, not used
+     * @throws IOException if an IO error occurs
+     */
     public static void main(String[] args) throws IOException {
         System.out.println(new QueryRunner().getResults(ImmutableMap.of(
                 TICKER, "PHGP.L",
@@ -39,6 +47,16 @@ public class QueryRunner {
         )));
     }
 
+    /**
+     * Retrieves results for a given financial instrument based on the input parameters.
+     *
+     * @param inputParams a map containing the parameters such as ticker, years, months, weeks, days,
+     *                    fromDate, toDate, interpolate, cleanData, region, type, and currency.
+     *                    The map should contain at least the 'ticker' key.
+     * @return a String representing the generated results in HTML format.
+     * @throws IOException if an IO error occurs during the retrieval of results.
+     * @throws IllegalArgumentException if the inputParams map is null or does not contain the 'ticker' key.
+     */
     public String getResults(Map<String, String> inputParams) throws IOException {
 
         if (inputParams == null)

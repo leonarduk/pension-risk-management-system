@@ -2,11 +2,9 @@ package com.leonarduk.finance.springboot;
 
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.ValueFormatter;
-import lombok.extern.log4j.Log4j;
 
 import java.util.List;
 
-@Log4j
 public class HtmlTools {
 
 

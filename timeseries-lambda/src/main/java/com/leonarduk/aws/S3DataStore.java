@@ -9,8 +9,7 @@ import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.AbstractCsvStockFeed;
 import com.leonarduk.finance.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 
 import java.io.BufferedReader;
@@ -19,10 +18,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
-    public static final Logger log = LoggerFactory
-            .getLogger(S3DataStore.class.getName());
     private final String bucketName;
     private final String folderName;
     private final String region;

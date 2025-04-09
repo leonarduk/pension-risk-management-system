@@ -9,13 +9,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Entity
 public class Instrument {
     public Instrument() {
     }
@@ -24,8 +22,6 @@ public class Instrument {
 
     private String category;
 
-    @Id
-    @Basic(optional = false)
     private String code;
 
     private String currency;
@@ -42,8 +38,6 @@ public class Instrument {
 
     private AssetType underlyingType;
 
-    @ManyToOne
-    @JoinColumn(name = "cash_code")
     public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
             Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.LONDON, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
 
@@ -53,8 +47,6 @@ public class Instrument {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Instrument.class.getName());
 
-    @ManyToOne
-    @JoinColumn(name = "unknown_code")
     public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
             AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.LONDON,
             Instrument.UNKNOWN_TEXT, Instrument.GBP, Instrument.UNKNOWN_TEXT);

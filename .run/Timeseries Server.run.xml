@@ -1,8 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Timeseries Server" type="Application" factoryName="Application">
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="com.leonarduk.finance.springboot.App" />
     <module name="timeseries-spring-boot-server" />
-    <option name="VM_PARAMETERS" value="-Dfilestore.path=&quot;C:\\Users\\steph\\workspaces\\luk\\data\\timeseries&quot;" />
+    <option name="VM_PARAMETERS" value="-Dfilestore.path=&quot;C:\\Users\\steph\\workspaces\\luk\\data\\timeseries&quot; " />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.leonarduk.finance.springboot.*" />

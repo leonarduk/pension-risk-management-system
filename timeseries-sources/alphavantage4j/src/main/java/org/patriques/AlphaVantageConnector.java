@@ -32,27 +32,61 @@ public class AlphaVantageConnector implements ApiConnector {
         this.timeOut = timeOut;
     }
 
+    /**
+     * The main method for connecting to the api. Given the api parameters it will
+     * create the url query and read the response.
+     *
+     * @param apiParameters the api parameters used in the query
+     * @return the response from AlphaVantage
+     * @throws AlphaVantageException if the request or parsing fails
+     */
     @Override
     public String getRequest(ApiParameter... apiParameters) {
+        if (apiParameters == null) {
+            throw new IllegalArgumentException("Api parameters cannot be null");
+        }
+
         String params = getParameters(apiParameters);
+        InputStreamReader inputStream = null;
+        BufferedReader bufferedReader = null;
+
         try {
+            // Create the request URL
             URL request = new URL(BASE_URL + params);
+            // Opens the connection to the url
             URLConnection connection = request.openConnection();
+            // Sets the timeout for the connection
             connection.setConnectTimeout(timeOut);
             connection.setReadTimeout(timeOut);
 
-            InputStreamReader inputStream = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(inputStream);
+            // Reads the response from the connection
+            inputStream = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
+            bufferedReader = new BufferedReader(inputStream);
+
             StringBuilder responseBuilder = new StringBuilder();
 
+            // Reads the response line by line
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 responseBuilder.append(line);
             }
-            bufferedReader.close();
+            // Returns the response
             return responseBuilder.toString();
         } catch (IOException e) {
+            // If the request fails then throw an exception
             throw new AlphaVantageException("failure sending request", e);
+        } finally {
+            // Ensure resources are closed
+            try {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                // Log or handle this secondary exception, if necessary
+            }
         }
     }
 

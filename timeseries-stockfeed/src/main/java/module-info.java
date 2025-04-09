@@ -11,7 +11,6 @@ module timeseries.stockfeed {
     requires htmlunit.driver;
     requires http.request;
     requires influxdb.client.core;
-    requires java.persistence;
     requires org.apache.commons.lang3;
     requires org.seleniumhq.selenium.api;
     requires org.slf4j;
