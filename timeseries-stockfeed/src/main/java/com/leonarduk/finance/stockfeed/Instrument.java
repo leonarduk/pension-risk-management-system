@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Instrument {
+public sealed class Instrument permits FxInstrument {
     public Instrument() {
     }
 

@@ -2,7 +2,7 @@ package com.leonarduk.finance.stockfeed;
 
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 
-public class FxInstrument extends Instrument {
+public final class FxInstrument extends Instrument {
 
     public FxInstrument(Source source, String currencyOne, String currencyTwo) {
         super(currencyTwo + "/" + currencyTwo, AssetType.FX, AssetType.FX, Source.ALPHAVANTAGE,
