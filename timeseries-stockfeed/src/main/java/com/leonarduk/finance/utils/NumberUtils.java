@@ -27,7 +27,7 @@ public class NumberUtils {
     }
 
     private static BigDecimal calculateBigDecimal(final String dataRaw) {
-        if (!StringUtils.isParseable(dataRaw)) {
+        if (StringUtils.isNotParseable(dataRaw)) {
             return null;
         }
         String data;
@@ -84,7 +84,7 @@ public class NumberUtils {
 
     public static Long getLong(final String data) {
         Long result = null;
-        if (!StringUtils.isParseable(data)) {
+        if (StringUtils.isNotParseable(data)) {
             return result;
         }
         try {

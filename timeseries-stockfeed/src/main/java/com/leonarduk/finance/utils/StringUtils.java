@@ -31,14 +31,14 @@ public class StringUtils {
     }
 
     public static String getString(final String data) {
-        if (!StringUtils.isParseable(data)) {
+        if (StringUtils.isNotParseable(data)) {
             return null;
         }
         return data;
     }
 
-    public static boolean isParseable(final String data) {
-        return !((data == null) || data.equals("N/A") || data.equals("-") || data.equals("") || data.equals("nan"));
+    public static boolean isNotParseable(final String data) {
+        return (data == null) || data.equals("N/A") || data.equals("-") || data.equals("") || data.equals("nan");
     }
 
     public static String join(final String[] data, final String d) {

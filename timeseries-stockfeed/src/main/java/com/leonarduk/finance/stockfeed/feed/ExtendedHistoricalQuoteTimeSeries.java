@@ -11,7 +11,6 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
 
@@ -24,10 +23,6 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
 
     public ExtendedHistoricalQuoteTimeSeries() {
         this(Lists.newArrayList());
-    }
-
-    public static ExtendedHistoricalQuoteTimeSeries concwer(List<ExtendedHistoricalQuote> series2) {
-        return new ExtendedHistoricalQuoteTimeSeries(series2.stream().collect(Collectors.toList()));
     }
 
     public ExtendedHistoricalQuoteTimeSeries(List<Bar> series2) {

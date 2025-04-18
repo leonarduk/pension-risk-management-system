@@ -142,7 +142,7 @@ public class DateUtils {
      * @return Calendar object representing the parsed date
      */
     public static Calendar parseDividendDate(final String date) {
-        if (!StringUtils.isParseable(date)) {
+        if (StringUtils.isNotParseable(date)) {
             return null;
         }
         final SimpleDateFormat format = new SimpleDateFormat(DateUtils.getDividendDateFormat(date.trim()), Locale.US);
@@ -167,8 +167,8 @@ public class DateUtils {
 
             return parsedDate;
         } catch (final ParseException ex) {
-            DateUtils.logger.warn("Failed to parse dividend date: " + date);
-            DateUtils.logger.trace("Failed to parse dividend date: " + date, ex);
+            DateUtils.logger.warn("Failed to parse dividend date: {}", date);
+            DateUtils.logger.trace("Failed to parse dividend date: {}", date, ex);
             return null;
         }
     }

@@ -169,7 +169,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     public ExtendedHistoricalQuote(Instrument instrument, LocalDate localDate, double open, double low, double high,
                                    double close, double adjustedClose, long volume, String comment) {
         this(instrument, localDate, BigDecimal.valueOf(open), BigDecimal.valueOf(low), BigDecimal.valueOf(high),
-                BigDecimal.valueOf(close), BigDecimal.valueOf(adjustedClose), Long.valueOf(volume), comment);
+                BigDecimal.valueOf(close), BigDecimal.valueOf(adjustedClose), volume, comment);
     }
 
     public ExtendedHistoricalQuote(ExtendedHistoricalQuote original) {
@@ -183,10 +183,10 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         this(Instrument.fromString(string), localDate, BigDecimal.valueOf(open.doubleValue()),
                 BigDecimal.valueOf(low.doubleValue()), BigDecimal.valueOf(high.doubleValue()),
                 BigDecimal.valueOf(close.doubleValue()), BigDecimal.valueOf(close.doubleValue()),
-                Long.valueOf(volume.longValue()), comment);
+                volume.longValue(), comment);
     }
 
-    public ExtendedHistoricalQuote(Instrument instrument, Map valuesMap) {
+    public ExtendedHistoricalQuote(Instrument instrument, Map<String, Object> valuesMap) {
         this.symbol = instrument.code();
         this.date = (Instant) valuesMap.get("date");
         this.open = BigDecimal.valueOf((Double) valuesMap.getOrDefault("open", 0.0));

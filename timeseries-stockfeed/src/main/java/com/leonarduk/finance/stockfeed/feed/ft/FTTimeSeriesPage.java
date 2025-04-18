@@ -26,7 +26,7 @@ public class FTTimeSeriesPage extends BaseSeleniumPage {
 
     @Override
     protected void load() {
-        log.info("Load " + this.getExpectedUrl());
+        log.info("Load {}", this.getExpectedUrl());
         this.getWebDriver().get(getExpectedUrl());
 
     }

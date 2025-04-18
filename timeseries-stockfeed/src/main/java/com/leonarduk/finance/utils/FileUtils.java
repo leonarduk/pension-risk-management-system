@@ -16,21 +16,12 @@ public class FileUtils {
         /**
          * Writing CSV file
          */
-        BufferedWriter writer = null;
-        try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 
-            writer = new BufferedWriter(new FileWriter(fileName));
             writer.write(sb.toString());
-            FileUtils.LOGGER.info("Saved to " + fileName);
+            FileUtils.LOGGER.info("Saved to {}", fileName);
         } catch (final IOException ioe) {
             FileUtils.LOGGER.error("Unable to write CSV file", ioe);
-        } finally {
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (final IOException ioe) {
-            }
         }
     }
 }

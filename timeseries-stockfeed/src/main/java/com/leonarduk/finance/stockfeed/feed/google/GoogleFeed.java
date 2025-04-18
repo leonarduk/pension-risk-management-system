@@ -45,7 +45,7 @@ public class GoogleFeed extends AbstractCsvStockFeed {
 
     protected HttpRequest createRequest(final CharSequence uri) throws IOException {
         try {
-            GoogleFeed.log.info("Request: " + uri);
+            GoogleFeed.log.info("Request: {}", uri);
             return HttpRequest.get(uri);
         } catch (final HttpRequestException e) {
             throw e.getCause();

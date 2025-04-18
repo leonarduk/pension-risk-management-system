@@ -73,7 +73,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
                 if (asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SATURDAY
                         && asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
                     if (parsedDates.contains(asHistoricalQuote.getDate())) {
-                        log.warn("Duplicate date " + asHistoricalQuote.getDate().toString() + " - skipping");
+                        log.warn("Duplicate date {} - skipping", asHistoricalQuote.getDate().toString());
                     } else {
                         quotes.add(asHistoricalQuote);
                         parsedDates.add(asHistoricalQuote.getDate());
@@ -81,12 +81,10 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
                 }
             }
 
-            Collections.sort(quotes, (o1, o2) -> {
-                return o2.getEndTime().compareTo(o1.getEndTime());
-            });
+            quotes.sort((o1, o2) -> o2.getEndTime().compareTo(o1.getEndTime()));
             return Optional.of(AbstractStockFeed.createStock(instrument, quotes));
         } catch (final Exception e) {
-            AbstractCsvStockFeed.log.warn("Failed:" + this + " : " + e.getMessage());
+            AbstractCsvStockFeed.log.warn("Failed:{} : {}", this, e.getMessage());
             return Optional.empty();
         }
 
@@ -245,7 +243,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
             }
             return Optional.of(NumberUtils.getBigDecimal(input));
         } catch (final NumberFormatException e) {
-            AbstractCsvStockFeed.log.warn("Failed to parse " + input);
+            AbstractCsvStockFeed.log.warn("Failed to parse {}", input);
             return Optional.empty();
         }
     }
@@ -257,7 +255,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
     protected boolean parseReader(final BufferedReader reader2) throws IOException {
         try {
             String line = reader2.readLine();
-            if ((line == null) || (line.length() == 0)) {
+            if ((line == null) || (line.isEmpty())) {
                 this.release();
                 return false;
             }

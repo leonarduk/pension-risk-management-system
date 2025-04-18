@@ -118,7 +118,7 @@ public class CrumbManager {
             }
 
 
-            log.debug("Params = " + params);
+            log.debug("Params = {}", params);
             connectionOath.setRequestProperty("Content-Length", Integer.toString(params.toString().length()));
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connectionOath.getOutputStream());
             outputStreamWriter.write(params.toString());

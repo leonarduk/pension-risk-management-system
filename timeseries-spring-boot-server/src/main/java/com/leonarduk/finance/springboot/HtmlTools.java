@@ -27,7 +27,7 @@ public class HtmlTools {
     }
 
     public static void printTable(final StringBuilder sb, final List<List<DataField>> records) {
-        if (records.size() > 0) {
+        if (!records.isEmpty()) {
             sb.append("<table border=\"1\"><tr>");
             records.get(0).stream().forEach(f -> {
                 if (f.isDisplay()) {
@@ -54,9 +54,6 @@ public class HtmlTools {
         if (sb == null) {
             throw new IllegalArgumentException("Passed in null StringBuilder");
         }
-//        if (null == value) {
-//            log.warn("Null value supplied - treat as empty string");
-//        }
         sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : value) + "'>")
             .append(formatter.format(value == null ? "" : value)).append("</td>");
     }
