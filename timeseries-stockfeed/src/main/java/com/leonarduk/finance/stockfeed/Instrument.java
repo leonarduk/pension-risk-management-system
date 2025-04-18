@@ -189,10 +189,9 @@ public sealed class Instrument permits FxInstrument {
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Instrument)) {
+        if (!(other instanceof Instrument castOther)) {
             return false;
         }
-        final Instrument castOther = (Instrument) other;
         return new EqualsBuilder().append(this.assetType, castOther.assetType).append(this.category, castOther.category)
                 .append(this.code, castOther.code).append(this.currency, castOther.currency)
                 .append(this.exchange, castOther.exchange).append(this.googleCode, castOther.googleCode)

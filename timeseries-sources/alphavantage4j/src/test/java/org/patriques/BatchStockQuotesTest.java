@@ -16,8 +16,7 @@ public class BatchStockQuotesTest {
 
     @Test
     public void singleStockQuote() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Batch Stock Market Quotes\",\n" +
                 "        \"2. Notes\": \"IEX Real-Time Price provided for free by IEX (https://iextrading.com/developer/).\",\n" +
@@ -52,8 +51,7 @@ public class BatchStockQuotesTest {
 
     @Test
     public void stockNoVolume() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Batch Stock Market Quotes\",\n" +
                 "        \"2. Notes\": \"IEX Real-Time Price provided for free by IEX (https://iextrading.com/developer/).\",\n" +

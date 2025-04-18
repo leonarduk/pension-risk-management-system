@@ -22,8 +22,7 @@ public class DigitalCurrenciesTest {
 
     @Test
     public void intraDay() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Intraday Prices and Volumes for Digital Currency\",\n" +
                 "        \"2. Digital Currency Code\": \"DUMMY\",\n" +
@@ -82,8 +81,7 @@ public class DigitalCurrenciesTest {
 
     @Test
     public void daily() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Daily Prices and Volumes for Digital Currency\",\n" +
                 "        \"2. Digital Currency Code\": \"BTC\",\n" +
@@ -164,8 +162,7 @@ public class DigitalCurrenciesTest {
 
     @Test
     public void weekly() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Weekly Prices and Volumes for Digital Currency\",\n" +
                 "        \"2. Digital Currency Code\": \"BTC\",\n" +
@@ -246,8 +243,7 @@ public class DigitalCurrenciesTest {
 
     @Test
     public void monthly() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Monthly Prices and Volumes for Digital Currency\",\n" +
                 "        \"2. Digital Currency Code\": \"BTC\",\n" +

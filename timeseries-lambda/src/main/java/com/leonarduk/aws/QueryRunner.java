@@ -150,8 +150,7 @@ public class QueryRunner {
             record.add(new DataField("Close", historicalQuote.getClosePrice()));
             record.add(new DataField("Volume", historicalQuote.getVolume()));
 
-            if (historicalQuote instanceof Commentable) {
-                Commentable commentable = (Commentable) historicalQuote;
+            if (historicalQuote instanceof Commentable commentable) {
                 record.add(new DataField("Comment", commentable.getComment()));
 
             }
