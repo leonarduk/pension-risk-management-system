@@ -18,14 +18,6 @@ public class NumberUtils {
 
     public static final BigDecimal THOUSAND = NumberUtils.getBigDecimal("1000");
 
-    public static boolean areSame(final BigDecimal thisOne, final BigDecimal thatOne) {
-        if (((thisOne == null) && (thatOne != null)) || ((thatOne == null) && (thisOne != null))) {
-            return false;
-        }
-
-        return NumberUtils.roundDecimal(thisOne).equals(NumberUtils.roundDecimal(thatOne));
-    }
-
     private static BigDecimal calculateBigDecimal(final String dataRaw) {
         if (StringUtils.isNotParseable(dataRaw)) {
             return null;
@@ -58,42 +50,12 @@ public class NumberUtils {
         return null;
     }
 
-    public static BigDecimal cleanBigDecimal(final BigDecimal input) {
-        if (input == null) {
-            return BigDecimal.ZERO;
-        }
-        return input.setScale(2, RoundingMode.DOWN);
-    }
-
     private static String cleanNumberString(final String data) {
         return StringUtils.join(data.trim().split(","), "");
     }
 
     public static BigDecimal getBigDecimal(final String data) {
         return NumberUtils.calculateBigDecimal(data);
-    }
-
-    public static BigDecimal getBigDecimal(final String dataMain, final String dataSub) {
-        final BigDecimal main = NumberUtils.getBigDecimal(dataMain);
-        final BigDecimal sub = NumberUtils.getBigDecimal(dataSub);
-        if ((main == null) || (main.compareTo(BigDecimal.ZERO) == 0)) {
-            return sub;
-        }
-        return main;
-    }
-
-    public static Long getLong(final String data) {
-        Long result = null;
-        if (StringUtils.isNotParseable(data)) {
-            return result;
-        }
-        try {
-            result = Long.parseLong(NumberUtils.cleanNumberString(data));
-        } catch (final NumberFormatException e) {
-            NumberUtils.logger.warn("Failed to parse: " + data);
-            NumberUtils.logger.trace("Failed to parse: " + data, e);
-        }
-        return result;
     }
 
     public static BigDecimal getPercent(final BigDecimal numerator, final BigDecimal denominator) {

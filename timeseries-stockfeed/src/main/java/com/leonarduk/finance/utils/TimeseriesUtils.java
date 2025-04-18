@@ -111,8 +111,8 @@ public class TimeseriesUtils {
     public static Bar createSyntheticBar(final LocalDate currentDate, final Double newClosePriceRaw,
                                          final Double newOpenPriceRaw, String comment) {
 
-        final Double newClosePrice = NumberUtils.roundDecimal(newClosePriceRaw);
-        final Double newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
+        final double newClosePrice = NumberUtils.roundDecimal(newClosePriceRaw);
+        final double newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
         return new ExtendedHistoricalQuote("", currentDate, BigDecimal.valueOf(newOpenPrice),
                 BigDecimal.valueOf(Double.min(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
                 BigDecimal.valueOf(Double.max(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),

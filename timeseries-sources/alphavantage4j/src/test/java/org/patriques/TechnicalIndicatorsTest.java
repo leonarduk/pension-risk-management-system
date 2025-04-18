@@ -19,7 +19,7 @@ public class TechnicalIndicatorsTest {
 
     @Test
     public void dema() {
-        String json = "" +
+        String json =
                 "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1: Symbol\": \"DUMMY\",\n" +
@@ -110,7 +110,7 @@ public class TechnicalIndicatorsTest {
 
     @Test
     public void kama() {
-        String json = "" +
+        String json =
                 "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1: Symbol\": \"DUMMY\",\n" +

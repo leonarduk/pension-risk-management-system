@@ -35,7 +35,7 @@ public class FTTimeSeriesPage extends BaseSeleniumPage {
         isLoaded();
 
         // e.g. 2021/04/01
-        DateTimeFormatter numericDateFormatter = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        DateTimeFormatter numericDateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         // e.g. Fri, Aug 20, 2021
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d, yyyy");
 

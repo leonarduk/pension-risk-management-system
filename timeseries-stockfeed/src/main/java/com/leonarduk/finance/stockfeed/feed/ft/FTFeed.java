@@ -31,7 +31,7 @@ public class FTFeed extends AbstractStockFeed {
 
     @Override
     public Optional<StockV1> get(Instrument instrument, int years, boolean addLatestQuoteToTheSeries) throws IOException {
-        return get(instrument, LocalDate.now().minus(years, ChronoUnit.YEARS), LocalDate.now(), addLatestQuoteToTheSeries);
+        return get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), addLatestQuoteToTheSeries);
     }
 
     @Override

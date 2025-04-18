@@ -15,7 +15,7 @@ public class SectorPerformancesTest {
 
     @Test
     public void sector() {
-        String json = "" +
+        String json =
                 "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"Information\": \"US Sector Performance (realtime & historical)\",\n" +
