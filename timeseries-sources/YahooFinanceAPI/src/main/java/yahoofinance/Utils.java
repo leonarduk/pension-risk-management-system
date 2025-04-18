@@ -3,8 +3,8 @@ package yahoofinance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -46,7 +46,7 @@ public class Utils {
 
     private static boolean isParseable(String data) {
         return !(data == null || data.equals("N/A") || data.equals("-")
-                || data.equals("") || data.equals("nan"));
+                || data.isEmpty() || data.equals("nan"));
     }
 
     public static String getString(String data) {
@@ -59,7 +59,7 @@ public class Utils {
     public static BigDecimal getBigDecimal(String data) {
         BigDecimal result = null;
         if (!Utils.isParseable(data)) {
-            return result;
+            return null;
         }
         try {
             data = Utils.cleanNumberString(data);
@@ -130,7 +130,7 @@ public class Utils {
     public static Integer getInt(String data) {
         Integer result = null;
         if (!Utils.isParseable(data)) {
-            return result;
+            return null;
         }
         try {
             data = Utils.cleanNumberString(data);
@@ -145,7 +145,7 @@ public class Utils {
     public static Long getLong(String data) {
         Long result = null;
         if (!Utils.isParseable(data)) {
-            return result;
+            return null;
         }
         try {
             data = Utils.cleanNumberString(data);
@@ -161,8 +161,8 @@ public class Utils {
         if (denominator == null || numerator == null || denominator.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        return numerator.divide(denominator, 4, BigDecimal.ROUND_HALF_EVEN)
-                .multiply(HUNDRED).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        return numerator.divide(denominator, 4, RoundingMode.HALF_EVEN)
+                .multiply(HUNDRED).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public static double getPercent(double numerator, double denominator) {
@@ -276,7 +276,7 @@ public class Utils {
         StringBuilder sb = new StringBuilder();
 
         for (Entry<String, String> entry : params.entrySet()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append("&");
             }
             String key = entry.getKey();

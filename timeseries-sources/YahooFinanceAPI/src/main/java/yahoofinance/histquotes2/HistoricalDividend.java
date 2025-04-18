@@ -1,5 +1,8 @@
 package yahoofinance.histquotes2;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,12 +14,20 @@ import java.util.Calendar;
  *
  * @author Randle McMurphy
  */
+@Setter
+@Getter
 public class HistoricalDividend {
 
     private String symbol;
 
     private Calendar date;
 
+    /**
+     * -- GETTER --
+     *  At the time of this writing Yahoo returns ADJUSTED dividends. Which means that as soon as
+     *  split occurs, all past dividends are divided by split factor.
+     *
+     */
     private BigDecimal adjDividend;
 
     public HistoricalDividend() {
@@ -25,36 +36,6 @@ public class HistoricalDividend {
     public HistoricalDividend(String symbol, Calendar date, BigDecimal adjDividend) {
         this.symbol = symbol;
         this.date = date;
-        this.adjDividend = adjDividend;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public Calendar getDate() {
-        return date;
-    }
-
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
-
-    /**
-     * At the time of this writing Yahoo returns ADJUSTED dividends. Which means that as soon as
-     * split occurs, all past dividends are divided by split factor.
-     *
-     * @return an adjusted dividend cash
-     */
-    public BigDecimal getAdjDividend() {
-        return adjDividend;
-    }
-
-    public void setAdjDividend(BigDecimal adjDividend) {
         this.adjDividend = adjDividend;
     }
 

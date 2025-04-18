@@ -14,8 +14,8 @@ public class ExchangeTimeZone {
 
     private static final Logger log = LoggerFactory.getLogger(ExchangeTimeZone.class);
 
-    public static final Map<String, TimeZone> SUFFIX_TIMEZONES = new HashMap<String, TimeZone>();
-    public static final Map<String, TimeZone> INDEX_TIMEZONES = new HashMap<String, TimeZone>();
+    public static final Map<String, TimeZone> SUFFIX_TIMEZONES = new HashMap<>();
+    public static final Map<String, TimeZone> INDEX_TIMEZONES = new HashMap<>();
 
     static {
         SUFFIX_TIMEZONES.put("", TimeZone.getTimeZone("America/New_York"));
@@ -128,7 +128,6 @@ public class ExchangeTimeZone {
         INDEX_TIMEZONES.put("^DJU", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^DJA", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^DWCF", TimeZone.getTimeZone("America/New_York"));
-        INDEX_TIMEZONES.put("^DJU", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^IXIC", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^BANK", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^NBI", TimeZone.getTimeZone("America/New_York"));
@@ -149,7 +148,6 @@ public class ExchangeTimeZone {
         INDEX_TIMEZONES.put("^NYL", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^XMI", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^XAX", TimeZone.getTimeZone("America/New_York"));
-        INDEX_TIMEZONES.put("^BATSK", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^RUI", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^RUT", TimeZone.getTimeZone("America/New_York"));
         INDEX_TIMEZONES.put("^RUA", TimeZone.getTimeZone("America/New_York"));

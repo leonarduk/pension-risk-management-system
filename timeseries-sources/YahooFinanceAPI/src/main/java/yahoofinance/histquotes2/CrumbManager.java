@@ -63,7 +63,7 @@ public class CrumbManager {
         Pattern patternPostForm = Pattern.compile("(.*)(action=\"/consent\")(.*)");
         Pattern patternInput = Pattern.compile("(.*)(<input type=\"hidden\" name=\")(.*?)(\" value=\")(.*?)(\">)");
         Matcher matcher;
-        Map<String, String> datas = new HashMap<String, String>();
+        Map<String, String> datas = new HashMap<>();
         boolean postFind = false;
         // Read source to get params data for post request
         while ((line = br.readLine()) != null) {
@@ -83,7 +83,7 @@ public class CrumbManager {
 
         }
         // If params are not empty, send the post request
-        if (datas.size() > 0) {
+        if (!datas.isEmpty()) {
 
             datas.put("namespace", YahooFinance.HISTQUOTES2_COOKIE_NAMESPACE);
             datas.put("agree", YahooFinance.HISTQUOTES2_COOKIE_AGREE);
@@ -91,7 +91,7 @@ public class CrumbManager {
             datas.put("doneUrl", YahooFinance.HISTQUOTES2_COOKIE_OATH_DONEURL + datas.get("sessionId") + "&inline=" + datas.get("inline") + "&lang=" + datas.get("locale"));
 
             URL requestOath = new URL(YahooFinance.HISTQUOTES2_COOKIE_OATH_URL);
-            HttpURLConnection connectionOath = null;
+            HttpURLConnection connectionOath;
             connectionOath = (HttpURLConnection) requestOath.openConnection();
             connectionOath.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
             connectionOath.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
@@ -104,7 +104,7 @@ public class CrumbManager {
             StringBuilder params = new StringBuilder();
 
             for (String key : datas.keySet()) {
-                if (params.length() == 0) {
+                if (params.isEmpty()) {
                     params.append(key);
                     params.append("=");
                     params.append(URLEncoder.encode(datas.get(key), StandardCharsets.UTF_8));
@@ -148,18 +148,7 @@ public class CrumbManager {
             return;
         }
 
-        URL crumbRequest = new URL(YahooFinance.HISTQUOTES2_CRUMB_URL);
-        RedirectableRequest redirectableCrumbRequest = new RedirectableRequest(crumbRequest, 5);
-        redirectableCrumbRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
-        redirectableCrumbRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
-
-        Map<String, String> requestProperties = new HashMap<String, String>();
-        requestProperties.put("Cookie", cookie);
-
-        URLConnection crumbConnection = redirectableCrumbRequest.openConnection(requestProperties);
-        InputStreamReader is = new InputStreamReader(crumbConnection.getInputStream());
-        BufferedReader br = new BufferedReader(is);
-        String crumbResult = br.readLine();
+        String crumbResult = getCrumbResult();
 
         if (crumbResult != null && !crumbResult.isEmpty()) {
             crumb = crumbResult.trim();
@@ -168,6 +157,21 @@ public class CrumbManager {
             log.warn("Failed to set crumb from http request. Historical quote requests will most likely fail.");
         }
 
+    }
+
+    private static String getCrumbResult() throws IOException {
+        URL crumbRequest = new URL(YahooFinance.HISTQUOTES2_CRUMB_URL);
+        RedirectableRequest redirectableCrumbRequest = new RedirectableRequest(crumbRequest, 5);
+        redirectableCrumbRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
+        redirectableCrumbRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
+
+        Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("Cookie", cookie);
+
+        URLConnection crumbConnection = redirectableCrumbRequest.openConnection(requestProperties);
+        InputStreamReader is = new InputStreamReader(crumbConnection.getInputStream());
+        BufferedReader br = new BufferedReader(is);
+        return br.readLine();
     }
 
     public static void refresh() throws IOException {

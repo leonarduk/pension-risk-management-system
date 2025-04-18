@@ -5,6 +5,7 @@ import com.google.common.io.Resources;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -24,10 +25,11 @@ public class YahooFinanceDispatcher extends Dispatcher {
     private final Map<String, ResponseResource> pathToResponseResource;
 
     public YahooFinanceDispatcher() {
-        this.pathToResponseResource = new HashMap<String, ResponseResource>();
+        this.pathToResponseResource = new HashMap<>();
         this.loadRequests();
     }
 
+    @NotNull
     @Override
     public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
         if (this.pathToResponseResource.containsKey(request.getPath())) {
