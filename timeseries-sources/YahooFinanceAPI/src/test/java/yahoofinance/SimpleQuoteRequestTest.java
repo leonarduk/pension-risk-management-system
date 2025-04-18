@@ -29,11 +29,11 @@ public class SimpleQuoteRequestTest extends MockedServersTest {
         assertNotNull(stock.getDividend());
 
         assertEquals(new BigDecimal("54.93"), stock.getQuote().getAsk());
-        assertEquals(new Long(700), stock.getQuote().getAskSize());
+        assertEquals(Long.valueOf(700), stock.getQuote().getAskSize());
         assertEquals(new BigDecimal("54.00"), stock.getQuote().getBid());
-        assertEquals(new Long(42000), stock.getQuote().getBidSize());
+        assertEquals(Long.valueOf(42000), stock.getQuote().getBidSize());
         assertEquals(new BigDecimal("50.34"), stock.getQuote().getPrice());
-        assertEquals(new Long(813), stock.getQuote().getLastTradeSize());
+        assertEquals(Long.valueOf(813), stock.getQuote().getLastTradeSize());
         assertEquals(new BigDecimal("50.58"), stock.getQuote().getOpen());
         assertEquals(new BigDecimal("51.00"), stock.getQuote().getPreviousClose());
 
@@ -44,8 +44,8 @@ public class SimpleQuoteRequestTest extends MockedServersTest {
         assertEquals(new BigDecimal("51.81"), stock.getQuote().getPriceAvg50());
         assertEquals(new BigDecimal("55.21"), stock.getQuote().getPriceAvg200());
 
-        assertEquals(new Long(1460112), stock.getQuote().getVolume());
-        assertEquals(new Long(2211770), stock.getQuote().getAvgVolume());
+        assertEquals(Long.valueOf(1460112), stock.getQuote().getVolume());
+        assertEquals(Long.valueOf(2211770), stock.getQuote().getAvgVolume());
         assertEquals("8/8/2016", stock.getQuote().getLastTradeDateStr());
         assertEquals("5:35pm", stock.getQuote().getLastTradeTimeStr());
         assertEquals(TimeZone.getTimeZone("Europe/Paris"), stock.getQuote().getTimeZone());
@@ -62,8 +62,8 @@ public class SimpleQuoteRequestTest extends MockedServersTest {
         assertEquals(new BigDecimal("4.72"), stock.getQuote().getChangeFromYearLowInPercent());
 
         assertEquals(new BigDecimal("38880000000.00"), stock.getStats().getMarketCap());
-        assertEquals(new Long(654166000), stock.getStats().getSharesFloat());
-        assertEquals(new Long(772397000), stock.getStats().getSharesOutstanding());
+        assertEquals(Long.valueOf(654166000), stock.getStats().getSharesFloat());
+        assertEquals(Long.valueOf(772397000), stock.getStats().getSharesOutstanding());
         assertEquals(new BigDecimal("3.74"), stock.getStats().getEps());
         assertEquals(new BigDecimal("13.47"), stock.getStats().getPe());
         assertEquals(new BigDecimal("0.00"), stock.getStats().getPeg());
@@ -103,7 +103,7 @@ public class SimpleQuoteRequestTest extends MockedServersTest {
          * Most things already tested by europeanStockQuoteTest
          */
         assertEquals(new BigDecimal("35.03"), stock.getQuote().getAsk());
-        assertEquals(new Long(1699919), stock.getQuote().getLastTradeSize());
+        assertEquals(Long.valueOf(1699919), stock.getQuote().getLastTradeSize());
         assertEquals(new BigDecimal("34.98"), stock.getQuote().getPreviousClose());
         assertEquals(new BigDecimal("35.93"), stock.getQuote().getYearHigh());
 
@@ -133,7 +133,7 @@ public class SimpleQuoteRequestTest extends MockedServersTest {
         assertNotNull(stock.getDividend());
 
         assertEquals(new BigDecimal("10.89"), stock.getQuote().getAsk());
-        assertEquals(new Long(300), stock.getQuote().getLastTradeSize());
+        assertEquals(Long.valueOf(300), stock.getQuote().getLastTradeSize());
         assertEquals(new BigDecimal("10.84"), stock.getQuote().getPreviousClose());
         assertEquals(new BigDecimal("9.57"), stock.getQuote().getYearLow());
 

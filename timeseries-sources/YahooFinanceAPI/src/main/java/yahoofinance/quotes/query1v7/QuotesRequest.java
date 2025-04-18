@@ -2,6 +2,7 @@ package yahoofinance.quotes.query1v7;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import yahoofinance.Utils;
@@ -22,6 +23,7 @@ import java.util.Map;
  *            quotes request
  * @author Stijn Strickx
  */
+@Getter
 public abstract class QuotesRequest<T> {
 
     private static final Logger log = LoggerFactory.getLogger(QuotesRequest.class);
@@ -33,15 +35,11 @@ public abstract class QuotesRequest<T> {
         this.symbols = symbols;
     }
 
-    public String getSymbols() {
-        return symbols;
-    }
-
     protected abstract T parseJson(JsonNode node);
 
     public T getSingleResult() throws IOException {
         List<T> results = this.getResult();
-        if (results.size() > 0) {
+        if (!results.isEmpty()) {
             return results.get(0);
         }
         return null;
@@ -54,9 +52,9 @@ public abstract class QuotesRequest<T> {
      * @throws IOException when there's a connection problem or the request is incorrect
      */
     public List<T> getResult() throws IOException {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
 
-        Map<String, String> params = new LinkedHashMap<String, String>();
+        Map<String, String> params = new LinkedHashMap<>();
         params.put("symbols", this.symbols);
 
         String url = YahooFinance.QUOTES_QUERY1V7_BASE_URL + "?" + Utils.getURLParameters(params);

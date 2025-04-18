@@ -58,7 +58,7 @@ public class HistoricalQuoteRequestTest extends MockedServersTest {
         assertEquals(new BigDecimal("769.900024"), histQuote.getHigh());
         assertEquals(new BigDecimal("689.00"), histQuote.getLow());
         assertEquals(new BigDecimal("738.599976"), histQuote.getOpen());
-        assertEquals(new Long(2125700), histQuote.getVolumeAsLong());
+        assertEquals(Long.valueOf(2125700), histQuote.getVolumeAsLong());
         assertEquals(3, histQuote.getDateAsCalendar().get(Calendar.MONTH));
         assertEquals(1, histQuote.getDateAsCalendar().get(Calendar.DATE));
         assertEquals(2016, histQuote.getDateAsCalendar().get(Calendar.YEAR));

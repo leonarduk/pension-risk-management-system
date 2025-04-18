@@ -38,7 +38,7 @@ import java.util.Map;
  * This API can also be used to send requests for retrieving FX rates.
  * <p>
  * Since the data is provided by Yahoo, please check their Terms of Service
- * at https://info.yahoo.com/legal/us/yahoo/
+ * at <a href="https://info.yahoo.com/legal/us/yahoo/">...</a>
  *
  * @author Stijn Strickx
  * @version %I%, %G%
@@ -51,7 +51,6 @@ public class YahooFinance {
     public static final String HISTQUOTES_BASE_URL = System.getProperty("yahoofinance.baseurl.histquotes", "https://ichart.yahoo.com/table.csv");
     public static final String HISTQUOTES2_ENABLED = System.getProperty("yahoofinance.histquotes2.enabled", "true");
     public static final String HISTQUOTES2_BASE_URL = System.getProperty("yahoofinance.baseurl.histquotes2", "https://query1.finance.yahoo.com/v7/finance/download/");
-    public static final String HISTQUOTES_QUERY2V8_BASE_URL = System.getProperty("yahoofinance.baseurl.histquotesquery2v8", "https://query2.finance.yahoo.com/v8/finance/chart/");
     public static final String HISTQUOTES2_SCRAPE_URL = System.getProperty("yahoofinance.scrapeurl.histquotes2", "https://finance.yahoo.com/quote/%5EGSPC/options");
     public static final String HISTQUOTES2_CRUMB_URL = System.getProperty("yahoofinance.crumburl.histquotes2", "https://query1.finance.yahoo.com/v1/test/getcrumb");
     public static final String HISTQUOTES2_CRUMB = System.getProperty("yahoofinance.crumb", "");
@@ -368,7 +367,7 @@ public class YahooFinance {
             FxQuotesRequest request = new FxQuotesRequest(Utils.join(symbols, ","));
             quotes = request.getResult();
         }
-        Map<String, FxQuote> result = new HashMap<String, FxQuote>();
+        Map<String, FxQuote> result = new HashMap<>();
         for (FxQuote quote : quotes) {
             result.put(quote.getSymbol(), quote);
         }
@@ -376,7 +375,7 @@ public class YahooFinance {
     }
 
     private static Map<String, Stock> getQuotes(String query, boolean includeHistorical) throws IOException {
-        Map<String, Stock> result = new HashMap<String, Stock>();
+        Map<String, Stock> result = new HashMap<>();
         if (YahooFinance.QUOTES_QUERY1V7_ENABLED.equalsIgnoreCase("true")) {
             StockQuotesQuery1V7Request request = new StockQuotesQuery1V7Request(query);
             List<Stock> stocks = request.getResult();

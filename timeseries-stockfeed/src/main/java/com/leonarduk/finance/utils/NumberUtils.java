@@ -101,8 +101,10 @@ public class NumberUtils {
         if ((denominator == null) || (numerator == null) || (denominator.compareTo(BigDecimal.ZERO) == 0)) {
             return BigDecimal.ZERO;
         }
-        return numerator.divide(denominator, 4, BigDecimal.ROUND_HALF_EVEN).multiply(NumberUtils.HUNDRED).setScale(2,
-                BigDecimal.ROUND_HALF_EVEN);
+        return numerator
+                .divide(denominator, 4, RoundingMode.HALF_EVEN)
+                .multiply(NumberUtils.HUNDRED)
+                .setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public static BigDecimal roundDecimal(final BigDecimal value) {

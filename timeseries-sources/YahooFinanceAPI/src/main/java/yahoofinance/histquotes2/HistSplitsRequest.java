@@ -72,7 +72,7 @@ public class HistSplitsRequest {
 
     public List<HistoricalSplit> getResult() throws IOException {
 
-        List<HistoricalSplit> result = new ArrayList<HistoricalSplit>();
+        List<HistoricalSplit> result = new ArrayList<>();
 
         if (this.from.after(this.to)) {
             log.warn("Unable to retrieve historical splits. "
@@ -81,7 +81,27 @@ public class HistSplitsRequest {
             return result;
         }
 
-        Map<String, String> params = new LinkedHashMap<String, String>();
+        Map<String, String> params = getStringStringMap();
+
+        String url = YahooFinance.HISTQUOTES2_BASE_URL + URLEncoder.encode(this.symbol, StandardCharsets.UTF_8) + "?" + Utils.getURLParameters(params);
+
+        // Get CSV from Yahoo
+        log.info("Sending request: " + url);
+
+        BufferedReader br = getBufferedReader(url);
+        br.readLine(); // skip the first line
+        // Parse CSV
+        for (String line = br.readLine(); line != null; line = br.readLine()) {
+
+            log.info("Parsing CSV line: " + Utils.unescape(line));
+            HistoricalSplit split = this.parseCSVLine(line);
+            result.add(split);
+        }
+        return result;
+    }
+
+    private Map<String, String> getStringStringMap() throws IOException {
+        Map<String, String> params = new LinkedHashMap<>();
         params.put("period1", String.valueOf(this.from.getTimeInMillis() / 1000));
         params.put("period2", String.valueOf(this.to.getTimeInMillis() / 1000));
 
@@ -93,31 +113,20 @@ public class HistSplitsRequest {
         params.put("events", "split");
 
         params.put("crumb", CrumbManager.getCrumb());
+        return params;
+    }
 
-        String url = YahooFinance.HISTQUOTES2_BASE_URL + URLEncoder.encode(this.symbol, StandardCharsets.UTF_8) + "?" + Utils.getURLParameters(params);
-
-        // Get CSV from Yahoo
-        log.info("Sending request: " + url);
-
+    private static BufferedReader getBufferedReader(String url) throws IOException {
         URL request = new URL(url);
         RedirectableRequest redirectableRequest = new RedirectableRequest(request, 5);
         redirectableRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
         redirectableRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
-        Map<String, String> requestProperties = new HashMap<String, String>();
+        Map<String, String> requestProperties = new HashMap<>();
         requestProperties.put("Cookie", CrumbManager.getCookie());
         URLConnection connection = redirectableRequest.openConnection(requestProperties);
 
         InputStreamReader is = new InputStreamReader(connection.getInputStream());
-        BufferedReader br = new BufferedReader(is);
-        br.readLine(); // skip the first line
-        // Parse CSV
-        for (String line = br.readLine(); line != null; line = br.readLine()) {
-
-            log.info("Parsing CSV line: " + Utils.unescape(line));
-            HistoricalSplit split = this.parseCSVLine(line);
-            result.add(split);
-        }
-        return result;
+        return new BufferedReader(is);
     }
 
     private HistoricalSplit parseCSVLine(String line) {

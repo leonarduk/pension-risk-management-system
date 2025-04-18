@@ -1,5 +1,7 @@
 package yahoofinance.quotes.csv;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import yahoofinance.Utils;
@@ -21,27 +23,17 @@ import java.util.Map;
  *            quotes request
  * @author Stijn Strickx
  */
+@Getter
 public abstract class QuotesRequest<T> {
 
     private static final Logger log = LoggerFactory.getLogger(QuotesRequest.class);
 
     protected final String query;
+    @Setter
     protected List<QuotesProperty> properties;
 
     public QuotesRequest(String query, List<QuotesProperty> properties) {
         this.query = query;
-        this.properties = properties;
-    }
-
-    public String getQuery() {
-        return query;
-    }
-
-    public List<QuotesProperty> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(List<QuotesProperty> properties) {
         this.properties = properties;
     }
 
@@ -57,7 +49,7 @@ public abstract class QuotesRequest<T> {
 
     public T getSingleResult() throws IOException {
         List<T> results = this.getResult();
-        if (results.size() > 0) {
+        if (!results.isEmpty()) {
             return results.get(0);
         }
         return null;
@@ -70,9 +62,9 @@ public abstract class QuotesRequest<T> {
      * @throws java.io.IOException when there's a connection problem or the request is incorrect
      */
     public List<T> getResult() throws IOException {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
 
-        Map<String, String> params = new LinkedHashMap<String, String>();
+        Map<String, String> params = new LinkedHashMap<>();
         params.put("s", this.query);
         params.put("f", this.getFieldsString());
         params.put("e", ".csv");

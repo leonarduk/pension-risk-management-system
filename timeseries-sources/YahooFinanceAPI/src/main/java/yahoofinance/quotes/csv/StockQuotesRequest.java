@@ -20,7 +20,7 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
      * symbol. This forces us to do manual parsing of the CSV lines instead of
      * using the easy String.split
      */
-    public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<QuotesProperty>();
+    public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<>();
 
     static {
 
@@ -103,13 +103,13 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
 
     @Override
     protected StockQuotesData parseCSVLine(String line) {
-        List<String> parsedLine = new ArrayList<String>();
+        List<String> parsedLine = new ArrayList<>();
 
         // first get company name, symbol, currency and exchange
         // because we need the symbol and currency or exchange might be the same as the symbol!
         // pretty ugly code due to the bad format of the csv
         int pos1 = 0;
-        int pos2 = 0;
+        int pos2;
         int skip = 2;
 
         if (line.startsWith("\"")) {
@@ -131,7 +131,6 @@ public class StockQuotesRequest extends QuotesRequest<StockQuotesData> {
         if (line.charAt(pos1) == '\"') {
             pos1 += 1;
             pos2 = line.indexOf('\"', pos1);
-            skip = 2;
         } else {
             pos2 = line.indexOf(',', pos1);
             skip = 1;

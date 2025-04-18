@@ -101,18 +101,10 @@ public class StockQuotesQuery1V7Request extends QuotesRequest<Stock> {
         // stats.setPeg(Utils.getBigDecimal(getStringValue(node,"symbol")));
 
         stats.setEpsEstimateCurrentYear(Utils.getBigDecimal(getStringValue(node, "epsForward")));
-        // stats.setEpsEstimateNextQuarter(Utils.getBigDecimal(getStringValue(node,"symbol")));
-        // stats.setEpsEstimateNextYear(Utils.getBigDecimal(getStringValue(node,"symbol")));
 
         stats.setPriceBook(Utils.getBigDecimal(getStringValue(node, "priceToBook")));
         // stats.setPriceSales(Utils.getBigDecimal(getStringValue(node,"symbol")));
         stats.setBookValuePerShare(Utils.getBigDecimal(getStringValue(node, "bookValue")));
-
-        // stats.setOneYearTargetPrice(Utils.getBigDecimal(getStringValue(node,"symbol")));
-        // stats.setEBITDA(Utils.getBigDecimal(getStringValue(node,"symbol")));
-        // stats.setRevenue(Utils.getBigDecimal(getStringValue(node,"symbol")));
-
-        // stats.setShortRatio(Utils.getBigDecimal(getStringValue(node,"symbol")));
 
         if (node.has("earningsTimestamp")) {
             stats.setEarningsAnnouncement(Utils.unixToCalendar(node.get("earningsTimestamp").asLong()));

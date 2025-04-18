@@ -1,5 +1,8 @@
 package yahoofinance.histquotes2;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -10,6 +13,8 @@ import java.util.Calendar;
  *
  * @author Randle McMurphy
  */
+@Setter
+@Getter
 public class HistoricalSplit {
 
     private String symbol;
@@ -26,38 +31,6 @@ public class HistoricalSplit {
         this.symbol = symbol;
         this.date = date;
         this.numerator = numerator;
-        this.denominator = denominator;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public Calendar getDate() {
-        return date;
-    }
-
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
-
-    public BigDecimal getNumerator() {
-        return numerator;
-    }
-
-    public void setNumerator(BigDecimal numerator) {
-        this.numerator = numerator;
-    }
-
-    public BigDecimal getDenominator() {
-        return denominator;
-    }
-
-    public void setDenominator(BigDecimal denominator) {
         this.denominator = denominator;
     }
 
