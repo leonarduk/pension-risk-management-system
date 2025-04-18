@@ -45,8 +45,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
         logger.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
         try {
 
-            if (instrument instanceof FxInstrument) {
-                FxInstrument fXInstrument = (FxInstrument) instrument;
+            if (instrument instanceof FxInstrument fXInstrument) {
                 return Optional.of(new StockV1(instrument, this.getFxSeries(fXInstrument.getCurrencyOne(),
                         fXInstrument.getCurrencyTwo(), fromDate, toDate)));
             }

@@ -61,10 +61,9 @@ public class StockV1 {
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof StockV1)) {
+        if (!(other instanceof StockV1 castOther)) {
             return false;
         }
-        final StockV1 castOther = (StockV1) other;
         return new EqualsBuilder().append(this.currency, castOther.currency).append(this.dividend, castOther.dividend)
                 .append(this.history, castOther.history).append(this.instrument, castOther.instrument)
                 .append(this.quote, castOther.quote).isEquals();

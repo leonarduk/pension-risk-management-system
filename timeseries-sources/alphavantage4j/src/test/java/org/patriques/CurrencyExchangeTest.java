@@ -19,8 +19,7 @@ public class CurrencyExchangeTest {
 
     @Test
     public void conversionFromEURToUSD() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Realtime Currency Exchange Rate\": {\n" +
                 "        \"1. From_Currency Code\": \"BTC\",\n" +
                 "        \"2. From_Currency Name\": \"Bitcoin\",\n" +
@@ -46,8 +45,7 @@ public class CurrencyExchangeTest {
 
     @Test
     public void dailyForexEURToUSD() {
-        String json = "" +
-                "{\n" +
+        String json = "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Forex Daily Prices (open, high, low, close)\",\n" +
                 "        \"2. From Symbol\": \"EUR\",\n" +
