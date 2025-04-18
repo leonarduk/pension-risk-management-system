@@ -3,7 +3,6 @@ package com.leonarduk.finance.stockfeed.datatransformation.correction;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 import org.ta4j.core.Bar;
 
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;

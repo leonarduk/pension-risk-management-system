@@ -53,8 +53,7 @@ public class NumberUtils {
             }
             return new BigDecimal(data).multiply(multiplier);
         } catch (final NumberFormatException e) {
-            NumberUtils.logger.warn("Failed to parse: " + dataRaw);
-            NumberUtils.logger.trace("Failed to parse: " + dataRaw, e);
+            NumberUtils.logger.warn("Failed to parse: {}", dataRaw, e);
         }
         return null;
     }

@@ -6,6 +6,7 @@ import org.ta4j.core.TimeSeries;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -4258117616509944879L;
     private final List<Bar> series;
 

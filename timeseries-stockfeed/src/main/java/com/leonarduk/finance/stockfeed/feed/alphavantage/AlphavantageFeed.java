@@ -71,8 +71,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
         String apiKey = apiKeyIterator.next();
         logger.info("Using key " + apiKey);
 
-        AlphaVantageConnector apiConnector = new AlphaVantageConnector(apiKey, timeout);
-        return apiConnector;
+        return new AlphaVantageConnector(apiKey, timeout);
     }
 
     private List<Bar> convertSeries(Instrument instrument, List<StockData> stockData) {

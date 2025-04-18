@@ -23,15 +23,13 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
     private final String bucketName;
     private final String folderName;
-    private final String region;
     private final AmazonS3 s3;
 
     public S3DataStore(String bucketName, String folderName, String region) {
         this.bucketName = bucketName;
         this.folderName = folderName;
-        this.region = region;
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
-        builder.setRegion(this.region);
+        builder.setRegion(region);
         s3 = builder.build();
     }
 

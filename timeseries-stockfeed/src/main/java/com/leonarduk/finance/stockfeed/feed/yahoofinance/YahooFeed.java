@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 import yahoofinance.quotes.csv.FxQuotesRequest;
-import yahoofinance.quotes.csv.StockQuotesData;
-import yahoofinance.quotes.csv.StockQuotesRequest;
 import yahoofinance.quotes.fx.FxQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
@@ -24,17 +22,7 @@ import java.util.stream.Collectors;
 public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
 
     public static final Logger logger = LoggerFactory.getLogger(YahooFeed.class.getName());
-    public static final String QUOTES_CSV_DELIMITER = ",";
     public static final String TIMEZONE = "America/New_York";
-
-    private static String getCode(final Instrument instrument) {
-        switch (instrument.getAssetType()) {
-            case FUND:
-                return instrument.getIsin();
-            default:
-                return instrument.code();
-        }
-    }
 
     /**
      * Some examples of accepted symbols:
@@ -87,11 +75,6 @@ public class YahooFeed extends AbstractStockFeed implements QuoteFeed {
         Stock stock = YahooFinance.get(symbol);
         StockQuote price = stock.getQuote();
         return new ExtendedStockQuote(price, "Yahoo");
-    }
-
-    public StockQuotesData getStockQuotesData(final Instrument instrument) throws IOException {
-        final StockQuotesRequest request = new StockQuotesRequest(instrument.code());
-        return request.getSingleResult();
     }
 
     @Override

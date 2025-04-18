@@ -21,12 +21,11 @@ import java.util.stream.Collectors;
 public class LinearInterpolatorTest {
     private TimeSeriesInterpolator interpolator;
     private TimeSeries series;
-    private List<ExtendedHistoricalQuote> quotes;
 
     @Before
     public void setUp() throws Exception {
         this.interpolator = new LinearInterpolator();
-        quotes = Arrays.asList(
+        List<ExtendedHistoricalQuote> quotes = Arrays.asList(
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-03"), 100.0, 110.0, 90.0,
                         105.0, 1000.0, 0, ""),
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-07"), 100.0, 112.0, 92.0,

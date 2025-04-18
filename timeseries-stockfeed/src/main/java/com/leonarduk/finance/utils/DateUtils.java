@@ -51,10 +51,6 @@ public class DateUtils {
         return calendar;
     }
 
-    public static Calendar dateToCalendar(final ZonedDateTime fromDate) {
-        return DateUtils.dateToCalendar(convertToDateViaInstant(fromDate.toLocalDate()));
-    }
-
     public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate) {
         return getDiffInWorkDays(startDate, endDate, Optional.empty());
     }
@@ -79,9 +75,8 @@ public class DateUtils {
     }
 
     public static Predicate<LocalDate> isWeekend() {
-        Predicate<LocalDate> isWeekend = date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
+        return date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
                 || date.getDayOfWeek() == DayOfWeek.SUNDAY;
-        return isWeekend;
     }
 
     private static String getDividendDateFormat(final String date) {
@@ -97,7 +92,7 @@ public class DateUtils {
     }
 
     public static Iterator<LocalDate> getLocalDateIterator(final LocalDate oldestDate, final LocalDate mostRecentDate) {
-        return new Iterator<LocalDate>() {
+        return new Iterator<>() {
 
             LocalDate nextDate = oldestDate;
 
@@ -113,34 +108,6 @@ public class DateUtils {
                     this.nextDate = this.nextDate.plusDays(2);
                 }
                 this.nextDate = this.nextDate.plusDays(1);
-                return currentDate;
-            }
-
-        };
-
-    }
-
-    public static Iterator<ZonedDateTime> getLocalDateNewToOldIterator(final ZonedDateTime startDate,
-                                                                       final ZonedDateTime lastDate) {
-        return new Iterator<ZonedDateTime>() {
-
-            ZonedDateTime nextDate = startDate;
-
-            @Override
-            public boolean hasNext() {
-                return this.nextDate.isAfter(lastDate) || this.nextDate.equals(lastDate);
-            }
-
-            @Override
-            public ZonedDateTime next() {
-                if (this.nextDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                    this.nextDate = this.nextDate.minusDays(2);
-                }
-                if (this.nextDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
-                    this.nextDate = this.nextDate.minusDays(1);
-                }
-                final ZonedDateTime currentDate = this.nextDate;
-                this.nextDate = this.nextDate.minusDays(1);
                 return currentDate;
             }
 
@@ -166,33 +133,6 @@ public class DateUtils {
         }
         return (DateUtils.dates.computeIfAbsent(fieldValue,
                 v -> DateUtils.convertToDateViaInstant(LocalDate.parse(v, DateTimeFormatter.ISO_DATE))));
-    }
-
-    /**
-     * Used to parse the last trade date / time. Returns null if the date / time
-     * cannot be parsed.
-     *
-     * @param date     String received that represents the date
-     * @param time     String received that represents the time
-     * @param timeZone time zone to use for parsing the date time
-     * @return Calendar object with the parsed datetime
-     */
-    public static Calendar parseDateTime(final String date, final String time, final TimeZone timeZone) {
-        final String datetime = date + " " + time;
-        final SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", Locale.US);
-
-        format.setTimeZone(timeZone);
-        try {
-            if (StringUtils.isParseable(date) && StringUtils.isParseable(time)) {
-                final Calendar c = Calendar.getInstance();
-                c.setTime(format.parse(datetime));
-                return c;
-            }
-        } catch (final ParseException ex) {
-            DateUtils.logger.warn("Failed to parse datetime: " + datetime);
-            DateUtils.logger.trace("Failed to parse datetime: " + datetime, ex);
-        }
-        return null;
     }
 
     /**
@@ -235,18 +175,6 @@ public class DateUtils {
 
     public static Date convertToDateViaInstant(LocalDate fromDate) {
         return java.util.Date.from(fromDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-    }
-
-    public static ZonedDateTime calendarToZonedDateTime(Calendar lastTradeTime) {
-        return lastTradeTime.toInstant().atZone(ZoneId.systemDefault());
-    }
-
-//	public ZonedDateTime convertToLocalDateViaMilisecond(Date dateToConvert) {
-//		return Instant.ofEpochMilli(dateToConvert.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-//	}
-
-    public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
-        return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
 }

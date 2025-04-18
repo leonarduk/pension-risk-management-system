@@ -16,8 +16,6 @@ public class DateUtilsTest {
     @Test
     @Ignore
     public final void testGetDiffInWorkDays() {
-//		Assert.assertEquals(2,
-//				DateUtils.getDiffInWorkDays(LocalDate.parse("2013-12-24"), LocalDate.parse("2013-12-27")));
 
         Assert.assertEquals(2,
                 DateUtils.getDiffInWorkDays(LocalDate.parse("2009-08-28"), LocalDate.parse("2009-09-01")));
