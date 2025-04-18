@@ -55,10 +55,7 @@ public class TimeseriesUtils {
     }
 
     public static Comparator<? super Bar> getComparator() {
-        final Comparator<? super Bar> comparator = (o1, o2) -> {
-            return o1.getEndTime().compareTo(o2.getEndTime());
-        };
-        return comparator;
+        return Comparator.comparing(Bar::getEndTime);
     }
 
     public static Bar getMostRecentQuote(final List<Bar> history) {
@@ -120,23 +117,6 @@ public class TimeseriesUtils {
                 BigDecimal.valueOf(Double.min(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
                 BigDecimal.valueOf(Double.max(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
                 DoubleNum.valueOf(0), comment);
-    }
-
-    public static Iterator<Bar> getTimeSeriesIterator(final TimeSeries series) {
-        final Iterator<Bar> iter = new Iterator<Bar>() {
-            int index = series.getBeginIndex();
-
-            @Override
-            public boolean hasNext() {
-                return this.index < (series.getEndIndex());
-            }
-
-            @Override
-            public Bar next() {
-                return series.getBar(this.index++);
-            }
-        };
-        return iter;
     }
 
     public static Optional<StockV1> interpolateAndSortSeries(final LocalDate fromLocalDate, final LocalDate toLocalDate,

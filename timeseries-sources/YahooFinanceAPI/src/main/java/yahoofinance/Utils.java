@@ -121,8 +121,7 @@ public class Utils {
             }
             result = Double.parseDouble(data) * multiplier;
         } catch (NumberFormatException e) {
-            log.warn("Failed to parse: " + data);
-            log.debug("Failed to parse: " + data, e);
+            log.warn("Failed to parse: {}", data, e);
         }
         return result;
     }

@@ -28,23 +28,13 @@ public class StockFeedEndpoint {
     @Autowired
     private StockFeed stockFeed;
 
-    @Autowired
-    private FxFeed fxFeed;
-
-    @Autowired
-    private DataStore dataStore;
-
     /**
      * Constructor for dependency injection.
      *
      * @param stockFeed the stock feed service
-     * @param fxFeed the FX feed service
-     * @param dataStore the data store service
      */
-    public StockFeedEndpoint(StockFeed stockFeed, FxFeed fxFeed, DataStore dataStore) {
+    public StockFeedEndpoint(StockFeed stockFeed) {
         this.stockFeed = stockFeed;
-        this.fxFeed = fxFeed;
-        this.dataStore = dataStore;
     }
 
     /**

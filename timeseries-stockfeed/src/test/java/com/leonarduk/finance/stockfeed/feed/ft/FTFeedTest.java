@@ -19,10 +19,6 @@ public class FTFeedTest {
         feed = new FTFeed();
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     @Ignore
     public void get() throws IOException {
@@ -30,17 +26,5 @@ public class FTFeedTest {
         if (result.isPresent()) {
             System.out.println(result.get().getHistory());
         }
-    }
-
-    @Test
-    public void testGet() {
-    }
-
-    @Test
-    public void getSource() {
-    }
-
-    @Test
-    public void isAvailable() {
     }
 }

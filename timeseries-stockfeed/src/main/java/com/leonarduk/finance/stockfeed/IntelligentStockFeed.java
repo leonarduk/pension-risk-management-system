@@ -16,21 +16,16 @@ import org.ta4j.core.num.DoubleNum;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed {
     public static final Logger log = LoggerFactory.getLogger(IntelligentStockFeed.class.getName());
 
-    private final DataStore dataStore;
     private final StockFeedFactory stockFeedFactory;
     public boolean refresh = true;
     private final Set<String> previousQueries;
 
     public IntelligentStockFeed(final DataStore dataStore) {
-        this.dataStore = dataStore;
         stockFeedFactory = new StockFeedFactory(dataStore);
         previousQueries = new HashSet<>();
     }
@@ -107,9 +102,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         try {
             return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, addLatestQuoteToTheSeries);
         } catch (final Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getStackTrace());
-            IntelligentStockFeed.log.warn("Failed to get data", e.getMessage());
+            System.err.println(Arrays.toString(e.getStackTrace()));
+            IntelligentStockFeed.log.warn("Failed to get data {}", e.getMessage());
             return Optional.empty();
         }
 

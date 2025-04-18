@@ -6,7 +6,6 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 

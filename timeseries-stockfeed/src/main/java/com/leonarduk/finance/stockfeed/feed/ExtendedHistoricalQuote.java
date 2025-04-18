@@ -10,6 +10,7 @@ import org.ta4j.core.num.Num;
 import yahoofinance.histquotes.HistoricalQuote;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Measurement(name = "HistoricalQuote")
 public class ExtendedHistoricalQuote extends HistoricalQuote
         implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
+    @Serial
     private static final long serialVersionUID = -6391604492688118701L;
 
     @Column(tag = true)
