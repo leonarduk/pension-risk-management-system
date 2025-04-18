@@ -26,12 +26,16 @@ public class SqsHandler implements RequestHandler<SQSEvent, Void> {
             log.info("SQS Message has no records");
         }
 
+        assert event != null;
         for (SQSMessage msg : event.getRecords()) {
             String messageBody = msg.getBody();
             try {
                 this.queryRunner.getResults(getParameterMap(messageBody));
             } catch (Exception e) {
-                System.err.println(String.format("Error parsing message \n %s. \n %s", messageBody));
+                System.err.printf("""
+                        Error parsing message\s
+                         %s.\s
+                         %s%n""", messageBody, e.getMessage());
             }
         }
         return null;

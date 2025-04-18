@@ -64,8 +64,6 @@ public class RedirectableRequest {
 
         if (redirectCount > this.protocolRedirectLimit) {
             throw new IOException("Protocol redirect count exceeded for url: " + this.request.toExternalForm());
-        } else if (connection == null) {
-            throw new IOException("Unexpected error while opening connection");
         } else {
             return connection;
         }

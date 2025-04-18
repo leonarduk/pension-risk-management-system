@@ -54,9 +54,9 @@ public class LinearInterpolator extends AbstractLineInterpolator {
         final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().toLocalDate(), currentDate);
         final double multiplier = dayCount / timeInterval;
 
-        final Double changeClosePrice = nextQuote.getClosePrice().doubleValue()
+        final double changeClosePrice = nextQuote.getClosePrice().doubleValue()
                 - currentQuote.getClosePrice().doubleValue();
-        final Double changeOpenPrice = nextQuote.getOpenPrice().doubleValue()
+        final double changeOpenPrice = nextQuote.getOpenPrice().doubleValue()
                 - currentQuote.getOpenPrice().doubleValue();
 
         final Double newClosePrice = currentQuote.getClosePrice().doubleValue()

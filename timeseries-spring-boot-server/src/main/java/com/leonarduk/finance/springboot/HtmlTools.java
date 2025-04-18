@@ -54,7 +54,8 @@ public class HtmlTools {
         if (sb == null) {
             throw new IllegalArgumentException("Passed in null StringBuilder");
         }
-        sb.append("<td bgcolor='" + HtmlTools.getColour(value == null ? "" : value) + "'>")
+        sb.append("<td bgcolor='")
+            .append(HtmlTools.getColour(value == null ? "" : value)).append("'>")
             .append(formatter.format(value == null ? "" : value)).append("</td>");
     }
     public static String getColour(final Object value) {
