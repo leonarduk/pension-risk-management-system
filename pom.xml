@@ -17,13 +17,13 @@
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
         <jacoco.version>0.8.12</jacoco.version>
         <jahoo.finance.version>3.17.0</jahoo.finance.version>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <junit.version>4.13.2</junit.version>
         <junit5.version>5.9.0</junit5.version>
         <log4jdbc.log4j2.version>1.16</log4jdbc.log4j2.version>
-        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <org.slf4j.version>2.0.17</org.slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,6 +42,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
                     <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>com.google.auto.service</groupId>
