@@ -58,17 +58,15 @@ public class IntraDay extends DigitalCurrencyResponse<SimpelDigitalCurrencyData>
         IntraDay resolve(Map<String, String> metaData,
                          Map<String, Map<String, String>> digitalCurrencyData) {
             List<SimpelDigitalCurrencyData> currencyDataList = new ArrayList<>();
-            digitalCurrencyData.forEach((key, values) -> {
-                currencyDataList.add(
-                        new SimpelDigitalCurrencyData(
-                                LocalDateTime.parse(key, DATE_WITH_TIME_FORMAT),
-                                Double.parseDouble(values.get("1a. price (" + market.getValue() + ")")),
-                                Double.parseDouble(values.get("1b. price (USD)")),
-                                Double.parseDouble(values.get("2. volume")),
-                                Double.parseDouble(values.get("3. market cap (USD)"))
-                        )
-                );
-            });
+            digitalCurrencyData.forEach((key, values) -> currencyDataList.add(
+                    new SimpelDigitalCurrencyData(
+                            LocalDateTime.parse(key, DATE_WITH_TIME_FORMAT),
+                            Double.parseDouble(values.get("1a. price (" + market.getValue() + ")")),
+                            Double.parseDouble(values.get("1b. price (USD)")),
+                            Double.parseDouble(values.get("2. volume")),
+                            Double.parseDouble(values.get("3. market cap (USD)"))
+                    )
+            ));
             return new IntraDay(metaData, currencyDataList);
         }
 

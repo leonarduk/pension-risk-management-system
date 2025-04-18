@@ -40,7 +40,7 @@ public class TimeseriesUtils {
     }
 
     public static boolean containsDatePoints(final List<Bar> cachedHistory, final LocalDate... dates) {
-        return getMissingDataPoints(cachedHistory, dates).size() == 0;
+        return getMissingDataPoints(cachedHistory, dates).isEmpty();
     }
 
     public static List<LocalDate> getMissingDataPointsForDateRange(final List<Bar> cachedHistory, final LocalDate fromdate, final LocalDate toDate) {
@@ -161,7 +161,7 @@ public class TimeseriesUtils {
     }
 
     public static List<Bar> sortQuoteList(final List<Bar> history) {
-        Collections.sort(history, TimeseriesUtils.getComparator());
+        history.sort(TimeseriesUtils.getComparator());
         return history;
     }
 

@@ -60,9 +60,9 @@ public class LinearInterpolator extends AbstractLineInterpolator {
                 - currentQuote.getOpenPrice().doubleValue();
 
         final Double newClosePrice = currentQuote.getClosePrice().doubleValue()
-                + (changeClosePrice * Double.valueOf(multiplier));
+                + (changeClosePrice * multiplier);
         final Double newOpenPrice = currentQuote.getOpenPrice().doubleValue()
-                + (changeOpenPrice * Double.valueOf(multiplier));
+                + (changeOpenPrice * multiplier);
 
         return TimeseriesUtils.createSyntheticBar(currentDate, newClosePrice, newOpenPrice, "Interpolated from "
                 + currentQuote.getEndTime().toLocalDate() + " - " + nextQuote.getEndTime().toLocalDate());

@@ -30,7 +30,7 @@ public class RedirectableRequest {
     }
 
     public URLConnection openConnection() throws IOException {
-        return openConnection(new HashMap<String, String>());
+        return openConnection(new HashMap<>());
     }
 
     public URLConnection openConnection(Map<String, String> requestProperties) throws IOException {

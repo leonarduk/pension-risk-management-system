@@ -41,7 +41,7 @@ public class HtmlTools {
 
 
     public static void printTable(final StringBuilder sb, final List<List<DataField>> records) {
-        if (records.size() > 0) {
+        if (!records.isEmpty()) {
             sb.append("<table border=\"1\"><tr>");
             records.get(0).stream().forEach(f -> {
                 if (f.isDisplay()) {

@@ -2,7 +2,6 @@ package com.leonarduk.finance.stockfeed.feed.ft;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

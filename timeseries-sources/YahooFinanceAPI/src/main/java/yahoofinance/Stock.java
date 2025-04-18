@@ -531,9 +531,7 @@ public class Stock {
         for (Field f : this.getClass().getDeclaredFields()) {
             try {
                 System.out.println(f.getName() + ": " + f.get(this));
-            } catch (IllegalArgumentException ex) {
-                log.error(null, ex);
-            } catch (IllegalAccessException ex) {
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
                 log.error(null, ex);
             }
         }

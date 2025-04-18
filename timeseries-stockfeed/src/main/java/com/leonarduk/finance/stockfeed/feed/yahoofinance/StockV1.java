@@ -269,9 +269,7 @@ public class StockV1 {
         for (final Field f : this.getClass().getDeclaredFields()) {
             try {
                 System.out.println(f.getName() + ": " + f.get(this));
-            } catch (final IllegalArgumentException ex) {
-                LoggerFactory.getLogger(StockV1.class.getName()).error(null, ex);
-            } catch (final IllegalAccessException ex) {
+            } catch (final IllegalArgumentException | IllegalAccessException ex) {
                 LoggerFactory.getLogger(StockV1.class.getName()).error(null, ex);
             }
         }

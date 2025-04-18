@@ -81,8 +81,7 @@ public class Utils {
             }
             result = new BigDecimal(data).multiply(multiplier);
         } catch (NumberFormatException e) {
-            log.warn("Failed to parse: " + data);
-            log.debug("Failed to parse: " + data, e);
+            log.warn("Failed to parse: {}", data, e);
         }
         return result;
     }

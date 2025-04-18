@@ -113,9 +113,9 @@ public sealed class Instrument permits FxInstrument {
 
         public void init(String filePath) throws IOException, URISyntaxException {
             this.instruments = ResourceTools.getResourceAsLines(filePath).stream().skip(1)
-                    .map(line -> this.create(line)).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
-            this.getInstruments().values().stream().forEach(i -> this.getInstruments().put(i.getIsin().toUpperCase(), i));
-            this.getInstruments().values().stream().forEach(i -> this.getInstruments().put(i.getGoogleCode().toUpperCase(), i));
+                    .map(this::create).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
+            this.getInstruments().values().forEach(i -> this.getInstruments().put(i.getIsin().toUpperCase(), i));
+            this.getInstruments().values().forEach(i -> this.getInstruments().put(i.getGoogleCode().toUpperCase(), i));
             this.getInstruments().put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
         }
 

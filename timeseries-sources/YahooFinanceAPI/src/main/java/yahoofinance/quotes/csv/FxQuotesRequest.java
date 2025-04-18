@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class FxQuotesRequest extends QuotesRequest<FxQuote> {
 
-    public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<QuotesProperty>();
+    public static final List<QuotesProperty> DEFAULT_PROPERTIES = new ArrayList<>();
 
     static {
         DEFAULT_PROPERTIES.add(QuotesProperty.Symbol);

@@ -31,7 +31,7 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
     public void storeSeries(final StockV1 stock) throws IOException {
 
         final File file = this.getStock(stock);
-        FileBasedDataStore.log.info("Save stock to " + file.getAbsolutePath());
+        FileBasedDataStore.log.info("Save stock to {}", file.getAbsolutePath());
         final List<Bar> series = stock.getHistory();
 
         /**
@@ -64,7 +64,7 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
     protected BufferedReader openReader() throws IOException {
         final File file = new File(this.storeLocation,
                 this.getQueryName(this.getInstrument()));
-        FileBasedDataStore.log.info("Read file from " + file.getAbsolutePath());
+        FileBasedDataStore.log.info("Read file from {}", file.getAbsolutePath());
 
         if (!file.exists()) {
             throw new IOException(file.getAbsolutePath() + " not found");
