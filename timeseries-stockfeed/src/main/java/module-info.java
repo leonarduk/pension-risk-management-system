@@ -17,4 +17,5 @@ module timeseries.stockfeed {
     requires ta4j.core;
     requires webscraper.core;
     requires YahooFinanceAPI;
+    requires com.fasterxml.jackson.annotation;
 }

@@ -2,13 +2,12 @@ package com.leonarduk.finance.springboot;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.leonarduk.finance.stockfeed.*;
 import com.leonarduk.finance.stockfeed.datatransformation.correction.ValueScalingTransformer;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ta4j.core.Bar;
@@ -38,18 +37,6 @@ public class StockFeedEndpoint {
     }
 
     /**
-     * Simple hello world endpoint.
-     *
-     * @param ticker the stock ticker
-     * @return a static greeting message
-     */
-    @GetMapping("/hello/{ticker}")
-    @ResponseBody
-    public String hello(@PathVariable("ticker") final String ticker) {
-        return "Hello, World!";
-    }
-
-    /**
      * Display stock history data in HTML format.
      *
      * @param ticker the stock ticker
@@ -74,6 +61,14 @@ public class StockFeedEndpoint {
                                  @RequestParam(name = "cleanDate", required = false) boolean cleanDate
     ) throws IOException {
 
+        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
+
+        final StringBuilder sbBody = new StringBuilder();
+        HtmlTools.printTable(sbBody, records);
+        return HtmlTools.createHtmlText(null, sbBody).toString();
+    }
+
+    private @NotNull List<List<DataField>> getRecords(String ticker, Integer years, String fromDate, String toDate, String fields, Double scaling, boolean interpolate, boolean cleanDate) throws IOException {
         Instrument instrument = Instrument.fromString(ticker);
 
         String[] fieldArray = {};
@@ -83,10 +78,44 @@ public class StockFeedEndpoint {
 
         List<List<DataField>> records = generateResults(years, fromDate, toDate, instrument,
             fieldArray, interpolate, cleanDate, scaling);
+        return records;
+    }
 
-        final StringBuilder sbBody = new StringBuilder();
-        HtmlTools.printTable(sbBody, records);
-        return HtmlTools.createHtmlText(null, sbBody).toString();
+    @GetMapping("/ticker/{ticker}/json")
+    @ResponseBody
+    public Map<String, Map<String, Double>> displayHistoryAsJson(@PathVariable("ticker") final String ticker,
+                                                                 @RequestParam(name = "years", required = false) Integer years,
+                                                                 @RequestParam(name = "fromDate", required = false) String fromDate,
+                                                                 @RequestParam(name = "toDate", required = false) String toDate,
+                                                                 @RequestParam(name = "fields", required = false) String fields,
+                                                                 @RequestParam(name = "scaling", required = false) Double scaling,
+                                                                 @RequestParam(name = "interpolate", required = false) boolean interpolate,
+                                                                 @RequestParam(name = "cleanDate", required = false) boolean cleanDate
+    ) throws IOException {
+        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
+
+        Map<String, Map<String, Double>> result = new TreeMap<>();
+        Map<String, Double> datePriceMap = new TreeMap<>();
+
+        for (List<DataField> record : records) {
+            String date = null;
+            Double closePrice = null;
+
+            for (DataField field : record) {
+                if ("Date".equals(field.getName())) {
+                    date = field.getValue().toString();
+                } else if ("Close".equals(field.getName())) {
+                    closePrice = Double.valueOf(field.getValue().toString());
+                }
+            }
+
+            if (date != null && closePrice != null) {
+                datePriceMap.put(date, closePrice);
+            }
+        }
+
+        result.put(ticker, datePriceMap);
+        return result;
     }
 
     /**
