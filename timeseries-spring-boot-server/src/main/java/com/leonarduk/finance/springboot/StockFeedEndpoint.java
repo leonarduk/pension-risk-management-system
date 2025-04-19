@@ -51,7 +51,7 @@ public class StockFeedEndpoint {
      * @throws IOException if data retrieval fails
      */
     @GetMapping("/ticker/{ticker}")
-    public String displayHistory(@PathVariable("ticker") final String ticker,
+    public String displayHistory(@PathVariable(name = "ticker") final String ticker,
                                  @RequestParam(name = "years", required = false) Integer years,
                                  @RequestParam(name = "fromDate", required = false) String fromDate,
                                  @RequestParam(name = "toDate", required = false) String toDate,
@@ -81,9 +81,9 @@ public class StockFeedEndpoint {
         return records;
     }
 
-    @GetMapping("/ticker/{ticker}/json")
+    @PostMapping("/ticker")
     @ResponseBody
-    public Map<String, Map<String, Double>> displayHistoryAsJson(@PathVariable("ticker") final String ticker,
+    public Map<String, Map<String, Double>> displayHistoryAsJson(@RequestParam("ticker") final String tickerArg,
                                                                  @RequestParam(name = "years", required = false) Integer years,
                                                                  @RequestParam(name = "fromDate", required = false) String fromDate,
                                                                  @RequestParam(name = "toDate", required = false) String toDate,
@@ -92,29 +92,40 @@ public class StockFeedEndpoint {
                                                                  @RequestParam(name = "interpolate", required = false) boolean interpolate,
                                                                  @RequestParam(name = "cleanDate", required = false) boolean cleanDate
     ) throws IOException {
-        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
 
         Map<String, Map<String, Double>> result = new TreeMap<>();
-        Map<String, Double> datePriceMap = new TreeMap<>();
 
-        for (List<DataField> record : records) {
-            String date = null;
-            Double closePrice = null;
+        List<String> tickers = new ArrayList<>();
+        if (tickerArg.contains(",")) {
+            String[] tickerArray = tickerArg.split(",");
+            Collections.addAll(tickers, tickerArray);
+        } else {
+            tickers.add(tickerArg);
+        }
 
-            for (DataField field : record) {
-                if ("Date".equals(field.getName())) {
-                    date = field.getValue().toString();
-                } else if ("Close".equals(field.getName())) {
-                    closePrice = Double.valueOf(field.getValue().toString());
+        for (String ticker : tickers) {
+            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
+            Map<String, Double> datePriceMap = new TreeMap<>();
+
+            for (List<DataField> record : records) {
+                String date = null;
+                Double closePrice = null;
+
+                for (DataField field : record) {
+                    if ("Date".equals(field.getName())) {
+                        date = field.getValue().toString();
+                    } else if ("Close".equals(field.getName())) {
+                        closePrice = Double.valueOf(field.getValue().toString());
+                    }
+                }
+
+                if (date != null && closePrice != null) {
+                    datePriceMap.put(date, closePrice);
                 }
             }
 
-            if (date != null && closePrice != null) {
-                datePriceMap.put(date, closePrice);
-            }
+            result.put(ticker, datePriceMap);
         }
-
-        result.put(ticker, datePriceMap);
         return result;
     }
 
