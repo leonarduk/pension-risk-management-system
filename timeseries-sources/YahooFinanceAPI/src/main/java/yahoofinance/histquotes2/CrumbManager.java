@@ -34,7 +34,7 @@ public class CrumbManager {
             return;
         }
 
-        URL request = new URL(YahooFinance.HISTQUOTES2_SCRAPE_URL);
+        URL request =  java.net.URI.create(YahooFinance.HISTQUOTES2_SCRAPE_URL).toURL();
         RedirectableRequest redirectableRequest = new RedirectableRequest(request, 5);
         redirectableRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
         redirectableRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);
@@ -90,7 +90,7 @@ public class CrumbManager {
             datas.put("originalDoneUrl", YahooFinance.HISTQUOTES2_SCRAPE_URL);
             datas.put("doneUrl", YahooFinance.HISTQUOTES2_COOKIE_OATH_DONEURL + datas.get("sessionId") + "&inline=" + datas.get("inline") + "&lang=" + datas.get("locale"));
 
-            URL requestOath = new URL(YahooFinance.HISTQUOTES2_COOKIE_OATH_URL);
+            URL requestOath = java.net.URI.create(YahooFinance.HISTQUOTES2_COOKIE_OATH_URL).toURL();
             HttpURLConnection connectionOath;
             connectionOath = (HttpURLConnection) requestOath.openConnection();
             connectionOath.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
@@ -160,7 +160,7 @@ public class CrumbManager {
     }
 
     private static String getCrumbResult() throws IOException {
-        URL crumbRequest = new URL(YahooFinance.HISTQUOTES2_CRUMB_URL);
+        URL crumbRequest = java.net.URI.create(YahooFinance.HISTQUOTES2_CRUMB_URL).toURL();
         RedirectableRequest redirectableCrumbRequest = new RedirectableRequest(crumbRequest, 5);
         redirectableCrumbRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
         redirectableCrumbRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);

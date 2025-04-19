@@ -27,6 +27,8 @@ public abstract class JsonParser<Data> {
     protected final String DATE_WITH_SIMPLE_TIME_PATTERN = "^\\d{4}-[01]\\d-[0-3]\\d\\s+[0-2]\\d:[0-5]\\d:[0-5]\\d";
     protected final String DATE_WITH_TIME_PATTERN = "^\\d{4}-[01]\\d-[0-3]\\d\\s+[0-2]\\d:[0-5]\\d:[0-5]\\d";
 
+    private static final com.google.gson.JsonParser PARSER = new com.google.gson.JsonParser();
+
     /**
      * Helper object to interpret the json.
      *
@@ -49,11 +51,8 @@ public abstract class JsonParser<Data> {
      * @return the generic Data type, i.e Intraday, Daily, Sector etc.
      */
     public Data parseJson(String json) {
-        if (json == null || json.trim().isEmpty()) {
-            throw new AlphaVantageException("JSON input is null or empty");
-        }
         try {
-            JsonElement jsonElement = com.google.gson.JsonParser.parseString(json);
+            JsonElement jsonElement = PARSER.parse(json);
             JsonObject rootObject = jsonElement.getAsJsonObject();
 
             JsonElement errorMessage = rootObject.get("Error Message");
