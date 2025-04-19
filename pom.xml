@@ -198,6 +198,7 @@
         <module>timeseries-stockfeed</module>
         <module>timeseries-spring-boot-server</module>
         <module>timeseries-lambda</module>
+<!--        <module>timeseries-python</module>-->
     </modules>
     <organization>
         <name>Leonard UK Ltd</name>
