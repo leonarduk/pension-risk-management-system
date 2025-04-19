@@ -151,8 +151,7 @@ public class TimeseriesUtils {
             StringUtils.addValue(sb, historicalQuote.getMinPrice());
             StringUtils.addValue(sb, historicalQuote.getClosePrice());
             StringUtils.addValue(sb, historicalQuote.getVolume());
-            if (historicalQuote instanceof Commentable) {
-                Commentable commentable = (Commentable) historicalQuote;
+            if (historicalQuote instanceof Commentable commentable) {
                 sb.append(",").append(commentable.getComment());
             }
             sb.append("\n");

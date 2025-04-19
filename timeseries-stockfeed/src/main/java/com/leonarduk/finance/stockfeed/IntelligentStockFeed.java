@@ -39,7 +39,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
         final StockV1 cash = new StockV1(instrument);
         final List<Bar> history = Lists.newArrayList();
         history.add(new ExtendedHistoricalQuote(instrument.getCode(), toDate, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, DoubleNum.valueOf(0l), "Manually created"));
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, DoubleNum.valueOf(0L), "Manually created"));
 
         final FlatLineInterpolator flatLineInterpolator = new FlatLineInterpolator();
         cash.setHistory(flatLineInterpolator.extendToFromDate(history, fromDate));

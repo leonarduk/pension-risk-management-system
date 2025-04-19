@@ -26,7 +26,7 @@ import com.leonarduk.finance.utils.DataField;
 public class StockFeedEndpoint {
 
     @Autowired
-    private StockFeed stockFeed;
+    private final StockFeed stockFeed;
 
     /**
      * Constructor for dependency injection.
@@ -131,7 +131,7 @@ public class StockFeedEndpoint {
                 years = 10;
             }
             toLocalDate = LocalDate.now();
-            fromLocalDate = LocalDate.now().plusYears(-1 * years);
+            fromLocalDate = LocalDate.now().plusYears(-1L * years);
         }
 
         historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanDate, scaling);
@@ -146,8 +146,7 @@ public class StockFeedEndpoint {
             record.add(new DataField("Close", historicalQuote.getClosePrice()));
             record.add(new DataField("Volume", historicalQuote.getVolume()));
 
-            if (historicalQuote instanceof Commentable) {
-                Commentable commentable = (Commentable) historicalQuote;
+            if (historicalQuote instanceof Commentable commentable) {
                 record.add(new DataField("Comment", commentable.getComment()));
             }
         }
