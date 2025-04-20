@@ -2,3 +2,4 @@ yfinance
 pandas
 numpymatplotlib
 PyPortfolioOpt
+matplotlib
