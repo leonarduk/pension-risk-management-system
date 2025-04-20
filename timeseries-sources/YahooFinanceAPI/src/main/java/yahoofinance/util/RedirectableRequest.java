@@ -56,6 +56,7 @@ public class RedirectableRequest {
                     redirectCount++;
                     String location = connection.getHeaderField("Location");
                     currentRequest = new URL(request, location);
+
                     break;
                 default:
                     hasResponse = true;

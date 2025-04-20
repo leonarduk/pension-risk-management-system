@@ -74,7 +74,8 @@ public abstract class QuotesRequest<T> {
         // Get CSV from Yahoo
         log.info("Sending request: " + url);
 
-        URL request = new URL(url);
+        URL request = java.net.URI.create(url).toURL();
+
         RedirectableRequest redirectableRequest = new RedirectableRequest(request, 5);
         redirectableRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
         redirectableRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);

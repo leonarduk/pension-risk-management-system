@@ -117,7 +117,7 @@ public class HistDividendsRequest {
     }
 
     private static BufferedReader getBufferedReader(String url) throws IOException {
-        URL request = new URL(url);
+        URL request = java.net.URI.create(url).toURL();
         RedirectableRequest redirectableRequest = new RedirectableRequest(request, 5);
         redirectableRequest.setConnectTimeout(YahooFinance.CONNECTION_TIMEOUT);
         redirectableRequest.setReadTimeout(YahooFinance.CONNECTION_TIMEOUT);

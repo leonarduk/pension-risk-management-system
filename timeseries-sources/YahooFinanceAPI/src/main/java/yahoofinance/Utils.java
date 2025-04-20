@@ -134,8 +134,7 @@ public class Utils {
             data = Utils.cleanNumberString(data);
             result = Integer.parseInt(data);
         } catch (NumberFormatException e) {
-            log.warn("Failed to parse: " + data);
-            log.debug("Failed to parse: " + data, e);
+            log.warn("Failed to parse: {}", data, e);
         }
         return result;
     }

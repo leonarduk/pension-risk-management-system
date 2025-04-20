@@ -52,7 +52,7 @@ public class AlphaVantageConnector implements ApiConnector {
 
         try {
             // Create the request URL
-            URL request = new URL(BASE_URL + params);
+            URL request = java.net.URI.create(BASE_URL + params).toURL();
             // Opens the connection to the url
             URLConnection connection = request.openConnection();
             // Sets the timeout for the connection
