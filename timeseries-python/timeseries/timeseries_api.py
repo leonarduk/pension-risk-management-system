@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pypfopt import EfficientFrontier, risk_models, expected_returns
 
+from timeseries.portfolio_app_api import get_time_series_from_xml
+
 DATE = "Date"
 PRICE = "Price"
 
@@ -42,30 +44,15 @@ def get_time_series(ticker, years: int = 0):
     dfs = []
 
     for ticker in tickers:
-        parameters = f"ticker={ticker}"
-        if years > 0:
-            parameters += f"&years={years}"
+        # df = fetch_from_api(ticker, years)
+        df = get_time_series_from_xml(xml_path, ticker)
 
-        url = f"http://localhost:8091/stock/ticker?{parameters}"
-        print(f"Fetching data from {url}")
-        response = requests.post(url=url)
-        data = response.json()
+        if df.empty:
+            print(f"No data for {ticker}")
+            continue
 
-        if ticker in data:
-            df = pd.DataFrame(data[ticker].items(), columns=[DATE, ticker])
-            df[DATE] = pd.to_datetime(df[DATE])
-            if df.empty:
-                print(f"No data for {ticker}")
-                continue
-            df.set_index(DATE, inplace=True)
-            dfs.append(df)
-
-            # Display the start and end dates for this ticker
-            start_date = df.index.min()
-            end_date = df.index.max()
-            print(f"{ticker} - Start date: {start_date}, End date: {end_date}")
-        else:
-            print(f"{ticker} not in response")
+        df.set_index(DATE, inplace=True)
+        dfs.append(df)
 
     if not dfs:
         print("No data found for the provided tickers.")
@@ -73,6 +60,30 @@ def get_time_series(ticker, years: int = 0):
 
     result = pd.concat(dfs, axis=1)
     return result
+
+
+def fetch_from_api(ticker, years):
+    parameters = f"ticker={ticker}"
+    if years > 0:
+        parameters += f"&years={years}"
+    url = f"http://localhost:8091/stock/ticker?{parameters}"
+    print(f"Fetching data from {url}")
+    response = requests.post(url=url)
+    data = response.json()
+
+    if ticker in data:
+        df = pd.DataFrame(data[ticker].items(), columns=[DATE, ticker])
+        df[DATE] = pd.to_datetime(df[DATE])
+
+        # Display the start and end dates for this ticker
+        start_date = df.index.min()
+        end_date = df.index.max()
+        print(f"{ticker} - Start date: {start_date}, End date: {end_date}")
+        return df
+
+    print(f"{ticker} not in response")
+    return pd.DataFrame()
+
 
 def calculate_var(portfolio_returns, confidence_level=0.95):
     var = np.percentile(portfolio_returns, (1 - confidence_level) * 100)
@@ -203,10 +214,12 @@ def fetch_prices_for_tickers(tickers, years=10):
 
 # 🚀 Main execution
 if __name__ == '__main__':
-    name_map = get_name_map_from_csv("main_etfs.csv")
-    tickers = set(name_map.values())
+    xml_path = r"C:\Users\User\workspaces\bitbucket\luk\data\portfolio\investments-with-id.xml"
+    # name_map = get_name_map_from_csv("main_etfs.csv")
+    # tickers = set(name_map.values())
+    tickers = ['EURO STOXX 50']
     prices = fetch_prices_for_tickers(tickers, years=30)
-
+    name_map = {'EURO STOXX 50': 'EURO STOXX 50'}
     if not prices.empty:
         plot_prices(prices)
 
