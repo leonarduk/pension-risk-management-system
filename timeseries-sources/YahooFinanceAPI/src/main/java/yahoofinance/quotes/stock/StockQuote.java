@@ -1,5 +1,7 @@
 package yahoofinance.quotes.stock;
 
+import lombok.Getter;
+import lombok.Setter;
 import yahoofinance.Utils;
 
 import java.math.BigDecimal;
@@ -11,6 +13,8 @@ import java.util.TimeZone;
  *
  * @author Stijn Strickx
  */
+@Setter
+@Getter
 public class StockQuote {
 
     private final String symbol;
@@ -26,6 +30,13 @@ public class StockQuote {
     private Long lastTradeSize;
     private String lastTradeDateStr;
     private String lastTradeTimeStr;
+    /**
+     * -- GETTER --
+     *  Will derive the time zone from the exchange to parse the date time into a Calendar object.
+     *  This will not react to changes in the lastTradeDateStr and lastTradeTimeStr
+     *
+     * @return last trade date time
+     */
     private Calendar lastTradeTime;
 
     private BigDecimal open;
@@ -35,7 +46,17 @@ public class StockQuote {
 
     private BigDecimal yearLow;
     private BigDecimal yearHigh;
+    /**
+     * -- GETTER --
+     *
+     * @return 50 day moving average
+     */
     private BigDecimal priceAvg50;
+    /**
+     * -- GETTER --
+     *
+     * @return 200 day moving average
+     */
     private BigDecimal priceAvg200;
 
     private Long volume;

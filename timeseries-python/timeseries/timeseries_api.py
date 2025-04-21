@@ -11,7 +11,25 @@ PRICE = "Price"
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 def get_time_series(ticker, years: int = 0):
+    """
+    Fetches historical time series data for the given stock ticker(s) from a local API.
+
+    Args:
+        ticker (Union[str, list, set, dict]): The stock ticker(s) to fetch data for.
+            Can be a string, list, set, or dictionary of tickers.
+        years (int, optional): The number of years of historical data to fetch.
+            Defaults to 0, which fetches all available data.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the time series data for the requested tickers.
+            The DataFrame is indexed by date, with columns for each ticker's data.
+
+    Notes:
+        - If no data is found for a ticker, it is skipped.
+        - If no data is found for all tickers, an empty DataFrame is returned.
+    """
     if isinstance(ticker, dict):
         tickers = ticker.keys()
     elif isinstance(ticker, list):
@@ -41,18 +59,26 @@ def get_time_series(ticker, years: int = 0):
                 continue
             df.set_index(DATE, inplace=True)
             dfs.append(df)
+
+            # Display the start and end dates for this ticker
+            start_date = df.index.min()
+            end_date = df.index.max()
+            print(f"{ticker} - Start date: {start_date}, End date: {end_date}")
         else:
             print(f"{ticker} not in response")
 
     if not dfs:
+        print("No data found for the provided tickers.")
         return pd.DataFrame()
 
-    return pd.concat(dfs, axis=1)
+    result = pd.concat(dfs, axis=1)
+    return result
 
 def calculate_var(portfolio_returns, confidence_level=0.95):
     var = np.percentile(portfolio_returns, (1 - confidence_level) * 100)
     print(f"1-day VaR at {confidence_level * 100:.0f}% confidence: {var:.2%}")
     return var
+
 
 def optimize_portfolio(prices):
     mu = expected_returns.mean_historical_return(prices)
@@ -71,6 +97,7 @@ def optimize_portfolio(prices):
 
     return cleaned_weights, weighted_returns
 
+
 def plot_prices(prices, filename=f"{OUTPUT_DIR}/prices.png"):
     prices.plot(title="Price Timeseries", figsize=(10, 5))
     plt.ylabel("Price")
@@ -79,6 +106,7 @@ def plot_prices(prices, filename=f"{OUTPUT_DIR}/prices.png"):
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
+
 
 def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     """
@@ -117,6 +145,7 @@ def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     plt.savefig(filename)
     plt.close()
 
+
 def plot_cumulative_returns(weighted_returns, filename=f"{OUTPUT_DIR}/cumulative_returns.png"):
     cumulative = (1 + weighted_returns).cumprod()
     cumulative.plot(title="Cumulative Portfolio Returns", figsize=(10, 5))
@@ -126,6 +155,7 @@ def plot_cumulative_returns(weighted_returns, filename=f"{OUTPUT_DIR}/cumulative
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
+
 
 def plot_var_distribution(portfolio_returns, filename=f"{OUTPUT_DIR}/return_distribution.png"):
     plt.hist(portfolio_returns, bins=50, alpha=0.7, color='blue')
@@ -137,6 +167,7 @@ def plot_var_distribution(portfolio_returns, filename=f"{OUTPUT_DIR}/return_dist
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
+
 
 def get_name_map_from_csv(positions_csv, name_field="Name", ticker_field="Symbol"):
     """
@@ -153,6 +184,7 @@ def get_name_map_from_csv(positions_csv, name_field="Name", ticker_field="Symbol
     positions = pd.read_csv(positions_csv)
     return dict(zip(positions[name_field], positions[ticker_field]))
 
+
 def fetch_prices_for_tickers(tickers, years=10):
     """
     Fetches historical price data for a given list of ticker symbols.
@@ -168,11 +200,12 @@ def fetch_prices_for_tickers(tickers, years=10):
     prices.index = pd.to_datetime(prices.index)
     return prices.sort_index()
 
+
 # 🚀 Main execution
 if __name__ == '__main__':
-    name_map = get_name_map_from_csv("steve_positions.csv")
+    name_map = get_name_map_from_csv("main_etfs.csv")
     tickers = set(name_map.values())
-    prices = fetch_prices_for_tickers(tickers, years=10)
+    prices = fetch_prices_for_tickers(tickers, years=30)
 
     if not prices.empty:
         plot_prices(prices)

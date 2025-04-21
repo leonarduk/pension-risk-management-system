@@ -1,4 +1,12 @@
 date,open,high,low,close,volume,comment
+2015-03-06,85.08,85.08,85.08,85.08,542.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-03-11,83.94,83.94,83.94,83.94,23.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-03-13,85.09,85.09,85.09,85.09,7.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-03-16,85.53,85.53,85.53,85.53,8689.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-03-18,86.32,86.32,86.30,86.30,266.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-03-23,87.23,87.23,87.23,87.23,1.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-03-25,87.62,87.62,87.62,87.62,30.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
+2015-04-10,86.50,86.65,86.50,86.65,14.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2015-04-15,85.92,85.99,85.89,85.99,2256.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2015-04-20,86.04,86.05,85.99,85.99,20963.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
 2015-04-21,85.69,85.79,85.69,85.79,457.00,com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed
