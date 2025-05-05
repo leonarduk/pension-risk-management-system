@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from timeseries.timeseries_api import get_time_series
+from analysis.portfolio.timeseries_api import get_time_series
 
 
 class TestGetTimeSeries(unittest.TestCase):
