@@ -103,14 +103,36 @@ def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path
         plt.show()
 
 
-def summarize_recent_signals(signals_df: pd.DataFrame, n: int = 5) -> str:
+from datetime import datetime, timedelta
+
+def summarize_recent_signals(signals_df: pd.DataFrame, n: int = 5, recent_days: int = None) -> str:
     if signals_df.empty:
         return "No signals found."
-    summary = signals_df.tail(n)
-    return "\n".join([f"{row['Date'].date()} - {row['Signal']} at {row['Price']:.2f}" for _, row in summary.iterrows()])
+
+    if recent_days is not None:
+        cutoff = datetime.now().date() - timedelta(days=recent_days)
+        signals_df = signals_df[signals_df["Date"].dt.date >= cutoff]
+
+    if signals_df.empty:
+        return f"No signals in the last {recent_days} days."
+
+    summary = signals_df.tail(n) if n else signals_df
+
+    def color_signal(signal):
+        if any(x in signal for x in ["Bullish", "Oversold"]):
+            return f"\033[92m{signal}\033[0m"  # Green
+        elif any(x in signal for x in ["Bearish", "Overbought"]):
+            return f"\033[91m{signal}\033[0m"  # Red
+        else:
+            return signal
+
+    return "\n".join([
+        f"{row['Date'].date()} - {color_signal(row['Signal'])} at {row['Price']:.2f}"
+        for _, row in summary.iterrows()
+    ])
 
 
-def analyze_ticker(ticker: str, xml_path: str, output_dir: str, years: int = 5) -> str:
+def analyze_ticker(ticker: str, xml_path: str, output_dir: str, years: int = 5, recent_days: int = None) -> str:
     df = get_time_series(ticker=ticker, years=years, xml_file=xml_path)
     if df.empty:
         print(f"❌ No price data for {ticker}")
@@ -125,7 +147,7 @@ def analyze_ticker(ticker: str, xml_path: str, output_dir: str, years: int = 5) 
 
     df = apply_technical_indicators(df)
     signals_df = generate_signals(df)
-    summary = summarize_recent_signals(signals_df)
+    summary = summarize_recent_signals(signals_df, recent_days=recent_days)
     print(f"\n📌 Recent Signals for {ticker}:")
     print(summary)
 
@@ -136,23 +158,38 @@ def analyze_ticker(ticker: str, xml_path: str, output_dir: str, years: int = 5) 
     signals_df.to_csv(signals_path, index=False)
     print(f"✅ Saved: {plot_path}, {signals_path}")
 
-    latest = signals_df.tail(1)
-    if not latest.empty:
-        return f"{ticker}: {latest.iloc[0]['Signal']} at {latest.iloc[0]['Price']:.2f} on {latest.iloc[0]['Date'].date()}"
-    return f"{ticker}: No recent signals."
+    if recent_days is not None:
+        cutoff = datetime.now().date() - timedelta(days=recent_days)
+        recent_signals = signals_df[signals_df["Date"].dt.date >= cutoff]
+    else:
+        recent_signals = signals_df
+
+    if not recent_signals.empty:
+        latest = recent_signals.tail(1).iloc[0]
+        signal_text = latest['Signal']
+        if any(x in signal_text for x in ["Bullish", "Oversold"]):
+            signal_text = f"\033[92m{signal_text}\033[0m"  # Green
+        elif any(x in signal_text for x in ["Bearish", "Overbought"]):
+            signal_text = f"\033[91m{signal_text}\033[0m"  # Red
+        return f"{ticker}: {signal_text} at {latest['Price']:.2f} on {latest['Date'].date()}"
+    else:
+        return f"{ticker}: No recent signals."
 
 
 if __name__ == "__main__":
     xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+    recent_days = 5
 
     tickers = get_unique_tickers(xml_file=xml_path)
+
+    tickers = ['AAPL', 'MSFT', 'GOOGL']  # Example tickers for testing
     print(f"\n📊 Unique Tickers in XML: {len(tickers)}")
 
     output_dir = "output"
 
     all_summaries = []
     for ticker in tickers:
-        summary = analyze_ticker(ticker, xml_path, output_dir)
+        summary = analyze_ticker(ticker, xml_path, output_dir, recent_days=recent_days)
         all_summaries.append(summary)
 
     print("\n📢 Summary of Recent Signals Across All Tickers:")
