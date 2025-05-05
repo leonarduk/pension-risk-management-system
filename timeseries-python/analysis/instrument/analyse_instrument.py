@@ -4,26 +4,22 @@ import matplotlib.pyplot as plt
 from ta.trend import SMAIndicator, MACD
 from ta.momentum import RSIIndicator
 from ta.volatility import BollingerBands
+
+from integrations.portfolioperformance.api.positions import get_unique_tickers
 from integrations.portfolioperformance.api.timeseries import get_time_series
+from integrations.stockfeed.timeseries import get_name_map_from_csv
 
 
 def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd.DataFrame:
     df = df.copy()
 
-    # SMA
     df["SMA20"] = SMAIndicator(df[price_col], window=20).sma_indicator()
     df["SMA50"] = SMAIndicator(df[price_col], window=50).sma_indicator()
-
-    # RSI
     df["RSI14"] = RSIIndicator(df[price_col], window=14).rsi()
-
-    # Bollinger Bands
     bb = BollingerBands(close=df[price_col], window=20, window_dev=2)
     df["bb_mavg"] = bb.bollinger_mavg()
     df["bb_high"] = bb.bollinger_hband()
     df["bb_low"] = bb.bollinger_lband()
-
-    # MACD
     macd = MACD(close=df[price_col])
     df["MACD"] = macd.macd()
     df["MACD_signal"] = macd.macd_signal()
@@ -38,20 +34,17 @@ def generate_signals(df: pd.DataFrame) -> pd.DataFrame:
         date = df.index[i]
         price = df.loc[date, "Price"]
 
-        # MACD crossover
         if df.loc[df.index[i - 1], "MACD"] < df.loc[df.index[i - 1], "MACD_signal"] and df.loc[date, "MACD"] > df.loc[date, "MACD_signal"]:
             signals.append((date, price, "MACD Bullish Crossover"))
         elif df.loc[df.index[i - 1], "MACD"] > df.loc[df.index[i - 1], "MACD_signal"] and df.loc[date, "MACD"] < df.loc[date, "MACD_signal"]:
             signals.append((date, price, "MACD Bearish Crossover"))
 
-        # RSI overbought/oversold
         rsi = df.loc[date, "RSI14"]
         if rsi > 70:
             signals.append((date, price, "RSI Overbought"))
         elif rsi < 30:
             signals.append((date, price, "RSI Oversold"))
 
-        # SMA crossover
         if df.loc[df.index[i - 1], "SMA20"] < df.loc[df.index[i - 1], "SMA50"] and df.loc[date, "SMA20"] > df.loc[date, "SMA50"]:
             signals.append((date, price, "SMA Bullish Crossover"))
         elif df.loc[df.index[i - 1], "SMA20"] > df.loc[df.index[i - 1], "SMA50"] and df.loc[date, "SMA20"] < df.loc[date, "SMA50"]:
@@ -63,7 +56,6 @@ def generate_signals(df: pd.DataFrame) -> pd.DataFrame:
 def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path: str = None, signals_df: pd.DataFrame = None):
     plt.figure(figsize=(14, 10))
 
-    # Ensure datetime index
     if not pd.api.types.is_datetime64_any_dtype(df.index):
         df.index = pd.to_datetime(df.index)
 
@@ -81,7 +73,6 @@ def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path
     ax1.grid(True)
     ax1.yaxis.set_major_formatter(price_formatter)
 
-    # Annotate signals
     if signals_df is not None:
         for _, row in signals_df.iterrows():
             color = 'green' if 'Bullish' in row['Signal'] or 'Oversold' in row['Signal'] else 'red'
@@ -112,24 +103,58 @@ def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path
         plt.show()
 
 
+def summarize_recent_signals(signals_df: pd.DataFrame, n: int = 5) -> str:
+    if signals_df.empty:
+        return "No signals found."
+    summary = signals_df.tail(n)
+    return "\n".join([f"{row['Date'].date()} - {row['Signal']} at {row['Price']:.2f}" for _, row in summary.iterrows()])
+
+
+def analyze_ticker(ticker: str, xml_path: str, output_dir: str, years: int = 5) -> str:
+    df = get_time_series(ticker=ticker, years=years, xml_file=xml_path)
+    if df.empty:
+        print(f"❌ No price data for {ticker}")
+        return f"{ticker}: No data."
+
+    symbol = df.columns[0]
+    df = df.rename(columns={symbol: "Price"})
+
+    print(f"\n📈 {ticker} Time Series:")
+    print(f"Start: {df.index.min().date()}, End: {df.index.max().date()}")
+    print(f"Prices: {df['Price'].iloc[0]:.2f} → {df['Price'].iloc[-1]:.2f}")
+
+    df = apply_technical_indicators(df)
+    signals_df = generate_signals(df)
+    summary = summarize_recent_signals(signals_df)
+    print(f"\n📌 Recent Signals for {ticker}:")
+    print(summary)
+
+    os.makedirs(output_dir, exist_ok=True)
+    plot_path = os.path.join(output_dir, f"{ticker}_technical.png")
+    signals_path = os.path.join(output_dir, f"{ticker}_signals.csv")
+    plot_technical_indicators(df, ticker=ticker, save_path=plot_path, signals_df=signals_df)
+    signals_df.to_csv(signals_path, index=False)
+    print(f"✅ Saved: {plot_path}, {signals_path}")
+
+    latest = signals_df.tail(1)
+    if not latest.empty:
+        return f"{ticker}: {latest.iloc[0]['Signal']} at {latest.iloc[0]['Price']:.2f} on {latest.iloc[0]['Date'].date()}"
+    return f"{ticker}: No recent signals."
+
+
 if __name__ == "__main__":
-    df = get_time_series(ticker="IUKD.L", years=5, xml_file="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml")
-    if not df.empty:
-        symbol = df.columns[0]
-        df = df.rename(columns={symbol: "Price"})
+    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
 
-        print("\n📈 Time Series Summary:")
-        print(f"Start Date: {df.index.min().date()} | End Date: {df.index.max().date()}")
-        print(f"Start Price: {df['Price'].iloc[0]:.2f} | End Price: {df['Price'].iloc[-1]:.2f}")
+    tickers = get_unique_tickers(xml_file=xml_path)
+    print(f"\n📊 Unique Tickers in XML: {len(tickers)}")
 
-        df = apply_technical_indicators(df)
-        signals_df = generate_signals(df)
-        print("\n📌 Buy/Sell Signals:")
-        print(signals_df.tail(10))
+    output_dir = "output"
 
-        plot_technical_indicators(df, ticker=symbol, save_path=f"output/{symbol}_technical.png", signals_df=signals_df)
+    all_summaries = []
+    for ticker in tickers:
+        summary = analyze_ticker(ticker, xml_path, output_dir)
+        all_summaries.append(summary)
 
-        signals_df.to_csv(f"output/{symbol}_signals.csv", index=False)
-        print(f"✅ Signals saved to output/{symbol}_signals.csv")
-    else:
-        print("❌ No price data available.")
+    print("\n📢 Summary of Recent Signals Across All Tickers:")
+    for s in all_summaries:
+        print("-", s)

@@ -4,6 +4,10 @@ from datetime import datetime
 
 import pandas as pd
 
+def get_unique_tickers(xml_file: str, cutoff_date=None) -> list:
+    df = extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=cutoff_date)
+    tickers = df["ticker"].dropna().unique().tolist()
+    return [t for t in tickers if t]  # filter out any empty strings
 
 def extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=None):
     tree = ET.parse(xml_file)
