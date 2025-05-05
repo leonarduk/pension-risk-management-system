@@ -1,8 +1,9 @@
-import os
 import xml.etree.ElementTree as ET
-import pandas as pd
 from collections import defaultdict
 from datetime import datetime
+
+import pandas as pd
+
 
 def extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=None):
     tree = ET.parse(xml_file)

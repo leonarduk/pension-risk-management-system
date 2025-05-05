@@ -95,7 +95,7 @@ def fetch_yahoo_headlines(ticker):
 
 def fetch_reddit_posts(reddit, ticker, limit=20):
     try:
-        posts = reddit.subreddit('stocks+investing+wallstreetbets').search(ticker, limit=limit, sort='new')
+        posts = reddit.subreddit('stocks+investing_com+wallstreetbets').search(ticker, limit=limit, sort='new')
         return [post.title + " " + (post.selftext or "") for post in posts]
     except Exception as e:
         print(f"Failed to fetch Reddit posts for {ticker}: {e}")
