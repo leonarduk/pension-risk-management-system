@@ -188,13 +188,18 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
         plot_path = os.path.join(output_dir, f"{ticker}_technical.png")
         plot_technical_indicators(df, ticker=ticker, save_path=plot_path, signals_df=signals_df)
 
+        # Write full signal history to CSV per ticker
+        signal_history_path = os.path.join(output_dir, f"{ticker}_signals.csv")
+        signals_df.to_csv(signal_history_path, index=False)
+        print(f"📄 Signal history saved to {signal_history_path}")
+
         if signals_df.empty:
             all_summaries.append(f"{display_name} ({ticker}): No signals found.")
         else:
             latest = signals_df.tail(1).iloc[0]
             signal_colored = colorize(latest['Signal'])
             all_summaries.append(
-                f"{display_name} ({ticker}): {signal_colored} at {latest['Price']:.2f} on {latest['Date'].date()}")
+                f"{display_name}: {signal_colored} at {latest['Price']:.2f} on {latest['Date'].date()}")
 
     print("📢 Summary of Recent Signals Across All Tickers:")
     for s in all_summaries:
@@ -205,6 +210,6 @@ if __name__ == "__main__":
     xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
     recent_days = 5
     group_signals = True
-    override_tickers = ['AV.L', 'GRG.L', 'GB00B00FPT80']  # Example override tickers
+    override_tickers = None #['AV.L', 'GRG.L', 'GB00B00FPT80']  # Example override tickers
 
     analyze_all_tickers(xml_path, recent_days, group_signals, output_dir="output", override_tickers=override_tickers)
