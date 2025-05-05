@@ -1,10 +1,9 @@
 import os
-from datetime import datetime, timedelta
-
-import matplotlib.pyplot as plt
 import pandas as pd
-from ta.momentum import RSIIndicator
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 from ta.trend import SMAIndicator, MACD
+from ta.momentum import RSIIndicator
 from ta.volatility import BollingerBands
 
 from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
@@ -27,7 +26,10 @@ def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd
     return df
 
 
-def generate_signals(df: pd.DataFrame, group_by_date: bool = False) -> pd.DataFrame:
+from scipy.stats import linregress
+
+
+def generate_signals(df: pd.DataFrame, group_by_date: bool = False, lookahead_days: int = 3) -> pd.DataFrame:
     signals = []
 
     for i in range(1, len(df)):
@@ -84,6 +86,19 @@ def generate_signals(df: pd.DataFrame, group_by_date: bool = False) -> pd.DataFr
         elif df.loc[df.index[i - 1], "Price"] > df.loc[df.index[i - 1], "bb_mavg"] and df.loc[date, "Price"] < df.loc[
             date, "bb_mavg"]:
             signals.append((date, price, "Price Crossed Below BB Mid"))
+
+    # Predictive MACD crossover
+    recent = df[['MACD', 'MACD_signal']].dropna().tail(5)
+    if len(recent) >= 3:
+        x = list(range(len(recent)))
+        macd_slope = linregress(x, recent['MACD'])[0]
+        signal_slope = linregress(x, recent['MACD_signal'])[0]
+        current_gap = recent['MACD'].iloc[-1] - recent['MACD_signal'].iloc[-1]
+        future_gap = current_gap + lookahead_days * (macd_slope - signal_slope)
+        if current_gap < 0 and future_gap > 0:
+            signals.append((df.index[-1], df.iloc[-1]['Price'], f"MACD Bullish Crossover Likely in {lookahead_days}d"))
+        elif current_gap > 0 and future_gap < 0:
+            signals.append((df.index[-1], df.iloc[-1]['Price'], f"MACD Bearish Crossover Likely in {lookahead_days}d"))
 
     df_signals = pd.DataFrame(signals, columns=["Date", "Price", "Signal"])
 
@@ -168,6 +183,7 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
     print(f"📊 Unique Tickers in XML: {len(tickers)}")
 
     all_summaries = []
+    prediction_summaries = []
     for ticker in tickers:
         display_name = name_map.get(ticker, ticker)
         df = get_time_series(ticker=ticker, years=5, xml_file=xml_path)
@@ -197,7 +213,11 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
             all_summaries.append(f"{display_name} ({ticker}): No signals found.")
         else:
             latest = signals_df.tail(1).iloc[0]
-            signal_colored = colorize(latest['Signal'])
+            signal = latest['Signal']
+            signal_colored = colorize(signal)
+            if 'likely' in signal.lower():
+                prediction_summaries.append(
+                    f"{display_name}: {signal} at {latest['Price']:.2f} on {latest['Date'].date()}")
             all_summaries.append(
                 f"{display_name}: {signal_colored} at {latest['Price']:.2f} on {latest['Date'].date()}")
 
@@ -205,6 +225,10 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
     for s in all_summaries:
         print("-", s)
 
+    if prediction_summaries:
+        print("🔮 PredictionsSummary: ")
+    for p in prediction_summaries:
+        print("-", p)
 
 if __name__ == "__main__":
     xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"

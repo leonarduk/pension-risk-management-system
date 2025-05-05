@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pypfopt import EfficientFrontier, risk_models, expected_returns
 
-from integrations.stockfeed.timeseries import fetch_prices_for_tickers, get_name_map_from_csv
+from integrations.portfolioperformance.api.positions import get_name_map_from_xml, get_unique_tickers
+from integrations.stockfeed.timeseries import fetch_prices_for_tickers
 
 DATE = "Date"
 PRICE = "Price"
@@ -104,8 +105,11 @@ def plot_var_distribution(portfolio_returns, filename=f"{OUTPUT_DIR}/return_dist
 
 # 🚀 Main execution
 if __name__ == '__main__':
-    name_map = get_name_map_from_csv("steve_positions.csv")
-    tickers = set(name_map.values())
+    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+
+    name_map = get_name_map_from_xml(xml_file=xml_path)
+    tickers = get_unique_tickers(xml_file=xml_path)
+
     prices = fetch_prices_for_tickers(tickers, years=10)
 
     if not prices.empty:
