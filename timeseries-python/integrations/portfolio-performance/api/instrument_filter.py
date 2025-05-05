@@ -46,7 +46,7 @@ def build_security_index(root):
 def build_taxonomy_reverse_lookup(root):
     reverse = {}
     for taxonomy in root.findall(".//taxonomies/taxonomy"):
-        tax_name = taxonomy.attrib.get("name")
+        tax_name = taxonomy.findtext("name", "").strip() or taxonomy.attrib.get("name", "Unknown")
         for classification in taxonomy.findall(".//classification"):
             class_name = classification.findtext("name", "")
             for assignment in classification.findall(".//assignment"):
@@ -107,7 +107,7 @@ def main():
 
     # Example 3: From taxonomy: Category = UK Equity Income
     results = filter_by_taxonomy("Category", "UK Equity Income", xml_file)
-    display_results(results, "Taxonomy: Category = UK Equity Income")
+    display_results(results, "Taxonomy:Category = UK Equity Income")
 
 if __name__ == "__main__":
     main()
