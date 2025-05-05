@@ -9,6 +9,7 @@ from ta.volatility import BollingerBands
 from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
 from integrations.portfolioperformance.api.timeseries import get_time_series
 
+from scipy.stats import linregress
 
 def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd.DataFrame:
     df = df.copy()
@@ -25,10 +26,6 @@ def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd
     df["MACD_hist"] = macd.macd_diff()
     return df
 
-
-from scipy.stats import linregress
-
-
 def generate_signals(df: pd.DataFrame, group_by_date: bool = False, lookahead_days: int = 3) -> pd.DataFrame:
     signals = []
 
@@ -36,58 +33,60 @@ def generate_signals(df: pd.DataFrame, group_by_date: bool = False, lookahead_da
         date = df.index[i]
         price = df.loc[date, "Price"]
 
-        # MACD crossovers
-        if df.loc[df.index[i - 1], "MACD"] < df.loc[df.index[i - 1], "MACD_signal"] and df.loc[date, "MACD"] > df.loc[
-            date, "MACD_signal"]:
+        rsi = df.loc[date, "RSI14"]
+        macd = df.loc[date, "MACD"]
+        macd_signal = df.loc[date, "MACD_signal"]
+        macd_hist = df.loc[date, "MACD_hist"]
+        sma20 = df.loc[date, "SMA20"]
+        sma50 = df.loc[date, "SMA50"]
+        prev_macd = df.loc[df.index[i - 1], "MACD"]
+        prev_macd_signal = df.loc[df.index[i - 1], "MACD_signal"]
+        prev_macd_hist = df.loc[df.index[i - 1], "MACD_hist"]
+        prev_price = df.loc[df.index[i - 1], "Price"]
+        prev_sma20 = df.loc[df.index[i - 1], "SMA20"]
+        prev_sma50 = df.loc[df.index[i - 1], "SMA50"]
+        prev_bb_mavg = df.loc[df.index[i - 1], "bb_mavg"]
+
+        if prev_macd < prev_macd_signal and macd > macd_signal:
             signals.append((date, price, "MACD Bullish Crossover"))
-        elif df.loc[df.index[i - 1], "MACD"] > df.loc[df.index[i - 1], "MACD_signal"] and df.loc[date, "MACD"] < df.loc[
-            date, "MACD_signal"]:
+        elif prev_macd > prev_macd_signal and macd < macd_signal:
             signals.append((date, price, "MACD Bearish Crossover"))
 
-        # MACD histogram reversal
-        if df.loc[df.index[i - 1], "MACD_hist"] < 0 and df.loc[date, "MACD_hist"] > 0:
+        if prev_macd_hist < 0 and macd_hist > 0:
             signals.append((date, price, "MACD Histogram Bullish Reversal"))
-        elif df.loc[df.index[i - 1], "MACD_hist"] > 0 and df.loc[date, "MACD_hist"] < 0:
+        elif prev_macd_hist > 0 and macd_hist < 0:
             signals.append((date, price, "MACD Histogram Bearish Reversal"))
 
-        # RSI signals
-        rsi = df.loc[date, "RSI14"]
         if rsi > 70:
             signals.append((date, price, "RSI Overbought"))
         elif rsi < 30:
             signals.append((date, price, "RSI Oversold"))
 
-        # SMA crossovers
-        if df.loc[df.index[i - 1], "SMA20"] < df.loc[df.index[i - 1], "SMA50"] and df.loc[date, "SMA20"] > df.loc[
-            date, "SMA50"]:
+        if prev_sma20 < prev_sma50 and sma20 > sma50:
             signals.append((date, price, "SMA Bullish Crossover"))
-        elif df.loc[df.index[i - 1], "SMA20"] > df.loc[df.index[i - 1], "SMA50"] and df.loc[date, "SMA20"] < df.loc[
-            date, "SMA50"]:
+        elif prev_sma20 > prev_sma50 and sma20 < sma50:
             signals.append((date, price, "SMA Bearish Crossover"))
 
-        # Price crossing SMA20
-        if df.loc[df.index[i - 1], "Price"] < df.loc[df.index[i - 1], "SMA20"] and df.loc[date, "Price"] > df.loc[
-            date, "SMA20"]:
+        if prev_price < prev_sma20 and price > sma20:
             signals.append((date, price, "Price Crossed Above SMA20"))
-        elif df.loc[df.index[i - 1], "Price"] > df.loc[df.index[i - 1], "SMA20"] and df.loc[date, "Price"] < df.loc[
-            date, "SMA20"]:
+        elif prev_price > prev_sma20 and price < sma20:
             signals.append((date, price, "Price Crossed Below SMA20"))
 
-        # Bollinger Band Breakouts
-        if df.loc[date, "Price"] > df.loc[date, "bb_high"]:
+        if price > df.loc[date, "bb_high"]:
             signals.append((date, price, "Price Above Bollinger Band"))
-        elif df.loc[date, "Price"] < df.loc[date, "bb_low"]:
+        elif price < df.loc[date, "bb_low"]:
             signals.append((date, price, "Price Below Bollinger Band"))
 
-        # Price crossing BB middle
-        if df.loc[df.index[i - 1], "Price"] < df.loc[df.index[i - 1], "bb_mavg"] and df.loc[date, "Price"] > df.loc[
-            date, "bb_mavg"]:
+        if prev_price < prev_bb_mavg and price > df.loc[date, "bb_mavg"]:
             signals.append((date, price, "Price Crossed Above BB Mid"))
-        elif df.loc[df.index[i - 1], "Price"] > df.loc[df.index[i - 1], "bb_mavg"] and df.loc[date, "Price"] < df.loc[
-            date, "bb_mavg"]:
+        elif prev_price > prev_bb_mavg and price < df.loc[date, "bb_mavg"]:
             signals.append((date, price, "Price Crossed Below BB Mid"))
 
-    # Predictive MACD crossover
+        if rsi < 50 and macd > macd_signal and price > sma20 > sma50:
+            signals.append((date, price, "🔥 Ideal Buy Setup"))
+        elif rsi > 50 and macd < macd_signal and price < sma20 < sma50:
+            signals.append((date, price, "⚠️ Better Sell Setup"))
+
     recent = df[['MACD', 'MACD_signal']].dropna().tail(5)
     if len(recent) >= 3:
         x = list(range(len(recent)))
@@ -96,16 +95,16 @@ def generate_signals(df: pd.DataFrame, group_by_date: bool = False, lookahead_da
         current_gap = recent['MACD'].iloc[-1] - recent['MACD_signal'].iloc[-1]
         future_gap = current_gap + lookahead_days * (macd_slope - signal_slope)
         if current_gap < 0 and future_gap > 0:
-            signals.append((df.index[-1], df.iloc[-1]['Price'], f"MACD Bullish Crossover Likely in {lookahead_days}d"))
+            signals.append((df.index[-1], df.iloc[-1]['Price'], f"🔮 MACD Bullish Crossover Likely in {lookahead_days}d"))
         elif current_gap > 0 and future_gap < 0:
-            signals.append((df.index[-1], df.iloc[-1]['Price'], f"MACD Bearish Crossover Likely in {lookahead_days}d"))
+            signals.append((df.index[-1], df.iloc[-1]['Price'], f"🔮 MACD Bearish Crossover Likely in {lookahead_days}d"))
 
     df_signals = pd.DataFrame(signals, columns=["Date", "Price", "Signal"])
 
     if group_by_date and not df_signals.empty:
         df_signals = df_signals.groupby("Date").agg({
             "Price": "first",
-            "Signal": lambda x: "; ".join(x)
+            "Signal": lambda x: "; ".join(sorted(x))
         }).reset_index()
 
     return df_signals
@@ -165,75 +164,64 @@ def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path
 
 def colorize(signal):
     signal_lower = signal.lower()
-    if any(x in signal_lower for x in ["bullish", "oversold", "crossed above"]):
-        return f"[92m{signal}[0m"
-    elif any(x in signal_lower for x in ["bearish", "overbought", "crossed below"]):
-        return f"[91m{signal}[0m"
+    if "ideal buy" in signal_lower or "bullish" in signal_lower or "oversold" in signal_lower or "crossed above" in signal_lower:
+        return f"\033[92m{signal}\033[0m"
+    elif "sell" in signal_lower or "bearish" in signal_lower or "overbought" in signal_lower or "crossed below" in signal_lower:
+        return f"\033[91m{signal}\033[0m"
     return signal
 
-
-def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output",
-                        override_tickers: list = None):
+def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output", override_tickers: list = None):
     name_map = get_name_map_from_xml(xml_file=xml_path)
+    tickers = override_tickers or get_unique_tickers(xml_file=xml_path)
 
-    tickers = get_unique_tickers(xml_file=xml_path)
-    if override_tickers:
-        tickers = override_tickers
+    bullish, bearish, predictions = [], [], []
 
-    print(f"📊 Unique Tickers in XML: {len(tickers)}")
-
-    all_summaries = []
-    prediction_summaries = []
     for ticker in tickers:
-        display_name = name_map.get(ticker, ticker)
+        name = name_map.get(ticker, ticker)
         df = get_time_series(ticker=ticker, years=5, xml_file=xml_path)
-
         if df.empty:
-            print(f"❌ No price data for {ticker}")
-            all_summaries.append(f"{display_name} ({ticker}): No data.")
+            print(f"❌ No data for {ticker}")
             continue
 
-        symbol = df.columns[0]
-        df = df.rename(columns={symbol: "Price"})
+        df.rename(columns={df.columns[0]: "Price"}, inplace=True)
         df = apply_technical_indicators(df)
         signals_df = generate_signals(df, group_by_date=group_signals)
 
-        cutoff = datetime.now().date() - timedelta(days=recent_days)
-        recent = signals_df[signals_df["Date"].dt.date >= cutoff] if not signals_df.empty else pd.DataFrame()
+        signal_path = os.path.join(output_dir, f"{ticker}_signals.csv")
+        signals_df.to_csv(signal_path, index=False)
 
+        # Save chart image
         plot_path = os.path.join(output_dir, f"{ticker}_technical.png")
         plot_technical_indicators(df, ticker=ticker, save_path=plot_path, signals_df=signals_df)
 
-        # Write full signal history to CSV per ticker
-        signal_history_path = os.path.join(output_dir, f"{ticker}_signals.csv")
-        signals_df.to_csv(signal_history_path, index=False)
-        print(f"📄 Signal history saved to {signal_history_path}")
-
-        if signals_df.empty:
-            all_summaries.append(f"{display_name} ({ticker}): No signals found.")
-        else:
+        if not signals_df.empty:
             latest = signals_df.tail(1).iloc[0]
-            signal = latest['Signal']
-            signal_colored = colorize(signal)
-            if 'likely' in signal.lower():
-                prediction_summaries.append(
-                    f"{display_name}: {signal} at {latest['Price']:.2f} on {latest['Date'].date()}")
-            all_summaries.append(
-                f"{display_name}: {signal_colored} at {latest['Price']:.2f} on {latest['Date'].date()}")
+            summary = f"{name} ({ticker}): {latest['Signal']} at {latest['Price']:.2f} on {latest['Date'].date()}"
+            if "likely" in latest['Signal'].lower():
+                predictions.append(summary)
+            elif "sell" in latest['Signal'].lower() or "bearish" in latest['Signal'].lower() or "overbought" in latest['Signal'].lower():
+                bearish.append(summary)
+            else:
+                bullish.append(summary)
 
-    print("📢 Summary of Recent Signals Across All Tickers:")
-    for s in all_summaries:
-        print("-", s)
+    print("\n📢 Bullish Signals:")
+    for b in sorted(bullish):
+        print("-", colorize(b))
 
-    if prediction_summaries:
-        print("🔮 PredictionsSummary: ")
-    for p in prediction_summaries:
-        print("-", p)
+    print("\n📉 Bearish Signals:")
+    for b in sorted(bearish):
+        print("-", colorize(b))
+
+    if predictions:
+        print("\n🔮 Predictions:")
+        for p in sorted(predictions):
+            print("-", colorize(p))
 
 if __name__ == "__main__":
-    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
-    recent_days = 5
-    group_signals = True
-    override_tickers = None #['AV.L', 'GRG.L', 'GB00B00FPT80']  # Example override tickers
-
-    analyze_all_tickers(xml_path, recent_days, group_signals, output_dir="output", override_tickers=override_tickers)
+    analyze_all_tickers(
+        xml_path="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
+        recent_days=5,
+        group_signals=True,
+        output_dir="output",
+        override_tickers=[]
+    )
