@@ -101,6 +101,26 @@ def extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=N
 
     return pd.DataFrame(records)
 
+def get_name_map_from_xml(xml_file: str) -> dict:
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+
+    name_map = {}
+    for sec in root.findall(".//securities/security"):
+        isin = sec.findtext("isin", default="").strip()
+        ticker = sec.findtext("tickerSymbol", default="").strip()
+        name = sec.findtext("name", default="").strip()
+
+        if isin:
+            if ticker:
+                name_map[isin] = f"{name} ({ticker})"
+                name_map[ticker] = f"{name} ({ticker})"  # optional, for reverse lookup
+            else:
+                name_map[isin] = name
+    return name_map
+
+
+
 # ✅ Main function
 def main(xml_file: str, by_account: bool = True, cutoff_date=None):
     pd.set_option("display.max_rows", None)
