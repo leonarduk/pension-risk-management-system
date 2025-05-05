@@ -1,0 +1,231 @@
+<?xml version="1.0" ?>
+<client id="1">
+  <version>66</version>
+  <baseCurrency>GBP</baseCurrency>
+  <securities>
+    <security id="2">
+      <uuid>91c16fe5-3bef-45b8-a52b-dcf23d05f390</uuid>
+      <name>Experian plc</name>
+      <currencyCode>GBX</currencyCode>
+      <isin>GB00B19NLV48</isin>
+      <tickerSymbol>EXPN.L</tickerSymbol>
+      <feed>GENERIC_HTML_TABLE</feed>
+      <feedURL>http://localhost:8091/stock/ticker/EXPN</feedURL>
+      <prices>
+        <price t="2014-01-20" v="113000000000"/>
+      </prices>
+      <latestFeed>YAHOO</latestFeed>
+      <latest t="2025-05-02" v="385400000000">
+        <high>-1</high>
+        <low>-1</low>
+        <volume>-1</volume>
+      </latest>
+      <attributes>
+        <map>
+          <entry>
+            <string>8a174b53-b9af-43de-b6f1-d548690d944e</string>
+            <boolean>true</boolean>
+          </entry>
+        </map>
+      </attributes>
+      <events>
+        <dividendEvent id="3">
+          <date>2025-01-09</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2025-02-07</paymentDate>
+          <amount currency="USD" amount="16"/>
+        </dividendEvent>
+      </events>
+      <property type="FEED" name="GENERIC-JSON-DATE">$.data[*].date</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-06-13T18:56:08.004482400Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists>
+    <watchlist id="4132">
+      <name>To fix timeseries</name>
+      <securities>
+        <security reference="2819"/>
+      </securities>
+    </watchlist>
+  </watchlists>
+  <accounts>
+    <account id="4144">
+      <uuid>9d037951-bd39-4fc7-a402-26d9c8bb4644</uuid>
+      <name>Steve ISA Cash</name>
+      <currencyCode>GBP</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction id="4145">
+          <uuid>a0b16554-ec52-4056-8e2d-3e9a3ec67a64</uuid>
+          <date>2019-08-27T00:00</date>
+          <currencyCode>GBP</currencyCode>
+          <amount>203827</amount>
+          <security reference="21"/>
+          <crossEntry class="buysell" id="4146">
+            <portfolio id="4147">
+              <uuid>ffc4c1e5-541b-4228-9640-3755b41fa32f</uuid>
+              <name>Steve ISA Shares</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="4144"/>
+              <transactions>
+                <portfolio-transaction id="4148">
+                  <uuid>4a9ef623-47c5-412c-ad6e-c58ae1ca64a2</uuid>
+                  <date>2019-08-27T00:00</date>
+                  <currencyCode>GBP</currencyCode>
+                  <amount>203827</amount>
+                  <security reference="21"/>
+                  <crossEntry class="buysell" reference="4146"/>
+                  <shares>9800000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="GBP" amount="900"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2021-07-08T22:37:12.868867982Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2021-07-08T22:37:12.868866512Z</updatedAt>
+            </portfolio>
+            <portfolioTransaction reference="4148"/>
+            <account reference="4144"/>
+            <accountTransaction reference="4145"/>
+          </crossEntry>
+          <shares>0</shares>
+          <updatedAt>2021-07-08T22:37:12.868723580Z</updatedAt>
+          <type>BUY</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2021-07-08T22:37:12.868635045Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="4147"/>
+  </portfolios>
+  <plans>
+    <investment-plan id="6003">
+      <name>JPM Pension</name>
+      <account reference="5791"/>
+      <attributes>
+        <map/>
+      </attributes>
+      <autoGenerate>true</autoGenerate>
+      <start>2022-02-26T00:00</start>
+      <interval>1</interval>
+      <amount>490917</amount>
+      <fees>0</fees>
+      <taxes>0</taxes>
+      <type>DEPOSIT</type>
+      <transactions>
+        <account-transaction reference="5960"/>
+      </transactions>
+    </investment-plan>
+  </plans>
+  <taxonomies>
+    <taxonomy>
+      <id>3a9269bc-b50a-4808-a687-828d91b50383</id>
+      <name>Type of Security</name>
+      <dimensions>
+        <string>Type of Security</string>
+      </dimensions>
+      <root id="6007">
+        <id>108efa12-b7fe-4b3c-a911-819f20b06533</id>
+        <name>Type of Security</name>
+        <color>#edaad6</color>
+        <children>
+          <classification id="6008">
+            <id>23432436-7511-4173-8c54-a5621b122b43</id>
+            <name>Fund</name>
+            <color>#ffff00</color>
+            <parent reference="6007"/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="830"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+        <data>
+          <entry>
+            <string>portfolioClassificationKey</string>
+          </entry>
+        </data>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards>
+    <dashboard name="Scenarios">
+      <id>80b8ec53-65d5-4e5b-acc0-d6180e9b537c</id>
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Key Indicators</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties>
+    <entry>
+      <string>security-name-config</string>
+    </entry>
+  </properties>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>UPDATE SERIES</label>
+        <pattern>http://localhost:8091/stock/ticker/{tickerSymbol}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>ter</id>
+        <name>Total Expense Ratio (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+        <properties/>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>StatementOfAssetsHistoryView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>66a38f23-aabc-4100-ba08-29188cd6e565</uuid>
+              <name>Standard</name>
+              <data>ClientFilter4f3c318e-3c3d-43bd-9048-f72bb424d964;#008000;SOLID;false;2;true,ClientFilter2980bf5b-913d-4712-9dbc-37bb5df72fb6;#ff0080;SOLID;false;2;true,ClientFilterf3826193-5549-41ed-aaad-a8ddb378f2c3;#0000ff;SOLID;false;2;true,ClientFilter829cc591-47da-4982-a848-4e3989faa24e;#8000ff;SOLID;false;2;true,ClientFilter3f23f206-e8b4-4f42-984a-8e3a5c5ef316;#797ce2;SOLID;false;2;true,[+]Portfolio1b18cba8-a6bc-4f3f-b531-980b390b049f;#e28b79;SOLID;false;2;true</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

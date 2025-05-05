@@ -1,0 +1,405 @@
+{
+  "/client": [
+    "@id"
+  ],
+  "/client/securities/security": [
+    "@id"
+  ],
+  "/client/securities/security/prices/price": [
+    "@t",
+    "@v"
+  ],
+  "/client/securities/security/latest": [
+    "@t",
+    "@v"
+  ],
+  "/client/securities/security/events/dividendEvent": [
+    "@id"
+  ],
+  "/client/securities/security/events/dividendEvent/amount": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/securities/security/property": [
+    "@name",
+    "@type"
+  ],
+  "/client/watchlists/watchlist": [
+    "@id"
+  ],
+  "/client/watchlists/watchlist/securities/security": [
+    "@reference"
+  ],
+  "/client/accounts/account": [
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction": [
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry": [
+    "@class",
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount": [
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction": [
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry": [
+    "@class",
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/units/unit": [
+    "@type"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/units/unit/amount": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/units/unit/forex": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/portfolio": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/portfolioTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/account": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/accountTransaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/accountTransaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/accountTransaction/crossEntry": [
+    "@class",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolioTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/account": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry": [
+    "@class",
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolio": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction/crossEntry": [
+    "@class",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction/units/unit": [
+    "@type"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction/units/unit/amount": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction/units/unit/forex": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/account": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/units/unit": [
+    "@type"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/units/unit/amount": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/units/unit/forex": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction": [
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry": [
+    "@class",
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/referenceAccount": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry": [
+    "@class",
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/portfolio": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/portfolioTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/account": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/accountTransaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/accountTransaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/accountTransaction/crossEntry": [
+    "@class",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/units/unit": [
+    "@type"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/units/unit/amount": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/portfolioTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/account": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/accountTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/transactionFrom": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/accountTo": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/portfolio/referenceAccount/transactions/account-transaction/crossEntry/transactionTo": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/units/unit": [
+    "@type"
+  ],
+  "/client/accounts/account/transactions/account-transaction/units/unit/amount": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/units/unit/forex": [
+    "@amount",
+    "@currency"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountFrom": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/transactionFrom": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry": [
+    "@class",
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/portfolio": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/portfolio/referenceAccount": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/security": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry": [
+    "@class",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/portfolioTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/account": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountTransaction": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry": [
+    "@class",
+    "@id",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/accountFrom": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction": [
+    "@id"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry": [
+    "@class",
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/transactionFrom": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/accountTo": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountFrom/transactions/account-transaction/crossEntry/transactionTo": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/transactionFrom": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/accountTo": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/accountTo/transactions/account-transaction/crossEntry/transactionTo": [
+    "@reference"
+  ],
+  "/client/accounts/account/transactions/account-transaction/crossEntry/transactionTo": [
+    "@reference"
+  ],
+  "/client/portfolios/portfolio": [
+    "@id",
+    "@reference"
+  ],
+  "/client/portfolios/portfolio/referenceAccount": [
+    "@reference"
+  ],
+  "/client/plans/investment-plan": [
+    "@id"
+  ],
+  "/client/plans/investment-plan/account": [
+    "@reference"
+  ],
+  "/client/plans/investment-plan/transactions/account-transaction": [
+    "@reference"
+  ],
+  "/client/plans/investment-plan/security": [
+    "@reference"
+  ],
+  "/client/plans/investment-plan/portfolio": [
+    "@reference"
+  ],
+  "/client/plans/investment-plan/transactions/portfolio-transaction": [
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root": [
+    "@id"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification": [
+    "@id"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/parent": [
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/assignments/assignment/investmentVehicle": [
+    "@class",
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification": [
+    "@id"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/parent": [
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/assignments/assignment/investmentVehicle": [
+    "@class",
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/children/classification": [
+    "@id"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/children/classification/parent": [
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/children/classification/assignments/assignment/investmentVehicle": [
+    "@class",
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/children/classification/children/classification": [
+    "@id"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/children/classification/children/classification/parent": [
+    "@reference"
+  ],
+  "/client/taxonomies/taxonomy/root/children/classification/children/classification/children/classification/children/classification/assignments/assignment/investmentVehicle": [
+    "@class",
+    "@reference"
+  ],
+  "/client/dashboards/dashboard": [
+    "@name"
+  ],
+  "/client/dashboards/dashboard/columns/column/widgets/widget": [
+    "@type"
+  ]
+}
