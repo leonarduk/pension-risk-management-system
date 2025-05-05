@@ -35,7 +35,7 @@ def extract_prices(security, cutoff_date):
         date_obj = datetime.strptime(date_str, "%Y-%m-%d")
         if cutoff_date and date_obj < cutoff_date:
             continue
-        value = int(value_str) / 1e9
+        value = int(value_str) / 1e8
         records.append((date_obj, value))
     return records
 

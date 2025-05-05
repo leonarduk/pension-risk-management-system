@@ -34,6 +34,14 @@ def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd
 def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path: str = None):
     plt.figure(figsize=(14, 10))
 
+    # Ensure datetime index
+    if not pd.api.types.is_datetime64_any_dtype(df.index):
+        df.index = pd.to_datetime(df.index)
+
+    # Format price to 2 decimal places and ensure y-axis formatting
+    from matplotlib.ticker import FuncFormatter
+    price_formatter = FuncFormatter(lambda x, _: f"{x:.2f}")
+
     # Price + SMAs + Bollinger Bands
     ax1 = plt.subplot(3, 1, 1)
     df["Price"].plot(ax=ax1, label="Price", color="black")
@@ -44,6 +52,7 @@ def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path
     ax1.set_title(f"{ticker} Price + SMA + Bollinger Bands")
     ax1.legend()
     ax1.grid(True)
+    ax1.yaxis.set_major_formatter(price_formatter)
 
     # RSI
     ax2 = plt.subplot(3, 1, 2, sharex=ax1)
@@ -77,6 +86,12 @@ if __name__ == "__main__":
     if not df.empty:
         symbol = df.columns[0]  # assumes one column after index
         df = df.rename(columns={symbol: "Price"})
+
+        # Debug: show series range and start/end prices
+        print("\n📈 Time Series Summary:")
+        print(f"Start Date: {df.index.min().date()} | End Date: {df.index.max().date()}")
+        print(f"Start Price: {df['Price'].iloc[0]:.2f} | End Price: {df['Price'].iloc[-1]:.2f}")
+
         df = apply_technical_indicators(df)
         plot_technical_indicators(df, ticker=symbol, save_path=f"output/{symbol}_technical.png")
     else:
