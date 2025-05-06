@@ -161,6 +161,8 @@ def plot_technical_indicators(df: pd.DataFrame, ticker: str = "Stock", save_path
     else:
         plt.show()
 
+    plt.close()
+
 
 def colorize(signal):
     signal_lower = signal.lower()

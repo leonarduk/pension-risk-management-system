@@ -8,7 +8,11 @@ import java.util.Optional;
 
 public interface StockFeed {
     enum Exchange {
-        L(".L", ".UK"), LONDON(".L", ".UK"), NY("", ""), NA("", "");
+        L(".L", ".UK"),
+        LONDON(".L", ".UK"),
+        NY("", ".US"),
+        NYQ("NYQ", ".US"),
+        NA("", ".US");
 
         private final String yahooSuffix;
         private final String stooqSuffix;

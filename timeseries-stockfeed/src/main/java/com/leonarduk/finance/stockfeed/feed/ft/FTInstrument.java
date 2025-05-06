@@ -27,6 +27,8 @@ public class FTInstrument {
                 return "LSE";
             case NY:
                 return "NYSE";
+            case NYQ:
+                return "NYQ";
             default:
                 throw new UnsupportedOperationException("FT feed does not support " + instrument.getExchange());
         }
