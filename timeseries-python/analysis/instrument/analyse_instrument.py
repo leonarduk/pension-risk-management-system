@@ -11,6 +11,7 @@ from integrations.portfolioperformance.api.timeseries import get_time_series
 
 from scipy.stats import linregress
 
+
 def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd.DataFrame:
     df = df.copy()
     df["SMA20"] = SMAIndicator(df[price_col], window=20).sma_indicator()
@@ -25,6 +26,7 @@ def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd
     df["MACD_signal"] = macd.macd_signal()
     df["MACD_hist"] = macd.macd_diff()
     return df
+
 
 def generate_signals(df: pd.DataFrame, group_by_date: bool = False, lookahead_days: int = 3) -> pd.DataFrame:
     signals = []
@@ -95,9 +97,11 @@ def generate_signals(df: pd.DataFrame, group_by_date: bool = False, lookahead_da
         current_gap = recent['MACD'].iloc[-1] - recent['MACD_signal'].iloc[-1]
         future_gap = current_gap + lookahead_days * (macd_slope - signal_slope)
         if current_gap < 0 and future_gap > 0:
-            signals.append((df.index[-1], df.iloc[-1]['Price'], f"🔮 MACD Bullish Crossover Likely in {lookahead_days}d"))
+            signals.append(
+                (df.index[-1], df.iloc[-1]['Price'], f"🔮 MACD Bullish Crossover Likely in {lookahead_days}d"))
         elif current_gap > 0 and future_gap < 0:
-            signals.append((df.index[-1], df.iloc[-1]['Price'], f"🔮 MACD Bearish Crossover Likely in {lookahead_days}d"))
+            signals.append(
+                (df.index[-1], df.iloc[-1]['Price'], f"🔮 MACD Bearish Crossover Likely in {lookahead_days}d"))
 
     df_signals = pd.DataFrame(signals, columns=["Date", "Price", "Signal"])
 
@@ -172,7 +176,9 @@ def colorize(signal):
         return f"\033[91m{signal}\033[0m"
     return signal
 
-def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output", override_tickers: list = None):
+
+def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output",
+                        override_tickers: list = None):
     name_map = get_name_map_from_xml(xml_file=xml_path)
     tickers = override_tickers or get_unique_tickers(xml_file=xml_path)
 
@@ -201,7 +207,8 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
             summary = f"{name} ({ticker}): {latest['Signal']} at {latest['Price']:.2f} on {latest['Date'].date()}"
             if "likely" in latest['Signal'].lower():
                 predictions.append(summary)
-            elif "sell" in latest['Signal'].lower() or "bearish" in latest['Signal'].lower() or "overbought" in latest['Signal'].lower():
+            elif "sell" in latest['Signal'].lower() or "bearish" in latest['Signal'].lower() or "overbought" in latest[
+                'Signal'].lower():
                 bearish.append(summary)
             else:
                 bullish.append(summary)
@@ -218,6 +225,7 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
         print("\n🔮 Predictions:")
         for p in sorted(predictions):
             print("-", colorize(p))
+
 
 if __name__ == "__main__":
     analyze_all_tickers(

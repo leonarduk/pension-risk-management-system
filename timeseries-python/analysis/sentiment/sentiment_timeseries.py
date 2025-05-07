@@ -11,6 +11,9 @@ from praw import Reddit
 import requests
 from bs4 import BeautifulSoup
 
+from integrations.portfolioperformance.api.positions import get_name_map_from_xml, get_unique_tickers
+
+
 # ---------- CONFIGURATION ---------- #
 
 load_dotenv()
@@ -152,6 +155,9 @@ def get_name_map_from_csv(positions_csv, name_field="Name", ticker_field="Symbol
 # ---------- ENTRY POINT ---------- #
 
 if __name__ == "__main__":
-    name_map = get_name_map_from_csv("steve_positions.csv")
-    tickers = set(name_map.values())  # de-duplicate
+    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+
+    name_map = get_name_map_from_xml(xml_file=xml_path)
+    tickers = get_unique_tickers(xml_file=xml_path)
+
     main(tickers)
