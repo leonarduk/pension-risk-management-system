@@ -1,3 +1,4 @@
+import json
 import os
 import xml.etree.ElementTree as ET
 import pandas as pd
@@ -34,26 +35,30 @@ UUID_ALIASES = {
     "UK Equity Income": "UK Equity Income Category"
 }
 
-def find_matching_security(root, search_name):
-    securities = root.findall(".//securities/security")
-    for sec in securities:
-        name = sec.findtext("name", "").strip()
-        if search_name.lower() in name.lower():
+
+def find_matching_security(root, identifier):
+    identifier = identifier.strip().lower()
+    for sec in root.findall(".//securities/security"):
+        name = sec.findtext("name", "").strip().lower()
+        isin = sec.findtext("isin", "").strip().lower()
+        ticker = sec.findtext("tickerSymbol", "").strip().lower()
+        if identifier in (name, isin, ticker):
             return sec
     return None
+
 
 def extract_attributes(security):
     result = {}
     for entry in security.findall(".//attributes/map/entry"):
         key_elem = entry.find("string")
-        value_elem = entry.find("*[2]")  # second child (value)
+        value_elem = entry.find("*[2]")
         if key_elem is not None and value_elem is not None:
             key = key_elem.text.strip()
             value = value_elem.text.strip() if value_elem.text else ""
             key_alias = UUID_ALIASES.get(key, key)
             result[f"custom:{key_alias}"] = value
-
     return result
+
 
 def extract_taxonomies(root, security_id):
     taxonomies = {}
@@ -64,64 +69,70 @@ def extract_taxonomies(root, security_id):
                 inv = assignment.find("investmentVehicle")
                 if inv is not None and inv.attrib.get("class") == "security" and inv.attrib.get("reference") == str(security_id):
                     class_name = classification.findtext("name")
-                    if name in taxonomies:
-                        taxonomies[name].append(class_name)
-                    else:
-                        taxonomies[name] = [class_name]
+                    taxonomies.setdefault(name, []).append(class_name)
     return taxonomies
 
-def extract_instrument_info(xml_file, instrument_name):
+
+def extract_instrument(xml_file, identifier, format="table"):
     if not os.path.exists(xml_file):
         raise FileNotFoundError(f"File not found: {xml_file}")
 
     tree = ET.parse(xml_file)
     root = tree.getroot()
+    sec = find_matching_security(root, identifier)
 
-    security = find_matching_security(root, instrument_name)
-    if security is None:
-        print(f"❌ No instrument found matching '{instrument_name}'")
-        return
+    if sec is None:
+        msg = f"❌ Instrument not found matching '{identifier}'"
+        if format == "json":
+            raise ValueError(msg)
+        else:
+            print(msg)
+            return
 
-    base_info = {
-        "uuid": security.findtext("uuid", ""),
-        "name": security.findtext("name", "").strip(),
-        "currencyCode": security.findtext("currencyCode", ""),
-        "isin": security.findtext("isin", ""),
-        "tickerSymbol": security.findtext("tickerSymbol", ""),
-        "wkn": security.findtext("wkn", ""),
-        "feed": security.findtext("feed", ""),
-        "feedURL": security.findtext("feedURL", ""),
-        "prices": security.findtext("prices", ""),
-        "latestFeed": security.findtext("latestFeed", ""),
-        "latest": security.findtext("latest", ""),
-        "events": security.findtext("events", ""),
-        "isRetired": security.findtext("isRetired", ""),
-        "updatedAt": security.findtext("updatedAt", ""),
-        "id": security.attrib.get("id", "")
+    instrument = {
+        "id": sec.attrib.get("id"),
+        "uuid": sec.findtext("uuid"),
+        "name": sec.findtext("name", "").strip(),
+        "currencyCode": sec.findtext("currencyCode"),
+        "isin": sec.findtext("isin"),
+        "tickerSymbol": sec.findtext("tickerSymbol"),
+        "wkn": sec.findtext("wkn"),
+        "feed": sec.findtext("feed"),
+        "feedURL": sec.findtext("feedURL"),
+        "latestFeed": sec.findtext("latestFeed"),
+        "isRetired": sec.findtext("isRetired") == "true",
+        "updatedAt": sec.findtext("updatedAt"),
+        "customAttributes": extract_attributes(sec),
+        "taxonomies": extract_taxonomies(root, sec.attrib.get("id"))
     }
 
-    # Merge attributes
-    attributes = extract_attributes(security)
-    base_info.update(attributes)
+    if format == "json":
+        return instrument
 
-    # Add tags and categories as blank for now
-    base_info["tags"] = ""
-    base_info["categories"] = ""
+    # Print nicely in table form
+    flat_data = {**instrument}
+    flat_data.pop("customAttributes", None)
+    flat_data.pop("taxonomies", None)
+    flat_data.update(instrument["customAttributes"])
+    for taxo, values in instrument["taxonomies"].items():
+        flat_data[f"taxonomy:{taxo}"] = ", ".join(values)
 
-    # Add taxonomy info
-    taxonomy_data = extract_taxonomies(root, base_info["id"])
-    for taxo_name, values in taxonomy_data.items():
-        base_info[f"taxonomy:{taxo_name}"] = ", ".join(values)
-
-    df = pd.DataFrame(base_info.items(), columns=["Field", "Value"])
+    df = pd.DataFrame(flat_data.items(), columns=["Field", "Value"])
     print("✅ Instrument Information:")
     print(df.to_string(index=False))
 
+
 def main():
-    extract_instrument_info(
-        xml_file="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
-        instrument_name="iShares UK Dividend ETF GBP Dist UCITS"
-    )
+    xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+
+    # Show in table
+    extract_instrument(xml_file, "Experian plc", format="table")
+
+    # Export as JSON
+    data = extract_instrument(xml_file, "GB00B19NLV48", format="json")
+    print("\n✅ JSON Format:")
+    print(json.dumps(data, indent=2))
+
 
 if __name__ == "__main__":
     main()
