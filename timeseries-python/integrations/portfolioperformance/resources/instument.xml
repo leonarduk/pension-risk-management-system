@@ -1,0 +1,21 @@
+    <security id="4711">
+      <uuid>a3bb56c9-91f7-42e7-a805-a8c39746b5ed</uuid>
+      <name>TWENTYFOUR INCOME FUND LIMITED </name>
+      <currencyCode>GBX</currencyCode>
+      <isin>GG00B90J5Z95</isin>
+      <tickerSymbol>TFIF.L</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices/>
+      <latestFeed></latestFeed>
+      <latest v="0">
+        <high>0</high>
+        <low>0</low>
+        <volume>0</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2025-05-08T23:32:13.368651500Z</updatedAt>
+    </security>

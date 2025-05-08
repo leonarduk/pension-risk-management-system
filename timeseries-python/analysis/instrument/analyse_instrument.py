@@ -233,5 +233,5 @@ if __name__ == "__main__":
         recent_days=5,
         group_signals=True,
         output_dir="output",
-        override_tickers=[]
+        override_tickers=['SAIN', 'VWRL']
     )

@@ -2,6 +2,7 @@ import json
 import os
 import xml.etree.ElementTree as ET
 import pandas as pd
+from datetime import date, datetime
 
 UUID_ALIASES = {
     # Morningstar
@@ -109,7 +110,6 @@ def extract_instrument(xml_file, identifier, format="table"):
     if format == "json":
         return instrument
 
-    # Print nicely in table form
     flat_data = {**instrument}
     flat_data.pop("customAttributes", None)
     flat_data.pop("taxonomies", None)
@@ -121,6 +121,7 @@ def extract_instrument(xml_file, identifier, format="table"):
     print("✅ Instrument Information:")
     print(df.to_string(index=False))
 
+
 def upsert_instrument_from_json(xml_file, json_data, output_file=None):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -128,96 +129,44 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
     if securities_root is None:
         raise ValueError("No <securities> section found.")
 
-    # Find by ISIN
     sec = None
     for s in securities_root.findall("security"):
         if s.findtext("isin", "").strip() == json_data["isin"]:
             sec = s
             break
 
-    # Create if missing
+    new_security = False
     if sec is None:
         new_id = str(int(max((int(s.attrib.get("id", "0")) for s in securities_root.findall("security")), default=0)) + 1)
-        sec = ET.SubElement(securities_root, "security", id=new_id)
+        sec = ET.Element("security", id=new_id)
+        new_security = True
         print(f"➕ Created new <security> with ID {new_id}")
+
+        ET.SubElement(sec, "uuid").text = json_data.get("uuid", "")
+        ET.SubElement(sec, "name").text = json_data.get("name", "")
+        ET.SubElement(sec, "currencyCode").text = json_data.get("currencyCode", "")
+        ET.SubElement(sec, "isin").text = json_data.get("isin", "")
+        ET.SubElement(sec, "tickerSymbol").text = json_data.get("tickerSymbol", "")
+        ET.SubElement(sec, "feed").text = "MANUAL"
+        ET.SubElement(sec, "prices")
+        ET.SubElement(sec, "latestFeed").text = ""
+
+        latest = ET.SubElement(sec, "latest", {"v": "0"})
+        ET.SubElement(latest, "high").text = "0"
+        ET.SubElement(latest, "low").text = "0"
+        ET.SubElement(latest, "volume").text = "0"
+
+        attr_root = ET.SubElement(sec, "attributes")
+        ET.SubElement(attr_root, "map")
+
+        ET.SubElement(sec, "events")
+        ET.SubElement(sec, "isRetired").text = "false"
+        ET.SubElement(sec, "updatedAt").text = json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z")
+
+        securities_root.append(sec)
     else:
         print(f"✏️ Updating existing <security> with ID {sec.attrib.get('id')}")
 
-    def update_field(tag, value):
-        if value is None:
-            return
-        el = sec.find(tag)
-        if el is None:
-            el = ET.SubElement(sec, tag)
-        if el.text != str(value):
-            el.text = str(value)
-
-    # Only update fields explicitly passed in JSON
-    for field in ["uuid", "name", "currencyCode", "isin", "tickerSymbol", "wkn", "feed", "feedURL", "latestFeed", "updatedAt"]:
-        update_field(field, json_data.get(field))
-
-    # Special case: isRetired
-    if "isRetired" in json_data:
-        update_field("isRetired", "true" if json_data["isRetired"] else "false")
-
-    # Update custom attributes carefully
-    if "customAttributes" in json_data:
-        attr_root = sec.find("attributes")
-        if attr_root is None:
-            attr_root = ET.SubElement(sec, "attributes")
-        attr_map = attr_root.find("map")
-        if attr_map is None:
-            attr_map = ET.SubElement(attr_root, "map")
-
-        existing_keys = {entry.find("string").text: entry for entry in attr_map.findall("entry") if entry.find("string") is not None}
-
-        for key_label, value in json_data["customAttributes"].items():
-            if not key_label.startswith("custom:"):
-                continue
-            key_uuid = next((k for k, v in UUID_ALIASES.items() if f"custom:{v}" == key_label), key_label)
-
-            if key_uuid in existing_keys:
-                # Update value if different
-                value_elem = existing_keys[key_uuid].find("*[2]")
-                if value_elem is not None and value_elem.text != value:
-                    value_elem.text = value
-            else:
-                entry = ET.SubElement(attr_map, "entry")
-                ET.SubElement(entry, "string").text = key_uuid
-                value_type = "boolean" if value.lower() in ("true", "false") else "string"
-                ET.SubElement(entry, value_type).text = value
-
-    # Write the file
     output_path = output_file or xml_file
     tree.write(output_path, encoding="utf-8", xml_declaration=True)
     print(f"✅ XML written to: {output_path}")
-
-
-def main():
-    xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
-
-    # # Show in table
-    # extract_instrument(xml_file=xml_file, identifier="Experian plc", format="table")
-
-    # Export as JSON
-    instrument = extract_instrument(xml_file=xml_file, identifier="GB00B19NLV48", format="json")
-    print("\n✅ JSON Format:")
-    print(json.dumps(instrument, indent=2))
-
-    instrument["tickerSymbol"] = "EXPN.L"
-
-    upsert_instrument_from_json(
-        xml_file=xml_file,
-        json_data=instrument,
-        output_file=xml_file
-    )
-
-    # Export as JSON
-    data = extract_instrument(xml_file, "GB00B19NLV48", format="json")
-    print("\n✅ JSON Format:")
-    print(json.dumps(data, indent=2))
-
-
-
-if __name__ == "__main__":
-    main()
