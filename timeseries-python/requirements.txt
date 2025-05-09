@@ -1,5 +1,5 @@
-yfinance
-pandas
+yfinance~=0.2.58
+pandas~=2.2.3
 numpymatplotlib
 PyPortfolioOpt
 
@@ -7,6 +7,13 @@ torch>=2.0.0
 transformers>=4.30.0
 praw
 textblob
-beautifulsoup4
-requests
-python-dotenv
+beautifulsoup4~=4.13.4
+requests~=2.32.3
+python-dotenv~=1.1.0
+
+numpy~=2.2.5
+matplotlib~=3.10.1
+bs4~=0.0.2
+selenium~=4.32.0
+requests-html~=0.10.0
+playwright~=1.52.0

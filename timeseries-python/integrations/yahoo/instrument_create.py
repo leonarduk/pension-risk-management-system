@@ -1,5 +1,5 @@
 import json
-from integrations.portfolioperformance.api.instrument_create import InstrumentBuilder
+from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
 from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json, extract_instrument
 
 
@@ -25,7 +25,7 @@ def create_instrument_from_yahoo(ticker_symbol: str, isin: str, xml_file: str, o
         .with_isin(isin)
         .with_ticker(info["symbol"])
         .with_currency(currency)
-        .with_feed("MANUAL") #, feed_url=f"https://finance.yahoo.com/quote/{ticker_symbol}")
+        # .with_feed("GENERIC_HTML_TABLE", feed_url=f"http://localhost:8091/stock/ticker/{ticker_symbol}")
         .with_updated_at()
         .build()
     )

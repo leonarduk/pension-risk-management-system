@@ -1,8 +1,9 @@
-import os
 import xml.etree.ElementTree as ET
+
 import pandas as pd
 
-from instrument_details import UUID_ALIASES
+from integrations.portfolioperformance.api.static.uuid_aliases import UUID_ALIASES
+
 
 def build_security_index(root):
     securities = {}

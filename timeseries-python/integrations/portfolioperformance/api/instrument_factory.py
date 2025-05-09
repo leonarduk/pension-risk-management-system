@@ -1,4 +1,4 @@
-from integrations.portfolioperformance.api.instrument_create import InstrumentBuilder
+from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
 
 
 class InstrumentFactory:
