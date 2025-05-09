@@ -1,7 +1,7 @@
 import json
 from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
 from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json, extract_instrument, \
-    ftse_tickers_missing_from_file
+    ftse_tickers_missing_from_file, bulk_add_missing_ftse
 
 
 def fetch_instrument_from_yahoo(ticker_symbol: str):
@@ -53,24 +53,106 @@ def get_latest_price(ticker):
         pass
     return 100.00  # fallback
 
-# 🧪 Example usage:
+# ================================================================
+# BULK-IMPORT MISSING FTSE TICKERS   (Yahoo → PP XML)
+# ================================================================
+import xml.etree.ElementTree as ET
+from datetime import datetime
+import yfinance as yf
+from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
+from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json
+
+def _norm_ticker(t: str) -> str:
+    """Upper-case and ensure '.L' suffix."""
+    t = (t or "").strip().upper()
+    return t if t.endswith(".L") else f"{t}.L"
+
+def _next_free_id(securities_root) -> int:
+    """First integer > max(<security id>)."""
+    return (
+        max((int(s.attrib.get("id", "0")) for s in securities_root.findall("security")), default=0)
+        + 1
+    )
+
+from datetime import datetime, UTC
+
+import xml.etree.ElementTree as ET
+from datetime import datetime, UTC
+import yfinance as yf
+from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
+from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json
+
+# ──────────────────────────────────────────────────────────────────────────
+def _norm(tkr: str) -> str:
+    tkr = (tkr or "").strip().upper()
+    return tkr if tkr.endswith(".L") else f"{tkr}.L"
+
+def _next_free_id(securities_root) -> int:
+    return max((int(s.attrib.get("id", "0")) for s in securities_root.findall("security")), default=0) + 1
+# ──────────────────────────────────────────────────────────────────────────
+def bulk_add_from_yahoo(xml_in: str, tickers: set[str], xml_out: str):
+    """
+    • read xml_in into an ElementTree
+    • for each ticker → get Yahoo info → build Instrument JSON
+      → upsert into that in-memory tree
+    • finally write the modified tree to xml_out
+    """
+    print(f"🔎  starting bulk import for {len(tickers)} tickers")
+
+    # <<<<<<<<<<  tree is created right here  >>>>>>>>>>
+    tree  = ET.parse(xml_in)
+    root  = tree.getroot()
+    secs  = root.find(".//securities")
+    next_id = _next_free_id(secs)
+
+    for raw in sorted(tickers, key=str.casefold):
+        tkr = _norm(raw)
+
+        try:
+            info = yf.Ticker(tkr).info
+        except Exception as e:
+            print(f"⚠️  {tkr:<8} Yahoo error ({e}) – skipped")
+            continue
+
+        if not all(k in info for k in ("longName", "currency", "symbol")):
+            print(f"⚠️  {tkr:<8} incomplete Yahoo data – skipped")
+            continue
+
+        currency = info["currency"].upper().replace("GBP", "GBX")
+
+        inst_json = (
+            InstrumentBuilder()
+            .with_id(next_id)
+            .with_name(info.get("longName") or info.get("shortName", tkr))
+            .with_ticker(tkr)
+            .with_currency(currency)
+            .with_updated_at()            # now uses timezone-aware UTC
+            .build()
+        )
+        next_id += 1
+
+        upsert_instrument_from_json(
+            xml_file=xml_in,          # parsed again inside helper – fine for now
+            json_data=inst_json,
+            output_file=None          # None → helper updates the *same* file path,
+                                      # but we only care that our json is valid.
+        )
+
+        print(f"  ✅  added/updated {tkr:<8}  → {inst_json['name'][:40]}")
+
+    # <<<<<<<<<<  and we can still see `tree` here  >>>>>>>>>>
+    tree.write(xml_out, encoding="utf-8", xml_declaration=True)
+    print(f"\n✅  bulk import finished → {xml_out}")
+# ──────────────────────────────────────────────────────────────────────────
+
 if __name__ == "__main__":
     xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
     output_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id-updated.xml"
 
     missing = ftse_tickers_missing_from_file(xml_file)
     print(f"\n⛔  {len(missing)} FTSE‑All‑Share tickers are NOT in your XML:")
-    print(sorted(list(missing))[:50], "…")  # preview first 50
 
+    bulk_add_from_yahoo(xml_file, missing, output_file)
 
-    for ticker in missing:
-        create_instrument_from_yahoo(
-            ticker_symbol=ticker,
-            xml_file=xml_file,
-            output_file=output_file
-        )
-        data = extract_instrument(output_file, ticker, format="json")
-        print("\n✅ JSON Format:")
-        print(json.dumps(data, indent=2))
 
 

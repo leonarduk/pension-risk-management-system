@@ -294,6 +294,63 @@ def missing_ftse_with_names(xml_file, ftse_map_module="ftse_all_share_dict"):
     # remove ".L" before lookup in the map
     return {t.rstrip(".L"): ftse_mod.ftse_all_share.get(t.rstrip(".L"), "??") for t in missing}
 
+def upsert_security_element(securities_root, json_data, next_id):
+    """
+    Append or update a <security>. Return (element, next_id).
+    `next_id` is the next free integer id as *str*.
+    """
+    def norm(t):                                    # `.L` & upper
+        t = (t or "").strip().upper()
+        return t if t.endswith(".L") else f"{t}.L"
+
+    # ─ Try match by ticker ─────────────────────────────
+    incoming_ticker = norm(json_data.get("tickerSymbol", ""))
+    for sec in securities_root.findall("security"):
+        if norm(sec.findtext("tickerSymbol")) == incoming_ticker:
+            return sec, next_id                    # update existing
+
+    # ─ Create new  ─────────────────────────────────────
+    sec = ET.SubElement(securities_root, "security", id=str(next_id))
+    next_id += 1                                   # bump for caller
+    print(f"➕  new <security id='{sec.attrib['id']}'>  ({incoming_ticker})")
+    #   ...  populate tags exactly as before  ...
+    return sec, next_id
+
+from yfinance import Ticker, shared
+from curl_cffi.requests.exceptions import HTTPError
+
+def bulk_add_missing_ftse(xml_path, tickers_to_add, out_path):
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    securities_root = root.find(".//securities")
+
+    # compute first free id once
+    next_id = max(int(s.attrib.get("id", "0")) for s in securities_root.findall("security")) + 1
+
+    for tkr in sorted(tickers_to_add):
+        try:
+            info = Ticker(tkr).info                 # can raise 404
+        except HTTPError as e:
+            print(f"⚠️  {tkr}: {e}.  Skipped.")
+            continue
+
+        json_data = {
+            "uuid":        shared.generate_uuid(),  # helper in yfinance
+            "name":        info.get("longName") or info.get("shortName", tkr),
+            "currencyCode": info.get("currency", "GBP"),
+            "tickerSymbol": tkr,
+            "feed":        "GENERIC_HTML_TABLE",
+            "updatedAt":   datetime.utcnow().isoformat() + "Z",
+            "isin":        info.get("isin", ""),
+        }
+
+        _, next_id = upsert_security_element(securities_root, json_data, next_id)
+
+    tree.write(out_path, encoding="utf-8", xml_declaration=True)
+    print(f"✅  wrote updated XML with {next_id-1} securities ➜  {out_path}")
+
+
+
 # ------------------------------------------------------------------
 #  Example usage
 # ------------------------------------------------------------------
