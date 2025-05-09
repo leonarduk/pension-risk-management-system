@@ -39,9 +39,14 @@ def extract_lse_data_with_browser(url):
     wait = WebDriverWait(driver, 15)
 
     try:
-        name_elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "h1")))
+        # Extract name with fallback
+        try:
+            name_elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "h1.instrument-header_title__Vv8WY")))
+        except:
+            name_elem = wait.until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
         name = name_elem.text.strip()
 
+        # Extract ISIN
         isin = ""
         try:
             isin_elem = wait.until(EC.presence_of_element_located(
@@ -51,6 +56,7 @@ def extract_lse_data_with_browser(url):
         except Exception as e:
             print("ISIN error:", e)
 
+        # Extract expense ratio
         expense_ratio = ""
         try:
             ratio_elem = wait.until(EC.presence_of_element_located(
@@ -60,6 +66,7 @@ def extract_lse_data_with_browser(url):
         except Exception as e:
             print("Expense ratio error:", e)
 
+        # Extract currency
         currency = "GBX"
         try:
             currency_elem = wait.until(EC.presence_of_element_located(
@@ -86,5 +93,6 @@ def extract_lse_data_with_browser(url):
 
 if __name__ == "__main__":
     url = "https://www.londonstockexchange.com/stock/PHGP/wisdomtree/company-page"
+    url = "https://www.londonstockexchange.com/stock/RIO/rio-tinto-plc/company-page"
     instrument = extract_lse_data_with_browser(url)
     print(instrument)
