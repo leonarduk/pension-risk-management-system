@@ -1,13 +1,8 @@
-import json
-import os
-import xml.etree.ElementTree as ET
-import pandas as pd
-from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 UUID_ALIASES = {
     "07ca79a6-4b1e-4906-8ee6-215d3299ac67": "Morningstar Category",
@@ -78,6 +73,16 @@ def extract_lse_data_with_browser(url):
         except Exception as e:
             print("Currency error:", e)
 
+        # Extract type (e.g. ETF, Equity)
+        instrument_type = ""
+        try:
+            type_elem = wait.until(EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "#ticker > div > section > div.ticker-main > div:nth-child(1) > span")
+            ))
+            instrument_type = type_elem.text.strip()
+        except Exception as e:
+            print("Type error:", e)
+
         ticker = url.split("/")[4].upper() + ".L"
 
         return {
@@ -85,7 +90,8 @@ def extract_lse_data_with_browser(url):
             "ticker": ticker,
             "isin": isin,
             "expense_ratio": expense_ratio,
-            "currency": currency
+            "currency": currency,
+            "type": instrument_type
         }
 
     finally:
@@ -93,6 +99,6 @@ def extract_lse_data_with_browser(url):
 
 if __name__ == "__main__":
     url = "https://www.londonstockexchange.com/stock/PHGP/wisdomtree/company-page"
-    url = "https://www.londonstockexchange.com/stock/RIO/rio-tinto-plc/company-page"
+    # url = "https://www.londonstockexchange.com/stock/RIO/rio-tinto-plc/company-page"
     instrument = extract_lse_data_with_browser(url)
     print(instrument)
