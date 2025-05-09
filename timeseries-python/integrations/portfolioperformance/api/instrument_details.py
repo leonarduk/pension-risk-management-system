@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from integrations.portfolioperformance.api.instrument_filter import build_security_index, build_taxonomy_reverse_lookup
+from integrations.portfolioperformance.api.static.ftse_all_share_dict import ftse_all_share
 from integrations.portfolioperformance.api.static.uuid_aliases import UUID_ALIASES
 
 
@@ -234,7 +235,46 @@ def instruments_without_tickers(xml_file):
         )
     return results
 
+# ------------------------------------------------------------------
+#  Prerequisites
+# ------------------------------------------------------------------
+# 1. Make sure ftse_all_share_dict.py (or .json) is on PYTHONPATH
+# 2. Keep get_all_tickers(xml_file) from earlier
 
+# ------------------------------------------------------------------
+#  Helper
+# ------------------------------------------------------------------
+def ftse_tickers_missing_from_file(xml_file, ftse_map_module="ftse_all_share_dict"):
+    """
+    Return the set of FTSE‑All‑Share tickers that do not appear
+    in PortfolioPerformance's get_all_tickers(xml_file) list.
+
+    Parameters
+    ----------
+    xml_file : str | pathlib.Path
+        Path to the PortfolioPerformance XML export.
+    ftse_map_module : str
+        Module name that contains `ftse_all_share` dict
+        (default assumes `from ftse_all_share_dict import ftse_all_share`).
+
+    Returns
+    -------
+    set[str]
+        Tickers that are in FTSE All‑Share but missing in your XML file.
+    """
+    # ── 1) all tickers in your PP file ──────────────────────────────
+    file_tickers = set(get_all_tickers(xml_file))
+
+    # ── 2) all FTSE tickers (module import) ─────────────────────────
+    ftse_tickers = set(ftse_all_share.keys())
+
+    # ── 3) difference ───────────────────────────────────────────────
+    return ftse_tickers - file_tickers
+
+
+# ------------------------------------------------------------------
+#  Example usage
+# ------------------------------------------------------------------
 if __name__ == "__main__":
     xml_file = r"C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
 
@@ -243,15 +283,16 @@ if __name__ == "__main__":
     print(f"\n✅ Found {len(all_tickers)} unique tickers")
     print(all_tickers[:20], "...")          # preview
 
-    # -------------------------------------------------------------------
-    # Demo
-    # -------------------------------------------------------------------
-    no_ticker = instruments_without_tickers(xml_file)
-    print(f"\n⚠️  Instruments with NO ticker ({len(no_ticker)}):")
-    for item in no_ticker:
-        print(
-            f"  • {item['name']:<45} "
-            f"(type={item['type'] or 'Unknown':<15}  id={item['id']})"
-        )
+    missing = ftse_tickers_missing_from_file(xml_file)
+    print(f"\n⛔  {len(missing)} FTSE‑All‑Share tickers are NOT in your XML:")
+    print(sorted(list(missing))[:50], "…")  # preview first 50
+
+    # no_ticker = instruments_without_tickers(xml_file)
+    # print(f"\n⚠️  Instruments with NO ticker ({len(no_ticker)}):")
+    # for item in no_ticker:
+    #     print(
+    #         f"  • {item['name']:<45} "
+    #         f"(type={item['type'] or 'Unknown':<15}  id={item['id']})"
+    #     )
 
 

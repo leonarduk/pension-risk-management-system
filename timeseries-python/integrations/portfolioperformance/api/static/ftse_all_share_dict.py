@@ -543,3 +543,4 @@ ftse_all_share = {'3IN': '3i Infrastructure',
                   'XPS': 'Xps Pensions',
                   'ZIG': 'Zigup',
                   'ZTF': 'Zotefoams'}
+
