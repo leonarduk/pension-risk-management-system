@@ -101,51 +101,70 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
     if securities_root is None:
         raise ValueError("No <securities> section found.")
 
+    # ------------------------------------------------------------
+    # 1️⃣  Look-up is now on tickerSymbol (normalised to upper, .L)
+    # ------------------------------------------------------------
+    def _norm_ticker(t):
+        t = (t or "").strip().upper()
+        return t if t.endswith(".L") else f"{t}.L"
+
+    incoming_ticker = _norm_ticker(json_data.get("tickerSymbol", ""))
+
     sec = None
     for s in securities_root.findall("security"):
-        if s.findtext("isin", "").strip() == json_data["isin"]:
+        existing_ticker = _norm_ticker(s.findtext("tickerSymbol", ""))
+        if existing_ticker and existing_ticker == incoming_ticker:
             sec = s
             break
+    # ------------------------------------------------------------
 
+    # 2️⃣  Everything else is unchanged – we either update or insert
     if sec is None:
-        new_id = str(int(max((int(s.attrib.get("id", "0")) for s in securities_root.findall("security")), default=0)) + 1)
+        new_id = str(
+            int(
+                max(
+                    (int(s.attrib.get("id", "0")) for s in securities_root.findall("security")),
+                    default=0,
+                )
+            )
+            + 1
+        )
         sec = ET.Element("security", id=new_id)
         print(f"➕ Created new <security> with ID {new_id}")
+        securities_root.append(sec)
+    else:
+        print(f"✏️ Updating existing <security> with ID {sec.attrib.get('id')}")
 
-        ET.SubElement(sec, "uuid").text = json_data.get("uuid", "")
-        ET.SubElement(sec, "name").text = json_data.get("name", "")
-        ET.SubElement(sec, "currencyCode").text = json_data.get("currencyCode", "")
-        ET.SubElement(sec, "isin").text = json_data.get("isin", "")
-        ET.SubElement(sec, "tickerSymbol").text = json_data.get("tickerSymbol", "")
+    # ─ Populate / overwrite standard fields ─────────────────────
+    field_map = {
+        "uuid":        json_data.get("uuid", ""),
+        "name":        json_data.get("name", ""),
+        "currencyCode": json_data.get("currencyCode", ""),
+        "isin":        json_data.get("isin", ""),
+        "tickerSymbol": json_data.get("tickerSymbol", ""),
+        "feed":        json_data.get("feed", "MANUAL"),
+        "feedURL":     json_data.get("feedURL", ""),
+        "latestFeed":  json_data.get("latestFeed", ""),
+        "isRetired":   "true" if json_data.get("isRetired") else "false",
+        "updatedAt":   json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z"),
+    }
+    for tag, value in field_map.items():
+        elem = sec.find(tag)
+        if elem is None:
+            elem = ET.SubElement(sec, tag)
+        elem.text = value
 
-        ET.SubElement(sec, "feed").text = json_data.get("feed", "MANUAL")
-
-        feed_url = json_data.get("feedURL", "")
-        if feed_url:
-            ET.SubElement(sec, "feedURL").text = feed_url
-
-        ET.SubElement(sec, "prices")
-
-        latest_feed = json_data.get("latestFeed", "")
-        if latest_feed:
-            ET.SubElement(sec, "latestFeed").text = latest_feed
-
+    # Ensure sub-elements that must exist
+    for tag in ("prices", "events"):
+        if sec.find(tag) is None:
+            ET.SubElement(sec, tag)
+    if sec.find("latest") is None:
         latest = ET.SubElement(sec, "latest", {"v": "0"})
         ET.SubElement(latest, "high").text = "0"
         ET.SubElement(latest, "low").text = "0"
         ET.SubElement(latest, "volume").text = "0"
 
-        attr_root = ET.SubElement(sec, "attributes")
-        ET.SubElement(attr_root, "map")
-
-        ET.SubElement(sec, "events")
-        ET.SubElement(sec, "isRetired").text = "false"
-        ET.SubElement(sec, "updatedAt").text = json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z")
-
-        securities_root.append(sec)
-    else:
-        print(f"✏️ Updating existing <security> with ID {sec.attrib.get('id')}")
-
+    # Write out
     output_path = output_file or xml_file
     tree.write(output_path, encoding="utf-8", xml_declaration=True)
     print(f"✅ XML written to: {output_path}")
@@ -242,35 +261,38 @@ def instruments_without_tickers(xml_file):
 # 2. Keep get_all_tickers(xml_file) from earlier
 
 # ------------------------------------------------------------------
-#  Helper
+#  Helper:  FTSE tickers missing from your PP file (normalised to *.L)
 # ------------------------------------------------------------------
 def ftse_tickers_missing_from_file(xml_file, ftse_map_module="ftse_all_share_dict"):
     """
-    Return the set of FTSE‑All‑Share tickers that do not appear
-    in PortfolioPerformance's get_all_tickers(xml_file) list.
-
-    Parameters
-    ----------
-    xml_file : str | pathlib.Path
-        Path to the PortfolioPerformance XML export.
-    ftse_map_module : str
-        Module name that contains `ftse_all_share` dict
-        (default assumes `from ftse_all_share_dict import ftse_all_share`).
-
-    Returns
-    -------
-    set[str]
-        Tickers that are in FTSE All‑Share but missing in your XML file.
+    Return FTSE-All-Share tickers that are not present in your
+    PortfolioPerformance XML, normalising everything to end with '.L'.
     """
-    # ── 1) all tickers in your PP file ──────────────────────────────
-    file_tickers = set(get_all_tickers(xml_file))
+    # 1)  Your PP tickers  →  ensure *.L suffix
+    file_tickers = {
+        (t if t.upper().endswith(".L") else f"{t}.L").upper()
+        for t in get_all_tickers(xml_file)
+    }
 
-    # ── 2) all FTSE tickers (module import) ─────────────────────────
-    ftse_tickers = set(ftse_all_share.keys())
+    # 2)  FTSE-All-Share tickers  →  ensure *.L suffix
+    ftse_tickers = {
+        (t if t.upper().endswith(".L") else f"{t}.L").upper()
+        for t in ftse_all_share.keys()
+    }
 
-    # ── 3) difference ───────────────────────────────────────────────
+    # 3)  Difference
     return ftse_tickers - file_tickers
 
+
+# ------------------------------------------------------------------
+# Optional: get missing (ticker, name) pairs
+# ------------------------------------------------------------------
+def missing_ftse_with_names(xml_file, ftse_map_module="ftse_all_share_dict"):
+    from importlib import import_module
+    ftse_mod = import_module(ftse_map_module)
+    missing = ftse_tickers_missing_from_file(xml_file, ftse_map_module)
+    # remove ".L" before lookup in the map
+    return {t.rstrip(".L"): ftse_mod.ftse_all_share.get(t.rstrip(".L"), "??") for t in missing}
 
 # ------------------------------------------------------------------
 #  Example usage

@@ -1,26 +1,29 @@
 import json
 from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
-from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json, extract_instrument
+from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json, extract_instrument, \
+    ftse_tickers_missing_from_file
+
 
 def fetch_instrument_from_yahoo(ticker_symbol: str):
     return yf.Ticker(ticker_symbol)
 
 
-def create_instrument_from_yahoo(ticker_symbol: str, isin: str, xml_file: str, output_file: str):
+def create_instrument_from_yahoo(ticker_symbol: str, xml_file: str, output_file: str):
     info = fetch_instrument_from_yahoo(ticker_symbol=ticker_symbol).info
 
-    required_fields = ["longName","shortName", "currency", "symbol",'trailingPE']
+    required_fields = ["longName","shortName", "currency", "symbol"]
     for field in required_fields:
         if field not in info:
-            raise ValueError(f"Missing '{field}' from Yahoo Finance data for {ticker_symbol}")
+            print(f"Missing '{field}' from Yahoo Finance data for {ticker_symbol}")
+            return
+
     currency = info["currency"].upper()
-    if currency == "GBP":
+    if currency == "GBp":
         currency = "GBX"  # Adjust for PortfolioPerformance expectations
 
     instrument = (
         InstrumentBuilder()
-        .with_name(info["shortName"])
-        .with_isin(isin)
+        .with_name(info["longName"])
         .with_ticker(info["symbol"])
         .with_currency(currency)
         # .with_feed("GENERIC_HTML_TABLE", feed_url=f"http://localhost:8091/stock/ticker/{ticker_symbol}")
@@ -55,28 +58,19 @@ if __name__ == "__main__":
     xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
     output_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id-updated.xml"
 
-    # instrument = extract_instrument(xml_file=xml_file, identifier="GB00B19NLV48", format="json")
-    # print("\n✅ JSON Format:")
-    # print(json.dumps(instrument, indent=2))
-    #
-    # instrument["tickerSymbol"] = "EXPN.L"
-    #
-    # upsert_instrument_from_json(
-    #     xml_file=xml_file,
-    #     json_data=instrument,
-    #     output_file=xml_file
-    # )
-    #
-    isin = "GG00B90J5Z95"
-    create_instrument_from_yahoo(
-        ticker_symbol="TFIF.L",
-        isin=isin,  # ← replace with the actual ISIN for TFIF
-        xml_file=xml_file,
-        output_file=output_file
-    )
+    missing = ftse_tickers_missing_from_file(xml_file)
+    print(f"\n⛔  {len(missing)} FTSE‑All‑Share tickers are NOT in your XML:")
+    print(sorted(list(missing))[:50], "…")  # preview first 50
 
-    data = extract_instrument(output_file, isin, format="json")
-    print("\n✅ JSON Format:")
-    print(json.dumps(data, indent=2))
+
+    for ticker in missing:
+        create_instrument_from_yahoo(
+            ticker_symbol=ticker,
+            xml_file=xml_file,
+            output_file=output_file
+        )
+        data = extract_instrument(output_file, ticker, format="json")
+        print("\n✅ JSON Format:")
+        print(json.dumps(data, indent=2))
 
 

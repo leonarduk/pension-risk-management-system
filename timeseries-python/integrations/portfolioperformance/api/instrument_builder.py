@@ -47,7 +47,7 @@ class InstrumentBuilder:
 
     def build(self):
         # Ensure required fields are present
-        required = ["name", "isin", "currencyCode", "tickerSymbol"]
+        required = ["name", "currencyCode", "tickerSymbol"]
         missing = [k for k in required if not self.data.get(k)]
         if missing:
             raise ValueError(f"Missing required fields: {', '.join(missing)}")
