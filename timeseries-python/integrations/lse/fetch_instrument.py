@@ -1,8 +1,13 @@
+import json
+import os
+import xml.etree.ElementTree as ET
+import pandas as pd
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 UUID_ALIASES = {
     "07ca79a6-4b1e-4906-8ee6-215d3299ac67": "Morningstar Category",
@@ -41,38 +46,6 @@ def extract_lse_data_with_browser(url):
             name_elem = wait.until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
         name = name_elem.text.strip()
 
-        # Extract ISIN
-        isin = ""
-        try:
-            isin_elem = wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//*[contains(text(), 'ISIN')]/following-sibling::div")
-            ))
-            isin = isin_elem.text.strip()
-        except Exception as e:
-            print("ISIN error:", e)
-
-        # Extract expense ratio
-        expense_ratio = ""
-        try:
-            ratio_elem = wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//*[contains(text(), 'Total Expense Ratio')]/following-sibling::div")
-            ))
-            expense_ratio = ratio_elem.text.strip()
-        except Exception as e:
-            print("Expense ratio error:", e)
-
-        # Extract currency
-        currency = "GBX"
-        try:
-            currency_elem = wait.until(EC.presence_of_element_located(
-                (By.CSS_SELECTOR, "#ticker strong")
-            ))
-            currency_text = currency_elem.text.strip()
-            if currency_text.startswith("(") and currency_text.endswith(")"):
-                currency = currency_text[1:-1].upper()
-        except Exception as e:
-            print("Currency error:", e)
-
         # Extract type (e.g. ETF, Equity)
         instrument_type = ""
         try:
@@ -83,6 +56,51 @@ def extract_lse_data_with_browser(url):
         except Exception as e:
             print("Type error:", e)
 
+        # Extract ISIN
+        isin = ""
+        try:
+            isin_elem = wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//*[contains(text(), 'ISIN')]/following-sibling::div")
+            ))
+            isin = isin_elem.text.strip()
+        except Exception as e:
+            print("ISIN error:", e)
+
+        expense_ratio = ""
+        if instrument_type == "ETF":
+            # Extract expense ratio
+            try:
+                ratio_elem = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, "//*[contains(text(), 'Total Expense Ratio')]/following-sibling::div")
+                ))
+                expense_ratio = ratio_elem.text.strip()
+            except Exception as e:
+                print("Expense ratio error:", e)
+
+        eps = ""
+        if instrument_type == "Equity":
+            # Extract EPS (only for equities)
+            try:
+                eps_elem = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, "//*[contains(text(), 'Earnings Per Share')]/following-sibling::div")
+                ))
+                eps = eps_elem.text.strip()
+            except Exception as e:
+                print("EPS error:", e)
+
+        # Extract currency
+        currency = ""
+        try:
+            currency_elem = wait.until(EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "#ticker strong")
+            ))
+            currency_text = currency_elem.text.strip()
+            if currency_text.startswith("(") and currency_text.endswith(")"):
+                currency = currency_text[1:-1].upper()
+        except Exception as e:
+            print("Currency error:", e)
+
+
         ticker = url.split("/")[4].upper() + ".L"
 
         return {
@@ -90,6 +108,7 @@ def extract_lse_data_with_browser(url):
             "ticker": ticker,
             "isin": isin,
             "expense_ratio": expense_ratio,
+            "eps": eps,
             "currency": currency,
             "type": instrument_type
         }
@@ -100,5 +119,6 @@ def extract_lse_data_with_browser(url):
 if __name__ == "__main__":
     url = "https://www.londonstockexchange.com/stock/PHGP/wisdomtree/company-page"
     # url = "https://www.londonstockexchange.com/stock/RIO/rio-tinto-plc/company-page"
+    # url = "https://www.londonstockexchange.com/stock/HFD/halfords-group-plc/company-page"
     instrument = extract_lse_data_with_browser(url)
     print(instrument)

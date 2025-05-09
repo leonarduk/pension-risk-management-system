@@ -4,6 +4,7 @@ from datetime import datetime
 
 import pandas as pd
 
+from integrations.portfolioperformance.api.instrument_filter import build_security_index, build_taxonomy_reverse_lookup
 from integrations.portfolioperformance.api.static.uuid_aliases import UUID_ALIASES
 
 
@@ -147,3 +148,110 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
     output_path = output_file or xml_file
     tree.write(output_path, encoding="utf-8", xml_declaration=True)
     print(f"✅ XML written to: {output_path}")
+
+# ------------------------------------------------------------------
+#  NEW HELPERS
+# ------------------------------------------------------------------
+
+def get_all_tickers(xml_file, unique=True, skip_blank=True):
+    """
+    Return a list of ticker symbols found in the XML.
+
+    Args
+    ----
+    xml_file : str | pathlib.Path
+        Path to the PortfolioPerformance XML file.
+    unique : bool, default True
+        If True, duplicates are removed.
+    skip_blank : bool, default True
+        If True, empty / missing tickerSymbol fields are ignored.
+
+    Returns
+    -------
+    list[str]
+        List of ticker symbols (optionally deduplicated).
+    """
+    tree = ET.parse(xml_file)
+    securities = build_security_index(tree.getroot())
+
+    tickers = [
+        sec.get("tickerSymbol", "").strip()
+        for sec in securities.values()
+        if not (skip_blank and not sec.get("tickerSymbol", "").strip())
+    ]
+
+    return sorted(set(tickers)) if unique else tickers
+
+
+# ------------------------------------------------------------------
+#  SAFER helper – skips or falls back if <security> has no id
+# ------------------------------------------------------------------
+
+def instruments_without_tickers(xml_file):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    securities = build_security_index(root)
+
+    # Build raw <security> lookup, but skip any without an id/uuid
+    raw_sec_lookup = {}
+    for s in root.findall(".//securities/security"):
+        sid = s.attrib.get("id") or s.findtext("uuid")      # uuid fallback
+        if not sid:
+            continue                                        # give up on totally anonymous nodes
+        raw_sec_lookup[sid] = s
+
+    taxonomy_lookup = build_taxonomy_reverse_lookup(root)
+
+    def _type_from_tax(sec_id):
+        for tax_name, classes in taxonomy_lookup.items():
+            if any(word in tax_name.lower() for word in ("type", "asset class")):
+                for class_name, ids in classes.items():
+                    if sec_id in ids:
+                        return class_name
+        return ""
+
+    results = []
+    for sec in securities.values():
+        if sec.get("tickerSymbol", "").strip():
+            continue   # we only want those *without* tickers
+
+        sec_id = sec.get("id") or sec.get("uuid") or ""
+        raw_elem = raw_sec_lookup.get(sec_id, ET.Element(""))
+
+        sec_type = (
+            raw_elem.attrib.get("type", "")
+            or raw_elem.findtext("type", "")
+            or _type_from_tax(sec_id)
+            or "Unknown"
+        ).strip()
+
+        results.append(
+            {
+                "id": sec_id or "N/A",
+                "name": sec["name"],
+                "type": sec_type,
+            }
+        )
+    return results
+
+
+if __name__ == "__main__":
+    xml_file = r"C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+
+    # --- new demo calls -------------------------------------------------
+    all_tickers = get_all_tickers(xml_file)
+    print(f"\n✅ Found {len(all_tickers)} unique tickers")
+    print(all_tickers[:20], "...")          # preview
+
+    # -------------------------------------------------------------------
+    # Demo
+    # -------------------------------------------------------------------
+    no_ticker = instruments_without_tickers(xml_file)
+    print(f"\n⚠️  Instruments with NO ticker ({len(no_ticker)}):")
+    for item in no_ticker:
+        print(
+            f"  • {item['name']:<45} "
+            f"(type={item['type'] or 'Unknown':<15}  id={item['id']})"
+        )
+
+

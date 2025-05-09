@@ -2,19 +2,17 @@ import json
 from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
 from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json, extract_instrument
 
+def fetch_instrument_from_yahoo(ticker_symbol: str):
+    return yf.Ticker(ticker_symbol)
+
 
 def create_instrument_from_yahoo(ticker_symbol: str, isin: str, xml_file: str, output_file: str):
-    if not isin or len(isin) != 12:
-        raise ValueError("A valid 12-character ISIN must be provided.")
+    info = fetch_instrument_from_yahoo(ticker_symbol=ticker_symbol).info
 
-    ticker = yf.Ticker(ticker_symbol)
-    info = ticker.info
-
-    required_fields = ["shortName", "currency", "symbol"]
+    required_fields = ["longName","shortName", "currency", "symbol",'trailingPE']
     for field in required_fields:
         if field not in info:
             raise ValueError(f"Missing '{field}' from Yahoo Finance data for {ticker_symbol}")
-
     currency = info["currency"].upper()
     if currency == "GBP":
         currency = "GBX"  # Adjust for PortfolioPerformance expectations
