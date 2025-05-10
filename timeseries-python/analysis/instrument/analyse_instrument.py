@@ -1,13 +1,14 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
 from ta.trend import SMAIndicator, MACD
 from ta.momentum import RSIIndicator
 from ta.volatility import BollingerBands
 
+import integrations.stockfeed.timeseries
+import integrations.portfolioperformance.api.timeseries
+
 from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
-from integrations.portfolioperformance.api.timeseries import get_time_series
 
 from scipy.stats import linregress
 
@@ -178,15 +179,17 @@ def colorize(signal):
 
 
 def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output",
-                        override_tickers: list = None):
+                        tickers: list = None, use_stockfeed=False):
     name_map = get_name_map_from_xml(xml_file=xml_path)
-    tickers = override_tickers or get_unique_tickers(xml_file=xml_path)
 
     bullish, bearish, predictions = [], [], []
 
     for ticker in tickers:
         name = name_map.get(ticker, ticker)
-        df = get_time_series(ticker=ticker, years=5, xml_file=xml_path)
+        if use_stockfeed:
+            df = integrations.stockfeed.timeseries.get_time_series(ticker=ticker, years=5)
+        else:    
+            df = integrations.portfolioperformance.api.timeseries.get_time_series(ticker=ticker, years=5, xml_file=xml_path)
         if df.empty:
             print(f"❌ No data for {ticker}")
             continue
@@ -228,10 +231,14 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
 
 
 if __name__ == "__main__":
+    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
+    override_tickers = []
+    tickers = override_tickers or get_unique_tickers(xml_file=xml_path)
+
     analyze_all_tickers(
         xml_path="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
         recent_days=5,
         group_signals=True,
         output_dir="output",
-        override_tickers=['SAIN', 'VWRL']
+        tickers=tickers
     )
