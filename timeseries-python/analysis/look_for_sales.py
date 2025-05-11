@@ -1,6 +1,5 @@
 from analysis.instrument.analyse_instrument import analyze_all_tickers
 from integrations.portfolioperformance.api.positions import extract_holdings_from_transactions
-from integrations.portfolioperformance.api.static.ftse_all_share_dict import ftse_all_share
 
 if __name__ == '__main__':
     xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
@@ -14,7 +13,7 @@ if __name__ == '__main__':
         xml_path="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
         recent_days=5,
         group_signals=True,
-        output_dir="output",
+        output_dir="instrument/output",
         tickers=my_tickers,
         use_stockfeed=False
     )

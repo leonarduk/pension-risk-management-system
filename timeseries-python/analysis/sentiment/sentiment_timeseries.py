@@ -106,7 +106,7 @@ def fetch_reddit_posts(reddit, ticker, limit=20):
 
 # ---------- MAIN ---------- #
 
-def main(tickers):
+def analyse_sentiment(tickers):
     today = datetime.today().date()
     reddit = Reddit(client_id=REDDIT_CLIENT_ID,
                     client_secret=REDDIT_CLIENT_SECRET,
@@ -160,4 +160,7 @@ if __name__ == "__main__":
     name_map = get_name_map_from_xml(xml_file=xml_path)
     tickers = get_unique_tickers(xml_file=xml_path)
 
-    main(tickers)
+    tickers = ['ASLI']
+    tickers = ['CARD.L', 'HFEL.L', 'TFIF.L', 'ASLI.L', 'ERNS.L', 'GAW.L', 'HICL.L']
+
+    analyse_sentiment(tickers)

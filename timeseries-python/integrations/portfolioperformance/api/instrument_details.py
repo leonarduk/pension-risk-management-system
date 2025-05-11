@@ -95,66 +95,66 @@ def extract_instrument(xml_file, identifier, format="table"):
 
 
 def upsert_instrument_from_json(xml_file, json_data, output_file=None):
+    """Insert *or* update a <security> in the PortfolioPerformance XML.
+
+    In addition to the existing fields, this version also handles ``type`` –
+    written as a simple <type> element on the security node.
+    """
+
     tree = ET.parse(xml_file)
     root = tree.getroot()
     securities_root = root.find(".//securities")
     if securities_root is None:
         raise ValueError("No <securities> section found.")
 
-    # ------------------------------------------------------------
-    # 1️⃣  Look-up is now on tickerSymbol (normalised to upper, .L)
-    # ------------------------------------------------------------
-    def _norm_ticker(t):
+    # ------------------------------------------------------------------
+    # Normalise ticker for look‑up (upper case & ensure ".L" suffix)
+    # ------------------------------------------------------------------
+    def _norm(t):
         t = (t or "").strip().upper()
         return t if t.endswith(".L") else f"{t}.L"
 
-    incoming_ticker = _norm_ticker(json_data.get("tickerSymbol", ""))
+    incoming_ticker = _norm(json_data.get("tickerSymbol", ""))
 
+    # Try to locate an existing <security> with the same ticker
     sec = None
     for s in securities_root.findall("security"):
-        existing_ticker = _norm_ticker(s.findtext("tickerSymbol", ""))
-        if existing_ticker and existing_ticker == incoming_ticker:
+        if _norm(s.findtext("tickerSymbol")) == incoming_ticker:
             sec = s
             break
-    # ------------------------------------------------------------
 
-    # 2️⃣  Everything else is unchanged – we either update or insert
     if sec is None:
-        new_id = str(
-            int(
-                max(
-                    (int(s.attrib.get("id", "0")) for s in securities_root.findall("security")),
-                    default=0,
-                )
-            )
-            + 1
-        )
-        sec = ET.Element("security", id=new_id)
-        print(f"➕ Created new <security> with ID {new_id}")
-        securities_root.append(sec)
+        # ➕ create new
+        next_id = max((int(s.attrib.get("id", 0)) for s in securities_root.findall("security")), default=0) + 1
+        sec = ET.SubElement(securities_root, "security", id=str(next_id))
+        print(f"➕  new <security id='{next_id}'> ({incoming_ticker})")
     else:
-        print(f"✏️ Updating existing <security> with ID {sec.attrib.get('id')}")
+        print(f"✏️  updating existing <security id='{sec.attrib.get('id')}'> ({incoming_ticker})")
 
-    # ─ Populate / overwrite standard fields ─────────────────────
+    # ------------------------------------------------------------------
+    # Populate / overwrite the standard fields – now incl. <type>
+    # ------------------------------------------------------------------
     field_map = {
-        "uuid":        json_data.get("uuid", ""),
-        "name":        json_data.get("name", ""),
-        "currencyCode": json_data.get("currencyCode", ""),
-        "isin":        json_data.get("isin", ""),
-        "tickerSymbol": json_data.get("tickerSymbol", ""),
-        "feed":        json_data.get("feed", "MANUAL"),
-        "feedURL":     json_data.get("feedURL", ""),
-        "latestFeed":  json_data.get("latestFeed", ""),
-        "isRetired":   "true" if json_data.get("isRetired") else "false",
-        "updatedAt":   json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z"),
+        "uuid":          json_data.get("uuid", ""),
+        "name":          json_data.get("name", ""),
+        "currencyCode":  json_data.get("currencyCode", ""),
+        "isin":          json_data.get("isin", ""),
+        "tickerSymbol":  json_data.get("tickerSymbol", ""),
+        "type":          json_data.get("type", ""),          #  🆕
+        "feed":          json_data.get("feed", "MANUAL"),
+        "feedURL":       json_data.get("feedURL", ""),
+        "latestFeed":    json_data.get("latestFeed", ""),
+        "isRetired":     "true" if json_data.get("isRetired") else "false",
+        "updatedAt":     json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z"),
     }
+
     for tag, value in field_map.items():
         elem = sec.find(tag)
         if elem is None:
             elem = ET.SubElement(sec, tag)
         elem.text = value
 
-    # Ensure sub-elements that must exist
+    # Ensure mandatory children exist
     for tag in ("prices", "events"):
         if sec.find(tag) is None:
             ET.SubElement(sec, tag)
@@ -164,7 +164,7 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
         ET.SubElement(latest, "low").text = "0"
         ET.SubElement(latest, "volume").text = "0"
 
-    # Write out
+    # Write back
     output_path = output_file or xml_file
     tree.write(output_path, encoding="utf-8", xml_declaration=True)
     print(f"✅ XML written to: {output_path}")

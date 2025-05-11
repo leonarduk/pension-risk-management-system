@@ -1,4 +1,5 @@
 from analysis.instrument.analyse_instrument import analyze_all_tickers
+from analysis.sentiment.sentiment_timeseries import analyse_sentiment
 from integrations.portfolioperformance.api.positions import extract_holdings_from_transactions
 from integrations.portfolioperformance.api.static.ftse_all_share_dict import ftse_all_share
 
@@ -16,18 +17,19 @@ if __name__ == '__main__':
     all_set = {t.strip().upper() for t in all_ftse_tickers if t}  # remove blanks/None
     mine_set = {t.strip().upper() for t in my_tickers if t}
 
-    missing_tickers = list(all_set - mine_set)  # tickers you don’t yet own
+    tickers = list(all_set - mine_set)  # tickers you don’t yet own
 
     print(len(all_ftse_tickers), "FTSE tickers")
-    print(len(missing_tickers), "tickers not yet in portfolio")
-    print(sorted(missing_tickers))
+    print(len(tickers), "tickers not yet in portfolio")
+    print(sorted(tickers))
 
+    tickers = ['CARD.L', 'HFEL.L', 'TFIF.L', 'ASLI.L', 'ERNS.L', 'GAW.L', 'HICL.L']
     analyze_all_tickers(
         xml_path="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
         recent_days=5,
         group_signals=True,
-        output_dir="output",
-        tickers=missing_tickers,
+        output_dir="instrument/output",
+        tickers=tickers,
         use_stockfeed=True
     )
 

@@ -1,7 +1,6 @@
 import json
-from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
-from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json, extract_instrument, \
-    ftse_tickers_missing_from_file, bulk_add_missing_ftse
+
+from integrations.portfolioperformance.api.instrument_details import ftse_tickers_missing_from_file
 
 
 def fetch_instrument_from_yahoo(ticker_symbol: str):
@@ -41,7 +40,6 @@ def create_instrument_from_yahoo(ticker_symbol: str, xml_file: str, output_file:
     )
     print(f"✅ Instrument written to: {output_file}")
 
-import yfinance as yf
 
 def get_latest_price(ticker):
     try:
@@ -56,11 +54,6 @@ def get_latest_price(ticker):
 # ================================================================
 # BULK-IMPORT MISSING FTSE TICKERS   (Yahoo → PP XML)
 # ================================================================
-import xml.etree.ElementTree as ET
-from datetime import datetime
-import yfinance as yf
-from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
-from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json
 
 def _norm_ticker(t: str) -> str:
     """Upper-case and ensure '.L' suffix."""
@@ -74,10 +67,8 @@ def _next_free_id(securities_root) -> int:
         + 1
     )
 
-from datetime import datetime, UTC
 
 import xml.etree.ElementTree as ET
-from datetime import datetime, UTC
 import yfinance as yf
 from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
 from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json
