@@ -2,15 +2,23 @@
 """sipp_transaction_converter.py – Cash CSV maker
 ================================================
 Convert a bank/export CSV into **Portfolio Performance** cash CSVs (one per
-account). The output now contains **both** a *Cash Account* and an *Offset
-Account* column, each populated from its own mapping.
+account).
 
-Changes in this revision
-------------------------
-* **Note** ← `DESCRIPTION` (unchanged)
-* **Cash Account** ← first mapping (e.g. `Steve SIPP → Steve SIPP Cash`)
-* **Offset Account** ← second mapping (e.g. `Steve SIPP → Steve SIPP`)
-* Retains Value column, dividend filter, IDE/CLI dual‑mode, working‑dir helper.
+Columns produced
+----------------
+* **Date** – formatted `YYYY‑MM‑DD 00:00:00`
+* **Type** – *Interest*, *Dividend*, or *Interest Charge*
+* **Value** – monetary amount (optional currency prefix)
+* **Cash Account** – from `CASH_ACCOUNT_MAP`
+* **Offset Account** – from `OFFSET_ACCOUNT_MAP`
+* **Note** – original `DESCRIPTION`
+* (Balance, Security, Shares, per share, Source kept for PP compatibility)
+
+Features
+~~~~~~~~
+* Dividend rows can be excluded (`--exclude-dividends` / `EXCLUDE_DIVIDENDS`).
+* Robust date parsing (`dd/mm/YYYY`, ISO, etc.).
+* Dual CLI/IDE usage with a working‑directory helper.
 """
 from __future__ import annotations
 
@@ -24,14 +32,13 @@ from typing import Dict, Optional
 import pandas as pd
 
 ###############################################################################
-#                               Mapping helpers                               #
+#                               Helper functions                              #
 ###############################################################################
 
 def _map_type(category: str, description: str) -> Optional[str]:
-    """Return PP *Type* or ``None`` to drop the row."""
+    """Return PP *Type* or None to drop the row."""
     category = (category or "").strip()
     description = (description or "").strip()
-
     if category == "Savings & investments income":
         return "Interest" if description.startswith("Interest From") else "Dividend"
     if category == "Service fees & bank charges":
@@ -47,8 +54,17 @@ def _extract_security(description: str, tx_type: str) -> str:
             return description.split(kw, 1)[0].strip()
     return description.strip()
 
+
+def _parse_dates(date_series: pd.Series) -> pd.Series:
+    """Parse dates that may be in `dd/mm/YYYY` *or* ISO formats."""
+    dates = pd.to_datetime(date_series, errors="coerce", dayfirst=True)
+    na_mask = dates.isna()
+    if na_mask.any():
+        dates.loc[na_mask] = pd.to_datetime(date_series[na_mask], errors="coerce", format="%Y-%m-%d")
+    return dates
+
 ###############################################################################
-#                                 Core logic                                  #
+#                               Core converter                                #
 ###############################################################################
 
 def _convert_account_df(
@@ -64,7 +80,7 @@ def _convert_account_df(
     if sub.empty:
         raise ValueError(f"No rows for account '{account}'.")
 
-    # Type mapping / filtering
+    # Map PP types and filter
     sub["Type"] = [_map_type(c, d) for c, d in zip(sub["CATEGORY"], sub["DESCRIPTION"])]
     sub = sub[sub["Type"].notna()].copy()
     if exclude_dividends:
@@ -72,15 +88,25 @@ def _convert_account_df(
     if sub.empty:
         raise ValueError(f"All rows for '{account}' filtered out.")
 
-    # Core columns
-    sub["Date"] = pd.to_datetime(sub["DATE"], dayfirst=True).dt.strftime("%Y-%m-%d 00:00:00")
+    # Date parsing
+    dates = _parse_dates(sub["DATE"])
+    bad = dates.isna()
+    if bad.any():
+        raise ValueError(
+            f"Un‑parseable DATE values for account '{account}': {sub.loc[bad, 'DATE'].unique()[:5]}"
+        )
+    sub["Date"] = dates.dt.strftime("%Y-%m-%d 00:00:00")
+
+    # Value column
     sub["Value"] = (
         [f"{currency} {a:.2f}" for a in sub["AMOUNT"]] if currency else [f"{a:.2f}" for a in sub["AMOUNT"]]
     )
+
+    # Security for dividends
     sub["Security"] = [_extract_security(d, t) for d, t in zip(sub["DESCRIPTION"], sub["Type"])]
 
     # Extra columns
-    sub["Note"] = sub["DESCRIPTION"].str.strip()
+    sub["Note"] = sub["DESCRIPTION"].astype(str).str.strip()
     sub["Cash Account"] = sub["ACCOUNT"].map(cash_account_map).fillna("")
     sub["Offset Account"] = sub["ACCOUNT"].map(offset_account_map).fillna("")
 
@@ -120,40 +146,37 @@ def convert_multiple_accounts(
     return written
 
 ###############################################################################
-#                               CLI helpers                                   #
+#                                     CLI                                    #
 ###############################################################################
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="Convert bank CSV → PP cash CSVs with Cash & Offset accounts.",
+        description="Bank CSV → PP cash CSVs (Cash & Offset accounts).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p.add_argument("INPUT", help="Source CSV file")
     p.add_argument("-m", "--map", dest="maps", action="append", required=True,
-                   help="<input-account>=<output.csv>")
+                   help="<input>=<output.csv>")
     p.add_argument("--cash-map", dest="cash_maps", action="append", required=True,
-                   help="<input-account>=<cash-account>")
+                   help="<input>=<cash-account>")
     p.add_argument("--offset-map", dest="offset_maps", action="append", required=True,
-                   help="<input-account>=<offset-account>")
-    p.add_argument("-c", "--currency", default="", help="Currency prefix for Value")
+                   help="<input>=<offset-account>")
+    p.add_argument("-c", "--currency", default="", help="Currency prefix for Value column")
     p.add_argument("--exclude-dividends", action="store_true")
     return p
 
 
 def _parse_pairs(pairs: list[str]) -> Dict[str, str]:
-    result: Dict[str, str] = {}
-    for p in pairs:
+    mapping: Dict[str, str] = {}
+    for p in pairs or []:
         if "=" not in p:
-            raise argparse.ArgumentTypeError(f"Invalid pair '{p}', expected a=b")
-        k, v = [s.strip() for s in p.split("=", 1)]
+            raise argparse.ArgumentTypeError(f"Invalid mapping '{p}', expected key=value")
+        k, v = (s.strip() for s in p.split("=", 1))
         if not k or not v:
-            raise argparse.ArgumentTypeError(f"Invalid pair '{p}', empty side")
-        result[k] = v
-    return result
+            raise argparse.ArgumentTypeError(f"Invalid mapping '{p}', empty side")
+        mapping[k] = v
+    return mapping
 
-###############################################################################
-#                                   main                                      #
-###############################################################################
 
 def main(argv: list[str] | None = None) -> None:
     ap = _build_arg_parser()
@@ -176,13 +199,13 @@ def main(argv: list[str] | None = None) -> None:
         print(f"✔ {a} → {p}")
 
 ###############################################################################
-#                               IDE section                                   #
+#                                  IDE mode                                  #
 ###############################################################################
 
 if __name__ == "__main__":
     WORKDIR = r"C:\\Users\\steph\\Downloads"
 
-    INPUT = "transactions.csv"
+    INPUT = "Transaction Export 13-05-2025 (1).csv"
     ACCOUNT_MAP = {
         "Steve SIPP": "Transactions_Steve_SIPP.csv",
         "Stocks & Shares ISA": "Transactions_Steve_ISA.csv",
@@ -198,7 +221,7 @@ if __name__ == "__main__":
         "Stocks & Shares ISA": "Steve ISA",
         "Lucy Stocks & Shares ISA": "Lucy ISA",
     }
-    CURRENCY = ""  # "GBP" if you need a prefix
+    CURRENCY = ""  # set "GBP" to prefix values
     EXCLUDE_DIVIDENDS = False
 
     if WORKDIR:
@@ -212,14 +235,13 @@ if __name__ == "__main__":
         main(sys.argv[1:])
     else:
         files = convert_multiple_accounts(
-            INPUT,
-            ACCOUNT_MAP,
+            INPUT, ACCOUNT_MAP,
             currency=CURRENCY,
             exclude_dividends=EXCLUDE_DIVIDENDS,
             cash_account_map=CASH_ACCOUNT_MAP,
             offset_account_map=OFFSET_ACCOUNT_MAP,
         )
         if not files:
-            raise SystemExit("No files written – check mappings.")
+            raise SystemExit("No files written – check mappings.")
         for a, p in files.items():
             print(f"✔ {a} → {p}")
