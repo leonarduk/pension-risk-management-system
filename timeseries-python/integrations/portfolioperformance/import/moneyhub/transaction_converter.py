@@ -202,6 +202,8 @@ def main(argv: list[str] | None = None) -> None:
 #                                  IDE mode                                  #
 ###############################################################################
 
+# TODO - map dividends properly - need to check name of stock to that in the mapping file
+
 if __name__ == "__main__":
     WORKDIR = r"C:\\Users\\steph\\Downloads"
 

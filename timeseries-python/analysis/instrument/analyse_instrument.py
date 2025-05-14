@@ -1,4 +1,6 @@
+import datetime
 import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from ta.trend import SMAIndicator, MACD
@@ -186,10 +188,7 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
 
     for ticker in tickers:
         name = name_map.get(ticker, ticker)
-        if use_stockfeed:
-            df = integrations.stockfeed.timeseries.get_time_series(ticker=ticker, years=5)
-        else:    
-            df = integrations.portfolioperformance.api.timeseries.get_time_series(ticker=ticker, years=5, xml_file=xml_path)
+        df = get_time_series(ticker, use_stockfeed, xml_path)
         if df.empty:
             print(f"❌ No data for {ticker}")
             continue
@@ -228,6 +227,59 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
         print("\n🔮 Predictions:")
         for p in sorted(predictions):
             print("-", colorize(p))
+
+
+def get_time_series(ticker, use_stockfeed, xml_path):
+    if use_stockfeed:
+        df = integrations.stockfeed.timeseries.get_time_series(ticker=ticker, years=5)
+    else:
+        df = integrations.portfolioperformance.api.timeseries.get_time_series(ticker=ticker, years=5, xml_file=xml_path)
+    print(df.head(5))
+
+    return df
+
+
+# analysis/instrument/analyse_instrument.py
+def get_price_series(
+    ticker: str,
+    start: datetime.date,
+    end: datetime.date,
+    timeseries: pd.DataFrame | None = None,
+    *,
+    use_stockfeed: bool = True,
+    xml_path: str | None = None,
+) -> pd.Series:
+    """
+    Return a *Series of closing prices* between `start` and `end`.
+    This is exactly the callable shape that dividends.last_12m_dividend_yield
+    asks for:  (ticker, start_date, end_date) -> Series
+    """
+    if timeseries is None:
+        # if no timeseries is passed, we fetch it from the API
+        # this is the default behavior for the last_12m_dividend_yield function
+        # but you can pass a timeseries DataFrame to avoid fetching it again
+        # (e.g. if you already have it in memory)
+        # this is useful for performance reasons
+        # and avoids hitting the API too many times
+        timeseries = get_time_series(ticker=ticker, use_stockfeed=use_stockfeed, xml_path=xml_path)
+
+    # ▸ Case A: the index is already dates and the ticker is a column
+    if ticker in timeseries.columns:
+        price = timeseries[ticker]
+
+    # ▸ Case B: fall back to whatever other shapes you support
+    else:
+        #-- existing StockFeed logic here (rename columns, set_index, …)
+        price = (
+            timeseries.rename(columns=str.lower)
+              .set_index("date")["close"]
+        )
+
+    # ensure we’re working with datetime index for slicing
+    if not isinstance(price.index, pd.DatetimeIndex):
+        price.index = pd.to_datetime(price.index)
+
+    return price.loc[start:end]
 
 
 if __name__ == "__main__":
