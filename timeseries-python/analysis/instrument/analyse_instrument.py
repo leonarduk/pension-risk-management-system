@@ -231,7 +231,7 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
         annual_yield, div_series = last_12m_dividend_yield(ticker=ticker, timeseries=None, use_stockfeed=False,
                                                            xml_path=xml_path, ccy=ccy)
 
-        print(f"{name} ({ticker}): {annual_yield:.2f}% annual yield : {div_series}")
+        print(f"{name}: {annual_yield:.2f}% annual yield : {div_series}")
 
         if df.empty:
             print(f"❌ No data for {ticker}")
@@ -433,7 +433,14 @@ def last_12m_dividend_yield(ticker: str, today: dt.date | None = None, *, timese
     div_cash, px = _harmonise_units(div_cash, px, ccy)
 
     # Calculate the dividend yield
-    return float(div_cash / px) * 100, div_series
+    annual_yield = float(div_cash / px) * 100
+
+    if annual_yield > 50:
+        print(f"⚠️  {ticker} has an unusually high yield of {annual_yield:.2f}% so dividing by 100.")
+        annual_yield /= 100
+
+
+    return annual_yield, div_series
 
 if __name__ == '__main__':
     xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"

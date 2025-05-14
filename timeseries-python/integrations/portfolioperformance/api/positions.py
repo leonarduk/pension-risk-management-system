@@ -1,151 +1,142 @@
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from datetime import datetime
+from typing import Union
 
 import pandas as pd
 
-def get_unique_tickers(xml_file: str, cutoff_date=None) -> list:
-    df = extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=cutoff_date)
-    tickers = df["ticker"].dropna().unique().tolist()
-    return [t for t in tickers if t]  # filter out any empty strings
+# ------------------------------------------------------------------ #
+#  Public helpers
+# ------------------------------------------------------------------ #
 
-def extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=None):
+def get_unique_tickers(xml_file: str, cutoff_date: Union[str, datetime, None] = None) -> list[str]:
+    df = extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=cutoff_date)
+    return df["ticker"].dropna().unique().tolist()
+
+
+def extract_holdings_from_transactions(
+    xml_file: str,
+    *,
+    by_account: bool = False,
+    cutoff_date: Union[str, datetime, None] = None,
+) -> pd.DataFrame:
+    """
+    Rebuild position sizes from <portfolio-transaction> entries.
+
+    • Supports BUY, SELL, TRANSFER_IN / OUT, REMOVAL (unit-moving types)
+    • Converts PP’s raw <shares> (scaled by 1e8) to real units
+    • Works with or without per-account breakdown
+    """
+
+    SHARE_SCALE = 10 ** 8                     # 9 800 000 000 → 98.0 shares
+    TYPE_SIGN   = {
+        "BUY": 1,
+        "SELL": -1,
+        "TRANSFER_IN": 1,
+        "TRANSFER_OUT": -1,
+        "REMOVAL": -1,
+    }
+
     tree = ET.parse(xml_file)
     root = tree.getroot()
 
-    # Handle cutoff date parsing
+    # ---- cutoff to datetime --------------------------------------------
     if isinstance(cutoff_date, str):
         cutoff_date = datetime.strptime(cutoff_date, "%Y-%m-%d")
 
-    # Build lookup: securityId -> {name, ticker, isin}
-    securities = {}
-    for sec in root.findall(".//securities/security"):
-        sid = sec.attrib.get("id")
-        securities[sid] = {
-            "name": sec.findtext("name", default=""),
-            "isin": sec.findtext("isin", default=""),
-            "ticker": sec.findtext("tickerSymbol", default="")
+    def _date_ok(iso: str | None) -> bool:
+        if cutoff_date is None or not iso:
+            return True
+        return datetime.strptime(iso[:10], "%Y-%m-%d") <= cutoff_date
+
+    # ---- securityId ➜ meta --------------------------------------------
+    sec_meta = {}
+    for s in root.findall(".//securities/security"):
+        sid = s.attrib.get("id") or s.findtext("uuid")
+        if not sid:
+            continue
+        sec_meta[sid] = {
+            "name":   s.findtext("name", ""),
+            "isin":   s.findtext("isin", ""),
+            "ticker": s.findtext("tickerSymbol", ""),
         }
 
-    records = []
+    # ---- iterate -------------------------------------------------------
+    ledgers: dict[str, defaultdict[str, float]] = defaultdict(lambda: defaultdict(float))
 
-    if by_account:
-        for account in root.findall(".//account"):
-            account_name = account.findtext("name", default="Unnamed Account")
-            holdings = defaultdict(float)
+    # scope: either each account separately or whole file
+    account_nodes = root.findall(".//account") if by_account else [root]
 
-            for tx in account.findall(".//account-transaction"):
-                date_str = tx.attrib.get("date")
-                if cutoff_date and date_str:
-                    try:
-                        tx_date = datetime.strptime(date_str, "%Y-%m-%d")
-                        if tx_date > cutoff_date:
-                            continue
-                    except ValueError:
-                        pass
+    for account in account_nodes:
+        acct_name = account.findtext("name", "Portfolio") if by_account else ""
 
-                security_elem = tx.find("security")
-                shares_elem = tx.find("shares")
-                if security_elem is not None and shares_elem is not None:
-                    sec_id = security_elem.attrib.get("reference")
-                    try:
-                        shares = float(shares_elem.text.strip())
-                        holdings[sec_id] += shares
-                    except (ValueError, AttributeError):
-                        continue
+        for ptx in account.findall(".//portfolio-transaction"):
+            if not _date_ok(ptx.findtext("date")):
+                continue
 
-            for sec_id, total_shares in holdings.items():
-                if abs(total_shares) > 1e-6:
-                    meta = securities.get(sec_id, {})
-                    records.append({
-                        "account": account_name,
-                        "securityId": sec_id,
-                        "name": meta.get("name"),
-                        "ticker": meta.get("ticker"),
-                        "isin": meta.get("isin"),
-                        "quantity": total_shares
-                    })
+            ttype = ptx.findtext("type", "").strip()
+            sign  = TYPE_SIGN.get(ttype)
+            if sign is None:
+                continue                          # skip dividends, fees, etc.
 
-    else:
-        holdings = defaultdict(float)
-        for tx in root.findall(".//account-transaction"):
-            date_str = tx.attrib.get("date")
-            if cutoff_date and date_str:
-                try:
-                    tx_date = datetime.strptime(date_str, "%Y-%m-%d")
-                    if tx_date > cutoff_date:
-                        continue
-                except ValueError:
-                    pass
+            q_raw = ptx.findtext("shares") or ptx.findtext("units")
+            if not q_raw:
+                continue
+            try:
+                qty = float(q_raw) / SHARE_SCALE * sign
+            except ValueError:
+                continue
 
-            security_elem = tx.find("security")
-            shares_elem = tx.find("shares")
-            if security_elem is not None and shares_elem is not None:
-                sec_id = security_elem.attrib.get("reference")
-                try:
-                    shares = float(shares_elem.text.strip())
-                    holdings[sec_id] += shares
-                except (ValueError, AttributeError):
-                    continue
+            sid_elem = ptx.find("security")
+            if sid_elem is None:
+                continue
+            sid = sid_elem.attrib.get("reference")
+            if not sid:
+                continue
 
-        for sec_id, total_shares in holdings.items():
-            if abs(total_shares) > 1e-6:
-                meta = securities.get(sec_id, {})
-                records.append({
-                    "securityId": sec_id,
-                    "name": meta.get("name"),
-                    "ticker": meta.get("ticker"),
-                    "isin": meta.get("isin"),
-                    "quantity": total_shares
-                })
+            ledgers[acct_name][sid] += qty
 
-    return pd.DataFrame(records)
+    # ---- flatten to DataFrame -----------------------------------------
+    rows = []
+    for acct, ldg in ledgers.items():
+        for sid, qty in ldg.items():
+            if abs(qty) < 1e-9:
+                continue
+            meta = sec_meta.get(sid, {})
+            rows.append(
+                {
+                    "account":   acct,
+                    "securityId": sid,
+                    "name":      meta.get("name", ""),
+                    "ticker":    meta.get("ticker", ""),
+                    "isin":      meta.get("isin", ""),
+                    "quantity":  qty,
+                }
+            )
 
-def get_name_map_from_xml(xml_file: str) -> dict:
+    return pd.DataFrame(rows)
+
+
+def get_name_map_from_xml(xml_file: str) -> dict[str, str]:
     tree = ET.parse(xml_file)
     root = tree.getroot()
 
-    name_map = {}
-    for sec in root.findall(".//securities/security"):
-        isin = sec.findtext("isin", default="").strip()
-        ticker = sec.findtext("tickerSymbol", default="").strip()
-        name = sec.findtext("name", default="").strip()
-
+    out = {}
+    for s in root.findall(".//securities/security"):
+        isin   = s.findtext("isin", "").strip()
+        ticker = s.findtext("tickerSymbol", "").strip()
+        name   = s.findtext("name", "").strip()
         if isin:
-            if ticker:
-                name_map[isin] = f"{name} ({ticker})"
-                name_map[ticker] = f"{name} ({ticker})"  # optional, for reverse lookup
-            else:
-                name_map[isin] = name
-    return name_map
+            out[isin] = f"{name} ({ticker})" if ticker else name
+        if ticker:
+            out[ticker] = f"{name} ({ticker})"
+    return out
 
-
-
-# ✅ Main function
-def main(xml_file: str, by_account: bool = True, cutoff_date=None):
-    pd.set_option("display.max_rows", None)
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", 0)
-    pd.set_option("display.max_colwidth", None)
-
-    df = extract_holdings_from_transactions(xml_file, by_account=by_account, cutoff_date=cutoff_date)
-
-    if not df.empty:
-        if cutoff_date:
-            print(f"✅ Reconstructed Holdings as of {cutoff_date}:")
-        else:
-            print("✅ Reconstructed Holdings (latest):")
-        print(df)
-    else:
-        print("❌ No holdings reconstructed from transactions.")
-
-# 🎯 Run it for dev/test
+# ------------------------------------------------------------------ #
+#  Quick CLI test
+# ------------------------------------------------------------------ #
 if __name__ == "__main__":
-    from datetime import timedelta
-    two_months_ago = datetime.today() - timedelta(days=60)
-
-    main(
-        xml_file="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
-        by_account=True,
-        cutoff_date=two_months_ago  # or e.g. "2024-03-01"
-    )
+    xml = r"C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+    df = extract_holdings_from_transactions(xml, by_account=True)
+    print(f"✅ rebuilt {len(df)} position rows")
+    print(df.to_string(index=False))  # prints every row, every column
