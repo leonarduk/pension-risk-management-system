@@ -5,7 +5,7 @@ PyPortfolioOpt
 
 torch>=2.0.0
 transformers>=4.30.0
-praw
+praw~=7.8.1
 textblob
 beautifulsoup4~=4.13.4
 requests~=2.32.3
@@ -17,3 +17,8 @@ bs4~=0.0.2
 selenium~=4.32.0
 requests-html~=0.10.0
 playwright~=1.52.0
+ta~=0.11.0
+scipy~=1.15.3
+python-dateutil~=2.9.0.post0
+anyio~=4.9.0
+curl_cffi~=0.10.0

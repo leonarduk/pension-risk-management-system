@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import os
 
@@ -9,10 +11,22 @@ from ta.volatility import BollingerBands
 
 import integrations.stockfeed.timeseries
 import integrations.portfolioperformance.api.timeseries
+from integrations.portfolioperformance.api.instrument_details import extract_instrument
 
 from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
 
 from scipy.stats import linregress
+
+import datetime as dt
+from dataclasses import dataclass
+from typing import Optional
+
+import yfinance as yf                 # public domain, BSD-style licence
+from dateutil.relativedelta import relativedelta
+
+__all__ = ["DividendFetcher", "last_12m_dividend_yield"]
+
+from pandas.core.interchange.dataframe_protocol import DataFrame
 
 
 def apply_technical_indicators(df: pd.DataFrame, price_col: str = "Price") -> pd.DataFrame:
@@ -180,6 +194,29 @@ def colorize(signal):
     return signal
 
 
+_currency_cache: dict[tuple[str, str], str] = {}      #  (xml_path, ticker) -> "GBP"/"GBX"/…
+
+def currency_for_ticker(xml_path: str, ticker: str) -> str:
+    """
+    Return the <currencyCode> for *ticker* as stored in the PP XML.
+    Falls back to 'UNKNOWN' if the security cannot be found.
+    Caches results so the XML is only parsed once per run.
+    """
+    key = (xml_path, ticker.upper())
+    if key in _currency_cache:
+        return _currency_cache[key]
+
+    try:
+        data = extract_instrument(xml_path, ticker, format="json")
+        ccy  = (data or {}).get("currencyCode", "UNKNOWN") or "UNKNOWN"
+    except Exception:
+        ccy = "UNKNOWN"
+
+    _currency_cache[key] = ccy
+    print(f"Currency for {ticker}: {ccy}")
+
+    return ccy
+
 def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output",
                         tickers: list = None, use_stockfeed=False):
     name_map = get_name_map_from_xml(xml_file=xml_path)
@@ -189,6 +226,13 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
     for ticker in tickers:
         name = name_map.get(ticker, ticker)
         df = get_time_series(ticker, use_stockfeed, xml_path)
+        ccy = currency_for_ticker(xml_path, ticker)
+
+        annual_yield, div_series = last_12m_dividend_yield(ticker=ticker, timeseries=None, use_stockfeed=False,
+                                                           xml_path=xml_path, ccy=ccy)
+
+        print(f"{name} ({ticker}): {annual_yield:.2f}% annual yield : {div_series}")
+
         if df.empty:
             print(f"❌ No data for {ticker}")
             continue
@@ -206,7 +250,7 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
 
         if not signals_df.empty:
             latest = signals_df.tail(1).iloc[0]
-            summary = f"{name} ({ticker}): {latest['Signal']} at {latest['Price']:.2f} on {latest['Date'].date()}"
+            summary = f"{name} ({ticker}): {latest['Signal']} at {latest['Price']:.2f} on {latest['Date'].date()} - {annual_yield:.2f}% annual yield"
             if "likely" in latest['Signal'].lower():
                 predictions.append(summary)
             elif "sell" in latest['Signal'].lower() or "bearish" in latest['Signal'].lower() or "overbought" in latest[
@@ -234,7 +278,7 @@ def get_time_series(ticker, use_stockfeed, xml_path):
         df = integrations.stockfeed.timeseries.get_time_series(ticker=ticker, years=5)
     else:
         df = integrations.portfolioperformance.api.timeseries.get_time_series(ticker=ticker, years=5, xml_file=xml_path)
-    print(df.head(5))
+    print(df.tail(1))
 
     return df
 
@@ -282,8 +326,117 @@ def get_price_series(
     return price.loc[start:end]
 
 
-if __name__ == "__main__":
-    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
+@dataclass(slots=True, frozen=True)
+class DividendFetcher:
+    """
+    Thin wrapper around yfinance that returns a clean pandas Series of cash
+    dividends (GBp for LSE symbols).  Nothing else is pulled – price lives in
+    the existing price utilities already inside *timeseries-python*.
+    """
+    ticker: str
+
+    def series(
+        self,
+        start: Optional[dt.date] = None,
+        end: Optional[dt.date] = None,
+    ) -> pd.Series:
+        today = dt.date.today()
+        start = start or today - relativedelta(years=5)
+        end = end or today
+
+        yf_ticker = yf.Ticker(self.ticker)
+        # 1) get the dividends from yfinance
+        try:
+            divs = yf_ticker.dividends
+        except Exception as e:
+            print(f"Error fetching dividends for {self.ticker}: {e}")
+            return pd.Series()
+
+        # ① strip the timezone so the index becomes tz-naïve
+        if divs.index.tz is not None:
+            divs.index = divs.index.tz_localize(None)
+
+        # ② now the slice works
+        return divs.loc[start:end].rename("div_cash")
+
+def _harmonise_units(div_cash: float, px: float, ccy: str) -> tuple[float, float]:
+    """
+    Ensure both dividend cash and price are expressed in the SAME unit.
+    Strategy:
+      ▸ If |px| > 100  ⇒ px is probably pence → convert to pounds.
+      ▸ If |px| <= 100 and |div_cash| > 10    ⇒ dividends are pence → convert to pounds.
+      (Tighten the thresholds if you like.)
+
+    Args:
+        ccy:
+    """
+    if  ccy == "GBP":      # GBP penny (p) is the default for LSE symbols
+        px /= 100          # 3018 p → £30.18
+    # elif div_cash > 10:    # dividends look like pence
+    #     div_cash /= 100    # 22.45 p → £0.2245
+    return div_cash, px
+
+# ---------- public one-liner -------------------------------------------------
+def last_12m_dividend_yield(ticker: str, today: dt.date | None = None, *, timeseries: DataFrame = None,
+                            use_stockfeed: bool = True, xml_path: str | None = None, ccy: str = "GBX") -> tuple[float, pd.Series]:
+    """
+    Trailing-twelve-month cash dividends ÷ latest closing price.
+
+    This function calculates the dividend yield for the given ticker symbol.
+    The dividend yield is the ratio of the total dividends paid out in the
+    last 12 months to the current price of the stock.
+
+    Parameters
+    ----------
+    ticker         LSE symbol **with** ".L" suffix or any Yahoo-Finance ticker
+    today          optional 'as-of' date (defaults to dt.date.today())
+    timeseries     optional callable(ticker, start, end)->pd.Series; by default
+                   we reuse the existing timeseries-python price utilities.
+    use_stockfeed  optional boolean (defaults to True); if True, load prices
+                   from stockfeed file; if False, download from Yahoo Finance
+    xml_path       optional path to stockfeed file (defaults to None); only
+                   used if use_stockfeed is True
+
+    Returns
+    -------
+    float    yield expressed as a decimal (0.045 == 4.5 %)
+
+    Args:
+        ccy:
+    """
+    today = today or dt.date.today()
+    window_start = today - relativedelta(months=12)
+
+    # 1) dividends ----------------------------------------------------------
+    # Pull the cash dividends for the given ticker in the last 12 months
+    div_series = DividendFetcher(ticker).series(window_start, today)
+    div_cash = div_series.sum()
+
+    # 2) prices -------------------------------------------------------------
+    # Pull the prices for the given ticker in the last 12 months.
+    # We pull a range so we’re sure to get at least one row.
+    prices = get_price_series(
+        ticker,
+        window_start,
+        today,
+        timeseries=timeseries,
+        use_stockfeed=use_stockfeed,
+        xml_path=xml_path,
+    ).dropna()
+
+    if prices.empty:
+        raise ValueError(f"No price data in {window_start:%Y-%m-%d}:{today}")
+
+    # Take the last valid close price
+    px = prices.iloc[-1]
+
+    div_cash, px = _harmonise_units(div_cash, px, ccy)
+
+    # Calculate the dividend yield
+    return float(div_cash / px) * 100, div_series
+
+if __name__ == '__main__':
+    xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
     override_tickers = []
     tickers = override_tickers or get_unique_tickers(xml_file=xml_path)
 
@@ -292,5 +445,8 @@ if __name__ == "__main__":
         recent_days=5,
         group_signals=True,
         output_dir="output",
-        tickers=tickers
+        tickers=tickers,
+        use_stockfeed=False
     )
+
+    # print(last_12m_dividend_yield(ticker="FSFL.L", timeseries=None, use_stockfeed=False, xml_path=xml_path))

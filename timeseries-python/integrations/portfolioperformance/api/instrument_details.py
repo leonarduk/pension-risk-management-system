@@ -173,6 +173,11 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
 #  NEW HELPERS
 # ------------------------------------------------------------------
 
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
+
+
 def get_all_tickers(xml_file, unique=True, skip_blank=True):
     """
     Return a list of ticker symbols found in the XML.
