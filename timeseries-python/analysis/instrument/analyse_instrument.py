@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import os
+from functools import lru_cache
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,7 +12,8 @@ from ta.volatility import BollingerBands
 
 import integrations.stockfeed.timeseries
 import integrations.portfolioperformance.api.timeseries
-from integrations.portfolioperformance.api.instrument_details import extract_instrument
+from analysis.instrument.timseries import get_time_series
+from integrations.portfolioperformance.api.instrument_details import currency_for_ticker
 
 from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
 
@@ -194,28 +196,6 @@ def colorize(signal):
     return signal
 
 
-_currency_cache: dict[tuple[str, str], str] = {}      #  (xml_path, ticker) -> "GBP"/"GBX"/…
-
-def currency_for_ticker(xml_path: str, ticker: str) -> str:
-    """
-    Return the <currencyCode> for *ticker* as stored in the PP XML.
-    Falls back to 'UNKNOWN' if the security cannot be found.
-    Caches results so the XML is only parsed once per run.
-    """
-    key = (xml_path, ticker.upper())
-    if key in _currency_cache:
-        return _currency_cache[key]
-
-    try:
-        data = extract_instrument(xml_path, ticker, format="json")
-        ccy  = (data or {}).get("currencyCode", "UNKNOWN") or "UNKNOWN"
-    except Exception:
-        ccy = "UNKNOWN"
-
-    _currency_cache[key] = ccy
-    print(f"Currency for {ticker}: {ccy}")
-
-    return ccy
 
 def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool = True, output_dir: str = "output",
                         tickers: list = None, use_stockfeed=False):
@@ -273,14 +253,6 @@ def analyze_all_tickers(xml_path: str, recent_days: int = 5, group_signals: bool
             print("-", colorize(p))
 
 
-def get_time_series(ticker, use_stockfeed, xml_path):
-    if use_stockfeed:
-        df = integrations.stockfeed.timeseries.get_time_series(ticker=ticker, years=5)
-    else:
-        df = integrations.portfolioperformance.api.timeseries.get_time_series(ticker=ticker, years=5, xml_file=xml_path)
-    print(df.tail(1))
-
-    return df
 
 
 # analysis/instrument/analyse_instrument.py
@@ -353,7 +325,7 @@ class DividendFetcher:
             return pd.Series()
 
         # ① strip the timezone so the index becomes tz-naïve
-        if divs.index.tz is not None:
+        if divs.index is not None and divs.index.tz is not None:
             divs.index = divs.index.tz_localize(None)
 
         # ② now the slice works

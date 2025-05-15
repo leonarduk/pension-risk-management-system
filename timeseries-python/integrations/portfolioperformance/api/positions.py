@@ -5,6 +5,8 @@ from typing import Union
 
 import pandas as pd
 
+
+
 # ------------------------------------------------------------------ #
 #  Public helpers
 # ------------------------------------------------------------------ #
@@ -137,6 +139,16 @@ def get_name_map_from_xml(xml_file: str) -> dict[str, str]:
 # ------------------------------------------------------------------ #
 if __name__ == "__main__":
     xml = r"C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
+
     df = extract_holdings_from_transactions(xml, by_account=True)
-    print(f"✅ rebuilt {len(df)} position rows")
-    print(df.to_string(index=False))  # prints every row, every column
+    print(f"\n✅ rebuilt {len(df)} positions")
+
+    from integrations.portfolioperformance.api.instrument_details import add_current_value_using_timeseries
+
+    valued = add_current_value_using_timeseries(xml, df)     # ← NEW
+
+    pd.set_option("display.max_rows", None)
+    print(valued.to_string(index=False,
+                           formatters={
+                               "price":       "{:,.2f}".format,
+                               "marketValue": "{:,.2f}".format}))

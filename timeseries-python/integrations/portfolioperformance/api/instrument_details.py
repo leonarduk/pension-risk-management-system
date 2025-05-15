@@ -1,8 +1,5 @@
 import os
-import xml.etree.ElementTree as ET
 from datetime import datetime
-
-import pandas as pd
 
 from integrations.portfolioperformance.api.instrument_filter import build_security_index, build_taxonomy_reverse_lookup
 from integrations.portfolioperformance.api.static.ftse_all_share_dict import ftse_all_share
@@ -172,10 +169,6 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
 # ------------------------------------------------------------------
 #  NEW HELPERS
 # ------------------------------------------------------------------
-
-from pathlib import Path
-import xml.etree.ElementTree as ET
-
 
 
 def get_all_tickers(xml_file, unique=True, skip_blank=True):
@@ -354,7 +347,135 @@ def bulk_add_missing_ftse(xml_path, tickers_to_add, out_path):
     tree.write(out_path, encoding="utf-8", xml_declaration=True)
     print(f"✅  wrote updated XML with {next_id-1} securities ➜  {out_path}")
 
+import yfinance as yf
+from functools import lru_cache
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIG
+# ─────────────────────────────────────────────────────────────────────────────
+PP_PENCE = "GBX"          # pence quoted on LSE
+PP_POUNDS = "GBP"         # pounds
+SHARE_SCALE = 10 ** 8     # already used earlier; keep it in one place
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PRICE + CURRENCY UTILITIES
+# ─────────────────────────────────────────────────────────────────────────────
+@lru_cache
+def _yf_close(ticker: str) -> float:
+    """Last adjusted close from Yahoo Finance (1 call per run thanks to cache)."""
+    return yf.Ticker(ticker).history(period="1d")["Close"].iloc[-1]
+
+
+@lru_cache
+def _currency_code(xml_path: str, identifier: str) -> str:
+    """
+    Ask *extract_instrument* once and cache the answer.
+    identifier can be ticker or ISIN; we know ticker here.
+    """
+    try:
+        info = extract_instrument(xml_path, identifier, format="json")
+        return (info or {}).get("currencyCode", "UNKNOWN") or "UNKNOWN"
+    except Exception:
+        return "UNKNOWN"
+
+
+# ------------------------------------------------------------------ #
+#  add_current_value_using_timeseries
+# ------------------------------------------------------------------ #
+from functools import lru_cache
+import pandas as pd
+import xml.etree.ElementTree as ET
+
+GBX = "GBX"          # pence on LSE
+GBP = "GBP"
+SHARE_SCALE = 10**8  # already used earlier
+
+@lru_cache
+def _currency_code(xml_path: str, ticker: str) -> str:
+    """Read <currencyCode> once per run via extract_instrument."""
+    try:
+        return extract_instrument(xml_path, ticker, format="json")["currencyCode"] or "UNKNOWN"
+    except Exception:
+        return "UNKNOWN"
+
+
+@lru_cache
+def _latest_price(ticker: str, xml_path: str, use_stockfeed: bool) -> float | None:
+    """
+    Pull the most recent close price via your get_time_series().
+    Returns None if the series is empty.
+    """
+    try:
+        df = get_time_series(ticker=ticker, use_stockfeed=use_stockfeed, xml_path=xml_path)
+        if df.empty:
+            return None
+        # Case A: ticker is the column, Case B: dataframe is already a Series
+        if isinstance(df, pd.Series):
+            return float(df.dropna().iloc[-1])
+        col = ticker if ticker in df.columns else df.columns[0]
+        return float(df[col].dropna().iloc[-1])
+    except Exception:
+        return None
+
+
+def add_current_value_using_timeseries(
+    xml_path: str,
+    holdings: pd.DataFrame,
+    *,
+    use_stockfeed: bool = False
+) -> pd.DataFrame:
+    """
+    Enrich *holdings* with columns: currency • price • marketValue
+    (Relies ONLY on your get_time_series + currencyCode in the XML.)
+    """
+
+    prices, currencies = {}, {}
+
+    for tkr in holdings["ticker"].dropna().unique():
+        ccy = _currency_code(xml_path, tkr)
+        px  = _latest_price(tkr, xml_path, use_stockfeed)
+
+        if px is None:           # leave NaN later; you can log here if needed
+            continue
+
+        if ccy.upper() == GBX:   # convert pence → pounds
+            px  /= 100
+            ccy = GBP
+
+        prices[tkr]     = px
+        currencies[tkr] = ccy
+
+    out = holdings.copy()
+    out["currency"]    = out["ticker"].map(currencies).fillna("UNKNOWN")
+    out["price"]       = out["ticker"].map(prices)
+    out["marketValue"] = out["price"] * out["quantity"]
+    return out
+
+_currency_cache: dict[tuple[str, str], str] = {}      #  (xml_path, ticker) -> "GBP"/"GBX"/…
+
+
+def currency_for_ticker(xml_path: str, ticker: str) -> str:
+    """
+    Return the <currencyCode> for *ticker* as stored in the PP XML.
+    Falls back to 'UNKNOWN' if the security cannot be found.
+    Caches results so the XML is only parsed once per run.
+    """
+    key = (xml_path, ticker.upper())
+    if key in _currency_cache:
+        return _currency_cache[key]
+
+    try:
+        data = extract_instrument(xml_path, ticker, format="json")
+        ccy  = (data or {}).get("currencyCode", "UNKNOWN") or "UNKNOWN"
+    except Exception:
+        ccy = "UNKNOWN"
+
+    _currency_cache[key] = ccy
+    print(f"Currency for {ticker}: {ccy}")
+
+    return ccy
 
 # ------------------------------------------------------------------
 #  Example usage
