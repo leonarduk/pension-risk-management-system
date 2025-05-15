@@ -20,7 +20,10 @@ from __future__ import annotations
 
 import io
 import sys
+from datetime import date, timedelta, datetime
 from pathlib import Path
+from functools import lru_cache
+import requests
 
 import pandas as pd
 import requests
@@ -44,8 +47,18 @@ OUT_DIR.mkdir(exist_ok=True)
 ###############################################################################
 
 def _download_yf_close(ticker: str, days: int = 260) -> pd.Series:
-    df = yf.download(ticker, period=f"{days}d", interval="1d", progress=False)
-    return df["Close"].dropna()
+    """Download **adjusted close** series as *1‑D pandas Series*.
+    Ensures we always return a flat Series even if yfinance gives a
+    DataFrame (happens with some locales / new auto_adjust behaviour)."""
+    df = yf.download(
+        ticker,
+        period=f"{days}d",
+        interval="1d",
+        auto_adjust=False,   # we want raw Close – easier to interpret
+        progress=False,
+    )
+    close = df[["Close"]].dropna().squeeze("columns")  # Series not DataFrame
+    return close
 
 
 def spx_metrics() -> pd.Series:
