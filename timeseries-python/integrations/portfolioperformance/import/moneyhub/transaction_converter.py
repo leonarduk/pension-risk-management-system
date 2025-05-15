@@ -31,6 +31,7 @@ from typing import Dict, Optional
 
 import pandas as pd
 
+
 ###############################################################################
 #                               Helper functions                              #
 ###############################################################################
@@ -57,10 +58,7 @@ def _extract_security(description: str, tx_type: str) -> str:
 
 def _parse_dates(date_series: pd.Series) -> pd.Series:
     """Parse dates that may be in `dd/mm/YYYY` *or* ISO formats."""
-    dates = pd.to_datetime(date_series, errors="coerce", dayfirst=True)
-    na_mask = dates.isna()
-    if na_mask.any():
-        dates.loc[na_mask] = pd.to_datetime(date_series[na_mask], errors="coerce", format="%Y-%m-%d")
+    dates = pd.to_datetime(date_series, errors="coerce", format="%Y-%m-%d")
     return dates
 
 ###############################################################################
@@ -68,13 +66,13 @@ def _parse_dates(date_series: pd.Series) -> pd.Series:
 ###############################################################################
 
 def _convert_account_df(
-    df: pd.DataFrame,
-    *,
-    account: str,
-    currency: str,
-    exclude_dividends: bool,
-    cash_account_map: Dict[str, str],
-    offset_account_map: Dict[str, str],
+        df: pd.DataFrame,
+        *,
+        account: str,
+        currency: str,
+        exclude_dividends: bool,
+        cash_account_map: Dict[str, str],
+        offset_account_map: Dict[str, str],
 ) -> pd.DataFrame:
     sub = df[df["ACCOUNT"] == account].copy()
     if sub.empty:
@@ -103,7 +101,15 @@ def _convert_account_df(
     )
 
     # Security for dividends
-    sub["Security"] = [_extract_security(d, t) for d, t in zip(sub["DESCRIPTION"], sub["Type"])]
+    sub["Security Name"] = [_extract_security(d, t) for d, t in zip(sub["DESCRIPTION"], sub["Type"])]
+
+    # only for dividends, replace with STOCK_NAME_MAP overrides
+    is_div = sub["Type"] == "Dividend"
+    sub.loc[is_div, "Security Name"] = (
+        sub.loc[is_div, "Security Name"]
+        .map(STOCK_NAME_MAP)
+        .fillna(sub.loc[is_div, "Security Name"])
+    )
 
     # Extra columns
     sub["Note"] = sub["DESCRIPTION"].astype(str).str.strip()
@@ -111,39 +117,52 @@ def _convert_account_df(
     sub["Offset Account"] = sub["ACCOUNT"].map(offset_account_map).fillna("")
 
     cols = [
-        "Date", "Type", "Value", "Balance", "Security", "Shares", "per share",
+        "Date", "Type", "Value", "Balance", "Security Name", "Shares", "per share",
         "Cash Account", "Offset Account", "Note", "Source",
     ]
     return sub.reindex(columns=cols)
 
 
 def convert_multiple_accounts(
-    input_path: str | pathlib.Path,
-    account_map: Dict[str, str],
-    *,
-    currency: str,
-    exclude_dividends: bool,
-    cash_account_map: Dict[str, str],
-    offset_account_map: Dict[str, str],
-) -> Dict[str, pathlib.Path]:
+        input_path: str | pathlib.Path,
+        account_map: Dict[str, str],
+        *,
+        output_file: str | pathlib.Path,
+        currency: str,
+        exclude_dividends: bool,
+        cash_account_map: Dict[str, str],
+        offset_account_map: Dict[str, str],
+) -> pathlib.Path:
+    """
+    Read the bank CSV at input_path, convert each account’s rows,
+    concatenate them, and write a single CSV at output_file.
+    """
     df = pd.read_csv(input_path)
-    written: Dict[str, pathlib.Path] = {}
-    for acc, out_file in account_map.items():
+    parts: list[pd.DataFrame] = []
+
+    for account in account_map:
         try:
-            out_df = _convert_account_df(
+            part = _convert_account_df(
                 df,
-                account=acc,
+                account=account,
                 currency=currency,
                 exclude_dividends=exclude_dividends,
                 cash_account_map=cash_account_map,
                 offset_account_map=offset_account_map,
             )
         except ValueError as e:
-            print(f"⚠ {e}")
+            print(f"⚠ Skipping {account}: {e}")
             continue
-        out_df.to_csv(out_file, index=False)
-        written[acc] = pathlib.Path(out_file)
-    return written
+        parts.append(part)
+
+    if not parts:
+        raise SystemExit("No data to write – all accounts were empty or filtered out.")
+
+    combined = pd.concat(parts, ignore_index=True)
+    combined.to_csv(output_file, index=False)
+    print(f"✔ Combined CSV → {output_file}")
+    return pathlib.Path(output_file)
+
 
 ###############################################################################
 #                                     CLI                                    #
@@ -188,6 +207,7 @@ def main(argv: list[str] | None = None) -> None:
 
     written = convert_multiple_accounts(
         args.INPUT, account_map,
+        output_file="AllAccounts.csv",
         currency=args.currency,
         exclude_dividends=args.exclude_dividends,
         cash_account_map=cash_map,
@@ -198,16 +218,17 @@ def main(argv: list[str] | None = None) -> None:
     for a, p in written.items():
         print(f"✔ {a} → {p}")
 
+
 ###############################################################################
 #                                  IDE mode                                  #
-###############################################################################
+###############################################1################################
 
 # TODO - map dividends properly - need to check name of stock to that in the mapping file
 
 if __name__ == "__main__":
     WORKDIR = r"C:\\Users\\steph\\Downloads"
 
-    INPUT = "Transaction Export 13-05-2025 (1).csv"
+    INPUT = "Transaction Export 15-05-2025.csv"
     ACCOUNT_MAP = {
         "Steve SIPP": "Transactions_Steve_SIPP.csv",
         "Stocks & Shares ISA": "Transactions_Steve_ISA.csv",
@@ -223,6 +244,33 @@ if __name__ == "__main__":
         "Stocks & Shares ISA": "Steve ISA",
         "Lucy Stocks & Shares ISA": "Lucy ISA",
     }
+    STOCK_NAME_MAP = {
+        "AstraZeneca plc Ordinary US$0.25": "AstraZeneca PLC",
+        "BioPharma Credit plc ORD USD0.01": "BioPharma Credit plc",
+        "Foresight Solar Fund Ltd Ordinary NPV Overseas": "Foresight Solar Fund Ltd",
+
+        "Global X ETFs Nasdaq 100 Covered Call UCITS ETF Dis Overseas": "Global X Nasdaq 100 Covered Call UCITS ETF D",
+        "Greencoat UK Wind plc Ordinary 1p": "Greencoat UK Wind plc",
+        "GSK plc ORD GBP0.3125": "GSK plc",
+
+        "iShares III plc iShares GBP Corporate Bond Ex-Financials UCITS ETF Overseas":
+            "iShares £ Corp Bond ex-Financials UCITS ETF GBP (Dist)",
+        "Invesco Markets II Plc US Treasury Bond 7-10 Year UCITS ETF Hedge - Dist Overseas":
+            "Invesco Markets II Plc US Treasury Bond 7-10 Year UCITS ETF Hedge - Dist",
+        "iShares III Plc Global Inflatin Linked Govt Bonds UCITS ETF GBP D Overseas":
+            "iShares Global Inflation Linked Government Bond UCITS ETF GBP Hedged (Dist)",
+
+        "JPMorgan Emerging Europe, Middle East & Africa Sec ORD GBP0.01":
+            "JPMorgan Emerging Europe, Middle East & Africa Sec",
+
+        "National Grid Ord 12, 204/473p": "National Grid",
+
+        "Unilever plc Ord 3.11p": "The Unilever Group",
+
+        "Vanguard Funds Plc FTSE All World High Dividend Yield UCITS ETF Overseas":
+            "Vanguard FTSE AllWld HiDivYld ETF",
+    }
+
     CURRENCY = ""  # set "GBP" to prefix values
     EXCLUDE_DIVIDENDS = False
 
@@ -233,17 +281,13 @@ if __name__ == "__main__":
         except OSError as e:
             raise SystemExit(e)
 
-    if len(sys.argv) > 1:
-        main(sys.argv[1:])
-    else:
-        files = convert_multiple_accounts(
-            INPUT, ACCOUNT_MAP,
-            currency=CURRENCY,
-            exclude_dividends=EXCLUDE_DIVIDENDS,
-            cash_account_map=CASH_ACCOUNT_MAP,
-            offset_account_map=OFFSET_ACCOUNT_MAP,
-        )
-        if not files:
-            raise SystemExit("No files written – check mappings.")
-        for a, p in files.items():
-            print(f"✔ {a} → {p}")
+    files = convert_multiple_accounts(
+        INPUT, ACCOUNT_MAP,
+        currency=CURRENCY,
+        output_file="AllAccounts.csv",
+        exclude_dividends=EXCLUDE_DIVIDENDS,
+        cash_account_map=CASH_ACCOUNT_MAP,
+        offset_account_map=OFFSET_ACCOUNT_MAP,
+    )
+    if not files:
+        raise SystemExit("No files written – check mappings.")
