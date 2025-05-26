@@ -163,4 +163,6 @@ if __name__ == "__main__":
     tickers = ['ASLI']
     tickers = ['CARD.L', 'HFEL.L', 'TFIF.L', 'ASLI.L', 'ERNS.L', 'GAW.L', 'HICL.L']
 
+    tickers = ['LAES']
+
     analyse_sentiment(tickers)

@@ -25,11 +25,19 @@ from __future__ import annotations
 import argparse
 import os
 import pathlib
-import sys
-import textwrap
 from typing import Dict, Optional
 
 import pandas as pd
+
+STEVE_SIPP = "Steve SIPP"
+ALEX_SIPP = "Alex SIPP"
+JOE_SIPP = "Alex SIPP"
+
+JOE_STOCKS_SHARES_ISA = "Joe Stocks & Shares ISA"
+LUCY_STOCKS_SHARES_ISA = "Lucy Stocks & Shares ISA"
+ALEX_STOCKS_SHARES_ISA = "Alex Stocks & Shares ISA"
+
+STEVE_STOCKS_SHARES_ISA = "Steve Stocks & Shares ISA"
 
 
 ###############################################################################
@@ -42,6 +50,8 @@ def _map_type(category: str, description: str) -> Optional[str]:
     description = (description or "").strip()
     if category == "Savings & investments income":
         return "Interest" if description.startswith("Interest From") else "Dividend"
+    if category == "Interest earnings":
+        return "Interest"
     if category == "Service fees & bank charges":
         return "Interest Charge"
     return None
@@ -228,21 +238,32 @@ def main(argv: list[str] | None = None) -> None:
 if __name__ == "__main__":
     WORKDIR = r"C:\\Users\\steph\\Downloads"
 
-    INPUT = "Transaction Export 15-05-2025.csv"
+    INPUT = "Transaction Export 26-05-2025.csv"
     ACCOUNT_MAP = {
-        "Steve SIPP": "Transactions_Steve_SIPP.csv",
-        "Stocks & Shares ISA": "Transactions_Steve_ISA.csv",
-        "Lucy Stocks & Shares ISA": "Transactions_Lucy_ISA.csv",
+        STEVE_SIPP: "Transactions_Steve_SIPP.csv",
+        STEVE_STOCKS_SHARES_ISA: "Transactions_Steve_ISA.csv",
+        LUCY_STOCKS_SHARES_ISA: "Transactions_Lucy_ISA.csv",
     }
     CASH_ACCOUNT_MAP = {
-        "Steve SIPP": "Steve SIPP Cash",
-        "Stocks & Shares ISA": "Steve ISA Cash",
-        "Lucy Stocks & Shares ISA": "Lucy ISA Cash",
+        STEVE_SIPP: "Steve SIPP Cash",
+        STEVE_STOCKS_SHARES_ISA: "Steve ISA Cash",
+        LUCY_STOCKS_SHARES_ISA: "Lucy ISA Cash",
+
+        ALEX_SIPP: "Alex SIPP Cash",
+        ALEX_STOCKS_SHARES_ISA: "Alex ISA Cash",
+
+        JOE_SIPP: "Joe SIPP Cash",
+        JOE_STOCKS_SHARES_ISA: "Joe ISA Cash",
+
     }
     OFFSET_ACCOUNT_MAP = {
-        "Steve SIPP": "Steve SIPP",
-        "Stocks & Shares ISA": "Steve ISA",
-        "Lucy Stocks & Shares ISA": "Lucy ISA",
+        ALEX_SIPP: ALEX_SIPP + " Shares",
+        JOE_SIPP: JOE_SIPP + " Shares",
+        ALEX_STOCKS_SHARES_ISA: "Alex ISA Shares",
+        JOE_STOCKS_SHARES_ISA:  "Joe ISA Shares",
+        STEVE_SIPP: STEVE_SIPP + " Shares",
+        STEVE_STOCKS_SHARES_ISA: "Steve ISA Shares",
+        LUCY_STOCKS_SHARES_ISA: "Lucy ISA Shares",
     }
     STOCK_NAME_MAP = {
         "AstraZeneca plc Ordinary US$0.25": "AstraZeneca PLC",
@@ -282,7 +303,7 @@ if __name__ == "__main__":
             raise SystemExit(e)
 
     files = convert_multiple_accounts(
-        INPUT, ACCOUNT_MAP,
+        INPUT, OFFSET_ACCOUNT_MAP,
         currency=CURRENCY,
         output_file="AllAccounts.csv",
         exclude_dividends=EXCLUDE_DIVIDENDS,

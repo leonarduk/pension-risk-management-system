@@ -1,30 +1,23 @@
 from __future__ import annotations
 
 import datetime
-import os
-from functools import lru_cache
-
-import pandas as pd
-import matplotlib.pyplot as plt
-from ta.trend import SMAIndicator, MACD
-from ta.momentum import RSIIndicator
-from ta.volatility import BollingerBands
-
-import integrations.stockfeed.timeseries
-import integrations.portfolioperformance.api.timeseries
-from analysis.instrument.timseries import get_time_series
-from integrations.portfolioperformance.api.instrument_details import currency_for_ticker
-
-from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
-
-from scipy.stats import linregress
-
 import datetime as dt
+import os
 from dataclasses import dataclass
 from typing import Optional
 
-import yfinance as yf                 # public domain, BSD-style licence
+import matplotlib.pyplot as plt
+import pandas as pd
+import yfinance as yf  # public domain, BSD-style licence
 from dateutil.relativedelta import relativedelta
+from scipy.stats import linregress
+from ta.momentum import RSIIndicator
+from ta.trend import SMAIndicator, MACD
+from ta.volatility import BollingerBands
+
+from analysis.instrument.timseries import get_time_series
+from integrations.portfolioperformance.api.instrument_details import currency_for_ticker
+from integrations.portfolioperformance.api.positions import get_unique_tickers, get_name_map_from_xml
 
 __all__ = ["DividendFetcher", "last_12m_dividend_yield"]
 
