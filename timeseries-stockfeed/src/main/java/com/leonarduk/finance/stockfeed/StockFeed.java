@@ -11,7 +11,7 @@ public interface StockFeed {
         L(".L", ".UK"),
         LONDON(".L", ".UK"),
         NY("", ".US"),
-        NYQ("NYQ", ".US"),
+        NYQ("", ".US"),
         NA("", ".US");
 
         private final String yahooSuffix;

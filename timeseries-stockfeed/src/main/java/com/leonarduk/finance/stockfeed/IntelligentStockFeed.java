@@ -133,13 +133,6 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                 stockFeedFactory.getDataFeed(Source.STOOQ));
         cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
                 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
-        cachedData = getWebFeed(instrument, addLatestQuoteToTheSeries, fromDate, toDate, cachedData,
-                stockFeedFactory.getDataFeed(Source.YAHOO));
-
-        if (addLatestQuoteToTheSeries) {
-            // or Source.ALPHAVANTAGE
-            this.addLatestQuoteToTheSeries(cachedData.get(), stockFeedFactory.getQuoteFeed(Source.YAHOO));
-        }
 
         if (cachedData.isEmpty()) {
             IntelligentStockFeed.log.warn("No data for " + instrument);

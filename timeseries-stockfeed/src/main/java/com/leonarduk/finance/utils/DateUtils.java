@@ -22,7 +22,6 @@
 package com.leonarduk.finance.utils;
 
 import com.google.common.collect.Maps;
-import com.leonarduk.finance.stockfeed.feed.yahoofinance.YahooFeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +134,8 @@ public class DateUtils {
                 v -> DateUtils.convertToDateViaInstant(LocalDate.parse(v, DateTimeFormatter.ISO_DATE))));
     }
 
+    public static final String TIMEZONE = "America/New_York";
+
     /**
      * Used to parse the dividend dates. Returns null if the date cannot be parsed.
      *
@@ -145,11 +146,12 @@ public class DateUtils {
         if (StringUtils.isNotParseable(date)) {
             return null;
         }
+        
         final SimpleDateFormat format = new SimpleDateFormat(DateUtils.getDividendDateFormat(date.trim()), Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
+        format.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
         try {
-            final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
-            final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(YahooFeed.TIMEZONE));
+            final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
+            final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
             parsedDate.setTime(format.parse(date.trim()));
 
             if (parsedDate.get(Calendar.YEAR) == 1970) {

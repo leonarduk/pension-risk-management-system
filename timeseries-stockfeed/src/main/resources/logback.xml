@@ -2,6 +2,8 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="jdbc" level="OFF"/>
-    <logger name="jdbc.sqltiming" level="DEBUG"/>
-    <logger name="jdbc.resultsettable" level="DEBUG"/>
+    <logger name="jdbc.sqltiming" level="INFO"/>
+    <logger name="jdbc.resultsettable" level="INFO"/>
+    <logger name="com.gargoylesoftware.htmlunit" level="WARN"/>
+
 </configuration>
