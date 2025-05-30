@@ -36,12 +36,13 @@ public class FTInstrument {
 
     private String getFTCode() {
         Instrument.AssetType type = instrument.getAssetType();
+        String code = instrument.getCode().replaceAll("-", ".");
         switch (type) {
             case EQUITY:
             case INVESTMENT_TRUST:
-                return instrument.getCode() + ":" + getFTExchange();
+                return code + ":" + getFTExchange();
             case ETF:
-                return instrument.getCode() + ":" + getFTExchange() + ":" + instrument.getCurrency();
+                return code + ":" + getFTExchange() + ":" + instrument.getCurrency();
             case FUND:
                 return instrument.getIsin() + ":" + instrument.getCurrency();
             default:

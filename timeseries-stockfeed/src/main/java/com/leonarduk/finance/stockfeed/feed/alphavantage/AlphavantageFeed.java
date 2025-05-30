@@ -68,7 +68,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
     private AlphaVantageConnector getConnection() {
         int timeout = 3000;
         String apiKey = apiKeyIterator.next();
-        logger.info("Using key {}", apiKey);
+        logger.debug("Using key {}", apiKey);
 
         return new AlphaVantageConnector(apiKey, timeout);
     }

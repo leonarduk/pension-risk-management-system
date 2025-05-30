@@ -136,7 +136,7 @@ public sealed class Instrument permits FxInstrument {
                                         String type, String currency)  {
         String localSymbol = symbol;
         final String fullStop = ".";
-        if (localSymbol.contains(fullStop)) {
+        if (localSymbol.contains(fullStop) && ! localSymbol.endsWith(".A")) {
             localSymbol = localSymbol.substring(0, localSymbol.indexOf(fullStop));
         }
         try {
