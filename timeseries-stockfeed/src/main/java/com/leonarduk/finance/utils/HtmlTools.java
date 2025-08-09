@@ -16,7 +16,8 @@ public class HtmlTools {
         if (null == value) {
             HtmlTools.logger.warn("Null value supplied - treat as empty string");
         }
-        sb.append("<td bgcolor='white'>")
+        sb.append("<td bgcolor='")
+                .append(HtmlTools.getColour(value == null ? "" : value)).append("'>")
                 .append(formatter.format(value == null ? "" : value)).append("</td>");
     }
 
@@ -62,6 +63,26 @@ public class HtmlTools {
             }
             sb.append("</table>");
         }
+    }
+
+    public static String getColour(final Object value) {
+        String colour = "white";
+        //        if (((value != null) && (value.equals(RecommendedTrade.BUY.name())
+        //            || ((value instanceof LocalDate)
+        //            && (Double.valueOf(Duration.between(LocalDate.now(), ((LocalDate) value)).toDays()))
+        //            .equals(Double.valueOf(0)))
+        //            || ((value instanceof BigDecimal) && (((BigDecimal) value).compareTo(BigDecimal.ZERO) > 0))))
+        //            || ((value instanceof Double) && ((Double) value).compareTo(Double.valueOf(0)) > 0)) {
+        //            colour = "green";
+        //        }
+        //
+        //        if (((value != null) && value.equals(RecommendedTrade.SELL.name())) || ((value instanceof LocalDate)
+        //            && (DateUtils.getDiffInWorkDays(LocalDate.now(), ((LocalDate) value))) > 1
+        //            || ((value instanceof BigDecimal) && (((BigDecimal) value).compareTo(BigDecimal.ZERO) < 0))
+        //            || ((value instanceof Double) && ((Double) value).compareTo(Double.valueOf(0)) < 0))) {
+        //            colour = "red";
+        //        }
+        return colour;
     }
 
 }

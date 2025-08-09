@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
+import com.leonarduk.finance.utils.HtmlTools;
 
 /**
  * REST endpoint for accessing stock feed data.
