@@ -1,8 +1,13 @@
 import os
 from datetime import datetime
 
-from integrations.portfolioperformance.api.instrument_filter import build_security_index, build_taxonomy_reverse_lookup
-from integrations.portfolioperformance.api.static.ftse_all_share_dict import ftse_all_share
+from integrations.portfolioperformance.api.instrument_filter import (
+    build_security_index,
+    build_taxonomy_reverse_lookup,
+)
+from integrations.portfolioperformance.api.static.ftse_all_share_dict import (
+    ftse_all_share,
+)
 from integrations.portfolioperformance.api.static.uuid_aliases import UUID_ALIASES
 
 
@@ -37,7 +42,11 @@ def extract_taxonomies(root, security_id):
         for classification in taxonomy.findall(".//classification"):
             for assignment in classification.findall("assignments/assignment"):
                 inv = assignment.find("investmentVehicle")
-                if inv is not None and inv.attrib.get("class") == "security" and inv.attrib.get("reference") == str(security_id):
+                if (
+                    inv is not None
+                    and inv.attrib.get("class") == "security"
+                    and inv.attrib.get("reference") == str(security_id)
+                ):
                     class_name = classification.findtext("name")
                     taxonomies.setdefault(name, []).append(class_name)
     return taxonomies
@@ -73,7 +82,7 @@ def extract_instrument(xml_file, identifier, format="table"):
         "isRetired": sec.findtext("isRetired") == "true",
         "updatedAt": sec.findtext("updatedAt"),
         "customAttributes": extract_attributes(sec),
-        "taxonomies": extract_taxonomies(root, sec.attrib.get("id"))
+        "taxonomies": extract_taxonomies(root, sec.attrib.get("id")),
     }
 
     if format == "json":
@@ -122,27 +131,38 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
 
     if sec is None:
         # ➕ create new
-        next_id = max((int(s.attrib.get("id", 0)) for s in securities_root.findall("security")), default=0) + 1
+        next_id = (
+            max(
+                (
+                    int(s.attrib.get("id", 0))
+                    for s in securities_root.findall("security")
+                ),
+                default=0,
+            )
+            + 1
+        )
         sec = ET.SubElement(securities_root, "security", id=str(next_id))
         print(f"➕  new <security id='{next_id}'> ({incoming_ticker})")
     else:
-        print(f"✏️  updating existing <security id='{sec.attrib.get('id')}'> ({incoming_ticker})")
+        print(
+            f"✏️  updating existing <security id='{sec.attrib.get('id')}'> ({incoming_ticker})"
+        )
 
     # ------------------------------------------------------------------
     # Populate / overwrite the standard fields – now incl. <type>
     # ------------------------------------------------------------------
     field_map = {
-        "uuid":          json_data.get("uuid", ""),
-        "name":          json_data.get("name", ""),
-        "currencyCode":  json_data.get("currencyCode", ""),
-        "isin":          json_data.get("isin", ""),
-        "tickerSymbol":  json_data.get("tickerSymbol", ""),
-        "type":          json_data.get("type", ""),          #  🆕
-        "feed":          json_data.get("feed", "MANUAL"),
-        "feedURL":       json_data.get("feedURL", ""),
-        "latestFeed":    json_data.get("latestFeed", ""),
-        "isRetired":     "true" if json_data.get("isRetired") else "false",
-        "updatedAt":     json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z"),
+        "uuid": json_data.get("uuid", ""),
+        "name": json_data.get("name", ""),
+        "currencyCode": json_data.get("currencyCode", ""),
+        "isin": json_data.get("isin", ""),
+        "tickerSymbol": json_data.get("tickerSymbol", ""),
+        "type": json_data.get("type", ""),  #  🆕
+        "feed": json_data.get("feed", "MANUAL"),
+        "feedURL": json_data.get("feedURL", ""),
+        "latestFeed": json_data.get("latestFeed", ""),
+        "isRetired": "true" if json_data.get("isRetired") else "false",
+        "updatedAt": json_data.get("updatedAt", datetime.utcnow().isoformat() + "Z"),
     }
 
     for tag, value in field_map.items():
@@ -165,6 +185,7 @@ def upsert_instrument_from_json(xml_file, json_data, output_file=None):
     output_path = output_file or xml_file
     tree.write(output_path, encoding="utf-8", xml_declaration=True)
     print(f"✅ XML written to: {output_path}")
+
 
 # ------------------------------------------------------------------
 #  NEW HELPERS
@@ -205,6 +226,7 @@ def get_all_tickers(xml_file, unique=True, skip_blank=True):
 #  SAFER helper – skips or falls back if <security> has no id
 # ------------------------------------------------------------------
 
+
 def instruments_without_tickers(xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -213,9 +235,9 @@ def instruments_without_tickers(xml_file):
     # Build raw <security> lookup, but skip any without an id/uuid
     raw_sec_lookup = {}
     for s in root.findall(".//securities/security"):
-        sid = s.attrib.get("id") or s.findtext("uuid")      # uuid fallback
+        sid = s.attrib.get("id") or s.findtext("uuid")  # uuid fallback
         if not sid:
-            continue                                        # give up on totally anonymous nodes
+            continue  # give up on totally anonymous nodes
         raw_sec_lookup[sid] = s
 
     taxonomy_lookup = build_taxonomy_reverse_lookup(root)
@@ -231,7 +253,7 @@ def instruments_without_tickers(xml_file):
     results = []
     for sec in securities.values():
         if sec.get("tickerSymbol", "").strip():
-            continue   # we only want those *without* tickers
+            continue  # we only want those *without* tickers
 
         sec_id = sec.get("id") or sec.get("uuid") or ""
         raw_elem = raw_sec_lookup.get(sec_id, ET.Element(""))
@@ -252,11 +274,13 @@ def instruments_without_tickers(xml_file):
         )
     return results
 
+
 # ------------------------------------------------------------------
 #  Prerequisites
 # ------------------------------------------------------------------
 # 1. Make sure ftse_all_share_dict.py (or .json) is on PYTHONPATH
 # 2. Keep get_all_tickers(xml_file) from earlier
+
 
 # ------------------------------------------------------------------
 #  Helper:  FTSE tickers missing from your PP file (normalised to *.L)
@@ -287,17 +311,23 @@ def ftse_tickers_missing_from_file(xml_file, ftse_map_module="ftse_all_share_dic
 # ------------------------------------------------------------------
 def missing_ftse_with_names(xml_file, ftse_map_module="ftse_all_share_dict"):
     from importlib import import_module
+
     ftse_mod = import_module(ftse_map_module)
     missing = ftse_tickers_missing_from_file(xml_file, ftse_map_module)
     # remove ".L" before lookup in the map
-    return {t.rstrip(".L"): ftse_mod.ftse_all_share.get(t.rstrip(".L"), "??") for t in missing}
+    return {
+        t.rstrip(".L"): ftse_mod.ftse_all_share.get(t.rstrip(".L"), "??")
+        for t in missing
+    }
+
 
 def upsert_security_element(securities_root, json_data, next_id):
     """
     Append or update a <security>. Return (element, next_id).
     `next_id` is the next free integer id as *str*.
     """
-    def norm(t):                                    # `.L` & upper
+
+    def norm(t):  # `.L` & upper
         t = (t or "").strip().upper()
         return t if t.endswith(".L") else f"{t}.L"
 
@@ -305,17 +335,19 @@ def upsert_security_element(securities_root, json_data, next_id):
     incoming_ticker = norm(json_data.get("tickerSymbol", ""))
     for sec in securities_root.findall("security"):
         if norm(sec.findtext("tickerSymbol")) == incoming_ticker:
-            return sec, next_id                    # update existing
+            return sec, next_id  # update existing
 
     # ─ Create new  ─────────────────────────────────────
     sec = ET.SubElement(securities_root, "security", id=str(next_id))
-    next_id += 1                                   # bump for caller
+    next_id += 1  # bump for caller
     print(f"➕  new <security id='{sec.attrib['id']}'>  ({incoming_ticker})")
     #   ...  populate tags exactly as before  ...
     return sec, next_id
 
+
 from yfinance import Ticker, shared
 from curl_cffi.requests.exceptions import HTTPError
+
 
 def bulk_add_missing_ftse(xml_path, tickers_to_add, out_path):
     tree = ET.parse(xml_path)
@@ -323,29 +355,33 @@ def bulk_add_missing_ftse(xml_path, tickers_to_add, out_path):
     securities_root = root.find(".//securities")
 
     # compute first free id once
-    next_id = max(int(s.attrib.get("id", "0")) for s in securities_root.findall("security")) + 1
+    next_id = (
+        max(int(s.attrib.get("id", "0")) for s in securities_root.findall("security"))
+        + 1
+    )
 
     for tkr in sorted(tickers_to_add):
         try:
-            info = Ticker(tkr).info                 # can raise 404
+            info = Ticker(tkr).info  # can raise 404
         except HTTPError as e:
             print(f"⚠️  {tkr}: {e}.  Skipped.")
             continue
 
         json_data = {
-            "uuid":        shared.generate_uuid(),  # helper in yfinance
-            "name":        info.get("longName") or info.get("shortName", tkr),
+            "uuid": shared.generate_uuid(),  # helper in yfinance
+            "name": info.get("longName") or info.get("shortName", tkr),
             "currencyCode": info.get("currency", "GBP"),
             "tickerSymbol": tkr,
-            "feed":        "GENERIC_HTML_TABLE",
-            "updatedAt":   datetime.utcnow().isoformat() + "Z",
-            "isin":        info.get("isin", ""),
+            "feed": "GENERIC_HTML_TABLE",
+            "updatedAt": datetime.utcnow().isoformat() + "Z",
+            "isin": info.get("isin", ""),
         }
 
         _, next_id = upsert_security_element(securities_root, json_data, next_id)
 
     tree.write(out_path, encoding="utf-8", xml_declaration=True)
     print(f"✅  wrote updated XML with {next_id-1} securities ➜  {out_path}")
+
 
 import yfinance as yf
 from functools import lru_cache
@@ -354,9 +390,9 @@ from functools import lru_cache
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────────────────────────────────────────
-PP_PENCE = "GBX"          # pence quoted on LSE
-PP_POUNDS = "GBP"         # pounds
-SHARE_SCALE = 10 ** 8     # already used earlier; keep it in one place
+PP_PENCE = "GBX"  # pence quoted on LSE
+PP_POUNDS = "GBP"  # pounds
+SHARE_SCALE = 10**8  # already used earlier; keep it in one place
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -388,15 +424,19 @@ from functools import lru_cache
 import pandas as pd
 import xml.etree.ElementTree as ET
 
-GBX = "GBX"          # pence on LSE
+GBX = "GBX"  # pence on LSE
 GBP = "GBP"
 SHARE_SCALE = 10**8  # already used earlier
+
 
 @lru_cache
 def _currency_code(xml_path: str, ticker: str) -> str:
     """Read <currencyCode> once per run via extract_instrument."""
     try:
-        return extract_instrument(xml_path, ticker, format="json")["currencyCode"] or "UNKNOWN"
+        return (
+            extract_instrument(xml_path, ticker, format="json")["currencyCode"]
+            or "UNKNOWN"
+        )
     except Exception:
         return "UNKNOWN"
 
@@ -408,7 +448,9 @@ def _latest_price(ticker: str, xml_path: str, use_stockfeed: bool) -> float | No
     Returns None if the series is empty.
     """
     try:
-        df = get_time_series(ticker=ticker, use_stockfeed=use_stockfeed, xml_path=xml_path)
+        df = get_time_series(
+            ticker=ticker, use_stockfeed=use_stockfeed, xml_path=xml_path
+        )
         if df.empty:
             return None
         # Case A: ticker is the column, Case B: dataframe is already a Series
@@ -421,10 +463,7 @@ def _latest_price(ticker: str, xml_path: str, use_stockfeed: bool) -> float | No
 
 
 def add_current_value_using_timeseries(
-    xml_path: str,
-    holdings: pd.DataFrame,
-    *,
-    use_stockfeed: bool = False
+    xml_path: str, holdings: pd.DataFrame, *, use_stockfeed: bool = False
 ) -> pd.DataFrame:
     """
     Enrich *holdings* with columns: currency • price • marketValue
@@ -435,25 +474,26 @@ def add_current_value_using_timeseries(
 
     for tkr in holdings["ticker"].dropna().unique():
         ccy = _currency_code(xml_path, tkr)
-        px  = _latest_price(tkr, xml_path, use_stockfeed)
+        px = _latest_price(tkr, xml_path, use_stockfeed)
 
-        if px is None:           # leave NaN later; you can log here if needed
+        if px is None:  # leave NaN later; you can log here if needed
             continue
 
-        if ccy.upper() == GBX:   # convert pence → pounds
-            px  /= 100
+        if ccy.upper() == GBX:  # convert pence → pounds
+            px /= 100
             ccy = GBP
 
-        prices[tkr]     = px
+        prices[tkr] = px
         currencies[tkr] = ccy
 
     out = holdings.copy()
-    out["currency"]    = out["ticker"].map(currencies).fillna("UNKNOWN")
-    out["price"]       = out["ticker"].map(prices)
+    out["currency"] = out["ticker"].map(currencies).fillna("UNKNOWN")
+    out["price"] = out["ticker"].map(prices)
     out["marketValue"] = out["price"] * out["quantity"]
     return out
 
-_currency_cache: dict[tuple[str, str], str] = {}      #  (xml_path, ticker) -> "GBP"/"GBX"/…
+
+_currency_cache: dict[tuple[str, str], str] = {}  #  (xml_path, ticker) -> "GBP"/"GBX"/…
 
 
 def currency_for_ticker(xml_path: str, ticker: str) -> str:
@@ -468,7 +508,7 @@ def currency_for_ticker(xml_path: str, ticker: str) -> str:
 
     try:
         data = extract_instrument(xml_path, ticker, format="json")
-        ccy  = (data or {}).get("currencyCode", "UNKNOWN") or "UNKNOWN"
+        ccy = (data or {}).get("currencyCode", "UNKNOWN") or "UNKNOWN"
     except Exception:
         ccy = "UNKNOWN"
 
@@ -476,6 +516,7 @@ def currency_for_ticker(xml_path: str, ticker: str) -> str:
     print(f"Currency for {ticker}: {ccy}")
 
     return ccy
+
 
 # ------------------------------------------------------------------
 #  Example usage
@@ -486,7 +527,7 @@ if __name__ == "__main__":
     # --- new demo calls -------------------------------------------------
     all_tickers = get_all_tickers(xml_file)
     print(f"\n✅ Found {len(all_tickers)} unique tickers")
-    print(all_tickers[:20], "...")          # preview
+    print(all_tickers[:20], "...")  # preview
 
     missing = ftse_tickers_missing_from_file(xml_file)
     print(f"\n⛔  {len(missing)} FTSE‑All‑Share tickers are NOT in your XML:")
@@ -499,5 +540,3 @@ if __name__ == "__main__":
     #         f"  • {item['name']:<45} "
     #         f"(type={item['type'] or 'Unknown':<15}  id={item['id']})"
     #     )
-
-

@@ -48,14 +48,25 @@ class InstrumentBuilder:
     # ------------------------------------------------------------------
     # Simple setters that write straight through to the backing dict
     # ------------------------------------------------------------------
-    def with_name(self, name):                self.data["name"]         = name;            return self
-    def with_isin(self, isin):                self.data["isin"]         = isin;            return self
-    def with_ticker(self, ticker):            self.data["tickerSymbol"] = ticker;          return self
-    def with_currency(self, currency):        self.data["currencyCode"] = currency;        return self
+    def with_name(self, name):
+        self.data["name"] = name
+        return self
+
+    def with_isin(self, isin):
+        self.data["isin"] = isin
+        return self
+
+    def with_ticker(self, ticker):
+        self.data["tickerSymbol"] = ticker
+        return self
+
+    def with_currency(self, currency):
+        self.data["currencyCode"] = currency
+        return self
 
     def with_feed(self, feed, feed_url=None, latest_feed=None):
-        self.data["feed"]       = feed or "GENERIC_HTML_TABLE"
-        self.data["feedURL"]    = feed_url or ""
+        self.data["feed"] = feed or "GENERIC_HTML_TABLE"
+        self.data["feedURL"] = feed_url or ""
         self.data["latestFeed"] = latest_feed or ""
         return self
 

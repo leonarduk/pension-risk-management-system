@@ -8,6 +8,7 @@ PRICE = "Price"
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 def get_time_series(ticker, years: int = 0):
     if isinstance(ticker, dict):
         tickers = ticker.keys()
@@ -62,6 +63,7 @@ def get_name_map_from_csv(positions_csv, name_field="Name", ticker_field="Symbol
     positions = pd.read_csv(positions_csv)
     return dict(zip(positions[name_field], positions[ticker_field]))
 
+
 def fetch_prices_for_tickers(tickers, years=10):
     """
     Fetches historical price data for a given list of ticker symbols.
@@ -77,8 +79,9 @@ def fetch_prices_for_tickers(tickers, years=10):
     prices.index = pd.to_datetime(prices.index)
     return prices.sort_index()
 
+
 # 🚀 Main execution
-if __name__ == '__main__':
+if __name__ == "__main__":
     name_map = get_name_map_from_csv("steve_positions.csv")
     tickers = set(name_map.values())
     prices = fetch_prices_for_tickers(tickers, years=10)

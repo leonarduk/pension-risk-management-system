@@ -3,7 +3,8 @@ from unittest.mock import patch, MagicMock
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from analysis.portfolio.timeseries_api import get_time_series
 
 
@@ -13,10 +14,7 @@ class TestGetTimeSeries(unittest.TestCase):
     def test_fetches_data_for_single_ticker(self, mock_post):
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "AAPL": {
-                "2023-01-01": 150,
-                "2023-01-02": 155
-            }
+            "AAPL": {"2023-01-01": 150, "2023-01-02": 155}
         }
         mock_post.return_value = mock_response
 
@@ -30,14 +28,8 @@ class TestGetTimeSeries(unittest.TestCase):
     def test_fetches_data_for_multiple_tickers(self, mock_post):
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "AAPL": {
-                "2023-01-01": 150,
-                "2023-01-02": 155
-            },
-            "MSFT": {
-                "2023-01-01": 250,
-                "2023-01-02": 255
-            }
+            "AAPL": {"2023-01-01": 150, "2023-01-02": 155},
+            "MSFT": {"2023-01-01": 250, "2023-01-02": 255},
         }
         mock_post.return_value = mock_response
 
@@ -62,10 +54,7 @@ class TestGetTimeSeries(unittest.TestCase):
     def test_skips_tickers_with_no_data(self, mock_post):
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "AAPL": {
-                "2023-01-01": 150,
-                "2023-01-02": 155
-            }
+            "AAPL": {"2023-01-01": 150, "2023-01-02": 155}
         }
         mock_post.return_value = mock_response
 

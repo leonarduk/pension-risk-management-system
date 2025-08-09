@@ -11,6 +11,7 @@ PASSWORD = os.getenv("INVESTING_PASSWORD")
 ALERT_CENTER_URL = "https://www.investing.com/members-admin/alert-center"
 LOGIN_URL = "https://www.investing.com/members-admin/login"
 
+
 async def scrape_alerts():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
@@ -76,6 +77,7 @@ async def scrape_alerts():
             print(f"{i+1}.", " | ".join(texts))
 
         await browser.close()
+
 
 if __name__ == "__main__":
     asyncio.run(scrape_alerts())

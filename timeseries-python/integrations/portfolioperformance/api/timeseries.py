@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 DATE = "Date"
 
+
 def normalize_tickers(ticker_input):
     if isinstance(ticker_input, dict):
         return set(ticker_input.keys())
@@ -13,17 +14,20 @@ def normalize_tickers(ticker_input):
     else:
         return {ticker_input}
 
+
 def load_securities_from_xml(xml_file):
     if not os.path.exists(xml_file):
         raise FileNotFoundError(f"XML file not found: {xml_file}")
     tree = ET.parse(xml_file)
     return tree.getroot().findall(".//securities/security")
 
+
 def match_security(tkr, security):
     name = security.findtext("name", default="")
     isin = security.findtext("isin", default="")
     symbol = security.findtext("tickerSymbol", default="")
     return tkr.lower() in (name.lower(), isin.lower(), symbol.lower())
+
 
 def extract_prices(security, cutoff_date):
     records = []
@@ -39,7 +43,10 @@ def extract_prices(security, cutoff_date):
         records.append((date_obj, value))
     return records
 
-def get_time_series(ticker, years=0, xml_file="C:/path/to/investments-with-id.xml", label_by="ticker"):
+
+def get_time_series(
+    ticker, years=0, xml_file="C:/path/to/investments-with-id.xml", label_by="ticker"
+):
     """
     Extracts a time series from a Portfolio Performance XML export.
     Parameters:
@@ -50,7 +57,11 @@ def get_time_series(ticker, years=0, xml_file="C:/path/to/investments-with-id.xm
     Returns:
         - pd.DataFrame with date index and one column per matched security
     """
-    assert label_by in ("name", "isin", "ticker"), "label_by must be one of: name, isin, ticker"
+    assert label_by in (
+        "name",
+        "isin",
+        "ticker",
+    ), "label_by must be one of: name, isin, ticker"
 
     tickers = normalize_tickers(ticker)
     securities = load_securities_from_xml(xml_file)
@@ -64,8 +75,10 @@ def get_time_series(ticker, years=0, xml_file="C:/path/to/investments-with-id.xm
             if match_security(tkr, security):
                 matched = True
                 label = security.findtext(
-                    {"name": "name", "isin": "isin", "ticker": "tickerSymbol"}[label_by],
-                    default=f"UNKNOWN_{tkr}"
+                    {"name": "name", "isin": "isin", "ticker": "tickerSymbol"}[
+                        label_by
+                    ],
+                    default=f"UNKNOWN_{tkr}",
                 )
                 prices = extract_prices(security, cutoff_date)
                 if prices:
@@ -82,14 +95,18 @@ def get_time_series(ticker, years=0, xml_file="C:/path/to/investments-with-id.xm
 
     return pd.concat(all_dfs, axis=1).sort_index()
 
+
 # ✅ main() for use in PyCharm
 def main(xml_file, tickers, years=0, label_by="ticker"):
     df = get_time_series(tickers, years=years, xml_file=xml_file, label_by=label_by)
     if not df.empty:
-        print(f"\n✅ Extracted {len(df)} rows for {len(tickers)} ticker(s), labelled by '{label_by}':")
+        print(
+            f"\n✅ Extracted {len(df)} rows for {len(tickers)} ticker(s), labelled by '{label_by}':"
+        )
         print(df.head())
     else:
         print("❌ No data returned.")
+
 
 # 🎯 Call it directly for quick dev/test
 if __name__ == "__main__":
@@ -97,5 +114,5 @@ if __name__ == "__main__":
         xml_file="C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml",
         tickers=["Greggs plc", "AV.L", "GB00B00FPT80"],
         years=5,
-        label_by="name"  # Options: "name", "isin", or "ticker"
+        label_by="name",  # Options: "name", "isin", or "ticker"
     )
