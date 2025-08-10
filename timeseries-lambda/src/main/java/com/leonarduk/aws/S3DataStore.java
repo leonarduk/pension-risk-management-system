@@ -18,6 +18,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Persist {@link StockV1} data in an S3 bucket.
+ * <p>
+ * The {@link #contains(StockV1)} method checks for the presence of the
+ * corresponding object in the configured S3 bucket and returns {@code true}
+ * only when that object exists.
+ * </p>
+ */
 @Slf4j
 public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
@@ -50,7 +58,7 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
     @Override
     public boolean contains(StockV1 stock) {
-        return s3.doesBucketExistV2(getS3Filepath(stock.getInstrument()));
+        return s3.doesObjectExist(bucketName, getS3Filepath(stock.getInstrument()));
     }
 
     @Override
