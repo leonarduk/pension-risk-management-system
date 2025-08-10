@@ -20,7 +20,7 @@ class InstrumentFactory:
             .with_feed(
                 "GENERIC_HTML_TABLE",
                 feed_url=self.metadata.get("source_url"),
-                latest_feed="YAHOO"
+                latest_feed="YAHOO",
             )
             .with_updated_at()
             .build()
@@ -29,7 +29,9 @@ class InstrumentFactory:
 
 # ✅ Optional CLI usage or test driver
 if __name__ == "__main__":
-    from integrations.investing_com.BROKEN.instrument import InvestingInstrumentExtractor
+    from integrations.investing_com.BROKEN.instrument import (
+        InvestingInstrumentExtractor,
+    )
     from instrument_details import upsert_instrument_from_json
     import json
 
@@ -50,8 +52,6 @@ if __name__ == "__main__":
     print(json.dumps(instrument, indent=2))
 
     upsert_instrument_from_json(
-        xml_file=xml_file,
-        json_data=instrument,
-        output_file=output_file
+        xml_file=xml_file, json_data=instrument, output_file=output_file
     )
     print(f"✅ Instrument written to {output_file}")

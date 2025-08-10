@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import finnhub
 
+
 def create_instrument_from_finnhub(result, xml_file: str, output_file: str):
     required = ["description", "symbol"]
     for field in required:
@@ -21,19 +22,21 @@ def create_instrument_from_finnhub(result, xml_file: str, output_file: str):
         "isRetired": False,
         "updatedAt": datetime.utcnow().isoformat() + "Z",
         "customAttributes": {},
-        "taxonomies": {}
+        "taxonomies": {},
     }
 
     print("\u2705 Built instrument from Finnhub:")
     print(json.dumps(instrument, indent=2))
 
-    from integrations.portfolioperformance.api.instrument_details import upsert_instrument_from_json
+    from integrations.portfolioperformance.api.instrument_details import (
+        upsert_instrument_from_json,
+    )
+
     upsert_instrument_from_json(
-        xml_file=xml_file,
-        json_data=instrument,
-        output_file=output_file
+        xml_file=xml_file, json_data=instrument, output_file=output_file
     )
     print(f"\u2705 Instrument written to: {output_file}")
+
 
 if __name__ == "__main__":
     FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
@@ -43,16 +46,18 @@ if __name__ == "__main__":
     client = finnhub.Client(api_key=FINNHUB_API_KEY)
 
     xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
-    output_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id-updated.xml"
+    output_file = (
+        "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id-updated.xml"
+    )
 
     search_term = "Experian"
     results = client.symbol_lookup(search_term).get("result", [])
     selected = next((r for r in results if r["symbol"] == "EXPN.L"), None)
     if not selected:
-        raise ValueError(f"No matching symbol 'EXPN.L' found in search results for {search_term}")
+        raise ValueError(
+            f"No matching symbol 'EXPN.L' found in search results for {search_term}"
+        )
 
     create_instrument_from_finnhub(
-        result=selected,
-        xml_file=xml_file,
-        output_file=output_file
+        result=selected, xml_file=xml_file, output_file=output_file
     )

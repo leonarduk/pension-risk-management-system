@@ -16,7 +16,7 @@ class InvestingInstrumentExtractor:
                 "Chrome/122.0.0.0 Safari/537.36"
             ),
             "Accept-Language": "en-US,en;q=0.9",
-            "Referer": "https://www.google.com"
+            "Referer": "https://www.google.com",
         }
         response = session.get(self.url, headers=headers)
 
@@ -28,13 +28,15 @@ class InvestingInstrumentExtractor:
                 keep_page=True,
                 scrolldown=0,
                 reload=False,
-                executablePath="C:/Program Files/Google/Chrome/Application/chrome.exe"  # or Edge path
+                executablePath="C:/Program Files/Google/Chrome/Application/chrome.exe",  # or Edge path
             )
         except Exception as e:
             raise Exception(f"❌ JavaScript rendering failed: {e}")
 
         if response.status_code != 200:
-            raise Exception(f"❌ Failed to fetch {self.url} — Status {response.status_code}")
+            raise Exception(
+                f"❌ Failed to fetch {self.url} — Status {response.status_code}"
+            )
 
         self.soup = BeautifulSoup(response.html.html, "lxml")
 
@@ -62,5 +64,5 @@ class InvestingInstrumentExtractor:
             "isin": isin,
             "currency": currency,
             "ticker": ticker or self.url.rstrip("/").split("/")[-1].upper(),
-            "source_url": self.url
+            "source_url": self.url,
         }

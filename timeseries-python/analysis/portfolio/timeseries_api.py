@@ -4,7 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pypfopt import EfficientFrontier, risk_models, expected_returns
 
-from integrations.portfolioperformance.api.positions import get_name_map_from_xml, get_unique_tickers
+from integrations.portfolioperformance.api.positions import (
+    get_name_map_from_xml,
+    get_unique_tickers,
+)
 from integrations.stockfeed.timeseries import fetch_prices_for_tickers
 
 DATE = "Date"
@@ -13,10 +16,12 @@ PRICE = "Price"
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 def calculate_var(portfolio_returns, confidence_level=0.95):
     var = np.percentile(portfolio_returns, (1 - confidence_level) * 100)
     print(f"1-day VaR at {confidence_level * 100:.0f}% confidence: {var:.2%}")
     return var
+
 
 def optimize_portfolio(prices):
     mu = expected_returns.mean_historical_return(prices)
@@ -35,6 +40,7 @@ def optimize_portfolio(prices):
 
     return cleaned_weights, weighted_returns
 
+
 def plot_prices(prices, filename=f"{OUTPUT_DIR}/prices.png"):
     prices.plot(title="Price Timeseries", figsize=(10, 5))
     plt.ylabel("Price")
@@ -43,6 +49,7 @@ def plot_prices(prices, filename=f"{OUTPUT_DIR}/prices.png"):
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
+
 
 def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     """
@@ -61,7 +68,11 @@ def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     labeled_weights = []
     for symbol, weight in weights.items():
         if weight > 0:
-            name = next((n for n, s in name_map.items() if s == symbol), symbol) if name_map else symbol
+            name = (
+                next((n for n, s in name_map.items() if s == symbol), symbol)
+                if name_map
+                else symbol
+            )
             label = f"{name} ({symbol})"
             labeled_weights.append((label, weight))
 
@@ -72,7 +83,7 @@ def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     values = [lw[1] for lw in labeled_weights]
 
     fig, ax = plt.subplots(figsize=(10, 0.4 * len(labels) + 1))
-    ax.barh(labels, values, color='skyblue')
+    ax.barh(labels, values, color="skyblue")
     ax.set_xlabel("Weight")
     ax.set_title("Optimized Portfolio Allocation (Sorted)")
     ax.set_xlim(0, 1)
@@ -81,7 +92,10 @@ def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     plt.savefig(filename)
     plt.close()
 
-def plot_cumulative_returns(weighted_returns, filename=f"{OUTPUT_DIR}/cumulative_returns.png"):
+
+def plot_cumulative_returns(
+    weighted_returns, filename=f"{OUTPUT_DIR}/cumulative_returns.png"
+):
     cumulative = (1 + weighted_returns).cumprod()
     cumulative.plot(title="Cumulative Portfolio Returns", figsize=(10, 5))
     plt.ylabel("Growth")
@@ -91,9 +105,17 @@ def plot_cumulative_returns(weighted_returns, filename=f"{OUTPUT_DIR}/cumulative
     plt.savefig(filename)
     plt.close()
 
-def plot_var_distribution(portfolio_returns, filename=f"{OUTPUT_DIR}/return_distribution.png"):
-    plt.hist(portfolio_returns, bins=50, alpha=0.7, color='blue')
-    plt.axvline(np.percentile(portfolio_returns, 5), color='red', linestyle='dashed', linewidth=2)
+
+def plot_var_distribution(
+    portfolio_returns, filename=f"{OUTPUT_DIR}/return_distribution.png"
+):
+    plt.hist(portfolio_returns, bins=50, alpha=0.7, color="blue")
+    plt.axvline(
+        np.percentile(portfolio_returns, 5),
+        color="red",
+        linestyle="dashed",
+        linewidth=2,
+    )
     plt.title("Distribution of Daily Portfolio Returns (VaR)")
     plt.xlabel("Daily Return")
     plt.ylabel("Frequency")
@@ -104,7 +126,7 @@ def plot_var_distribution(portfolio_returns, filename=f"{OUTPUT_DIR}/return_dist
 
 
 # 🚀 Main execution
-if __name__ == '__main__':
+if __name__ == "__main__":
     xml_path = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
 
     name_map = get_name_map_from_xml(xml_file=xml_path)

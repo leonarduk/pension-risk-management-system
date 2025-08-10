@@ -8,6 +8,19 @@
 
 A tool that reads timeseries from Yahoo and [Alphavantage](https://www.alphavantage.co/documentation) and does analysis.
 
+## Development
+
+Java modules are formatted with [Spotless](https://github.com/diffplug/spotless) using the Google Java Style.  Use `mvn spotless:apply` to format sources and `mvn verify` to run the check.
+
+The `timeseries-python` module relies on [pre-commit](https://pre-commit.com/) with `black` and `flake8` for formatting and linting:
+
+```bash
+pip install pre-commit
+pre-commit run --all-files
+```
+
+The GitHub Actions workflow runs these tools on every push and pull request.
+
 # timeseries-sources
 This module has tools to acquire the timeseries information, interpolate where there are missing data points, and saves to CSV or now, InfluxDb.  By saving to CSV to cache the data you can use the text editor of your choice to clean up the data.
 

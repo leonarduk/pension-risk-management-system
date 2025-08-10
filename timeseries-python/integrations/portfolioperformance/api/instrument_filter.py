@@ -13,7 +13,7 @@ def build_security_index(root):
             "name": sec.findtext("name", ""),
             "isin": sec.findtext("isin", ""),
             "tickerSymbol": sec.findtext("tickerSymbol", ""),
-            "id": sid
+            "id": sid,
         }
 
         # Add readable custom attributes
@@ -27,18 +27,24 @@ def build_security_index(root):
         securities[sid] = record
     return securities
 
+
 def build_taxonomy_reverse_lookup(root):
     reverse = {}
     for taxonomy in root.findall(".//taxonomies/taxonomy"):
-        tax_name = taxonomy.findtext("name", "").strip() or taxonomy.attrib.get("name", "Unknown")
+        tax_name = taxonomy.findtext("name", "").strip() or taxonomy.attrib.get(
+            "name", "Unknown"
+        )
         for classification in taxonomy.findall(".//classification"):
             class_name = classification.findtext("name", "")
             for assignment in classification.findall(".//assignment"):
                 inv = assignment.find("investmentVehicle")
                 if inv is not None and inv.attrib.get("class") == "security":
                     sec_id = inv.attrib.get("reference")
-                    reverse.setdefault(tax_name, {}).setdefault(class_name, []).append(sec_id)
+                    reverse.setdefault(tax_name, {}).setdefault(class_name, []).append(
+                        sec_id
+                    )
     return reverse
+
 
 def filter_by_attribute(attr_key, attr_value, xml_file, op="eq"):
     tree = ET.parse(xml_file)
@@ -59,6 +65,7 @@ def filter_by_attribute(attr_key, attr_value, xml_file, op="eq"):
             continue
     return matches
 
+
 def filter_by_taxonomy(taxonomy_name, class_name, xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -67,6 +74,7 @@ def filter_by_taxonomy(taxonomy_name, class_name, xml_file):
 
     matching_ids = taxonomy_lookup.get(taxonomy_name, {}).get(class_name, [])
     return [securities[sid] for sid in matching_ids if sid in securities]
+
 
 def display_results(results, title="Filtered Instruments"):
     if results:
@@ -78,6 +86,7 @@ def display_results(results, title="Filtered Instruments"):
     else:
         print("❌ No matching instruments found.")
 
+
 def main():
     xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
 
@@ -86,12 +95,15 @@ def main():
     display_results(results, "Instruments with TER < 0.2")
 
     # Example 2: Morningstar Category = UK Equity Income
-    results = filter_by_attribute("Morningstar Category", "UK Equity Income", xml_file, op="eq")
+    results = filter_by_attribute(
+        "Morningstar Category", "UK Equity Income", xml_file, op="eq"
+    )
     display_results(results, "Instruments with Morningstar Category = UK Equity Income")
 
     # Example 3: From taxonomy: Category = UK Equity Income
     results = filter_by_taxonomy("Category", "UK Equity Income", xml_file)
     display_results(results, "Taxonomy:Category = UK Equity Income")
+
 
 if __name__ == "__main__":
     main()

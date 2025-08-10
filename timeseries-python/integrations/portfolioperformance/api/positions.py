@@ -6,13 +6,17 @@ from typing import Union
 import pandas as pd
 
 
-
 # ------------------------------------------------------------------ #
 #  Public helpers
 # ------------------------------------------------------------------ #
 
-def get_unique_tickers(xml_file: str, cutoff_date: Union[str, datetime, None] = None) -> list[str]:
-    df = extract_holdings_from_transactions(xml_file, by_account=False, cutoff_date=cutoff_date)
+
+def get_unique_tickers(
+    xml_file: str, cutoff_date: Union[str, datetime, None] = None
+) -> list[str]:
+    df = extract_holdings_from_transactions(
+        xml_file, by_account=False, cutoff_date=cutoff_date
+    )
     return df["ticker"].dropna().unique().tolist()
 
 
@@ -30,8 +34,8 @@ def extract_holdings_from_transactions(
     • Works with or without per-account breakdown
     """
 
-    SHARE_SCALE = 10 ** 8                     # 9 800 000 000 → 98.0 shares
-    TYPE_SIGN   = {
+    SHARE_SCALE = 10**8  # 9 800 000 000 → 98.0 shares
+    TYPE_SIGN = {
         "BUY": 1,
         "SELL": -1,
         "TRANSFER_IN": 1,
@@ -58,13 +62,15 @@ def extract_holdings_from_transactions(
         if not sid:
             continue
         sec_meta[sid] = {
-            "name":   s.findtext("name", ""),
-            "isin":   s.findtext("isin", ""),
+            "name": s.findtext("name", ""),
+            "isin": s.findtext("isin", ""),
             "ticker": s.findtext("tickerSymbol", ""),
         }
 
     # ---- iterate -------------------------------------------------------
-    ledgers: dict[str, defaultdict[str, float]] = defaultdict(lambda: defaultdict(float))
+    ledgers: dict[str, defaultdict[str, float]] = defaultdict(
+        lambda: defaultdict(float)
+    )
 
     # scope: either each account separately or whole file
     account_nodes = root.findall(".//account") if by_account else [root]
@@ -77,9 +83,9 @@ def extract_holdings_from_transactions(
                 continue
 
             ttype = ptx.findtext("type", "").strip()
-            sign  = TYPE_SIGN.get(ttype)
+            sign = TYPE_SIGN.get(ttype)
             if sign is None:
-                continue                          # skip dividends, fees, etc.
+                continue  # skip dividends, fees, etc.
 
             q_raw = ptx.findtext("shares") or ptx.findtext("units")
             if not q_raw:
@@ -107,12 +113,12 @@ def extract_holdings_from_transactions(
             meta = sec_meta.get(sid, {})
             rows.append(
                 {
-                    "account":   acct,
+                    "account": acct,
                     "securityId": sid,
-                    "name":      meta.get("name", ""),
-                    "ticker":    meta.get("ticker", ""),
-                    "isin":      meta.get("isin", ""),
-                    "quantity":  qty,
+                    "name": meta.get("name", ""),
+                    "ticker": meta.get("ticker", ""),
+                    "isin": meta.get("isin", ""),
+                    "quantity": qty,
                 }
             )
 
@@ -125,14 +131,15 @@ def get_name_map_from_xml(xml_file: str) -> dict[str, str]:
 
     out = {}
     for s in root.findall(".//securities/security"):
-        isin   = s.findtext("isin", "").strip()
+        isin = s.findtext("isin", "").strip()
         ticker = s.findtext("tickerSymbol", "").strip()
-        name   = s.findtext("name", "").strip()
+        name = s.findtext("name", "").strip()
         if isin:
             out[isin] = f"{name} ({ticker})" if ticker else name
         if ticker:
             out[ticker] = f"{name} ({ticker})"
     return out
+
 
 # ------------------------------------------------------------------ #
 #  Quick CLI test
@@ -143,12 +150,16 @@ if __name__ == "__main__":
     df = extract_holdings_from_transactions(xml, by_account=True)
     print(f"\n✅ rebuilt {len(df)} positions")
 
-    from integrations.portfolioperformance.api.instrument_details import add_current_value_using_timeseries
+    from integrations.portfolioperformance.api.instrument_details import (
+        add_current_value_using_timeseries,
+    )
 
-    valued = add_current_value_using_timeseries(xml, df)     # ← NEW
+    valued = add_current_value_using_timeseries(xml, df)  # ← NEW
 
     pd.set_option("display.max_rows", None)
-    print(valued.to_string(index=False,
-                           formatters={
-                               "price":       "{:,.2f}".format,
-                               "marketValue": "{:,.2f}".format}))
+    print(
+        valued.to_string(
+            index=False,
+            formatters={"price": "{:,.2f}".format, "marketValue": "{:,.2f}".format},
+        )
+    )
