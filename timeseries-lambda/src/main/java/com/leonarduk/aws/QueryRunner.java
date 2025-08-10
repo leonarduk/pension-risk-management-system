@@ -6,6 +6,7 @@ import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.ta4j.core.Bar;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 public class QueryRunner {
     public static final String INTERPOLATE = "interpolate";
     public static final String CLEAN_DATA = "cleanData";
@@ -39,7 +41,7 @@ public class QueryRunner {
      * @throws IOException if an IO error occurs
      */
     public static void main(String[] args) throws IOException {
-        System.out.println(new QueryRunner().getResults(ImmutableMap.of(
+        log.info(new QueryRunner().getResults(ImmutableMap.of(
                 TICKER, "PHGP.L",
                 YEARS, "1",
                 "interpolate", "true",
@@ -63,7 +65,7 @@ public class QueryRunner {
         {
             throw new IllegalArgumentException("No parameters provided. Expect at least ticker");
         }
-        System.out.println(inputParams);
+        log.debug("Input parameters: {}", inputParams);
 
 
         String ticker = inputParams.get(TICKER);
