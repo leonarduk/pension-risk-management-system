@@ -48,9 +48,17 @@ public class InstrumentTest {
     @Test
     public void testInactiveTickerFilteredOut() throws IOException {
         Instrument.InstrumentLoader loader = Instrument.InstrumentLoader.getInstance();
+        // Inactive instrument CC1 should not be present using any of its identifiers
         Assert.assertFalse(loader.getInstruments().containsKey("CC1"));
+        Assert.assertFalse(loader.getInstruments().containsKey("FR0010713784"));
+        Assert.assertFalse(loader.getInstruments().containsKey("LON:CC1"));
+
+        // Active instrument still available
         Assert.assertTrue(loader.getInstruments().containsKey("XDND"));
+
+        // Lookups for inactive identifiers should return a manually created placeholder
         Assert.assertEquals(Source.MANUAL, Instrument.fromString("CC1").getSource());
+        Assert.assertEquals(Source.MANUAL, Instrument.fromString("FR0010713784").getSource());
     }
 
 }
