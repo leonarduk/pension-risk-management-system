@@ -4,17 +4,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class HtmlTools {
     public static final Logger logger = LoggerFactory.getLogger(HtmlTools.class.getName());
+    private static final String BUNDLE_NAME = "messages";
+
+    private static ResourceBundle bundle() {
+        return ResourceBundle.getBundle(BUNDLE_NAME, Locale.getDefault());
+    }
 
     public static void addField(final Object value, final StringBuilder sb, final ValueFormatter formatterRaw) {
         final ValueFormatter formatter = formatterRaw == null ? (Object::toString) : formatterRaw;
         if (sb == null) {
-            throw new IllegalArgumentException("Passed in null StringBuilder");
+            throw new IllegalArgumentException(bundle().getString("htmltools.null_stringbuilder"));
         }
         if (null == value) {
-            HtmlTools.logger.warn("Null value supplied - treat as empty string");
+            HtmlTools.logger.warn(bundle().getString("htmltools.null_value"));
         }
         sb.append("<td bgcolor='")
                 .append(HtmlTools.getColour(value == null ? "" : value)).append("'>")
@@ -23,12 +30,12 @@ public class HtmlTools {
 
     public static void addHeader(final String nameRaw, final StringBuilder sb) {
         if (sb == null) {
-            throw new IllegalArgumentException("Passed in null StringBuilder");
+            throw new IllegalArgumentException(bundle().getString("htmltools.null_stringbuilder"));
         }
         String name = nameRaw;
         if (null == name) {
             name = "";
-            HtmlTools.logger.warn("Null field name supplied - treat as empty string");
+            HtmlTools.logger.warn(bundle().getString("htmltools.null_field"));
         }
         sb.append("<th>").append(name).append("</th>");
     }
