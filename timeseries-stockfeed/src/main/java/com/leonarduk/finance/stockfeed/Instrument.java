@@ -30,6 +30,8 @@ public sealed class Instrument permits FxInstrument {
 
     private String googleCode;
 
+    private String indexCategory;
+
     private String isin;
 
     private String name;
@@ -39,7 +41,7 @@ public sealed class Instrument permits FxInstrument {
     private AssetType underlyingType;
 
     public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
-            Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.LONDON, Instrument.CASH_TEXT, Instrument.GBP, "N/A");
+            Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.LONDON, Instrument.CASH_TEXT, "", Instrument.GBP, "N/A");
 
     private static final String CASH_TEXT = "Cash";
 
@@ -49,7 +51,7 @@ public sealed class Instrument permits FxInstrument {
 
     public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
             AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.LONDON,
-            Instrument.UNKNOWN_TEXT, Instrument.GBP, Instrument.UNKNOWN_TEXT);
+            Instrument.UNKNOWN_TEXT, "", Instrument.GBP, Instrument.UNKNOWN_TEXT);
 
     private static final String UNKNOWN_TEXT = "UNKNOWN";
 
@@ -94,13 +96,15 @@ public sealed class Instrument permits FxInstrument {
                 List<String> strings = Arrays.asList(line.split(","));
 
                 final Iterator<String> iter = strings.iterator();
-                return new Instrument(StringUtils.defaultIfEmpty(iter.next(), ""),
+                return new Instrument(
+                        StringUtils.defaultIfEmpty(iter.next(), ""),
                         AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
                         AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
                         Source.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
                         StringUtils.defaultIfEmpty(iter.next(), ""),
                         StringUtils.defaultIfEmpty(iter.next(), ""),
                         Exchange.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
+                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
                         StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
                         StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
                         StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "")
@@ -148,12 +152,12 @@ public sealed class Instrument permits FxInstrument {
         }
 
         return new Instrument(symbol, AssetType.fromString(type), AssetType.fromString(type), Source.MANUAL, symbol, localSymbol,
-                Exchange.valueOf(region), "", currency, symbol);
+                Exchange.valueOf(region), "", "", currency, symbol);
     }
 
 
     protected Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
-                         final String isin, final String code, final Exchange exchange, final String category, final String currency,
+                         final String isin, final String code, final Exchange exchange, final String category, final String indexCategory, final String currency,
                          final String googleCode) {
         this.assetType = type;
         this.underlyingType = underlying;
@@ -162,6 +166,7 @@ public sealed class Instrument permits FxInstrument {
         this.code = code;
         this.name = name;
         this.category = category;
+        this.indexCategory = indexCategory;
         this.currency = currency;
         this.googleCode = googleCode;
         this.exchange = exchange;
@@ -173,6 +178,10 @@ public sealed class Instrument permits FxInstrument {
 
     public String category() {
         return this.category;
+    }
+
+    public String indexCategory() {
+        return this.indexCategory;
     }
 
     public String code() {
@@ -193,6 +202,7 @@ public sealed class Instrument permits FxInstrument {
             return false;
         }
         return new EqualsBuilder().append(this.assetType, castOther.assetType).append(this.category, castOther.category)
+                .append(this.indexCategory, castOther.indexCategory)
                 .append(this.code, castOther.code).append(this.currency, castOther.currency)
                 .append(this.exchange, castOther.exchange).append(this.googleCode, castOther.googleCode)
                 .append(this.isin, castOther.isin).append(this.name, castOther.name)
@@ -205,6 +215,10 @@ public sealed class Instrument permits FxInstrument {
 
     public String getCategory() {
         return this.category;
+    }
+
+    public String getIndexCategory() {
+        return this.indexCategory;
     }
 
     public String getCode() {
@@ -238,7 +252,7 @@ public sealed class Instrument permits FxInstrument {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(this.assetType).append(this.category).append(this.code)
-                .append(this.currency).append(this.exchange).append(this.googleCode).append(this.isin).append(this.name)
+                .append(this.indexCategory).append(this.currency).append(this.exchange).append(this.googleCode).append(this.isin).append(this.name)
                 .append(this.source).append(this.underlyingType).toHashCode();
     }
 
@@ -253,7 +267,7 @@ public sealed class Instrument permits FxInstrument {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("assetType", this.assetType).append("category", this.category)
-                .append("code", this.code).append("currency", this.currency).append("exchange", this.exchange)
+                .append("indexCategory", this.indexCategory).append("code", this.code).append("currency", this.currency).append("exchange", this.exchange)
                 .append("googleCode", this.googleCode).append("isin", this.isin).append("name", this.name)
                 .append("source", this.source).append("underlyingType", this.underlyingType).toString();
     }
