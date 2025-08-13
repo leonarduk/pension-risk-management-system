@@ -78,11 +78,11 @@
             <scope>compile</scope>
         </dependency>
 		<!-- ta4j -->
-		<dependency>
-			<groupId>org.ta4j</groupId>
-			<artifactId>ta4j-core</artifactId>
-			<version>0.12</version>
-		</dependency>
+                <dependency>
+                        <groupId>org.ta4j</groupId>
+                        <artifactId>ta4j-core</artifactId>
+                        <version>${org.ta4j.version}</version>
+                </dependency>
 		
 
 		<!-- google finance -->
