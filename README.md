@@ -61,6 +61,14 @@ This returns JSON similar to:
 {"close": 123.45}
 ```
 
+### CORS configuration
+
+Cross origin requests are controlled with the `cors.allowed-origins` property. The
+default is empty, meaning no origins are permitted. Provide a comma separated list
+of trusted origins in `application.properties` or override it at runtime using the
+`CORS_ALLOWED_ORIGINS` environment variable. Profile specific files such as
+`application-prod.properties` can also define the property for different environments.
+
 ## timeseries-lambda
 
 The `timeseries-lambda` module runs as a Docker container and requires several

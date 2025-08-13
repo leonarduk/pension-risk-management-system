@@ -10,19 +10,22 @@ import java.util.Arrays;
 /**
  * Simple CORS configuration that reads the allowed origins from the
  * {@code cors.allowed-origins} property. Multiple origins can be supplied as a
- * comma separated list.
+ * comma separated list. If the property is not set then no cross origin
+ * requests are allowed.
  */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${cors.allowed-origins:*}")
+    @Value("${cors.allowed-origins:}")
     private String allowedOrigins;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        String[] origins = Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .toArray(String[]::new);
+        String[] origins =
+                Arrays.stream(allowedOrigins.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .toArray(String[]::new);
         registry.addMapping("/**")
                 .allowedOrigins(origins)
                 .allowedMethods("*")
