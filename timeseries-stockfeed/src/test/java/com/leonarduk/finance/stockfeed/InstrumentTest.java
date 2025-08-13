@@ -45,4 +45,12 @@ public class InstrumentTest {
 
     }
 
+    @Test
+    public void testInactiveTickerFilteredOut() throws IOException {
+        Instrument.InstrumentLoader loader = Instrument.InstrumentLoader.getInstance();
+        Assert.assertFalse(loader.getInstruments().containsKey("CC1"));
+        Assert.assertTrue(loader.getInstruments().containsKey("XDND"));
+        Assert.assertEquals(Source.MANUAL, Instrument.fromString("CC1").getSource());
+    }
+
 }
