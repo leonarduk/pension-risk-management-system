@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pension UI</title>
+</head>
+<body>
+  <h1 id="title"></h1>
+  <script>
+    function getLang() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('lang') || 'en';
+    }
+    const lang = getLang();
+    fetch('lang/' + lang + '.json')
+      .then(r => r.json())
+      .then(t => {
+        document.getElementById('title').textContent = t.title;
+      });
+  </script>
+</body>
+</html>

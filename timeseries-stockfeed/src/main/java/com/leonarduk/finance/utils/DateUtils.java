@@ -40,6 +40,36 @@ public class DateUtils {
     public static final Logger logger = LoggerFactory.getLogger(DateUtils.class.getName());
     private static Map<String, Date> dates;
 
+    /**
+     * Static list of UK bank holidays used when determining working days.
+     * <p>
+     * The list is intentionally limited to the most recent years required by the
+     * application and test cases. It can be extended as needed.
+     */
+    public static final List<LocalDate> UK_BANK_HOLIDAYS = Collections.unmodifiableList(Arrays.asList(
+            // 2022
+            LocalDate.of(2022, 1, 3), // New Year's Day (substitute)
+            LocalDate.of(2022, 4, 15), // Good Friday
+            LocalDate.of(2022, 4, 18), // Easter Monday
+            LocalDate.of(2022, 5, 2), // Early May bank holiday
+            LocalDate.of(2022, 6, 2), // Spring bank holiday
+            LocalDate.of(2022, 6, 3), // Platinum Jubilee bank holiday
+            LocalDate.of(2022, 8, 29), // Summer bank holiday
+            LocalDate.of(2022, 9, 19), // Queen's funeral
+            LocalDate.of(2022, 12, 26), // Boxing Day
+            LocalDate.of(2022, 12, 27), // Christmas Day (substitute)
+            // 2023
+            LocalDate.of(2023, 1, 2), // New Year's Day (substitute)
+            LocalDate.of(2023, 4, 7), // Good Friday
+            LocalDate.of(2023, 4, 10), // Easter Monday
+            LocalDate.of(2023, 5, 1), // Early May bank holiday
+            LocalDate.of(2023, 5, 8), // Coronation of King Charles III
+            LocalDate.of(2023, 5, 29), // Spring bank holiday
+            LocalDate.of(2023, 8, 28), // Summer bank holiday
+            LocalDate.of(2023, 12, 25), // Christmas Day
+            LocalDate.of(2023, 12, 26)  // Boxing Day
+    ));
+
     public static LocalDate calendarToLocalDate(Calendar calendar) {
         return LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
     }
@@ -51,18 +81,20 @@ public class DateUtils {
     }
 
     public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate) {
-        return getDiffInWorkDays(startDate, endDate, Optional.empty());
+        return getDiffInWorkDays(startDate, endDate, Optional.of(UK_BANK_HOLIDAYS));
     }
 
-    public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate, final Optional<List<LocalDate>> holidays) {
+    public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate,
+                                        final Optional<List<LocalDate>> holidays) {
         // Validate method arguments
         if (startDate == null || endDate == null) {
-            throw new IllegalArgumentException("Invalid method argument(s) to countBusinessDaysBetween (" + startDate + "," + endDate + "," + holidays + ")");
+            throw new IllegalArgumentException(
+                    "Invalid method argument(s) to countBusinessDaysBetween (" + startDate + "," + endDate + "," + holidays + ")");
         }
 
-        // Predicate 1: Is a given date is a holiday
-        Predicate<LocalDate> isHoliday = date -> holidays.isPresent()
-                && holidays.get().contains(date);
+        List<LocalDate> holidayList = holidays.orElse(UK_BANK_HOLIDAYS);
+        // Predicate 1: Is a given date a holiday
+        Predicate<LocalDate> isHoliday = holidayList::contains;
 
         // Iterate over stream of all dates and check each day against any weekday or
         // holiday
@@ -76,6 +108,10 @@ public class DateUtils {
     public static Predicate<LocalDate> isWeekend() {
         return date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
                 || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+    }
+
+    public static Predicate<LocalDate> isHoliday() {
+        return UK_BANK_HOLIDAYS::contains;
     }
 
     private static String getDividendDateFormat(final String date) {
@@ -97,16 +133,15 @@ public class DateUtils {
 
             @Override
             public boolean hasNext() {
-                return this.nextDate.isBefore(mostRecentDate) || this.nextDate.equals(mostRecentDate);
+                return !this.nextDate.isAfter(mostRecentDate);
             }
 
             @Override
             public LocalDate next() {
                 final LocalDate currentDate = this.nextDate;
-                if (this.nextDate.getDayOfWeek() == DayOfWeek.FRIDAY) {
-                    this.nextDate = this.nextDate.plusDays(2);
-                }
-                this.nextDate = this.nextDate.plusDays(1);
+                do {
+                    this.nextDate = this.nextDate.plusDays(1);
+                } while (isWeekend().or(isHoliday()).test(this.nextDate) && this.nextDate.isBefore(mostRecentDate.plusDays(1)));
                 return currentDate;
             }
 
@@ -120,7 +155,7 @@ public class DateUtils {
     }
 
     public static LocalDate getLastWeekday(final LocalDate returnDate) {
-        if ((returnDate.getDayOfWeek() == DayOfWeek.SATURDAY) || (returnDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+        if (isWeekend().or(isHoliday()).test(returnDate)) {
             return DateUtils.getPreviousDate(returnDate);
         }
         return returnDate;
