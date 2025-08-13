@@ -82,7 +82,7 @@ public class QueryRunner {
 
         String region = StringUtils.defaultIfEmpty(inputParams.get("region"), "L");
         String type = StringUtils.defaultIfEmpty(inputParams.get("type"), "UNKNOWN");
-        String currency = StringUtils.defaultIfEmpty(inputParams.get("type"), "GBP");
+        String currency = StringUtils.defaultIfEmpty(inputParams.get("currency"), "GBP");
 
         if (ticker.contains(".")) {
             String[] parts = ticker.split("\\.");
