@@ -74,21 +74,23 @@ public sealed class Instrument permits FxInstrument {
     public static class InstrumentLoader {
         private Map<String, Instrument> instruments = null;
 
-        private static InstrumentLoader instance;
+        private static volatile InstrumentLoader instance;
 
         public static InstrumentLoader getInstance() throws IOException {
-//			if (InstrumentLoader.instance == null) {
-            InstrumentLoader.instance = new InstrumentLoader();
-
-            try {
-                instance.init("resources/data/instruments_list.csv");
-            } catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
-                throw new IOException(e);
+            if (instance == null) {
+                synchronized (InstrumentLoader.class) {
+                    if (instance == null) {
+                        InstrumentLoader loader = new InstrumentLoader();
+                        try {
+                            loader.init("resources/data/instruments_list.csv");
+                        } catch (URISyntaxException e) {
+                            throw new IOException(e);
+                        }
+                        instance = loader;
+                    }
+                }
             }
-//			}
-
-            return InstrumentLoader.instance;
+            return instance;
         }
 
         private final static Logger logger = LoggerFactory.getLogger(Instrument.class.getName());

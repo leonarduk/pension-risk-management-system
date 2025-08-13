@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class InstrumentTest {
 
@@ -59,6 +61,28 @@ public class InstrumentTest {
         // Lookups for inactive identifiers should return a manually created placeholder
         Assert.assertEquals(Source.MANUAL, Instrument.fromString("CC1").getSource());
         Assert.assertEquals(Source.MANUAL, Instrument.fromString("FR0010713784").getSource());
+    }
+
+    @Test
+    public void testLoaderSingletonReadsOnce() throws Exception {
+        Instrument.InstrumentLoader first = Instrument.InstrumentLoader.getInstance();
+        Instrument.InstrumentLoader second = Instrument.InstrumentLoader.getInstance();
+        Assert.assertSame(first, second);
+
+        Field field = Instrument.InstrumentLoader.class.getDeclaredField("instruments");
+        field.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, Instrument> map = (Map<String, Instrument>) field.get(first);
+        Instrument removed = map.remove("XDND");
+
+        Instrument.InstrumentLoader third = Instrument.InstrumentLoader.getInstance();
+        Assert.assertSame(first, third);
+        @SuppressWarnings("unchecked")
+        Map<String, Instrument> mapAfter = (Map<String, Instrument>) field.get(third);
+        Assert.assertFalse(mapAfter.containsKey("XDND"));
+
+        // restore state for other tests
+        mapAfter.put("XDND", removed);
     }
 
 }
