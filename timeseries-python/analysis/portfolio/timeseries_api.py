@@ -1,8 +1,11 @@
 import os
-import pandas as pd
-import numpy as np
+from typing import List, Union
+
 import matplotlib.pyplot as plt
-from pypfopt import EfficientFrontier, risk_models, expected_returns
+import numpy as np
+import pandas as pd
+import requests
+from pypfopt import EfficientFrontier, expected_returns, risk_models
 
 from integrations.portfolioperformance.api.positions import (
     get_name_map_from_xml,
@@ -15,6 +18,44 @@ PRICE = "Price"
 
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+def get_time_series(
+    ticker: Union[str, List[str]],
+    years: int = 5,
+    url: str = "http://localhost:8080/stock/ticker",
+):
+    """Fetch price history for one or more tickers.
+
+    Args:
+        ticker: Single ticker or list of tickers.
+        years: Number of years of history to request.
+        url: Endpoint of the stock history service.
+
+    Returns:
+        DataFrame indexed by date with one column per ticker.
+    """
+
+    tickers = [ticker] if isinstance(ticker, str) else ticker
+    payload = {"ticker": ",".join(tickers), "years": years}
+    response = requests.post(url, data=payload)
+    data = response.json()
+    if not isinstance(data, dict):
+        raise ValueError("Invalid JSON response")
+
+    frames = []
+    for symbol, series in data.items():
+        if not series:
+            continue
+        frames.append(pd.Series(series, name=symbol, dtype=float))
+
+    if not frames:
+        return pd.DataFrame()
+
+    df = pd.concat(frames, axis=1)
+    df.index = pd.to_datetime(df.index)
+    df.index.name = DATE
+    return df
 
 
 def calculate_var(portfolio_returns, confidence_level=0.95):
