@@ -2,7 +2,9 @@
 name: Maven Build
 
 on:
-  [push, pull_request]
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
   build:
@@ -36,6 +38,19 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B verify --file pom.xml
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }} # stored in GitHub secrets
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./timeseries-lambda
+          file: ./timeseries-lambda/Dockerfile
+          push: true
+          tags: ${{ secrets.REGISTRY_URL }}/pension-risk-management-system/timeseries-lambda:latest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
       - name: Update dependency graph
