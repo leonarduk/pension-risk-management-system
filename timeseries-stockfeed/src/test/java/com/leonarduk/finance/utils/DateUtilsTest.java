@@ -35,6 +35,22 @@ public class DateUtilsTest {
     }
 
     @Test
+    public void testGetDiffInWorkDaysSkipsBankHolidays() {
+        LocalDate start = LocalDate.parse("2023-04-28");
+        LocalDate end = LocalDate.parse("2023-05-09");
+        Assert.assertEquals(5, DateUtils.getDiffInWorkDays(start, end));
+    }
+
+    @Test
+    public void testLocalDateIteratorSkipsBankHolidays() {
+        Iterator<LocalDate> iter = DateUtils.getLocalDateIterator(LocalDate.parse("2022-12-23"),
+                LocalDate.parse("2022-12-28"));
+        Assert.assertEquals(LocalDate.parse("2022-12-23"), iter.next());
+        Assert.assertEquals(LocalDate.parse("2022-12-28"), iter.next());
+        Assert.assertFalse(iter.hasNext());
+    }
+
+    @Test
     public final void testGetLocalDateIterator() {
         final Iterator<LocalDate> iter = DateUtils.getLocalDateIterator(LocalDate.parse(DateUtilsTest.APRIL3),
                 LocalDate.parse(DateUtilsTest.APRIL10));
