@@ -1,5 +1,7 @@
+import pandas as pd
 import pytest
 
+from analysis import var
 from analysis.var import historical_var
 
 
@@ -24,7 +26,6 @@ def test_historical_var_raises_on_empty():
         assert True
     else:
         assert False
-from analysis import var
 
 
 def test_historical_var_scenario():

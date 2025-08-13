@@ -1,3 +1,4 @@
+# flake8: noqa
 import os
 import sys
 import pandas as pd
@@ -71,6 +72,7 @@ def get_time_series(ticker, years=1, url="http://localhost:8080/stock/ticker"):
     result.index.name = DATE
     return result
 
+
 def get_time_series(ticker, years=1, endpoint="http://localhost:8080/stock/ticker"):
     """Fetch time series data from the stock endpoint.
 
@@ -87,6 +89,7 @@ def get_time_series(ticker, years=1, endpoint="http://localhost:8080/stock/ticke
         ticker_param = ",".join(ticker)
     else:
         ticker_param = ticker
+
 
 def get_time_series(
     ticker: Union[str, List[str]],

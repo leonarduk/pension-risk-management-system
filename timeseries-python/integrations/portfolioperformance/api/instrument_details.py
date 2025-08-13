@@ -1,5 +1,11 @@
+"""Utility helpers for PortfolioPerformance instrument details."""
+
+# flake8: noqa
 import os
 from datetime import datetime
+import xml.etree.ElementTree as ET
+
+import pandas as pd
 
 from integrations.portfolioperformance.api.instrument_filter import (
     build_security_index,

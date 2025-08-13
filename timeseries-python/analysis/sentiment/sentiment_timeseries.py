@@ -28,7 +28,9 @@ LOCALE_DIR = BASE_DIR / "locale"
 parser = argparse.ArgumentParser()
 parser.add_argument("--locale", default="en", help="locale code")
 args, _ = parser.parse_known_args()
-lang = gettext.translation("messages", localedir=str(LOCALE_DIR), languages=[args.locale], fallback=True)
+lang = gettext.translation(
+    "messages", localedir=str(LOCALE_DIR), languages=[args.locale], fallback=True
+)
 _ = lang.gettext
 
 REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
@@ -87,7 +89,11 @@ def analyze_sentiment(texts, source, ticker, today, extract_writer):
                 total_score += score
                 if abs(score) > 0.0:
                     label = score_to_label(score)
-                    print(_("  TEXT ({label}, {score:.4f}): {text}...").format(label=label, score=score, text=text[:160]))
+                    print(
+                        _("  TEXT ({label}, {score:.4f}): {text}...").format(
+                            label=label, score=score, text=text[:160]
+                        )
+                    )
                     extract_writer.writerow(
                         [today, ticker, round(score, 4), label, text]
                     )
@@ -111,7 +117,11 @@ def fetch_yahoo_headlines(ticker):
         ]
         return headlines
     except Exception as e:
-        print(_("Failed to fetch Yahoo headlines for {ticker}: {error}").format(ticker=ticker, error=e))
+        print(
+            _("Failed to fetch Yahoo headlines for {ticker}: {error}").format(
+                ticker=ticker, error=e
+            )
+        )
         return []
 
 
@@ -125,7 +135,11 @@ def fetch_reddit_posts(reddit, ticker, limit=20):
         )
         return [post.title + " " + (post.selftext or "") for post in posts]
     except Exception as e:
-        print(_("Failed to fetch Reddit posts for {ticker}: {error}").format(ticker=ticker, error=e))
+        print(
+            _("Failed to fetch Reddit posts for {ticker}: {error}").format(
+                ticker=ticker, error=e
+            )
+        )
         return []
 
 
@@ -149,7 +163,6 @@ def analyse_sentiment(tickers):
     with open(output_path, mode="a", newline="", encoding="utf-8") as outfile, open(
         extract_path, mode="a", newline="", encoding="utf-8"
     ) as extractfile:
-
         writer = csv.writer(outfile)
         extract_writer = csv.writer(extractfile)
 
