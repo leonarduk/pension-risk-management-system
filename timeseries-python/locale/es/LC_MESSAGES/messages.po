@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"Language: es\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Device set to use"
+msgstr "Dispositivo utilizado"
+
+msgid "Batch failed: {error}"
+msgstr "Lote falló: {error}"
+
+msgid "Failed to fetch Yahoo headlines for {ticker}: {error}"
+msgstr "No se pudieron obtener los titulares de Yahoo para {ticker}: {error}"
+
+msgid "Failed to fetch Reddit posts for {ticker}: {error}"
+msgstr "No se pudieron obtener las publicaciones de Reddit para {ticker}: {error}"
+
+msgid "\n--- Analyzing {ticker} ---"
+msgstr "\n--- Analizando {ticker} ---"

@@ -3,6 +3,8 @@ import time
 import csv
 from datetime import datetime
 from pathlib import Path
+import argparse
+import gettext
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -21,6 +23,14 @@ from integrations.portfolioperformance.api.positions import (
 
 load_dotenv()
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+LOCALE_DIR = BASE_DIR / "locale"
+parser = argparse.ArgumentParser()
+parser.add_argument("--locale", default="en", help="locale code")
+args, _ = parser.parse_known_args()
+lang = gettext.translation("messages", localedir=str(LOCALE_DIR), languages=[args.locale], fallback=True)
+_ = lang.gettext
+
 REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
 REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET")
 REDDIT_USER_AGENT = os.getenv("REDDIT_USER_AGENT")
@@ -32,7 +42,7 @@ EXTRACTS_CSV = "sentiment_extracts.csv"
 # ---------- LOAD PIPELINE ---------- #
 
 sentiment_analyzer = pipeline("sentiment-analysis", model=MODEL_NAME)
-print("Device set to use", sentiment_analyzer.device.type)
+print(_("Device set to use"), sentiment_analyzer.device.type)
 
 # ---------- SENTIMENT LOGIC ---------- #
 
@@ -82,7 +92,7 @@ def analyze_sentiment(texts, source, ticker, today, extract_writer):
                         [today, ticker, round(score, 4), label, text]
                     )
         except Exception as e:
-            print(f"Batch failed: {e}")
+            print(_("Batch failed: {error}").format(error=e))
     return total_score / len(clean_texts) if clean_texts else 0.0
 
 
@@ -101,7 +111,7 @@ def fetch_yahoo_headlines(ticker):
         ]
         return headlines
     except Exception as e:
-        print(f"Failed to fetch Yahoo headlines for {ticker}: {e}")
+        print(_("Failed to fetch Yahoo headlines for {ticker}: {error}").format(ticker=ticker, error=e))
         return []
 
 
@@ -115,7 +125,7 @@ def fetch_reddit_posts(reddit, ticker, limit=20):
         )
         return [post.title + " " + (post.selftext or "") for post in posts]
     except Exception as e:
-        print(f"Failed to fetch Reddit posts for {ticker}: {e}")
+        print(_("Failed to fetch Reddit posts for {ticker}: {error}").format(ticker=ticker, error=e))
         return []
 
 
@@ -152,7 +162,7 @@ def analyse_sentiment(tickers):
             )
 
         for ticker in tickers:
-            print(f"\n--- Analyzing {ticker} ---")
+            print(_("\n--- Analyzing {ticker} ---").format(ticker=ticker))
 
             yahoo_headlines = fetch_yahoo_headlines(ticker)
             yahoo_score = analyze_sentiment(

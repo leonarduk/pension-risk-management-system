@@ -1,5 +1,11 @@
 FROM openjdk:18-jdk
 
+# Placeholder environment variables for AWS credentials and SQS configuration
+ENV AWS_ACCESS_KEY_ID="" \
+    AWS_SECRET_ACCESS_KEY="" \
+    AWS_REGION="" \
+    SQS_QUEUE_URL=""
+
 # https://medium.com/@MustehssunI/deploying-java-application-on-aws-lambda-using-docker-a95f6fc159da
 
 COPY target/dependency/* /function/

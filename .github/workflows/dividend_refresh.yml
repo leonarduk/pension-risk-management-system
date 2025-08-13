@@ -1,0 +1,29 @@
+name: Refresh dividend yields
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          pip install yfinance pandas ta scipy matplotlib python-dateutil
+      - name: Refresh dividend yields
+        run: python timeseries-python/dividend_refresh.py
+      - name: Commit updated yields
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git config user.name 'github-actions[bot]'
+            git commit -am "chore: refresh dividend yields"
+            git push
+          fi

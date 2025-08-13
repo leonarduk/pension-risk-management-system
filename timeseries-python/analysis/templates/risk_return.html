@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Risk vs Return</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<canvas id="riskReturnChart" width="400" height="300"></canvas>
+<script>
+fetch('/analytics/risk-return?tickers=AAPL,MSFT')
+  .then(res => res.json())
+  .then(data => {
+      const ctx = document.getElementById('riskReturnChart').getContext('2d');
+      const dataset = data.map(d => ({x: d.annual_std, y: d.annual_return, label: d.ticker}));
+      new Chart(ctx, {
+        type: 'scatter',
+        data: { datasets: [{ label: 'Risk/Return', data: dataset, backgroundColor: 'rgba(54, 162, 235, 0.6)'}] },
+        options: {
+          plugins: { tooltip: { callbacks: { label: ctx => `${ctx.raw.label}: (${ctx.raw.x.toFixed(2)}, ${ctx.raw.y.toFixed(2)})` } } },
+          scales: {
+            x: { title: { display: true, text: 'Annualised Std Dev' } },
+            y: { title: { display: true, text: 'Annualised Return' } }
+          }
+        }
+      });
+  });
+</script>
+</body>
+</html>
