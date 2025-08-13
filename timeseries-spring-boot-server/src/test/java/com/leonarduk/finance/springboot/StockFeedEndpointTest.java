@@ -1,80 +1,49 @@
-//package com.leonarduk.finance.springboot;
-//
-//import java.io.IOException;
-//import java.util.Optional;
-//
-//import java.time.LocalDate;
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.mockito.Mockito;
-//
-//import com.google.common.collect.Lists;
-//import com.leonarduk.finance.stockfeed.AbstractStockFeed;
-//import com.leonarduk.finance.stockfeed.Instrument;
-//import com.leonarduk.finance.stockfeed.StockV1;
-//import com.leonarduk.finance.stockfeed.StockFeed;
-//
-//public class StockFeedEndpointTest {
-//
-//	private StockFeedEndpoint	point;
-//	private StockFeed			stockFeed;
-//	private String				ticker;
-//
-//	@Before
-//	public void setUp() throws Exception {
-//		this.stockFeed = Mockito.mock(StockFeed.class);
-//		this.point = new StockFeedEndpoint(this.stockFeed);
-//		this.ticker = "Cash";
-//	}
-//
-//	@Test
-//	public final void testDisplayHistory() throws IOException {
-//		final boolean interpolate = true;
-//		final Instrument instrument = Instrument.CASH;
-//		final Optional<StockV1> stock = Optional
-//		        .of(AbstractStockFeed.createStock(instrument));
-//		stock.get().setHistory(Lists.newArrayList());
-//		Mockito.when(
-//		        this.stockFeed.get(instrument, LocalDate.parse("2017-01-01"),
-//		                LocalDate.parse("2017-06-01"), interpolate))
-//		        .thenReturn(stock);
-//		this.point.displayHistory(this.ticker, 0, "2017-01-01", "2017-06-01",
-//		        true);
-//	}
-//
-//	@Test
-//	public final void testDownloadHistoryCsv() throws IOException {
-//		final boolean interpolate = true;
-//		final Instrument instrument = Instrument.CASH;
-//		final Optional<StockV1> stock = Optional
-//		        .of(AbstractStockFeed.createStock(instrument));
-//		Mockito.when(this.stockFeed.get(instrument, 1, interpolate))
-//		        .thenReturn(stock);
-//		this.point.downloadHistoryCsv(this.ticker, 1, interpolate);
-//	}
-//
-//	@Test
-//	public final void testDownloadHistoryCsvWithHistory() throws IOException {
-//		final boolean interpolate = true;
-//		final Instrument instrument = Instrument.CASH;
-//		final Optional<StockV1> stock = Optional
-//		        .of(AbstractStockFeed.createStock(instrument));
-//		stock.get().setHistory(Lists.newArrayList());
-//		Mockito.when(this.stockFeed.get(instrument, 1, interpolate))
-//		        .thenReturn(stock);
-//		this.point.downloadHistoryCsv(this.ticker, 1, interpolate);
-//	}
-//
-//	@Test
-//	public final void testGetHistory() throws IOException {
-//		final boolean interpolate = true;
-//		final Instrument instrument = Instrument.CASH;
-//		final Optional<StockV1> stock = Optional
-//		        .of(AbstractStockFeed.createStock(instrument));
-//		stock.get().setHistory(Lists.newArrayList());
-//		Mockito.when(this.stockFeed.get(instrument, 1, interpolate))
-//		        .thenReturn(stock);
-//		this.point.getHistory(this.ticker, 1, true);
-//	}
-//
-//}
+package com.leonarduk.finance.springboot;
+
+import com.leonarduk.finance.stockfeed.AbstractStockFeed;
+import com.leonarduk.finance.stockfeed.Instrument;
+import com.leonarduk.finance.stockfeed.StockFeed;
+import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(StockFeedEndpoint.class)
+class StockFeedEndpointTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private StockFeed stockFeed;
+
+    @Test
+    void displayHistoryReturnsHtmlTable() throws Exception {
+        Instrument instrument = Instrument.CASH;
+        StockV1 stock = AbstractStockFeed.createStock(instrument, Collections.emptyList());
+        Mockito.when(stockFeed.get(eq(instrument), eq(LocalDate.parse("2024-01-01")),
+                eq(LocalDate.parse("2024-01-02")), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(Optional.of(stock));
+
+        mockMvc.perform(get("/stock/ticker/{ticker}", "CASH")
+                        .param("fromDate", "2024-01-01")
+                        .param("toDate", "2024-01-02")
+                        .param("interpolate", "true")
+                        .param("cleanDate", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("<html")));
+    }
+}
+

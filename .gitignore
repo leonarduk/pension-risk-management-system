@@ -13,3 +13,5 @@ __pycache__
 /timeseries-lambda/dependency-reduced-pom.xml
 **/*.mo
 **/*.png
+/ui/node_modules/
+/ui/dist/

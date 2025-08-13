@@ -1,6 +1,7 @@
 package com.leonarduk.finance.springboot;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -156,6 +157,19 @@ public class StockFeedEndpoint {
             result.put(ticker, datePriceMap);
         }
         return result;
+    }
+
+    @GetMapping("/price/{ticker}")
+    @ResponseBody
+    public Map<String, BigDecimal> getLatestClosePrice(@PathVariable(name = "ticker") final String ticker)
+            throws IOException {
+        Instrument instrument = Instrument.fromString(ticker);
+        Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
+        if (stock.isPresent()) {
+            BigDecimal close = stock.get().getQuote().getPrice();
+            return Collections.singletonMap("close", close);
+        }
+        return Collections.emptyMap();
     }
 
     /**
