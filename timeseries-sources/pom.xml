@@ -106,11 +106,12 @@
 			<artifactId>htmlunit-driver</artifactId>
 			<version>${org.seleniumhq.selenium.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
+                <!-- Removed legacy SLF4J binding to Log4j 1.x -->
+                <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                        <version>1.4.14</version>
+                </dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
