@@ -1,20 +1,51 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import requests
 from pypfopt import EfficientFrontier, risk_models, expected_returns
-
 from integrations.portfolioperformance.api.positions import (
     get_name_map_from_xml,
     get_unique_tickers,
 )
 from integrations.stockfeed.timeseries import fetch_prices_for_tickers
 
+# Expose module under a shorter alias so unit tests can patch requests easily
+sys.modules.setdefault("timeseries_api", sys.modules[__name__])
+
 DATE = "Date"
 PRICE = "Price"
 
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+def get_time_series(ticker: str | list[str], years: int = 1) -> pd.DataFrame:
+    """Fetch timeseries data for one or more tickers.
+
+    The function posts a simple JSON payload to an external timeseries API and
+    returns a :class:`pandas.DataFrame` indexed by ``DATE`` with one column per
+    ticker.  Missing or empty tickers are ignored.
+    """
+
+    tickers = [ticker] if isinstance(ticker, str) else list(ticker)
+    response = requests.post(
+        "http://example.com/timeseries", json={"ticker": tickers, "years": years}
+    )
+    data = response.json()
+
+    if not isinstance(data, dict):
+        raise ValueError("Invalid JSON")
+
+    filtered = {t: data.get(t) for t in tickers if data.get(t)}
+    if not filtered:
+        return pd.DataFrame()
+
+    df = pd.DataFrame(filtered)
+    df.index.name = DATE
+    df.sort_index(inplace=True)
+    return df
 
 
 def calculate_var(portfolio_returns, confidence_level=0.95):
