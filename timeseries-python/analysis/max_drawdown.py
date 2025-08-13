@@ -35,4 +35,6 @@ def max_drawdown(ticker: Union[str, Iterable[str]], years: int = 5) -> pd.DataFr
         drawdown_series = series / running_max - 1
         drawdowns[t] = abs(drawdown_series.min())
 
-    return pd.DataFrame({"ticker": list(drawdowns.keys()), "max_drawdown": list(drawdowns.values())})
+    return pd.DataFrame(
+        {"ticker": list(drawdowns.keys()), "max_drawdown": list(drawdowns.values())}
+    )

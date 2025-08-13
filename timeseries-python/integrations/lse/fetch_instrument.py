@@ -30,7 +30,7 @@ def extract_lse_data_with_browser(url):
                     (By.CSS_SELECTOR, "h1.instrument-header_title__Vv8WY")
                 )
             )
-        except:
+        except Exception:
             name_elem = wait.until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
         name = name_elem.text.strip()
 

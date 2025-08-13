@@ -59,11 +59,13 @@ def historical_var(
     index = min(max(index, 0), len(sorted_returns) - 1)
     return float(sorted_returns[index])
 
+
 def _apply_scenario(returns: pd.Series, scenario: str | None) -> pd.Series:
     if scenario in SCENARIO_FACTORS:
         factor = SCENARIO_FACTORS[scenario]
         return returns.apply(lambda x: x * factor if x < 0 else x)
     return returns
+
 
 @app.post("/var")
 def var_endpoint():

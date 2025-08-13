@@ -4,7 +4,9 @@ import requests
 DATE = "Date"
 
 
-def align_series(source: pd.Series, target: pd.Series, method: str = "ffill") -> pd.Series:
+def align_series(
+    source: pd.Series, target: pd.Series, method: str = "ffill"
+) -> pd.Series:
     """Align one time series to another using index rebasing.
 
     The function scales ``source`` so that the first common date matches

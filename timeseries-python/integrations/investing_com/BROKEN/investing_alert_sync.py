@@ -26,14 +26,14 @@ async def scrape_alerts():
             await page.wait_for_selector("button:has-text('I Accept')", timeout=5000)
             await page.click("button:has-text('I Accept')")
             print("✅ Accepted privacy consent.")
-        except:
+        except Exception:
             print("ℹ️ No consent popup detected.")
 
         # Dismiss UK Edition popup if present
         try:
             await page.click("text=No thanks", timeout=3000)
             print("✅ Dismissed UK Edition popup.")
-        except:
+        except Exception:
             print("ℹ️ No UK Edition popup detected.")
 
         # Print current URL for debugging
@@ -59,7 +59,7 @@ async def scrape_alerts():
         try:
             await page.wait_for_url("**/members-admin/**", timeout=15000)
             print("✅ Logged in successfully.")
-        except:
+        except Exception:
             print("❌ Login may have failed or took too long.")
             return
 

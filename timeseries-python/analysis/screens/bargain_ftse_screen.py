@@ -302,8 +302,6 @@ if __name__ == "__main__":
         # no CLI args ➜ run with defaults
         run(DEFAULT_XML, cutoff=DEFAULT_CUTOFF, use_stockfeed=DEFAULT_STOCKFDB)
     else:
-        import argparse
-
         p = argparse.ArgumentParser(description="Value+Momentum screener")
         p.add_argument("xml", type=Path)
         p.add_argument("--stockfeed", action="store_true")

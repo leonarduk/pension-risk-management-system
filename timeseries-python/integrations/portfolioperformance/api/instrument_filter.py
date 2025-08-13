@@ -61,7 +61,7 @@ def filter_by_attribute(attr_key, attr_value, xml_file, op="eq"):
                 matches.append(sec)
             elif op == "eq" and str(value).lower() == str(attr_value).lower():
                 matches.append(sec)
-        except:
+        except Exception:
             continue
     return matches
 

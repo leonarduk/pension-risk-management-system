@@ -23,7 +23,6 @@ import sys
 from datetime import date, timedelta, datetime
 from pathlib import Path
 from functools import lru_cache
-import requests
 
 import pandas as pd
 import requests
