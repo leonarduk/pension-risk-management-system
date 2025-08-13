@@ -43,19 +43,41 @@
 
 	<dependencies>
 
-                <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-                <dependency>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                        <version>33.4.8-jre</version>
-                </dependency>
+               <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+               <dependency>
+                       <groupId>com.google.guava</groupId>
+                       <artifactId>guava</artifactId>
+                       <version>33.4.8-jre</version>
+               </dependency>
 
-                <!-- Official AlphaVantage client -->
-                <dependency>
-                        <groupId>com.github.patriques</groupId>
-                        <artifactId>alphavantage4j</artifactId>
-                        <version>${alphavantage4j.version}</version>
-                </dependency>
+               <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+               <dependency>
+                       <groupId>com.fasterxml.jackson.core</groupId>
+                       <artifactId>jackson-databind</artifactId>
+                       <version>2.19.0</version>
+               </dependency>
+
+               <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+               <dependency>
+                       <groupId>org.projectlombok</groupId>
+                       <artifactId>lombok</artifactId>
+                       <version>1.18.38</version>
+                       <scope>provided</scope>
+               </dependency>
+
+               <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+               <dependency>
+                       <groupId>org.yaml</groupId>
+                       <artifactId>snakeyaml</artifactId>
+                       <version>2.4</version>
+               </dependency>
+
+               <!-- Official AlphaVantage client -->
+               <dependency>
+                       <groupId>com.github.patriques</groupId>
+                       <artifactId>alphavantage4j</artifactId>
+                       <version>${alphavantage4j.version}</version>
+               </dependency>
 
                 <!-- Official Yahoo Finance API -->
                 <dependency>
@@ -104,10 +126,40 @@
 			<version>${org.apache.commons.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${org.slf4j.version}</version>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>${javax.xml.bind.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>4.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>4.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.3.232</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bgee.log4jdbc-log4j2</groupId>
+			<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+			<version>${log4jdbc.log4j2.version}</version>
+		</dependency>
+               <dependency>
+                       <groupId>org.slf4j</groupId>
+                       <artifactId>slf4j-api</artifactId>
+                       <version>2.0.17</version>
+               </dependency>
 		<!-- ta4j -->
 		<dependency>
 			<groupId>org.ta4j</groupId>
