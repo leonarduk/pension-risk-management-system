@@ -98,20 +98,21 @@ public sealed class Instrument permits FxInstrument {
                 List<String> strings = Arrays.asList(line.split(","));
 
                 final Iterator<String> iter = strings.iterator();
-                return new Instrument(
-                        StringUtils.defaultIfEmpty(iter.next(), ""),
-                        AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        Source.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        StringUtils.defaultIfEmpty(iter.next(), ""),
-                        StringUtils.defaultIfEmpty(iter.next(), ""),
-                        Exchange.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        Boolean.parseBoolean(StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "TRUE", "TRUE"))
-                );
+
+                String name = StringUtils.defaultIfEmpty(iter.next(), "");
+                AssetType assetType = AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                AssetType underlying = AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                Source source = Source.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                String isin = StringUtils.defaultIfEmpty(iter.next(), "");
+                String code = StringUtils.defaultIfEmpty(iter.next(), "");
+                Exchange exchange = Exchange.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                String category = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                String indexCategory = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                String currency = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                String googleCode = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                boolean active = Boolean.parseBoolean(StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "TRUE", "TRUE"));
+
+                return new Instrument(name, assetType, underlying, source, isin, code, exchange, category, indexCategory, currency, googleCode, active);
             } catch (Exception e) {
                 logger.warn(String.format("Could not map %s to an instrument", line), e);
                 throw e;
