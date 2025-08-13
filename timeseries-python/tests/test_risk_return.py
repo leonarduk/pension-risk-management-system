@@ -2,6 +2,7 @@ import pandas as pd
 from unittest.mock import patch
 
 from analysis.risk_return import risk_return
+from analysis.var import historical_var
 
 
 def test_risk_return_calculates_metrics():
@@ -11,3 +12,6 @@ def test_risk_return_calculates_metrics():
     assert result.loc[0, "ticker"] == "AAPL"
     assert "annual_return" in result.columns
     assert "annual_std" in result.columns
+    assert "var" in result.columns
+    expected_var = historical_var(prices.pct_change().dropna()["AAPL"])
+    assert result.loc[0, "var"] == expected_var
