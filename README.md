@@ -39,3 +39,13 @@ If you select interpolate=true, it will flat-line dates before and after the ava
 e.g.
 http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
 
+You can also restrict the response to instruments belonging to a specific
+category by supplying the `category` query parameter:
+
+```
+http://localhost:8091/stock/ticker/MNP?years=2&category=EQUITY
+```
+
+When requesting JSON data with multiple tickers the same parameter can be used
+to filter out instruments that do not match the selected category.
+
