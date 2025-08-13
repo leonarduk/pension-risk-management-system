@@ -39,6 +39,16 @@ If you select interpolate=true, it will flat-line dates before and after the ava
 e.g.
 http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
 
+You can also restrict the response to instruments belonging to a specific
+category by supplying the `category` query parameter:
+
+```
+http://localhost:8091/stock/ticker/MNP?years=2&category=EQUITY
+```
+
+When requesting JSON data with multiple tickers the same parameter can be used
+to filter out instruments that do not match the selected category.
+=======
 ## timeseries-lambda
 
 The `timeseries-lambda` module runs as a Docker container and requires several
@@ -59,7 +69,6 @@ docker run \
   -e SQS_QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/123456789012/queue \
   <image>
 ```
-=======
 To fetch the latest closing price only, use:
 
 http://localhost:8091/stock/price/MNP

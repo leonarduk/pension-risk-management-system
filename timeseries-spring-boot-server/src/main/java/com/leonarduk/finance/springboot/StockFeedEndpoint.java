@@ -66,11 +66,15 @@ public class StockFeedEndpoint {
                                  @RequestParam(name = "scaling", required = false) Double scaling,
                                  @RequestParam(name = "interpolate", required = false) boolean interpolate,
                                  @RequestParam(name = "cleanDate", required = false) boolean cleanDate,
-                                 @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
+                                 @RequestParam(name = "category", required = false) String category,
+                              @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
                                  @RequestParam(name = "lang", required = false) String lang
     ) throws IOException {
 
-        Locale locale = Locale.getDefault();
+        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                category);
+
+      Locale locale = Locale.getDefault();
         if (StringUtils.isNotBlank(lang)) {
             locale = Locale.forLanguageTag(lang);
         } else if (StringUtils.isNotBlank(acceptLanguage)) {
@@ -88,8 +92,14 @@ public class StockFeedEndpoint {
         return HtmlTools.createHtmlText(null, sbBody).toString();
     }
 
-    private @NotNull List<List<DataField>> getRecords(String ticker, Integer years, String fromDate, String toDate, String fields, Double scaling, boolean interpolate, boolean cleanDate) throws IOException {
+    private @NotNull List<List<DataField>> getRecords(String ticker, Integer years, String fromDate, String toDate,
+                                                      String fields, Double scaling, boolean interpolate, boolean cleanDate,
+                                                      String category) throws IOException {
         Instrument instrument = Instrument.fromString(ticker);
+
+        if (category != null && !category.equalsIgnoreCase(instrument.category())) {
+            return Collections.emptyList();
+        }
 
         String[] fieldArray = {};
         if (fields != null) {
@@ -97,7 +107,7 @@ public class StockFeedEndpoint {
         }
 
         List<List<DataField>> records = generateResults(years, fromDate, toDate, instrument,
-            fieldArray, interpolate, cleanDate, scaling);
+                fieldArray, interpolate, cleanDate, scaling);
         return records;
     }
 
@@ -111,6 +121,7 @@ public class StockFeedEndpoint {
                                                                  @RequestParam(name = "scaling", required = false) Double scaling,
                                                                  @RequestParam(name = "interpolate", required = false) boolean interpolate,
                                                                  @RequestParam(name = "cleanDate", required = false) boolean cleanDate,
+                                                                 @RequestParam(name = "category", required = false) String category,
                                                                  @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
                                                                  @RequestParam(name = "lang", required = false) String lang
     ) throws IOException {
@@ -134,7 +145,11 @@ public class StockFeedEndpoint {
         }
 
         for (String ticker : tickers) {
-            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
+            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                    category);
+            if (records.isEmpty()) {
+                continue;
+            }
             Map<String, Double> datePriceMap = new TreeMap<>();
 
             for (List<DataField> record : records) {
