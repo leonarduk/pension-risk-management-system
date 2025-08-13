@@ -3,6 +3,8 @@ import pandas as pd
 import pytest
 from unittest.mock import patch
 
+from analysis.risk_return import risk_return
+from analysis.var import historical_var
 from analysis.risk_return import TRADING_DAYS, risk_return
 
 
@@ -18,6 +20,11 @@ def test_risk_return_calculates_metrics():
     expected_std = daily_returns.std() * np.sqrt(TRADING_DAYS)
 
     assert result.loc[0, "ticker"] == "AAPL"
+    assert "annual_return" in result.columns
+    assert "annual_std" in result.columns
+    assert "var" in result.columns
+    expected_var = historical_var(prices.pct_change().dropna()["AAPL"])
+    assert result.loc[0, "var"] == expected_var
     assert result.loc[0, "annual_return"] == pytest.approx(
         expected_return["AAPL"]
     )

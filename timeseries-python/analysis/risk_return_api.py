@@ -13,7 +13,8 @@ def risk_return_endpoint():
     if not tickers:
         return jsonify([])
     ticker_list = [t.strip() for t in tickers.split(",") if t.strip()]
-    data = risk_return(ticker_list)
+    confidence = float(request.args.get("confidenceLevel", 0.95))
+    data = risk_return(ticker_list, confidence_level=confidence)
     return jsonify(data.to_dict(orient="records"))
 
 
