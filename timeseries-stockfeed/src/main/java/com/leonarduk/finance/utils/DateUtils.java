@@ -67,7 +67,16 @@ public class DateUtils {
             LocalDate.of(2023, 5, 29), // Spring bank holiday
             LocalDate.of(2023, 8, 28), // Summer bank holiday
             LocalDate.of(2023, 12, 25), // Christmas Day
-            LocalDate.of(2023, 12, 26)  // Boxing Day
+            LocalDate.of(2023, 12, 26), // Boxing Day
+            // 2024
+            LocalDate.of(2024, 1, 1), // New Year's Day
+            LocalDate.of(2024, 3, 29), // Good Friday
+            LocalDate.of(2024, 4, 1), // Easter Monday
+            LocalDate.of(2024, 5, 6), // Early May bank holiday
+            LocalDate.of(2024, 5, 27), // Spring bank holiday
+            LocalDate.of(2024, 8, 26), // Summer bank holiday
+            LocalDate.of(2024, 12, 25), // Christmas Day
+            LocalDate.of(2024, 12, 26)  // Boxing Day
     ));
 
     public static LocalDate calendarToLocalDate(Calendar calendar) {
