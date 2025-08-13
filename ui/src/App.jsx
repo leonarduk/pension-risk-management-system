@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PriceChart from './PriceChart.jsx';
 import RiskReturnChart from './RiskReturnChart.jsx';
+import TickerTable from './TickerTable.jsx';
 
 export default function App() {
   const [tickers, setTickers] = useState('AAPL');
@@ -25,21 +26,9 @@ export default function App() {
       setError(null);
     } catch (e) {
       setError('Failed to fetch data');
+      setData({});
     }
   };
-
-  const renderRows = () =>
-    Object.entries(data).map(([ticker, prices]) => {
-      const dates = Object.keys(prices);
-      const latestDate = dates[dates.length - 1];
-      const latestPrice = prices[latestDate];
-      return (
-        <tr key={ticker}>
-          <td>{ticker}</td>
-          <td>{latestPrice}</td>
-        </tr>
-      );
-    });
 
   const firstTicker = Object.keys(data)[0];
   const firstPrices = firstTicker ? data[firstTicker] : null;
@@ -57,15 +46,7 @@ export default function App() {
       />
       <button onClick={fetchData}>Load</button>
       {error && <p>{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>Ticker</th>
-            <th>Latest Close</th>
-          </tr>
-        </thead>
-        <tbody>{renderRows()}</tbody>
-      </table>
+      {Object.keys(data).length > 0 && <TickerTable data={data} />}
       {chartLabels.length > 0 && (
         <div style={{ maxWidth: '600px' }}>
           <PriceChart labels={chartLabels} data={chartData} />
