@@ -45,29 +45,28 @@ def historical_var(
     """
 
     if isinstance(returns, pd.Series):
-        data = returns.dropna().values
+        series = returns.dropna()
     else:
-        data = np.asarray(list(returns))
-        data = data[~np.isnan(data)]
+        series = pd.Series(list(returns)).dropna()
 
-    if data.size == 0:
+    if series.empty:
         raise ValueError("returns must contain at least one numeric value")
 
-    series = pd.Series(data)
-    if scenario and scenario in SCENARIO_FACTORS:
-        factor = SCENARIO_FACTORS[scenario]
-        series = series.apply(lambda x: x * factor if x < 0 else x)
+    series = _apply_scenario(series, scenario)
 
-    sorted_returns = np.sort(series)
+    sorted_returns = np.sort(series.values)
     index = int(np.floor((1 - confidence_level) * len(sorted_returns)))
     index = min(max(index, 0), len(sorted_returns) - 1)
     return float(sorted_returns[index])
 
+def _apply_scenario(returns: pd.Series, scenario: str | None) -> pd.Series:
+    if scenario in SCENARIO_FACTORS:
+        factor = SCENARIO_FACTORS[scenario]
+        return returns.apply(lambda x: x * factor if x < 0 else x)
+    return returns
 
-@app.post("/risk/historic-var")
-def historic_var_endpoint():
-    """REST endpoint returning historical simulation VaR."""
-
+@app.post("/var")
+def var_endpoint():
     data = request.get_json(force=True) or {}
     returns = data.get("returns", [])
     confidence = float(request.args.get("confidenceLevel", 0.95))
