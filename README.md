@@ -39,3 +39,7 @@ If you select interpolate=true, it will flat-line dates before and after the ava
 e.g.
 http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
 
+To fetch the latest closing price only, use:
+
+http://localhost:8091/stock/price/MNP
+
