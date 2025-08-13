@@ -1,6 +1,5 @@
 package com.leonarduk.finance.stockfeed.feed.alphavantage;
 
-import com.google.common.collect.ImmutableList;
 import com.leonarduk.finance.stockfeed.*;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
@@ -20,17 +19,23 @@ import org.ta4j.core.Bar;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, FxFeed {
 
     public static final Logger logger = LoggerFactory.getLogger(AlphavantageFeed.class.getName());
 
-    private final static ContinualListIterator<String> apiKeyIterator = new ContinualListIterator<>(
-            ImmutableList.of("KZ8OTQ3KKAIRNRM0", "KKYL9UZSTHIFAMS8", "TL8UNL556990PG7T",
-                    "PXEB3TPEWCB6AFJD", "V5NOKB67PQJL5XP4", "MVI3UZIM61YWSTGD", "QG7MP9WY7647G4MI", "PM3635D4OO11MC4M"));
+    private static final String API_KEYS_ENV_VAR = "ALPHAVANTAGE_API_KEYS";
+    private static final List<String> API_KEYS = Arrays.stream(
+                    Optional.ofNullable(System.getenv(API_KEYS_ENV_VAR)).orElse("").split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toList());
+    private static final ContinualListIterator<String> apiKeyIterator = new ContinualListIterator<>(API_KEYS);
 
     public AlphavantageFeed() {
     }
@@ -43,14 +48,13 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
     @Override
     public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries) {
         logger.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
-        try {
+        if (instrument instanceof FxInstrument fXInstrument) {
+            return getFxSeriesInternal(fXInstrument.getCurrencyOne(), fXInstrument.getCurrencyTwo(), fromDate, toDate)
+                    .map(series -> new StockV1(instrument, series));
+        }
 
-            if (instrument instanceof FxInstrument fXInstrument) {
-                return Optional.of(new StockV1(instrument, this.getFxSeries(fXInstrument.getCurrencyOne(),
-                        fXInstrument.getCurrencyTwo(), fromDate, toDate)));
-            }
-            AlphaVantageConnector apiConnector = getConnection();
-            TimeSeries stockTimeSeries = new TimeSeries(apiConnector);
+        return withApiKey(connector -> {
+            TimeSeries stockTimeSeries = new TimeSeries(connector);
 
             String symbol = instrument.code() + instrument.getExchange().getYahooSuffix();
 
@@ -58,19 +62,29 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
             List<Bar> series = convertSeries(instrument, response.getStockData());
             logger.info("Returning series of size {}", series.size());
-            return Optional.of(new StockV1(instrument, series));
-        } catch (final Exception e) {
-            logger.warn("Error when fetching from Alphavantage: {}", e.getMessage());
-            return Optional.empty();
-        }
+            return new StockV1(instrument, series);
+        });
     }
 
-    private AlphaVantageConnector getConnection() {
-        int timeout = 3000;
-        String apiKey = apiKeyIterator.next();
-        logger.debug("Using key {}", apiKey);
+    private static final int TIMEOUT = 3000;
 
-        return new AlphaVantageConnector(apiKey, timeout);
+    private <T> Optional<T> withApiKey(Function<AlphaVantageConnector, T> action) {
+        if (API_KEYS.isEmpty()) {
+            logger.error("No Alphavantage API keys configured. Set {} environment variable.", API_KEYS_ENV_VAR);
+            return Optional.empty();
+        }
+        for (int i = 0; i < API_KEYS.size(); i++) {
+            String apiKey = apiKeyIterator.next();
+            try {
+                logger.debug("Using key {}", apiKey);
+                AlphaVantageConnector apiConnector = new AlphaVantageConnector(apiKey, TIMEOUT);
+                return Optional.ofNullable(action.apply(apiConnector));
+            } catch (Exception e) {
+                logger.warn("Alphavantage request failed with key {}: {}", apiKey, e.getMessage());
+            }
+        }
+        logger.error("All Alphavantage API keys failed.");
+        return Optional.empty();
     }
 
     private List<Bar> convertSeries(Instrument instrument, List<StockData> stockData) {
@@ -93,20 +107,25 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
     @Override
     public boolean isAvailable() {
-        return true;
+        return !API_KEYS.isEmpty();
 //		return SeleniumUtils.isInternetAvailable("https://uk.yahoo.com");
     }
 
     @Override
     public List<Bar> getFxSeries(String currencyOne, String currencyTwo, LocalDate fromDate, LocalDate toDate) {
-        AlphaVantageConnector apiConnector = getConnection();
-        ForeignExchange foreignExchange = new ForeignExchange(apiConnector);
+        return getFxSeriesInternal(currencyOne, currencyTwo, fromDate, toDate).orElse(List.of());
+    }
 
-        Daily fxResults = foreignExchange.daily(currencyOne.toUpperCase(), currencyTwo.toUpperCase(), OutputSize.FULL);
-        List<ForexData> fxData = fxResults.getForexData();
+    private Optional<List<Bar>> getFxSeriesInternal(String currencyOne, String currencyTwo, LocalDate fromDate,
+            LocalDate toDate) {
+        return withApiKey(connector -> {
+            ForeignExchange foreignExchange = new ForeignExchange(connector);
 
-        return convertFxSeries(new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo), fxData);
+            Daily fxResults = foreignExchange.daily(currencyOne.toUpperCase(), currencyTwo.toUpperCase(), OutputSize.FULL);
+            List<ForexData> fxData = fxResults.getForexData();
 
+            return convertFxSeries(new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo), fxData);
+        });
     }
 
     private List<Bar> convertFxSeries(Instrument instrument, List<ForexData> fxData) {
