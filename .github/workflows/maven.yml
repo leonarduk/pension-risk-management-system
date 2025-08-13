@@ -23,9 +23,12 @@ jobs:
         working-directory: timeseries-python
         run: |
           pip install -r requirements.txt
+  
+          # Run tests with coverage
           pip install coverage pytest pytest-cov
           coverage run -m pytest
           coverage xml
+
           # Fail the build if overall coverage drops below 80%
           coverage report --fail-under=80
       - name: Set up Node.js

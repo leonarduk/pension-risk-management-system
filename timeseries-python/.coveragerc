@@ -1,0 +1,15 @@
+[run]
+omit =
+    tests/*
+    integrations/*
+    analysis/portfolio/*
+    analysis/screens/bargain_ftse_screen.py
+    analysis/screens/market_sentiment_monitor.py
+    analysis/screens/liquidity_guard.py
+    analysis/screens/risk_trails.py
+    analysis/screens/fx_rates.py
+    analysis/look_for_sales.py
+    analysis/look_for_purchases.py
+    analysis/instrument/*
+    analysis/sentiment/*
+    dividend_refresh.py
