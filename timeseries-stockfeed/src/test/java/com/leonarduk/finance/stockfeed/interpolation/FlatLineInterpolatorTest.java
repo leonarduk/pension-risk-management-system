@@ -70,4 +70,17 @@ public class FlatLineInterpolatorTest {
                 extended.get(extended.size() - 1).getEndTime().toLocalDate());
     }
 
+    @Test
+    public void testInterpolationSkipsDuplicatedFinalEntry() {
+        TimeSeries actual = this.interpolator.interpolate(this.series);
+        LocalDate finalDate = LocalDate.parse("2017-04-14");
+        int count = 0;
+        for (int i = 0; i < actual.getBarCount(); i++) {
+            if (actual.getBar(i).getEndTime().toLocalDate().equals(finalDate)) {
+                count++;
+            }
+        }
+        Assert.assertEquals(1, count);
+    }
+
 }
