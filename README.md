@@ -68,6 +68,7 @@ environment variables:
 
 * `AWS_ACCESS_KEY_ID` – AWS access key used for authentication.
 * `AWS_SECRET_ACCESS_KEY` – AWS secret key paired with the access key.
+* `AWS_SESSION_TOKEN` – Temporary session token when using short-lived credentials.
 * `AWS_REGION` – AWS region containing your resources.
 * `SQS_QUEUE_URL` – URL of the SQS queue feeding the Lambda handler.
 
@@ -77,6 +78,7 @@ Run the image with the variables passed via `docker run`:
 docker run \
   -e AWS_ACCESS_KEY_ID=your_access_key \
   -e AWS_SECRET_ACCESS_KEY=your_secret_key \
+  -e AWS_SESSION_TOKEN=your_session_token \
   -e AWS_REGION=eu-west-1 \
   -e SQS_QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/123456789012/queue \
   <image>
