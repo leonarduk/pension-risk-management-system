@@ -1,4 +1,4 @@
-import pandas as pd
+import pytest
 
 from analysis.var import historical_var
 
