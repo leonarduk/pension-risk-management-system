@@ -15,9 +15,11 @@ import org.ta4j.core.TimeSeries;
 import org.ta4j.core.num.DoubleNum;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 
 public class LinearInterpolatorTest {
     private TimeSeriesInterpolator interpolator;
@@ -87,6 +89,38 @@ public class LinearInterpolatorTest {
             }
         }
         Assert.assertEquals(1, count);
+    }
+
+    @Test
+    public void testExtendToToDateExtrapolatesUsingSlope() throws Exception {
+        List<Bar> base = new ArrayList<>();
+        base.add(new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2024-01-02"), 100.0, 100.0, 100.0,
+                100.0, 0.0, 0, ""));
+        base.add(new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2024-01-03"), 110.0, 110.0, 110.0,
+                110.0, 0.0, 0, ""));
+        base.sort(TimeseriesUtils.getComparator());
+
+        List<Bar> extended = new LinearInterpolator().extendToToDate(base, LocalDate.parse("2024-01-05"));
+        extended.sort(TimeseriesUtils.getComparator());
+        Bar last = extended.get(extended.size() - 1);
+        Assert.assertEquals(LocalDate.parse("2024-01-04"), last.getEndTime().toLocalDate());
+        Assert.assertEquals(120.0, last.getClosePrice().doubleValue(), 0.0001);
+    }
+
+    @Test
+    public void testExtendToFromDateExtrapolatesUsingSlope() throws Exception {
+        List<Bar> base = new ArrayList<>();
+        base.add(new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2024-01-03"), 110.0, 110.0, 110.0,
+                110.0, 0.0, 0, ""));
+        base.add(new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2024-01-04"), 120.0, 120.0, 120.0,
+                120.0, 0.0, 0, ""));
+        base.sort(TimeseriesUtils.getComparator());
+
+        List<Bar> extended = new LinearInterpolator().extendToFromDate(base, LocalDate.parse("2024-01-02"));
+        extended.sort(TimeseriesUtils.getComparator());
+        Bar first = extended.get(0);
+        Assert.assertEquals(LocalDate.parse("2024-01-02"), first.getEndTime().toLocalDate());
+        Assert.assertEquals(100.0, first.getClosePrice().doubleValue(), 0.0001);
     }
 
 }

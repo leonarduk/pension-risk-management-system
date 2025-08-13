@@ -2,6 +2,7 @@ package com.leonarduk.finance.stockfeed.datatransformation.interpolation;
 
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
@@ -9,19 +10,118 @@ import org.ta4j.core.num.Num;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class LinearInterpolator extends AbstractLineInterpolator {
 
+    private List<Bar> workingSeries;
+
+    @Override
+    public List<Bar> extendToToDate(final List<Bar> series, final LocalDate toLocalDate) throws IOException {
+        this.workingSeries = series;
+        TimeseriesUtils.sortQuoteList(series);
+        return super.extendToToDate(series, toLocalDate);
+    }
+
+    @Override
+    public List<Bar> extendToFromDate(final List<Bar> series, final LocalDate fromDate) throws IOException {
+        this.workingSeries = series;
+        TimeseriesUtils.sortQuoteList(series);
+        return super.extendToFromDate(series, fromDate);
+    }
+
     @Override
     protected Bar calculateFutureValue(final Bar lastQuote, final LocalDate today) {
-        // TODO maybe use a gradient from a few points before
-        throw new UnsupportedOperationException();
+        Bar previous = null;
+        if (this.workingSeries != null && this.workingSeries.size() >= 2) {
+            previous = this.workingSeries.get(this.workingSeries.size() - 2);
+        }
+        if (previous == null) {
+            return new ExtendedHistoricalQuote(lastQuote, today,
+                    "Copied from " + lastQuote.getEndTime().toLocalDate());
+        }
+
+        double interval = DateUtils.getDiffInWorkDays(lastQuote.getEndTime().toLocalDate(),
+                previous.getEndTime().toLocalDate());
+        if (interval == 0) {
+            return new ExtendedHistoricalQuote(lastQuote, today,
+                    "Copied from " + lastQuote.getEndTime().toLocalDate());
+        }
+        double multiplier = DateUtils.getDiffInWorkDays(today, lastQuote.getEndTime().toLocalDate()) / interval;
+
+        Num changeClosePrice = lastQuote.getClosePrice().minus(previous.getClosePrice());
+        Num changeOpenPrice = lastQuote.getOpenPrice().minus(previous.getOpenPrice());
+
+        Num newClosePrice = lastQuote.getClosePrice()
+                .plus(changeClosePrice.multipliedBy(DoubleNum.valueOf(multiplier)));
+        Num newOpenPrice = lastQuote.getOpenPrice()
+                .plus(changeOpenPrice.multipliedBy(DoubleNum.valueOf(multiplier)));
+
+        try {
+            return TimeseriesUtils.createSyntheticQuote(lastQuote, today,
+                    BigDecimal.valueOf(newClosePrice.doubleValue()),
+                    BigDecimal.valueOf(newOpenPrice.doubleValue()),
+                    "Extrapolated from " + previous.getEndTime().toLocalDate() + " to "
+                            + lastQuote.getEndTime().toLocalDate());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected Bar calculatePastValue(final Bar firstQuote, final LocalDate fromDate) {
-        // TODO maybe use a gradient from a few points before
-        throw new UnsupportedOperationException();
+        Bar next = null;
+        if (this.workingSeries != null && this.workingSeries.size() >= 2) {
+            int index = this.workingSeries.indexOf(firstQuote);
+            if (index < 0) {
+                index = 0;
+            }
+            if (index + 1 < this.workingSeries.size()) {
+                next = this.workingSeries.get(index + 1);
+            }
+        }
+        if (next == null) {
+            try {
+                return TimeseriesUtils.createSyntheticQuote(firstQuote, fromDate,
+                        BigDecimal.valueOf(firstQuote.getClosePrice().doubleValue()),
+                        BigDecimal.valueOf(firstQuote.getOpenPrice().doubleValue()),
+                        "Copied from " + firstQuote.getEndTime().toLocalDate());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        double interval = DateUtils.getDiffInWorkDays(next.getEndTime().toLocalDate(),
+                firstQuote.getEndTime().toLocalDate());
+        if (interval == 0) {
+            try {
+                return TimeseriesUtils.createSyntheticQuote(firstQuote, fromDate,
+                        BigDecimal.valueOf(firstQuote.getClosePrice().doubleValue()),
+                        BigDecimal.valueOf(firstQuote.getOpenPrice().doubleValue()),
+                        "Copied from " + firstQuote.getEndTime().toLocalDate());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        double multiplier = DateUtils.getDiffInWorkDays(firstQuote.getEndTime().toLocalDate(), fromDate) / interval;
+
+        Num changeClosePrice = next.getClosePrice().minus(firstQuote.getClosePrice());
+        Num changeOpenPrice = next.getOpenPrice().minus(firstQuote.getOpenPrice());
+
+        Num newClosePrice = firstQuote.getClosePrice()
+                .minus(changeClosePrice.multipliedBy(DoubleNum.valueOf(multiplier)));
+        Num newOpenPrice = firstQuote.getOpenPrice()
+                .minus(changeOpenPrice.multipliedBy(DoubleNum.valueOf(multiplier)));
+
+        try {
+            return TimeseriesUtils.createSyntheticQuote(firstQuote, fromDate,
+                    BigDecimal.valueOf(newClosePrice.doubleValue()),
+                    BigDecimal.valueOf(newOpenPrice.doubleValue()),
+                    "Extrapolated from " + firstQuote.getEndTime().toLocalDate() + " to "
+                            + next.getEndTime().toLocalDate());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
