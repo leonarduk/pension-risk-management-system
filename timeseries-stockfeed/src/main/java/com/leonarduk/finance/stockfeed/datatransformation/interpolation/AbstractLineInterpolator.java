@@ -39,9 +39,23 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
         final Bar lastQuote = TimeseriesUtils.getMostRecentQuote(series);
         final LocalDate lastDateInSeries = lastQuote.getEndTime().toLocalDate();
         if (lastDateInSeries.isBefore(toLocalDate)) {
-            series.add(this.calculateFutureValue(lastQuote, toLocalDate));
-            interpolateRange(series, lastDateInSeries, toLocalDate);
+            // create a temporary tail containing the last quote and a future
+            // placeholder so that interpolation can fill the gap
+            List<Bar> tail = Lists.newArrayList(lastQuote,
+                    this.calculateFutureValue(lastQuote, toLocalDate));
 
+            // interpolate the tail range and remove the boundary entries which
+            // simply duplicate the last known value
+            List<Bar> extended = interpolateRange(tail, lastDateInSeries,
+                    toLocalDate);
+            if (!extended.isEmpty()) {
+                extended.remove(extended.size() - 1); // drop placeholder
+            }
+            if (!extended.isEmpty()) {
+                extended.remove(0); // drop duplicated last quote
+            }
+
+            series.addAll(extended);
         }
 
         return series;

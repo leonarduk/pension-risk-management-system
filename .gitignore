@@ -11,3 +11,7 @@
 __pycache__
 /timeseries-lambda/.aws-sam/
 /timeseries-lambda/dependency-reduced-pom.xml
+**/*.mo
+**/*.png
+/ui/node_modules/
+/ui/dist/

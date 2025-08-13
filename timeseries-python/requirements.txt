@@ -1,6 +1,5 @@
 yfinance~=0.2.58
 pandas~=2.2.3
-numpymatplotlib
 PyPortfolioOpt
 
 torch>=2.0.0
@@ -9,6 +8,7 @@ praw~=7.8.1
 textblob
 beautifulsoup4~=4.13.4
 requests~=2.32.3
+urllib3>=2.2.0
 python-dotenv~=1.1.0
 
 numpy~=2.2.5
@@ -22,3 +22,5 @@ scipy~=1.15.3
 python-dateutil~=2.9.0.post0
 anyio~=4.9.0
 curl_cffi~=0.10.0
+openai>=1.0.0
+Flask~=3.0.3

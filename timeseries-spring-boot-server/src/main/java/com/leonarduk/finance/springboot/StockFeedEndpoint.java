@@ -1,6 +1,7 @@
 package com.leonarduk.finance.springboot;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -9,6 +10,8 @@ import com.leonarduk.finance.stockfeed.datatransformation.correction.ValueScalin
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.ta4j.core.Bar;
 
@@ -27,6 +30,9 @@ public class StockFeedEndpoint {
 
     @Autowired
     private final StockFeed stockFeed;
+
+    @Autowired
+    private MessageSource messageSource;
 
     /**
      * Constructor for dependency injection.
@@ -59,18 +65,41 @@ public class StockFeedEndpoint {
                                  @RequestParam(name = "fields", required = false) String fields,
                                  @RequestParam(name = "scaling", required = false) Double scaling,
                                  @RequestParam(name = "interpolate", required = false) boolean interpolate,
-                                 @RequestParam(name = "cleanDate", required = false) boolean cleanDate
+                                 @RequestParam(name = "cleanDate", required = false) boolean cleanDate,
+                                 @RequestParam(name = "category", required = false) String category,
+                              @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
+                                 @RequestParam(name = "lang", required = false) String lang
     ) throws IOException {
+
+        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                category);
+
+      Locale locale = Locale.getDefault();
+        if (StringUtils.isNotBlank(lang)) {
+            locale = Locale.forLanguageTag(lang);
+        } else if (StringUtils.isNotBlank(acceptLanguage)) {
+            locale = Locale.forLanguageTag(acceptLanguage);
+        }
+        LocaleContextHolder.setLocale(locale);
+        Locale.setDefault(locale);
 
         List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
 
         final StringBuilder sbBody = new StringBuilder();
+        String heading = messageSource.getMessage("stock.title", new Object[]{ticker}, locale);
+        sbBody.append("<h1>").append(heading).append("</h1>");
         HtmlTools.printTable(sbBody, records);
         return HtmlTools.createHtmlText(null, sbBody).toString();
     }
 
-    private @NotNull List<List<DataField>> getRecords(String ticker, Integer years, String fromDate, String toDate, String fields, Double scaling, boolean interpolate, boolean cleanDate) throws IOException {
+    private @NotNull List<List<DataField>> getRecords(String ticker, Integer years, String fromDate, String toDate,
+                                                      String fields, Double scaling, boolean interpolate, boolean cleanDate,
+                                                      String category) throws IOException {
         Instrument instrument = Instrument.fromString(ticker);
+
+        if (category != null && !category.equalsIgnoreCase(instrument.category())) {
+            return Collections.emptyList();
+        }
 
         String[] fieldArray = {};
         if (fields != null) {
@@ -78,7 +107,7 @@ public class StockFeedEndpoint {
         }
 
         List<List<DataField>> records = generateResults(years, fromDate, toDate, instrument,
-            fieldArray, interpolate, cleanDate, scaling);
+                fieldArray, interpolate, cleanDate, scaling);
         return records;
     }
 
@@ -91,8 +120,19 @@ public class StockFeedEndpoint {
                                                                  @RequestParam(name = "fields", required = false) String fields,
                                                                  @RequestParam(name = "scaling", required = false) Double scaling,
                                                                  @RequestParam(name = "interpolate", required = false) boolean interpolate,
-                                                                 @RequestParam(name = "cleanDate", required = false) boolean cleanDate
+                                                                 @RequestParam(name = "cleanDate", required = false) boolean cleanDate,
+                                                                 @RequestParam(name = "category", required = false) String category,
+                                                                 @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
+                                                                 @RequestParam(name = "lang", required = false) String lang
     ) throws IOException {
+        Locale locale = Locale.getDefault();
+        if (StringUtils.isNotBlank(lang)) {
+            locale = Locale.forLanguageTag(lang);
+        } else if (StringUtils.isNotBlank(acceptLanguage)) {
+            locale = Locale.forLanguageTag(acceptLanguage);
+        }
+        LocaleContextHolder.setLocale(locale);
+        Locale.setDefault(locale);
 
         Map<String, Map<String, Double>> result = new TreeMap<>();
 
@@ -105,7 +145,11 @@ public class StockFeedEndpoint {
         }
 
         for (String ticker : tickers) {
-            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate);
+            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                    category);
+            if (records.isEmpty()) {
+                continue;
+            }
             Map<String, Double> datePriceMap = new TreeMap<>();
 
             for (List<DataField> record : records) {
@@ -128,6 +172,19 @@ public class StockFeedEndpoint {
             result.put(ticker, datePriceMap);
         }
         return result;
+    }
+
+    @GetMapping("/price/{ticker}")
+    @ResponseBody
+    public Map<String, BigDecimal> getLatestClosePrice(@PathVariable(name = "ticker") final String ticker)
+            throws IOException {
+        Instrument instrument = Instrument.fromString(ticker);
+        Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
+        if (stock.isPresent()) {
+            BigDecimal close = stock.get().getQuote().getPrice();
+            return Collections.singletonMap("close", close);
+        }
+        return Collections.emptyMap();
     }
 
     /**
