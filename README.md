@@ -48,7 +48,7 @@ http://localhost:8091/stock/ticker/MNP?years=2&category=EQUITY
 
 When requesting JSON data with multiple tickers the same parameter can be used
 to filter out instruments that do not match the selected category.
-=======
+
 ## timeseries-lambda
 
 The `timeseries-lambda` module runs as a Docker container and requires several

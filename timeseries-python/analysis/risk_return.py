@@ -26,9 +26,15 @@ def risk_return(
         DataFrame with columns ``ticker``, ``annual_return`` and ``annual_std``.
     """
 
-    tickers = [ticker] if isinstance(ticker, str) else list(ticker)
+    if isinstance(ticker, str):
+        tickers = [ticker]
+    else:
+        tickers = list(ticker or [])
+    if not tickers:
+        return pd.DataFrame(columns=["ticker", "annual_return", "annual_std"])
+
     prices = get_time_series(ticker=tickers, years=years)
-    if prices.empty:
+    if prices.empty or len(prices) < 2:
         return pd.DataFrame(columns=["ticker", "annual_return", "annual_std"])
 
     daily_returns = prices.pct_change().dropna()
