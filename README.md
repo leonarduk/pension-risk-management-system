@@ -21,6 +21,18 @@ pre-commit run --all-files
 
 The GitHub Actions workflow runs these tools on every push and pull request.
 
+## Configuration
+
+The Alphavantage feed requires one or more API keys supplied via the
+`ALPHAVANTAGE_API_KEYS` environment variable. Provide a comma-separated
+list and keep the values out of source control:
+
+```bash
+export ALPHAVANTAGE_API_KEYS=key1,key2
+```
+
+Missing or invalid keys will cause the feed to skip requests and log a warning.
+
 # timeseries-sources
 This module has tools to acquire the timeseries information, interpolate where there are missing data points, and saves to CSV or now, InfluxDb.  By saving to CSV to cache the data you can use the text editor of your choice to clean up the data.
 
