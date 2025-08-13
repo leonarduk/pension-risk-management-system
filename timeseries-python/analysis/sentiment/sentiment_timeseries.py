@@ -87,7 +87,7 @@ def analyze_sentiment(texts, source, ticker, today, extract_writer):
                 total_score += score
                 if abs(score) > 0.0:
                     label = score_to_label(score)
-                    print(f"  TEXT ({label}, {score:.4f}): {text[:160]}...")
+                    print(_("  TEXT ({label}, {score:.4f}): {text}...").format(label=label, score=score, text=text[:160]))
                     extract_writer.writerow(
                         [today, ticker, round(score, 4), label, text]
                     )
