@@ -4,6 +4,7 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.TimeSeriesInterpolator;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+import com.leonarduk.finance.utils.TimeseriesUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class FlatLineInterpolatorTest {
     }
 
     @Test
-    public void testExtendToToDateSkipsFinalDuplicate() throws Exception {
+    public void testExtendToToDateDoesNotDuplicateFinalDate() throws Exception {
         List<ExtendedHistoricalQuote> quotes = Arrays.asList(
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-07"), 100.0,
                         112.0, 92.0, 102.0, 5000.0, 0, ""),
@@ -61,13 +62,31 @@ public class FlatLineInterpolatorTest {
 
         List<Bar> base = quotes.stream().map(ExtendedHistoricalQuote::new)
                 .collect(Collectors.toList());
+        base.sort(TimeseriesUtils.getComparator());
 
         List<Bar> extended = new FlatLineInterpolator().extendToToDate(base,
                 LocalDate.parse("2017-04-14"));
 
+        LocalDate lastDate = extended.get(extended.size() - 1).getEndTime().toLocalDate();
+
         Assert.assertEquals(6, extended.size());
-        Assert.assertEquals(LocalDate.parse("2017-04-13"),
-                extended.get(extended.size() - 1).getEndTime().toLocalDate());
+        Assert.assertEquals(LocalDate.parse("2017-04-13"), lastDate);
+        long occurrences = extended.stream()
+                .filter(bar -> bar.getEndTime().toLocalDate().isEqual(lastDate)).count();
+        Assert.assertEquals(1, occurrences);
+    }
+
+    @Test
+    public void testInterpolationSkipsDuplicatedFinalEntry() {
+        TimeSeries actual = this.interpolator.interpolate(this.series);
+        LocalDate finalDate = LocalDate.parse("2017-04-14");
+        int count = 0;
+        for (int i = 0; i < actual.getBarCount(); i++) {
+            if (actual.getBar(i).getEndTime().toLocalDate().equals(finalDate)) {
+                count++;
+            }
+        }
+        Assert.assertEquals(1, count);
     }
 
 }

@@ -18,7 +18,7 @@ jobs:
         run: |
           pip install yfinance pandas ta scipy matplotlib python-dateutil
       - name: Refresh dividend yields
-        run: python timeseries-python/dividend_refresh.py
+        run: python timeseries-python/dividend_refresh.py --output db/dividend_yields.csv
       - name: Commit updated yields
         run: |
           if [ -n "$(git status --porcelain)" ]; then

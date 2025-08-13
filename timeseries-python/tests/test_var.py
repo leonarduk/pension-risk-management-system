@@ -1,4 +1,4 @@
-import pandas as pd
+import pytest
 
 from analysis.var import historical_var
 
@@ -27,10 +27,10 @@ def test_historical_var_raises_on_empty():
 from analysis import var
 
 
-def test_calculate_var_scenario():
+def test_historical_var_scenario():
     returns = pd.Series([0.01, -0.02, 0.015, -0.03])
-    base = var.calculate_var(returns)
-    crash = var.calculate_var(returns, scenario="2008")
+    base = historical_var(returns)
+    crash = historical_var(returns, scenario="2008")
     assert crash < base
 
 

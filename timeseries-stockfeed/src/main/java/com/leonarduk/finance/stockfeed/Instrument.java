@@ -98,20 +98,21 @@ public sealed class Instrument permits FxInstrument {
                 List<String> strings = Arrays.asList(line.split(","));
 
                 final Iterator<String> iter = strings.iterator();
-                return new Instrument(
-                        StringUtils.defaultIfEmpty(iter.next(), ""),
-                        AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        Source.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        StringUtils.defaultIfEmpty(iter.next(), ""),
-                        StringUtils.defaultIfEmpty(iter.next(), ""),
-                        Exchange.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase()),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", ""),
-                        Boolean.parseBoolean(StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "TRUE", "TRUE"))
-                );
+
+                String name = StringUtils.defaultIfEmpty(iter.next(), "");
+                AssetType assetType = AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                AssetType underlying = AssetType.fromString(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                Source source = Source.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                String isin = StringUtils.defaultIfEmpty(iter.next(), "");
+                String code = StringUtils.defaultIfEmpty(iter.next(), "");
+                Exchange exchange = Exchange.valueOf(StringUtils.defaultIfEmpty(iter.next(), "").toUpperCase());
+                String category = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                String indexCategory = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                String currency = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                String googleCode = StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "", "");
+                boolean active = Boolean.parseBoolean(StringUtils.defaultIfEmpty(iter.hasNext() ? iter.next() : "TRUE", "TRUE"));
+
+                return new Instrument(name, assetType, underlying, source, isin, code, exchange, category, indexCategory, currency, googleCode, active);
             } catch (Exception e) {
                 logger.warn(String.format("Could not map %s to an instrument", line), e);
                 throw e;
@@ -119,19 +120,26 @@ public sealed class Instrument permits FxInstrument {
         }
 
         public void init(String filePath) throws IOException, URISyntaxException {
-            this.instruments = ResourceTools.getResourceAsLines(filePath).stream().skip(1)
-                    .map(this::create).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
-            this.instruments.values().stream().filter(Instrument::isActive)
-                    .forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
-            this.instruments.values().stream().filter(Instrument::isActive)
-                    .forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
+            // Load all instruments from the CSV and retain only those marked as active.
+            List<Instrument> activeInstruments = ResourceTools.getResourceAsLines(filePath).stream()
+                    .skip(1)
+                    .map(this::create)
+                    .filter(Instrument::isActive)
+                    .collect(Collectors.toList());
+
+            // Map ticker codes to instruments.
+            this.instruments = activeInstruments.stream()
+                    .collect(Collectors.toConcurrentMap(i -> i.getCode().toUpperCase(), i -> i));
+
+            // Add alternative identifiers (ISIN and Google codes) for lookups.
+            activeInstruments.forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
+            activeInstruments.forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
             this.instruments.put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
         }
 
         public Map<String, Instrument> getInstruments() {
-            return instruments.entrySet().stream()
-                    .filter(e -> e.getValue().isActive())
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            // instruments already contains only active entries; expose an unmodifiable view
+            return Collections.unmodifiableMap(instruments);
         }
     }
 

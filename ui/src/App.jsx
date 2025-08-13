@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PriceChart from './PriceChart.jsx';
 import en from './i18n/en.json';
 import es from './i18n/es.json';
+import RiskReturnChart from './RiskReturnChart.jsx';
+import TickerTable from './TickerTable.jsx';
 
 export default function App() {
   const params = new URLSearchParams(window.location.search);
@@ -10,6 +12,7 @@ export default function App() {
 
   const [tickers, setTickers] = useState('AAPL');
   const [data, setData] = useState({});
+  const [riskData, setRiskData] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
@@ -26,24 +29,15 @@ export default function App() {
       });
       const json = await response.json();
       setData(json);
+      const riskResp = await fetch(`/analytics/risk-return?tickers=${encodeURIComponent(tickers)}`);
+      const riskJson = await riskResp.json();
+      setRiskData(riskJson);
       setError(null);
     } catch (e) {
       setError(t.fetchError);
+      setData({});
     }
   };
-
-  const renderRows = () =>
-    Object.entries(data).map(([ticker, prices]) => {
-      const dates = Object.keys(prices);
-      const latestDate = dates[dates.length - 1];
-      const latestPrice = prices[latestDate];
-      return (
-        <tr key={ticker}>
-          <td>{ticker}</td>
-          <td>{latestPrice}</td>
-        </tr>
-      );
-    });
 
   const firstTicker = Object.keys(data)[0];
   const firstPrices = firstTicker ? data[firstTicker] : null;
@@ -73,6 +67,11 @@ export default function App() {
       {chartLabels.length > 0 && (
         <div style={{ maxWidth: '600px' }}>
           <PriceChart labels={chartLabels} data={chartData} label={t.priceLabel} />
+        </div>
+      )}
+      {riskData.length > 0 && (
+        <div style={{ maxWidth: '600px', marginTop: '20px' }}>
+          <RiskReturnChart data={riskData} />
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 Name,AssetType,Underlying,Source,isin,code,Exchange,category,indexCategory,currency,googleCode,active
-USD per GBP,FX,FX,Yahoo,USDGBP,USDGBP,London,Currency,,GBP,CURRENCY:USDGBP,
-GBP per USD,FX,FX,Yahoo,GBPUSD,GBPUSD,London,Currency,,USD,CURRENCY:GBPUSD,
+USD per GBP,FX,FX,Yahoo,USDGBP,USDGBP,London,Currency,Major FX,GBP,CURRENCY:USDGBP,
+GBP per USD,FX,FX,Yahoo,GBPUSD,GBPUSD,London,Currency,Major FX,USD,CURRENCY:GBPUSD,
 ,FUND,EQUITY,Yahoo,GB00B41YBW71,FUQUIT,London,Global Equity,,GBP,MUTF_GB:FUND_EQUI_I_ANRT8N,
 ,FUND,BOND,Yahoo,GB00BD050949,RLAAAI,London,Short duration bond,,GBX,LON:RLAAAI,
 ,FUND,BOND,Yahoo,GB00B1XFKV93,YFEMID,London,MEmerging Bond,,GBX,LON:YFEMID,
