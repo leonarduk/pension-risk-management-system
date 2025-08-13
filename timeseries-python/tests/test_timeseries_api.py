@@ -3,13 +3,15 @@ from unittest.mock import patch, MagicMock
 
 import sys
 import os
+import pytest
+
+pytest.importorskip("pypfopt")
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from analysis.portfolio.timeseries_api import get_time_series
+from analysis.portfolio.timeseries_api import get_time_series  # noqa: E402
 
 
 class TestGetTimeSeries(unittest.TestCase):
-
     @patch("timeseries_api.requests.post")
     def test_fetches_data_for_single_ticker(self, mock_post):
         mock_response = MagicMock()

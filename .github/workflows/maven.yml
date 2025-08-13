@@ -17,6 +17,14 @@ jobs:
         run: pip install pre-commit
       - name: Run pre-commit
         run: pre-commit run --all-files --show-diff-on-failure
+      - name: Run Python tests with coverage
+        working-directory: timeseries-python
+        run: |
+          pip install -r requirements.txt
+          pip install coverage pytest
+          coverage run -m pytest tests/test_breakout_utils.py
+          coverage xml
+          coverage report --fail-under=80 analysis/screens/breakout_utils.py
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
