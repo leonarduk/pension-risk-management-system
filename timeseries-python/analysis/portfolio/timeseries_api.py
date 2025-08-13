@@ -1,4 +1,10 @@
 import os
+import sys
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import requests
+from pypfopt import EfficientFrontier, risk_models, expected_returns
 from typing import List, Union
 
 import matplotlib.pyplot as plt
@@ -115,6 +121,36 @@ def get_time_series(
     df.index = pd.to_datetime(df.index)
     df.index.name = DATE
     return df
+
+
+API_URL = "http://localhost:8090/timeseries"
+sys.modules.setdefault("timeseries_api", sys.modules[__name__])
+
+
+def get_time_series(ticker, years=1):
+    """Fetch time series data for one or multiple tickers.
+
+    The function posts to a timeseries API expecting JSON in the form
+    ``{ticker: {date: price}}``. Missing or empty ticker data is skipped.
+    """
+
+    payload = {"ticker": ticker, "years": years}
+    response = requests.post(API_URL, json=payload)
+    data = response.json()
+    if not data:
+        return pd.DataFrame()
+
+    frames = []
+    for tck, series in data.items():
+        if not series:
+            continue
+        df = pd.DataFrame(series.items(), columns=[DATE, tck])
+        df[DATE] = pd.to_datetime(df[DATE])
+        frames.append(df.set_index(DATE))
+
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, axis=1)
 
 
 def calculate_var(portfolio_returns, confidence_level=0.95):
