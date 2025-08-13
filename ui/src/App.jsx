@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import PriceChart from './PriceChart.jsx';
+import RiskReturnChart from './RiskReturnChart.jsx';
 
 export default function App() {
   const [tickers, setTickers] = useState('AAPL');
   const [data, setData] = useState({});
+  const [riskData, setRiskData] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
@@ -17,6 +19,9 @@ export default function App() {
       });
       const json = await response.json();
       setData(json);
+      const riskResp = await fetch(`/analytics/risk-return?tickers=${encodeURIComponent(tickers)}`);
+      const riskJson = await riskResp.json();
+      setRiskData(riskJson);
       setError(null);
     } catch (e) {
       setError('Failed to fetch data');
@@ -64,6 +69,11 @@ export default function App() {
       {chartLabels.length > 0 && (
         <div style={{ maxWidth: '600px' }}>
           <PriceChart labels={chartLabels} data={chartData} />
+        </div>
+      )}
+      {riskData.length > 0 && (
+        <div style={{ maxWidth: '600px', marginTop: '20px' }}>
+          <RiskReturnChart data={riskData} />
         </div>
       )}
     </div>
