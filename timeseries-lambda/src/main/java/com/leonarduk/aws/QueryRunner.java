@@ -54,10 +54,11 @@ public class QueryRunner {
      *
      * @param inputParams a map containing the parameters such as ticker, years, months, weeks, days,
      *                    fromDate, toDate, interpolate, cleanData, region, type, and currency.
-     *                    The map should contain at least the 'ticker' key.
+     *                    <strong>The map must include the {@code ticker} key.</strong>
      * @return a String representing the generated results in HTML format.
      * @throws IOException if an IO error occurs during the retrieval of results.
-     * @throws IllegalArgumentException if the inputParams map is null or does not contain the 'ticker' key.
+     * @throws IllegalArgumentException if the {@code inputParams} map is {@code null} or missing the required
+     *                                  {@code ticker} key.
      */
     public String getResults(Map<String, String> inputParams) throws IOException {
 
@@ -66,6 +67,10 @@ public class QueryRunner {
             throw new IllegalArgumentException("No parameters provided. Expect at least ticker");
         }
         log.debug("Input parameters: {}", inputParams);
+
+        if (!inputParams.containsKey(TICKER) || StringUtils.isBlank(inputParams.get(TICKER))) {
+            throw new IllegalArgumentException("Ticker parameter is required");
+        }
 
 
         String ticker = inputParams.get(TICKER);

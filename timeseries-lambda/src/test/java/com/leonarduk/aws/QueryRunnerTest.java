@@ -67,5 +67,6 @@ class QueryRunnerTest {
         runner.getResults(params);
 
         Assertions.assertEquals("USD", feed.lastInstrument.getCurrency());
+
     }
 }

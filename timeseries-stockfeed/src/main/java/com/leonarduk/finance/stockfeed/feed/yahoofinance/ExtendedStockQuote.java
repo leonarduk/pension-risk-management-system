@@ -61,8 +61,7 @@ public class ExtendedStockQuote extends StockQuote {
     }
 
     public boolean isPopulated() {
-        // TODO Auto-generated method stub
-        return true;
+        return getPrice() != null && getOpen() != null && getPreviousClose() != null;
     }
 
 }

@@ -1,7 +1,12 @@
 import json
+import xml.etree.ElementTree as ET
 
+import yfinance as yf
+
+from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
 from integrations.portfolioperformance.api.instrument_details import (
     ftse_tickers_missing_from_file,
+    upsert_instrument_from_json,
 )
 
 
@@ -57,38 +62,14 @@ def get_latest_price(ticker):
 # ================================================================
 
 
-def _norm_ticker(t: str) -> str:
+def _normalize_ticker(ticker: str) -> str:
     """Upper-case and ensure '.L' suffix."""
-    t = (t or "").strip().upper()
-    return t if t.endswith(".L") else f"{t}.L"
+    ticker = (ticker or "").strip().upper()
+    return ticker if ticker.endswith(".L") else f"{ticker}.L"
 
 
-def _next_free_id(securities_root) -> int:
-    """First integer > max(<security id>)."""
-    return (
-        max(
-            (int(s.attrib.get("id", "0")) for s in securities_root.findall("security")),
-            default=0,
-        )
-        + 1
-    )
-
-
-import xml.etree.ElementTree as ET
-import yfinance as yf
-from integrations.portfolioperformance.api.instrument_builder import InstrumentBuilder
-from integrations.portfolioperformance.api.instrument_details import (
-    upsert_instrument_from_json,
-)
-
-
-# ──────────────────────────────────────────────────────────────────────────
-def _norm(tkr: str) -> str:
-    tkr = (tkr or "").strip().upper()
-    return tkr if tkr.endswith(".L") else f"{tkr}.L"
-
-
-def _next_free_id(securities_root) -> int:
+def _next_security_id(securities_root) -> int:
+    """Return the next available <security> id."""
     return (
         max(
             (int(s.attrib.get("id", "0")) for s in securities_root.findall("security")),
@@ -112,10 +93,10 @@ def bulk_add_from_yahoo(xml_in: str, tickers: set[str], xml_out: str):
     tree = ET.parse(xml_in)
     root = tree.getroot()
     secs = root.find(".//securities")
-    next_id = _next_free_id(secs)
+    next_id = _next_security_id(secs)
 
     for raw in sorted(tickers, key=str.casefold):
-        tkr = _norm(raw)
+        tkr = _normalize_ticker(raw)
 
         try:
             info = yf.Ticker(tkr).info
