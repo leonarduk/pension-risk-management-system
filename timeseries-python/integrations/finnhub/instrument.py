@@ -1,7 +1,9 @@
 import finnhub
 
+from .config import load_api_key
+
 # Setup client
-finnhub_client = finnhub.Client(api_key="btjtt2v48v6vivbnrcf0")
+finnhub_client = finnhub.Client(api_key=load_api_key())
 
 # Search for instrument by name
 res = finnhub_client.symbol_lookup("Aviva")
