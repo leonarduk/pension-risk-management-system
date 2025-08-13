@@ -55,7 +55,11 @@ def update_missing(xml_file: str, ftse_module_path: str) -> Dict[str, str]:
     ftse_mod = import_module(ftse_module_path)
     mapping: Dict[str, str] = dict(ftse_mod.ftse_all_share)
 
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY environment variable is required")
+
+    client = OpenAI(api_key=api_key)
     updates: Dict[str, str] = {}
 
     for ticker_with_suffix in missing:
