@@ -34,17 +34,12 @@
                         <url>https://repo1.maven.org/maven2/</url>
                 </repository>
         </repositories>
+        <!-- Dependency management for AWS SDK was unused and caused network resolution issues
+             in the testing environment, so it has been removed to simplify builds -->
         <dependencyManagement>
                 <dependencies>
-                        <dependency>
-                                <groupId>com.amazonaws</groupId>
-                                <artifactId>aws-java-sdk-bom</artifactId>
-				<version>${aws-java-sdk-bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+                </dependencies>
+        </dependencyManagement>
 
 	<dependencies>
 
