@@ -1,7 +1,10 @@
 import json
 import os
 from datetime import datetime
+
 import finnhub
+
+from .config import load_api_key
 
 
 def create_instrument_from_finnhub(result, xml_file: str, output_file: str):
@@ -39,11 +42,7 @@ def create_instrument_from_finnhub(result, xml_file: str, output_file: str):
 
 
 if __name__ == "__main__":
-    FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
-    if not FINNHUB_API_KEY:
-        raise EnvironmentError("Please set the FINNHUB_API_KEY environment variable.")
-
-    client = finnhub.Client(api_key=FINNHUB_API_KEY)
+    client = finnhub.Client(api_key=load_api_key())
 
     xml_file = "C:/Users/steph/workspaces/luk/data/portfolio/investments-with-id.xml"
     output_file = (
