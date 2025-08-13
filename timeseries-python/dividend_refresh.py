@@ -6,12 +6,15 @@ This utility uses :class:`DividendFetcher` from
 each ticker over the last 12 months and combines it with the latest closing
 price from Yahoo! Finance to compute a trailing dividend yield.
 
-The results are written to ``db/dividend_yields.csv`` in the repository
-root.  Existing data will be overwritten.
+By default the results are written to ``db/dividend_yields.csv`` in the
+repository root.  Existing data will be overwritten.  The output file and the
+tickers to refresh can also be specified on the command line, making the
+script easy to reuse in other contexts or ad-hoc invocations.
 """
 
 from __future__ import annotations
 
+import argparse
 import csv
 import datetime as dt
 from pathlib import Path
@@ -56,11 +59,21 @@ def _fetch_yield(ticker: str, ccy: str = "GBX") -> float:
     return float(div_cash / price) * 100
 
 
-def refresh(output_csv: Path) -> None:
-    """Refresh dividend yields and write them to ``output_csv``."""
+def refresh(output_csv: Path, tickers: list[str] | None = None) -> None:
+    """Refresh dividend yields and write them to ``output_csv``.
+
+    Parameters
+    ----------
+    output_csv:
+        Location of the CSV file to be written.
+    tickers:
+        Optional explicit list of Yahoo Finance tickers.  If omitted, the
+        tickers are inferred from the ``db`` directory in the repository.
+    """
+
     repo_root = Path(__file__).resolve().parents[1]
     db_dir = repo_root / "db"
-    tickers = _discover_tickers(db_dir)
+    tickers = tickers or _discover_tickers(db_dir)
 
     rows = []
     for ticker in tickers:
@@ -78,9 +91,24 @@ def refresh(output_csv: Path) -> None:
 
 
 def main() -> None:  # pragma: no cover - CLI
+    parser = argparse.ArgumentParser(description="Refresh dividend yields")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Destination CSV file (defaults to db/dividend_yields.csv)",
+    )
+    parser.add_argument(
+        "--ticker",
+        dest="tickers",
+        action="append",
+        help="Ticker symbol to refresh; can be used multiple times",
+    )
+    args = parser.parse_args()
+
     repo_root = Path(__file__).resolve().parents[1]
-    out_file = repo_root / "db" / "dividend_yields.csv"
-    refresh(out_file)
+    out_file = args.output or (repo_root / "db" / "dividend_yields.csv")
+
+    refresh(out_file, tickers=args.tickers)
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI
