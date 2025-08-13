@@ -19,9 +19,10 @@ public class PortfolioSummaryScheduler {
     }
 
     /**
-     * Triggered based on cron expression defined in application properties.
+     * Triggered based on cron expression defined in application properties
+     * (`portfolio.summary.cron`).
      */
-    @Scheduled(cron = "${portfolio.summary.cron:0 0 8,18 * * *}")
+    @Scheduled(cron = "${portfolio.summary.cron}")
     public void sendPortfolioSummary() {
         String summary = metricsService.createSummary();
         emailService.send("Portfolio Metrics Summary", summary);

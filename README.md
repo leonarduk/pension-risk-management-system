@@ -61,7 +61,6 @@ This returns JSON similar to:
 {"close": 123.45}
 ```
 
-=======
 ## timeseries-lambda
 
 The `timeseries-lambda` module runs as a Docker container and requires several

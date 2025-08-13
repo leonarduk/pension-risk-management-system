@@ -27,7 +27,7 @@
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <org.slf4j.version>2.0.17</org.slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <rest.assured.version>2.3.3</rest.assured.version>
+        <rest.assured.version>5.5.0</rest.assured.version>
         <org.ta4j.version>0.18</org.ta4j.version>
         <org.apache.commons.version>3.18.0</org.apache.commons.version>
         <javax.xml.bind.version>2.4.0-b180830.0359</javax.xml.bind.version>
@@ -103,6 +103,20 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <rules>
+                            <rule>
+                                <element>BUNDLE</element>
+                                <limits>
+                                    <limit>
+                                        <counter>INSTRUCTION</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.80</minimum>
+                                    </limit>
+                                </limits>
+                            </rule>
+                        </rules>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
