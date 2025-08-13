@@ -17,7 +17,6 @@
 	<name>timeseries-sources</name>
 
         <properties>
-                <aws-java-sdk-bom.version>1.12.738</aws-java-sdk-bom.version>
                 <start-class>com.leonarduk.finance.springboot.App</start-class>
                 <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
                 <org.seleniumhq.selenium.version>4.13.0</org.seleniumhq.selenium.version>
@@ -29,18 +28,12 @@
                 <yahoofinanceapi.version>3.17.0</yahoofinanceapi.version>
         </properties>
 
-        <dependencyManagement>
-                <dependencies>
-                        <dependency>
-                                <groupId>com.amazonaws</groupId>
-                                <artifactId>aws-java-sdk-bom</artifactId>
-				<version>${aws-java-sdk-bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
+	<repositories>
+                <repository>
+                        <id>central</id>
+                        <url>https://repo1.maven.org/maven2/</url>
+                </repository>
+        </repositories>
 	<dependencies>
 
                <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
@@ -86,32 +79,9 @@
                         <version>${yahoofinanceapi.version}</version>
                 </dependency>
 
-		<dependency>
-			<groupId>com.leonarduk</groupId>
-			<artifactId>webscraper-core</artifactId>
-			<version>${webscraper-core.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-entitymanager</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/htmlunit-driver -->
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
+                <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/htmlunit-driver -->
+                <dependency>
+                        <groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>htmlunit-driver</artifactId>
 			<version>${org.seleniumhq.selenium.version}</version>
 		</dependency>

@@ -29,7 +29,12 @@
 		<jahoo.finance.version>3.15.0</jahoo.finance.version>
 	</properties>
 
-        <!-- Repositories removed; rely on Maven Central defaults -->
+        <repositories>
+                <repository>
+                        <id>central</id>
+                        <url>https://repo1.maven.org/maven2/</url>
+                </repository>
+        </repositories>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder -->
