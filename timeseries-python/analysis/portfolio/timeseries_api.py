@@ -2,7 +2,10 @@ import os
 import sys
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import requests
+
+from analysis.var import historical_var
 
 # Allow tests to patch using a simplified module name
 sys.modules.setdefault("timeseries_api", sys.modules[__name__])
@@ -18,13 +21,43 @@ PRICE = "Price"
 
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+sys.modules.setdefault("timeseries_api", sys.modules[__name__])
 
 
-def calculate_var(portfolio_returns, confidence_level=0.95):
-    var = np.percentile(portfolio_returns, (1 - confidence_level) * 100)
-    print(f"1-day VaR at {confidence_level * 100:.0f}% confidence: {var:.2%}")
-    return var
+def get_time_series(ticker, years=1, url="http://localhost:8080/stock/ticker"):
+    """Fetch time series data for one or more tickers via the stock feed API.
 
+    Parameters
+    ----------
+    ticker : str or list
+        Single ticker symbol or list of symbols.
+    years : int, optional
+        Number of years of historical data to request.
+    url : str
+        Endpoint of the stock feed service.
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame indexed by date with tickers as columns.
+    """
+    payload = {"ticker": ticker, "years": years}
+    response = requests.post(url, data=payload)
+    data = response.json()
+
+    frames = []
+    for symbol, series in data.items():
+        df = pd.DataFrame(series.items(), columns=[DATE, symbol])
+        df[DATE] = pd.to_datetime(df[DATE])
+        df.set_index(DATE, inplace=True)
+        frames.append(df)
+
+    if not frames:
+        return pd.DataFrame()
+
+    result = pd.concat(frames, axis=1).sort_index()
+    result.index.name = DATE
+    return result
 
 def get_time_series(ticker, years=1, endpoint="http://localhost:8080/stock/ticker"):
     """Fetch time series data from the stock endpoint.
@@ -185,7 +218,8 @@ if __name__ == "__main__":
         plot_var_distribution(port_returns)
 
         print("\n📉 Calculating historical VaR...")
-        calculate_var(port_returns, confidence_level=0.95)
+        var = historical_var(port_returns, confidence_level=0.95)
+        print(f"1-day VaR at 95% confidence: {var:.2%}")
 
         print(f"\n✅ Plots saved in: {os.path.abspath(OUTPUT_DIR)}")
     else:
