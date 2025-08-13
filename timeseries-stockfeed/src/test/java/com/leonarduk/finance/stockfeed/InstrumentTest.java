@@ -39,6 +39,7 @@ public class InstrumentTest {
         Assert.assertEquals(Source.GOOGLE, actual.source());
         Assert.assertEquals(Exchange.LONDON, actual.getExchange());
         Assert.assertEquals("US Large-Cap Value Equity", actual.getCategory());
+        Assert.assertEquals("MSCI NA High Div Yield", actual.getIndexCategory());
         Assert.assertEquals("GBX", actual.getCurrency());
         Assert.assertEquals("LON:XDND", actual.getGoogleCode());
 
