@@ -4,23 +4,22 @@ import requests
 DATE = "Date"
 
 
-def align_series(
-    source: pd.Series, target: pd.Series, method: str = "ffill"
-) -> pd.Series:
+def align_series(source: pd.Series, target: pd.Series, method: str = "ffill") -> pd.Series:
     """Align one time series to another using index rebasing.
 
-    The source series is scaled so that its value matches the target
-    at the first overlapping date and then reindexed to the target's
-    index.
+    The function scales ``source`` so that the first common date matches
+    the value of ``target`` on that date. The rebased series is then
+    reindexed to ``target`` using the provided fill method.
 
     Args:
-        source (pd.Series): Series to be aligned.
-        target (pd.Series): Series providing the desired index.
-        method (str, optional): Method used when reindexing. Defaults to "ffill".
+        source: Series that will be rebased.
+        target: Series providing the desired index.
+        method: Reindex fill method. Defaults to ``"ffill"``.
 
     Returns:
-        pd.Series: Source series rebased and indexed like the target.
+        pd.Series: ``source`` rebased and aligned to ``target``.
     """
+
     intersection = source.index.intersection(target.index)
     if intersection.empty:
         raise ValueError("No overlapping dates to align series")
