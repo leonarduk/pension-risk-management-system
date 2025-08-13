@@ -6,11 +6,16 @@ import numpy as np
 import pandas as pd
 
 from .portfolio.timeseries_api import get_time_series
+from .var import historical_var
 
 TRADING_DAYS = 252
 
 
-def risk_return(ticker: Union[str, Iterable[str]], years: int = 5) -> pd.DataFrame:
+def risk_return(
+    ticker: Union[str, Iterable[str]],
+    years: int = 5,
+    confidence_level: float = 0.95,
+) -> pd.DataFrame:
     """Calculate annualised return and risk for each ticker.
 
     Args:
@@ -21,19 +26,27 @@ def risk_return(ticker: Union[str, Iterable[str]], years: int = 5) -> pd.DataFra
         DataFrame with columns ``ticker``, ``annual_return`` and ``annual_std``.
     """
 
-    tickers = [ticker] if isinstance(ticker, str) else list(ticker)
+    if isinstance(ticker, str):
+        tickers = [ticker]
+    else:
+        tickers = list(ticker or [])
+    if not tickers:
+        return pd.DataFrame(columns=["ticker", "annual_return", "annual_std"])
+
     prices = get_time_series(ticker=tickers, years=years)
-    if prices.empty:
+    if prices.empty or len(prices) < 2:
         return pd.DataFrame(columns=["ticker", "annual_return", "annual_std"])
 
     daily_returns = prices.pct_change().dropna()
     annual_return = (1 + daily_returns.mean()) ** TRADING_DAYS - 1
     annual_std = daily_returns.std() * np.sqrt(TRADING_DAYS)
+    var = daily_returns.apply(lambda s: historical_var(s, confidence_level))
 
     return pd.DataFrame(
         {
             "ticker": annual_return.index,
             "annual_return": annual_return.values,
             "annual_std": annual_std.values,
+            "var": var.values,
         }
     )

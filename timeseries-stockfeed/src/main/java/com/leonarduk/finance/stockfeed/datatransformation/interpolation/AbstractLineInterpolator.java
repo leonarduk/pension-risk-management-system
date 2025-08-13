@@ -44,15 +44,17 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
             List<Bar> tail = Lists.newArrayList(lastQuote,
                     this.calculateFutureValue(lastQuote, toLocalDate));
 
-            // interpolate the tail range and remove the boundary entries which
+            // interpolate the tail range and remove any boundary entries which
             // simply duplicate the last known value
             List<Bar> extended = interpolateRange(tail, lastDateInSeries,
                     toLocalDate);
             if (!extended.isEmpty()) {
                 extended.remove(extended.size() - 1); // drop placeholder
-            }
-            if (!extended.isEmpty()) {
-                extended.remove(0); // drop duplicated last quote
+                // Drop the previous trading day only if it has been reinserted
+                if (!extended.isEmpty()
+                        && extended.get(0).getEndTime().toLocalDate().isEqual(lastDateInSeries)) {
+                    extended.remove(0);
+                }
             }
 
             series.addAll(extended);
@@ -84,31 +86,39 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
     }
 
     public List<Bar> interpolateRange(List<Bar> series, final LocalDate oldestDate, final LocalDate mostRecentDate) {
-        LocalDate currentDate = oldestDate;
+        List<Bar> newseries = Lists.newArrayList();
+        if (series.isEmpty()) {
+            return newseries;
+        }
 
         final Iterator<LocalDate> dateIter = DateUtils.getLocalDateIterator(oldestDate, mostRecentDate);
-        final Iterator<Bar> seriesIter = series.iterator();
-        Bar currentQuote = seriesIter.next();
+        // assume series is already sorted chronologically
+        int index = 0;
+        Bar currentQuote = series.get(index);
+        newseries.add(currentQuote);
 
-        List<Bar> newseries = Lists.newArrayList();
-        // until the end
-        while (currentDate.isBefore(mostRecentDate) && seriesIter.hasNext()) {
-            final Bar nextQuote = seriesIter.next();
-            currentDate = dateIter.next();
+        while (dateIter.hasNext() && index + 1 < series.size()) {
+            LocalDate currentDate = dateIter.next();
 
-            // Mon , Tue, Fri, Tues
-            // until we match this date
-            while (nextQuote.getEndTime().toLocalDate().isAfter(currentDate)) {
+            // skip the date already represented by the current quote
+            if (currentDate.isEqual(currentQuote.getEndTime().toLocalDate())) {
+                continue;
+            }
+
+            final Bar nextQuote = series.get(index + 1);
+            final LocalDate nextQuoteDate = nextQuote.getEndTime().toLocalDate();
+
+            if (currentDate.isBefore(nextQuoteDate)) {
                 if (nextQuote.getEndTime().isAfter(currentQuote.getEndTime())) {
                     newseries.add(this.createSyntheticBar(currentQuote, currentDate, nextQuote));
                 }
-                currentDate = dateIter.next();
+            } else if (currentDate.isEqual(nextQuoteDate)) {
+                currentQuote = nextQuote;
+                index++;
+                newseries.add(currentQuote);
             }
-
-            // matched next one
-            currentQuote = nextQuote;
-            newseries.add(currentQuote);
         }
+
         return newseries;
     }
 

@@ -13,6 +13,7 @@ module timeseries.stockfeed {
     requires http.request;
     requires influxdb.client.core;
     requires org.apache.commons.lang3;
+    requires org.apache.commons.text;
     requires org.htmlunit;
     requires org.seleniumhq.selenium.api;
     requires org.slf4j;

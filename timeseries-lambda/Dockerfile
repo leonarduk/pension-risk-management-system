@@ -3,6 +3,7 @@ FROM openjdk:18-jdk
 # Placeholder environment variables for AWS credentials and SQS configuration
 ENV AWS_ACCESS_KEY_ID="" \
     AWS_SECRET_ACCESS_KEY="" \
+    AWS_SESSION_TOKEN="" \
     AWS_REGION="" \
     SQS_QUEUE_URL=""
 
