@@ -7,6 +7,9 @@ import requests
 
 from analysis.var import historical_var
 
+# Allow tests to patch using a simplified module name
+sys.modules.setdefault("timeseries_api", sys.modules[__name__])
+
 from integrations.portfolioperformance.api.positions import (
     get_name_map_from_xml,
     get_unique_tickers,
@@ -56,6 +59,33 @@ def get_time_series(ticker, years=1, url="http://localhost:8080/stock/ticker"):
     result.index.name = DATE
     return result
 
+def get_time_series(ticker, years=1, endpoint="http://localhost:8080/stock/ticker"):
+    """Fetch time series data from the stock endpoint.
+
+    Args:
+        ticker (str | list[str]): ticker symbol or list of symbols.
+        years (int): number of years of history.
+        endpoint (str): URL of the stock feed endpoint.
+
+    Returns:
+        pandas.DataFrame: DataFrame indexed by Date with tickers as columns.
+    """
+
+    if isinstance(ticker, list):
+        ticker_param = ",".join(ticker)
+    else:
+        ticker_param = ticker
+
+    payload = {"ticker": ticker_param, "years": years}
+    response = requests.post(endpoint, params=payload)
+    data = response.json()
+    df = pd.DataFrame(data)
+    if df.empty:
+        return df
+    df.index.name = "Date"
+    return df
+
+
 def optimize_portfolio(prices):
     from pypfopt import EfficientFrontier, risk_models, expected_returns
 
@@ -77,6 +107,8 @@ def optimize_portfolio(prices):
 
 
 def plot_prices(prices, filename=f"{OUTPUT_DIR}/prices.png"):
+    import matplotlib.pyplot as plt
+
     prices.plot(title="Price Timeseries", figsize=(10, 5))
     plt.ylabel("Price")
     plt.xlabel("Date")
@@ -117,6 +149,8 @@ def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
     labels = [lw[0] for lw in labeled_weights]
     values = [lw[1] for lw in labeled_weights]
 
+    import matplotlib.pyplot as plt
+
     fig, ax = plt.subplots(figsize=(10, 0.4 * len(labels) + 1))
     ax.barh(labels, values, color="skyblue")
     ax.set_xlabel("Weight")
@@ -131,6 +165,8 @@ def plot_weights(weights, name_map=None, filename=f"{OUTPUT_DIR}/weights.png"):
 def plot_cumulative_returns(
     weighted_returns, filename=f"{OUTPUT_DIR}/cumulative_returns.png"
 ):
+    import matplotlib.pyplot as plt
+
     cumulative = (1 + weighted_returns).cumprod()
     cumulative.plot(title="Cumulative Portfolio Returns", figsize=(10, 5))
     plt.ylabel("Growth")
@@ -144,6 +180,8 @@ def plot_cumulative_returns(
 def plot_var_distribution(
     portfolio_returns, filename=f"{OUTPUT_DIR}/return_distribution.png"
 ):
+    import matplotlib.pyplot as plt
+
     plt.hist(portfolio_returns, bins=50, alpha=0.7, color="blue")
     plt.axvline(
         np.percentile(portfolio_returns, 5),
