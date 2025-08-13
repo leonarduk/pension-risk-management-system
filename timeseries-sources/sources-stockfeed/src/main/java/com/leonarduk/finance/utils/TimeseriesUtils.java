@@ -11,8 +11,8 @@ import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.num.DoubleNum;
 
 import java.io.IOException;
@@ -69,11 +69,11 @@ public class TimeseriesUtils {
         return history.get(0);
     }
 
-    public static TimeSeries getTimeSeries(final StockV1 stock, final int i, boolean addLatestQuoteToTheSeries) throws IOException {
+    public static BarSeries getTimeSeries(final StockV1 stock, final int i, boolean addLatestQuoteToTheSeries) throws IOException {
         return TimeseriesUtils.getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now(), addLatestQuoteToTheSeries);
     }
 
-    public static TimeSeries getTimeSeries(final StockV1 stock, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
+    public static BarSeries getTimeSeries(final StockV1 stock, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
             throws IOException {
         List<Bar> history = stock.getHistory();
         if ((null == history) || history.isEmpty()) {
@@ -98,7 +98,7 @@ public class TimeseriesUtils {
                 return null;
             }
         }
-        return new LinearInterpolator().interpolate(new BaseTimeSeries(stock.getName(), ticks));
+        return new LinearInterpolator().interpolate(new BaseBarSeries(stock.getName(), ticks));
     }
 
     public static Bar createSyntheticQuote(final Bar currentQuote, final LocalDate currentDate,
@@ -122,7 +122,7 @@ public class TimeseriesUtils {
                 DoubleNum.valueOf(0), comment);
     }
 
-    public static Iterator<Bar> getTimeSeriesIterator(final TimeSeries series) {
+    public static Iterator<Bar> getTimeSeriesIterator(final BarSeries series) {
         final Iterator<Bar> iter = new Iterator<Bar>() {
             int index = series.getBeginIndex();
 

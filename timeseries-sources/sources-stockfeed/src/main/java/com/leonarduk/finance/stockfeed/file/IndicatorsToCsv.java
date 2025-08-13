@@ -25,7 +25,7 @@ package com.leonarduk.finance.stockfeed.file;
 
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.StringUtils;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.*;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.helpers.PriceVariationIndicator;
@@ -37,7 +37,7 @@ import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
  */
 public class IndicatorsToCsv {
 
-    public static void exportIndicatorsToCsv(final TimeSeries series) {
+    public static void exportIndicatorsToCsv(final BarSeries series) {
         final String fileName = "target/" + series.getName() + "_indicators.csv";
         /**
          * Creating indicators
