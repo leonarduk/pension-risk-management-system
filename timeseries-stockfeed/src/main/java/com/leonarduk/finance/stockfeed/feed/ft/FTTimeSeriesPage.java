@@ -32,20 +32,21 @@ public class FTTimeSeriesPage extends BaseSeleniumPage {
     }
 
     public List<Bar> getTimeseries(Instrument instrument, LocalDate fromDate, LocalDate toDate) {
-        isLoaded();
 
-        // e.g. 2021/04/01
-        DateTimeFormatter numericDateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        // e.g. 2021-04-01
+        DateTimeFormatter numericDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         // e.g. Fri, Aug 20, 2021
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d, yyyy");
 
-        //TODO set these
         String fromDateString = fromDate.format(numericDateFormatter);
         String toDateString = toDate.format(numericDateFormatter);
 
+        String url = String.format("%s%sstartDate=%s&endDate=%s", getExpectedUrl(),
+                getExpectedUrl().contains("?") ? "&" : "?", fromDateString, toDateString);
+        log.info("Load {}", url);
+        this.getWebDriver().get(url);
+
         WebElement table = this.getWebDriver().findElement(By.className("mod-tearsheet-historical-prices__results"));
-//        List<String> columns = table.findElement(By.tagName("tr")).findElements(By.tagName("th")).stream().map(WebElement::getText).collect(Collectors.toList());
-        // date, open , high, low, close, volume
         WebElement body = table.findElement(By.tagName("tbody"));
         List<WebElement> rows = body.findElements(By.tagName("tr"));
 
@@ -53,8 +54,6 @@ public class FTTimeSeriesPage extends BaseSeleniumPage {
                 .map(row -> {
                     Iterator<WebElement> fieldsIter = row.findElements(By.tagName("td")).iterator();
                     String dateString = fieldsIter.next().findElements(By.tagName("span")).get(1).getAttribute("innerHTML");
-
-                    // e.g. Fri, Aug 20, 2021
                     LocalDate date = LocalDate.parse(dateString, formatter);
                     double open = parseDouble(fieldsIter.next().getText());
                     double high = parseDouble(fieldsIter.next().getText());
@@ -65,6 +64,10 @@ public class FTTimeSeriesPage extends BaseSeleniumPage {
                     return new ExtendedHistoricalQuote(instrument, date,
                             open, low, high, close, close,
                             volume, "FTFeed");
+                })
+                .filter(bar -> {
+                    LocalDate date = bar.getEndTime().toLocalDate();
+                    return !(date.isBefore(fromDate) || date.isAfter(toDate));
                 })
                 .collect(Collectors.toList());
     }
