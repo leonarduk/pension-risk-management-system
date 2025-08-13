@@ -20,12 +20,10 @@ import java.util.stream.Collectors;
  * Tests that interpolation skips recognised UK bank holidays.
  */
 public class HolidayInterpolationTest {
-    private TimeSeriesInterpolator interpolator;
     private TimeSeries series;
 
     @Before
     public void setUp() {
-        this.interpolator = new FlatLineInterpolator();
         List<ExtendedHistoricalQuote> quotes = Arrays.asList(
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2022-12-23"), 100.0, 100.0, 100.0,
                         100.0, 1000.0, 0, ""),
@@ -36,8 +34,22 @@ public class HolidayInterpolationTest {
     }
 
     @Test
-    public void testSkipsUKBankHolidays() {
-        TimeSeries actual = this.interpolator.interpolate(this.series);
+    public void testSkipsUKBankHolidaysFlatLine() {
+        TimeSeriesInterpolator flat = new FlatLineInterpolator();
+        TimeSeries actual = flat.interpolate(this.series);
+        Assert.assertEquals(2, actual.getBarCount());
+        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().toLocalDate());
+        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().toLocalDate());
+        for (int i = 0; i < actual.getBarCount(); i++) {
+            LocalDate date = actual.getBar(i).getEndTime().toLocalDate();
+            Assert.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
+        }
+    }
+
+    @Test
+    public void testSkipsUKBankHolidaysLinear() {
+        TimeSeriesInterpolator linear = new com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator();
+        TimeSeries actual = linear.interpolate(this.series);
         Assert.assertEquals(2, actual.getBarCount());
         Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().toLocalDate());
         Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().toLocalDate());
