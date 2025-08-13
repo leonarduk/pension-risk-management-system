@@ -1,0 +1,9 @@
+{
+  "title": "Gestión de Riesgo de Pensiones",
+  "placeholder": "Introduzca tickers separados por comas",
+  "load": "Cargar",
+  "fetchError": "Error al obtener datos",
+  "tickerHeader": "Ticker",
+  "latestCloseHeader": "Último Cierre",
+  "priceLabel": "Precio"
+}

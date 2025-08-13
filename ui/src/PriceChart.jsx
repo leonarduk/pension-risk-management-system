@@ -20,12 +20,12 @@ ChartJS.register(
   Legend
 );
 
-export default function PriceChart({ labels, data }) {
+export default function PriceChart({ labels, data, label }) {
   const chartData = {
     labels,
     datasets: [
       {
-        label: 'Price',
+        label,
         data,
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',

@@ -1,0 +1,9 @@
+{
+  "title": "Pension Risk Management",
+  "placeholder": "Enter comma-separated tickers",
+  "load": "Load",
+  "fetchError": "Failed to fetch data",
+  "tickerHeader": "Ticker",
+  "latestCloseHeader": "Latest Close",
+  "priceLabel": "Price"
+}

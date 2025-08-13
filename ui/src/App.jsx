@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import PriceChart from './PriceChart.jsx';
+import en from './i18n/en.json';
+import es from './i18n/es.json';
 import RiskReturnChart from './RiskReturnChart.jsx';
 import TickerTable from './TickerTable.jsx';
 
 export default function App() {
+  const params = new URLSearchParams(window.location.search);
+  const lang = params.get('lang') || 'en';
+  const t = lang === 'es' ? es : en;
+
   const [tickers, setTickers] = useState('AAPL');
   const [data, setData] = useState({});
   const [riskData, setRiskData] = useState([]);
@@ -13,9 +19,12 @@ export default function App() {
     try {
       const params = new URLSearchParams();
       params.append('ticker', tickers);
-      const response = await fetch('/stock/ticker', {
+      const response = await fetch('/stock/ticker?lang=' + lang, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept-Language': lang,
+        },
         body: params.toString(),
       });
       const json = await response.json();
@@ -25,7 +34,7 @@ export default function App() {
       setRiskData(riskJson);
       setError(null);
     } catch (e) {
-      setError('Failed to fetch data');
+      setError(t.fetchError);
       setData({});
     }
   };
@@ -37,19 +46,27 @@ export default function App() {
 
   return (
     <div>
-      <h1>Pension Risk Management</h1>
+      <h1>{t.title}</h1>
       <input
         type="text"
         value={tickers}
         onChange={(e) => setTickers(e.target.value)}
-        placeholder="Enter comma-separated tickers"
+        placeholder={t.placeholder}
       />
-      <button onClick={fetchData}>Load</button>
+      <button onClick={fetchData}>{t.load}</button>
       {error && <p>{error}</p>}
-      {Object.keys(data).length > 0 && <TickerTable data={data} />}
+      <table>
+        <thead>
+          <tr>
+            <th>{t.tickerHeader}</th>
+            <th>{t.latestCloseHeader}</th>
+          </tr>
+        </thead>
+        <tbody>{renderRows()}</tbody>
+      </table>
       {chartLabels.length > 0 && (
         <div style={{ maxWidth: '600px' }}>
-          <PriceChart labels={chartLabels} data={chartData} />
+          <PriceChart labels={chartLabels} data={chartData} label={t.priceLabel} />
         </div>
       )}
       {riskData.length > 0 && (
