@@ -44,15 +44,17 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
             List<Bar> tail = Lists.newArrayList(lastQuote,
                     this.calculateFutureValue(lastQuote, toLocalDate));
 
-            // interpolate the tail range and remove the boundary entries which
+            // interpolate the tail range and remove any boundary entries which
             // simply duplicate the last known value
             List<Bar> extended = interpolateRange(tail, lastDateInSeries,
                     toLocalDate);
             if (!extended.isEmpty()) {
                 extended.remove(extended.size() - 1); // drop placeholder
-            }
-            if (!extended.isEmpty()) {
-                extended.remove(0); // drop duplicated last quote
+                // Drop the previous trading day only if it has been reinserted
+                if (!extended.isEmpty()
+                        && extended.get(0).getEndTime().toLocalDate().isEqual(lastDateInSeries)) {
+                    extended.remove(0);
+                }
             }
 
             series.addAll(extended);
