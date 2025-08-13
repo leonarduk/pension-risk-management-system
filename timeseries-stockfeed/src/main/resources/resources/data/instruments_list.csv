@@ -1,11 +1,11 @@
-Name,AssetType,Underlying,Source,isin,code,Exchange,category,indexCategory,currency,googleCode,
+Name,AssetType,Underlying,Source,isin,code,Exchange,category,indexCategory,currency,googleCode,active
 USD per GBP,FX,FX,Yahoo,USDGBP,USDGBP,London,Currency,,GBP,CURRENCY:USDGBP,
 GBP per USD,FX,FX,Yahoo,GBPUSD,GBPUSD,London,Currency,,USD,CURRENCY:GBPUSD,
 ,FUND,EQUITY,Yahoo,GB00B41YBW71,FUQUIT,London,Global Equity,,GBP,MUTF_GB:FUND_EQUI_I_ANRT8N,
 ,FUND,BOND,Yahoo,GB00BD050949,RLAAAI,London,Short duration bond,,GBX,LON:RLAAAI,
 ,FUND,BOND,Yahoo,GB00B1XFKV93,YFEMID,London,MEmerging Bond,,GBX,LON:YFEMID,
 ,FUND,BOND,Yahoo,GB00B45Q9038,VVUILG,London,UK Inflation,,GBP,MUTF_GB:VANG_UK_INFL_1YLF91E,
-Amundi ETF MSCI China EUR A/I GBP,ETF,EQUITY,Google,FR0010713784,CC1,London,China Equity,,GBX,LON:CC1,
+Amundi ETF MSCI China EUR A/I GBP,ETF,EQUITY,Google,FR0010713784,CC1,London,China Equity,,GBX,LON:CC1,FALSE
 Amundi ETF MSCI EM Latin America EUR A/I GBP,ETF,EQUITY,Google,FR0011020973,ALAT,London,Latin America Equity,,GBX,LON:ALAT,
 Amundi ETF MSCI Emerging Markets EUR A/I GBP,ETF,EQUITY,Google,FR0010959676,AEEM,London,Global Emerging Markets Equity,,GBX,LON:AEEM,
 Amundi ETF MSCI Germany A/I GBP,ETF,EQUITY,Google,FR0010655712,CG1,London,Germany Large-Cap Equity,,GBX,LON:CG1,
