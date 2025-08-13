@@ -119,19 +119,26 @@ public sealed class Instrument permits FxInstrument {
         }
 
         public void init(String filePath) throws IOException, URISyntaxException {
-            this.instruments = ResourceTools.getResourceAsLines(filePath).stream().skip(1)
-                    .map(this::create).collect(Collectors.toConcurrentMap(i -> i.getCode(), i -> i));
-            this.instruments.values().stream().filter(Instrument::isActive)
-                    .forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
-            this.instruments.values().stream().filter(Instrument::isActive)
-                    .forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
+            // Load all instruments from the CSV and retain only those marked as active.
+            List<Instrument> activeInstruments = ResourceTools.getResourceAsLines(filePath).stream()
+                    .skip(1)
+                    .map(this::create)
+                    .filter(Instrument::isActive)
+                    .collect(Collectors.toList());
+
+            // Map ticker codes to instruments.
+            this.instruments = activeInstruments.stream()
+                    .collect(Collectors.toConcurrentMap(i -> i.getCode().toUpperCase(), i -> i));
+
+            // Add alternative identifiers (ISIN and Google codes) for lookups.
+            activeInstruments.forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
+            activeInstruments.forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
             this.instruments.put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
         }
 
         public Map<String, Instrument> getInstruments() {
-            return instruments.entrySet().stream()
-                    .filter(e -> e.getValue().isActive())
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            // instruments already contains only active entries; expose an unmodifiable view
+            return Collections.unmodifiableMap(instruments);
         }
     }
 
