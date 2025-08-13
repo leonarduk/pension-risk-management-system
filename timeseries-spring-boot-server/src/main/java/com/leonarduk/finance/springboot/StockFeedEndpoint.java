@@ -174,17 +174,22 @@ public class StockFeedEndpoint {
         return result;
     }
 
+    /**
+     * Return the latest closing price for the supplied ticker.
+     *
+     * @param ticker the stock ticker
+     * @return a JSON map containing the close price
+     * @throws IOException if the stock data cannot be retrieved
+     */
     @GetMapping("/price/{ticker}")
     @ResponseBody
-    public Map<String, BigDecimal> getLatestClosePrice(@PathVariable(name = "ticker") final String ticker)
-            throws IOException {
+    public Map<String, BigDecimal> getLatestClosePrice(
+            @PathVariable(name = "ticker") final String ticker) throws IOException {
         Instrument instrument = Instrument.fromString(ticker);
         Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
-        if (stock.isPresent()) {
-            BigDecimal close = stock.get().getQuote().getPrice();
-            return Collections.singletonMap("close", close);
-        }
-        return Collections.emptyMap();
+        return stock
+                .map(s -> Collections.singletonMap("close", s.getQuote().getPrice()))
+                .orElse(Collections.emptyMap());
     }
 
     /**

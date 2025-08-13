@@ -48,6 +48,19 @@ http://localhost:8091/stock/ticker/MNP?years=2&category=EQUITY
 
 When requesting JSON data with multiple tickers the same parameter can be used
 to filter out instruments that do not match the selected category.
+
+To fetch only the latest closing price for a ticker use the `/price` endpoint:
+
+```
+http://localhost:8091/stock/price/MNP
+```
+
+This returns JSON similar to:
+
+```json
+{"close": 123.45}
+```
+
 =======
 ## timeseries-lambda
 
@@ -69,7 +82,4 @@ docker run \
   -e SQS_QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/123456789012/queue \
   <image>
 ```
-To fetch the latest closing price only, use:
-
-http://localhost:8091/stock/price/MNP
 
