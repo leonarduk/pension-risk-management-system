@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.BaseBarSeries;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class FlatLineInterpolatorTest {
     private TimeSeriesInterpolator interpolator;
-    private TimeSeries series;
+    private BarSeries series;
 
     @Before
     public void setUp() throws Exception {
@@ -32,13 +32,13 @@ public class FlatLineInterpolatorTest {
                         105.0, 1000.0, 0, ""));
 
         final List<Bar> ticks = quotes.stream().map(q -> new ExtendedHistoricalQuote(q)).collect(Collectors.toList());
-        this.series = new BaseTimeSeries(ticks);
+        this.series = new BaseBarSeries(ticks);
     }
 
     @Test
     public void testInterpolateTimeSeries() {
 
-        final TimeSeries actual = this.interpolator.interpolate(this.series);
+        final BarSeries actual = this.interpolator.interpolate(this.series);
         Assert.assertEquals(10, actual.getBarCount());
         Assert.assertEquals(LocalDate.parse("2017-04-03"), actual.getBar(0).getEndTime().toLocalDate());
         Assert.assertEquals(LocalDate.parse("2017-04-04"), actual.getBar(1).getEndTime().toLocalDate());

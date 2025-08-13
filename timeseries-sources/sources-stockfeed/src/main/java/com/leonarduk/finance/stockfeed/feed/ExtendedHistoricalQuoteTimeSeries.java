@@ -2,7 +2,7 @@ package com.leonarduk.finance.stockfeed.feed;
 
 import com.google.common.collect.Lists;
 import org.ta4j.core.Bar;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
+public class ExtendedHistoricalQuoteTimeSeries implements BarSeries {
 
     /**
      *
@@ -124,7 +124,7 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
     }
 
     @Override
-    public TimeSeries getSubSeries(int startIndex, int endIndex) {
+    public BarSeries getSubSeries(int startIndex, int endIndex) {
         return new ExtendedHistoricalQuoteTimeSeries(series.subList(startIndex, endIndex));
     }
 
