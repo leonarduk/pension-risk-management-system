@@ -1,9 +1,12 @@
 import os
-import sys
-import pandas as pd
-import numpy as np
+from typing import List, Union
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import requests
+from pypfopt import EfficientFrontier, expected_returns, risk_models
+import sys
 
 from analysis.var import historical_var
 
@@ -76,14 +79,48 @@ def get_time_series(ticker, years=1, endpoint="http://localhost:8080/stock/ticke
     else:
         ticker_param = ticker
 
-    payload = {"ticker": ticker_param, "years": years}
-    response = requests.post(endpoint, params=payload)
+def get_time_series(
+    ticker: Union[str, List[str]],
+    years: int = 5,
+    url: str = "http://localhost:8080/stock/ticker",
+):
+    """Fetch price history for one or more tickers.
+
+    Args:
+        ticker: Single ticker or list of tickers.
+        years: Number of years of history to request.
+        url: Endpoint of the stock history service.
+
+    Returns:
+        DataFrame indexed by date with one column per ticker.
+    """
+
+    tickers = [ticker] if isinstance(ticker, str) else ticker
+    payload = {"ticker": ",".join(tickers), "years": years}
+    response = requests.post(url, data=payload)
     data = response.json()
-    df = pd.DataFrame(data)
-    if df.empty:
-        return df
-    df.index.name = "Date"
+    if not isinstance(data, dict):
+        raise ValueError("Invalid JSON response")
+
+    frames = []
+    for symbol, series in data.items():
+        if not series:
+            continue
+        frames.append(pd.Series(series, name=symbol, dtype=float))
+
+    if not frames:
+        return pd.DataFrame()
+
+    df = pd.concat(frames, axis=1)
+    df.index = pd.to_datetime(df.index)
+    df.index.name = DATE
     return df
+
+
+def calculate_var(portfolio_returns, confidence_level=0.95):
+    var = np.percentile(portfolio_returns, (1 - confidence_level) * 100)
+    print(f"1-day VaR at {confidence_level * 100:.0f}% confidence: {var:.2%}")
+    return var
 
 
 def optimize_portfolio(prices):
