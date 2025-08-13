@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -43,6 +44,7 @@ class StockFeedEndpointTest {
                         .param("interpolate", "true")
                         .param("cleanDate", "true"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("<html")));
     }
 }
