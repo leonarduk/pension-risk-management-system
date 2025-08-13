@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(StockFeedEndpoint.class)
@@ -42,10 +43,30 @@ class StockFeedEndpointTest {
                         .param("fromDate", "2024-01-01")
                         .param("toDate", "2024-01-02")
                         .param("interpolate", "true")
-                        .param("cleanDate", "true"))
+                        .param("cleanDate", "true")
+                        .param("category", "Cash"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("<html")));
+    }
+
+    @Test
+    void displayHistoryAsJsonFiltersOutNonMatchingCategory() throws Exception {
+        Instrument instrument = Instrument.CASH;
+        StockV1 stock = AbstractStockFeed.createStock(instrument, Collections.emptyList());
+        Mockito.when(stockFeed.get(eq(instrument), eq(LocalDate.parse("2024-01-01")),
+                eq(LocalDate.parse("2024-01-02")), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(Optional.of(stock));
+
+        mockMvc.perform(post("/stock/ticker")
+                        .param("ticker", "CASH")
+                        .param("fromDate", "2024-01-01")
+                        .param("toDate", "2024-01-02")
+                        .param("interpolate", "true")
+                        .param("cleanDate", "true")
+                        .param("category", "EQUITY"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
     }
 }
 
