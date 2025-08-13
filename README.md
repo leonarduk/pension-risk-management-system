@@ -39,3 +39,24 @@ If you select interpolate=true, it will flat-line dates before and after the ava
 e.g.
 http://localhost:8091/stock/ticker/MNP?years=2&interpolate=true&clean=true
 
+## timeseries-lambda
+
+The `timeseries-lambda` module runs as a Docker container and requires several
+environment variables:
+
+* `AWS_ACCESS_KEY_ID` – AWS access key used for authentication.
+* `AWS_SECRET_ACCESS_KEY` – AWS secret key paired with the access key.
+* `AWS_REGION` – AWS region containing your resources.
+* `SQS_QUEUE_URL` – URL of the SQS queue feeding the Lambda handler.
+
+Run the image with the variables passed via `docker run`:
+
+```bash
+docker run \
+  -e AWS_ACCESS_KEY_ID=your_access_key \
+  -e AWS_SECRET_ACCESS_KEY=your_secret_key \
+  -e AWS_REGION=eu-west-1 \
+  -e SQS_QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/123456789012/queue \
+  <image>
+```
+
