@@ -59,4 +59,8 @@ docker run \
   -e SQS_QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/123456789012/queue \
   <image>
 ```
+=======
+To fetch the latest closing price only, use:
+
+http://localhost:8091/stock/price/MNP
 
