@@ -1,0 +1,4 @@
+Name,AssetType,Underlying,Source,isin,code,Exchange,category,currency,googleCode,active
+Active Instrument,ETF,EQUITY,Google,ISINAAA,AAA,London,Test,GBP,LON:AAA,true
+Inactive Instrument,ETF,EQUITY,Google,ISINBBB,BBB,London,Test,GBP,LON:BBB,false
+
