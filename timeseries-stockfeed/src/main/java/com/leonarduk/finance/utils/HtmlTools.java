@@ -1,5 +1,6 @@
 package com.leonarduk.finance.utils;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,8 @@ public class HtmlTools {
         }
         sb.append("<td bgcolor='")
                 .append(HtmlTools.getColour(value == null ? "" : value)).append("'>")
-                .append(formatter.format(value == null ? "" : value)).append("</td>");
+                .append(StringEscapeUtils.escapeHtml4(formatter.format(value == null ? "" : value)))
+                .append("</td>");
     }
 
     public static void addHeader(final String nameRaw, final StringBuilder sb) {
@@ -37,7 +39,9 @@ public class HtmlTools {
             name = "";
             HtmlTools.logger.warn(bundle().getString("htmltools.null_field"));
         }
-        sb.append("<th>").append(name).append("</th>");
+        sb.append("<th>")
+                .append(StringEscapeUtils.escapeHtml4(name))
+                .append("</th>");
     }
 
     public static StringBuilder createHtmlText(final StringBuilder sbHead, final StringBuilder sbBody) {
