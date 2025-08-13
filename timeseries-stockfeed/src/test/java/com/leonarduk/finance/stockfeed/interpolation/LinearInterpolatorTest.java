@@ -2,6 +2,7 @@ package com.leonarduk.finance.stockfeed.interpolation;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator;
+import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.TimeSeriesInterpolator;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import org.junit.Assert;
@@ -55,6 +56,24 @@ public class LinearInterpolatorTest {
         Assert.assertEquals(DoubleNum.valueOf(106.8).doubleValue(), actual.getBar(5).getClosePrice().doubleValue(),
                 0.001);
 
+    }
+
+    @Test
+    public void testInterpolationSkipsDuplicatedFinalEntry() throws Exception {
+        List<ExtendedHistoricalQuote> quotes = Arrays.asList(
+                new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-07"), 100.0,
+                        112.0, 92.0, 102.0, 5000.0, 0, ""),
+                new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2017-04-03"), 100.0,
+                        110.0, 90.0, 105.0, 1000.0, 0, ""));
+
+        List<Bar> base = quotes.stream().map(ExtendedHistoricalQuote::new)
+                .collect(Collectors.toList());
+        List<Bar> extended = new FlatLineInterpolator().extendToToDate(base,
+                LocalDate.parse("2017-04-14"));
+
+        TimeSeries ts = new LinearInterpolator().interpolate(new BaseTimeSeries(extended));
+        Assert.assertEquals(LocalDate.parse("2017-04-13"),
+                ts.getBar(ts.getBarCount() - 1).getEndTime().toLocalDate());
     }
 
 }
