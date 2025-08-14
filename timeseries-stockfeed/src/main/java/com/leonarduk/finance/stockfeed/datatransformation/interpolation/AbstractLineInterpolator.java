@@ -5,7 +5,7 @@ import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuoteTimeSeries;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 import org.ta4j.core.Bar;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -71,7 +71,7 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
     }
 
     @Override
-    public TimeSeries interpolate(final TimeSeries timeseries) {
+    public BarSeries interpolate(final BarSeries timeseries) {
         if (timeseries.getEndIndex() < 0) {
             return timeseries;
         }

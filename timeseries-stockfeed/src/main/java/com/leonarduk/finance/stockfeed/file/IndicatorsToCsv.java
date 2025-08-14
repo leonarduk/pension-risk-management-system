@@ -25,19 +25,19 @@ package com.leonarduk.finance.stockfeed.file;
 
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.StringUtils;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.*;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
-import org.ta4j.core.indicators.helpers.PriceVariationIndicator;
 import org.ta4j.core.indicators.helpers.TypicalPriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
+import org.ta4j.core.num.Num;
 
 /**
  * This class builds a CSV file containing values from indicators.
  */
 public class IndicatorsToCsv {
 
-    public static void exportIndicatorsToCsv(final TimeSeries series) {
+    public static void exportIndicatorsToCsv(final BarSeries series) {
         final String fileName = "target/" + series.getName() + "_indicators.csv";
         /**
          * Creating indicators
@@ -46,8 +46,6 @@ public class IndicatorsToCsv {
         final ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
         // Typical price
         final TypicalPriceIndicator typicalPrice = new TypicalPriceIndicator(series);
-        // Price variation
-        final PriceVariationIndicator priceVariation = new PriceVariationIndicator(series);
         // Simple moving averages
         final SMAIndicator shortSma = new SMAIndicator(closePrice, 8);
         final SMAIndicator longSma = new SMAIndicator(closePrice, 20);
@@ -81,7 +79,9 @@ public class IndicatorsToCsv {
             sb.append(series.getBar(i).getEndTime().toLocalDate()); //
             StringUtils.addValue(sb, (closePrice.getValue(i)));
             StringUtils.addValue(sb, (typicalPrice.getValue(i)));
-            StringUtils.addValue(sb, (priceVariation.getValue(i)));
+            Num previous = series.getBar(Math.max(0, i - 1)).getClosePrice();
+            Num current = series.getBar(i).getClosePrice();
+            StringUtils.addValue(sb, current.dividedBy(previous));
             StringUtils.addValue(sb, (shortSma.getValue(i)));
             StringUtils.addValue(sb, (longSma.getValue(i)));
             StringUtils.addValue(sb, (shortEma.getValue(i)));

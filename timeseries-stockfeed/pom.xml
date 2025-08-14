@@ -23,5 +23,10 @@
             <artifactId>selenium-api</artifactId>
             <version>${org.seleniumhq.selenium.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.ta4j</groupId>
+            <artifactId>ta4j-core</artifactId>
+            <version>${org.ta4j.version}</version>
+        </dependency>
     </dependencies>
 </project>

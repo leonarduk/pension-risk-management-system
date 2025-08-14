@@ -2,17 +2,17 @@ package com.leonarduk.finance.stockfeed.feed;
 
 import com.google.common.collect.Lists;
 import org.ta4j.core.Bar;
-import org.ta4j.core.TimeSeries;
-import org.ta4j.core.num.DoubleNum;
+import org.ta4j.core.BarBuilder;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.bars.TimeBarBuilder;
+import org.ta4j.core.num.DoubleNumFactory;
 import org.ta4j.core.num.Num;
+import org.ta4j.core.num.NumFactory;
 
 import java.io.Serial;
-import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.function.Function;
 
-public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
+public class ExtendedHistoricalQuoteTimeSeries implements BarSeries {
 
     /**
      *
@@ -20,6 +20,7 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
     @Serial
     private static final long serialVersionUID = -4258117616509944879L;
     private final List<Bar> series;
+    private final NumFactory numFactory = DoubleNumFactory.getInstance();
 
     public ExtendedHistoricalQuoteTimeSeries() {
         this(Lists.newArrayList());
@@ -88,29 +89,6 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
     }
 
     @Override
-    public void addBar(Duration timePeriod, ZonedDateTime endTime) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addBar(ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice, Num closePrice, Num volume,
-                       Num amount) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addBar(Duration timePeriod, ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice,
-                       Num closePrice, Num volume) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addBar(Duration timePeriod, ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice,
-                       Num closePrice, Num volume, Num amount) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void addTrade(Num tradeVolume, Num tradePrice) {
         throw new UnsupportedOperationException();
     }
@@ -121,18 +99,18 @@ public class ExtendedHistoricalQuoteTimeSeries implements TimeSeries {
     }
 
     @Override
-    public TimeSeries getSubSeries(int startIndex, int endIndex) {
+    public BarSeries getSubSeries(int startIndex, int endIndex) {
         return new ExtendedHistoricalQuoteTimeSeries(series.subList(startIndex, endIndex));
     }
 
     @Override
-    public Num numOf(Number number) {
-        return DoubleNum.valueOf(number);
+    public NumFactory numFactory() {
+        return numFactory;
     }
 
     @Override
-    public Function<Number, Num> function() {
-        throw new UnsupportedOperationException();
+    public BarBuilder barBuilder() {
+        return new TimeBarBuilder(numFactory);
     }
 
 }
