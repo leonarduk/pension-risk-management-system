@@ -1,6 +1,6 @@
 module org.patriques.alphavantage4j {
-    requires com.google.gson;
-    requires javax.annotation.api;
+    requires gson;
+    requires java.annotation;
     requires jsr305;
     exports org.patriques;
     exports org.patriques.input;
