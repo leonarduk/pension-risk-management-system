@@ -33,8 +33,8 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
                         current.getEndTime().toLocalDate(),
 
                         scaleDown(current.getOpenPrice()),
-                        scaleDown(current.getMinPrice()),
-                        scaleDown(current.getMaxPrice()),
+                        scaleDown(current.getLowPrice()),
+                        scaleDown(current.getHighPrice()),
                         scaleDown(current.getClosePrice()),
 
                         current.getVolume(),
@@ -46,8 +46,8 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
                         current.getEndTime().toLocalDate(),
 
                         scaleUp(current.getOpenPrice()),
-                        scaleUp(current.getMinPrice()),
-                        scaleUp(current.getMaxPrice()),
+                        scaleUp(current.getLowPrice()),
+                        scaleUp(current.getHighPrice()),
                         scaleUp(current.getClosePrice()),
 
                         current.getVolume(),

@@ -29,8 +29,8 @@ public class ValueScalingTransformer implements TimeSeriesCleaner {
                                 current.getEndTime().toLocalDate(),
 
                                 current.getOpenPrice().multipliedBy(scalingFactor),
-                                current.getMinPrice().multipliedBy(scalingFactor),
-                                current.getMaxPrice().multipliedBy(scalingFactor),
+                                current.getLowPrice().multipliedBy(scalingFactor),
+                                current.getHighPrice().multipliedBy(scalingFactor),
                                 current.getClosePrice().multipliedBy(scalingFactor),
 
                                 current.getVolume(),

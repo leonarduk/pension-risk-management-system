@@ -149,8 +149,8 @@ public class TimeseriesUtils {
         for (final Bar historicalQuote : series) {
             sb.append(historicalQuote.getEndTime().toLocalDate().toString());
             StringUtils.addValue(sb, historicalQuote.getOpenPrice());
-            StringUtils.addValue(sb, historicalQuote.getMaxPrice());
-            StringUtils.addValue(sb, historicalQuote.getMinPrice());
+            StringUtils.addValue(sb, historicalQuote.getHighPrice());
+            StringUtils.addValue(sb, historicalQuote.getLowPrice());
             StringUtils.addValue(sb, historicalQuote.getClosePrice());
             StringUtils.addValue(sb, historicalQuote.getVolume());
             if (historicalQuote instanceof Commentable commentable) {
