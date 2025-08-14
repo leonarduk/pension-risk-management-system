@@ -23,9 +23,8 @@
 		<java.version>21</java.version>
 		<log4jdbc.log4j2.version>1.16</log4jdbc.log4j2.version>
                 <rest.assured.version>5.5.0</rest.assured.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
-		<jacoco.version>0.8.13</jacoco.version>
+                <maven.compiler.release>21</maven.compiler.release>
+                <jacoco.version>0.8.13</jacoco.version>
 		<jahoo.finance.version>3.15.0</jahoo.finance.version>
 		<org.ta4j.version>0.18</org.ta4j.version>
 	</properties>
@@ -114,8 +113,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.12.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
                     <fork>true</fork>
                 </configuration>
             </plugin>
