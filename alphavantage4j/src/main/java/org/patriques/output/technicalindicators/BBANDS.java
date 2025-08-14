@@ -1,12 +1,12 @@
 package org.patriques.output.technicalindicators;
 
-import org.patriques.input.technicalindicators.Interval;
-import org.patriques.output.JsonParser;
-import org.patriques.output.technicalindicators.data.BBANDSData;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.input.technicalindicators.Interval;
+import org.patriques.output.JsonParser;
+import org.patriques.output.technicalindicators.data.BBANDSData;
 
 /**
  * Representation of the Bollinger bands (BBANDS) response from api.

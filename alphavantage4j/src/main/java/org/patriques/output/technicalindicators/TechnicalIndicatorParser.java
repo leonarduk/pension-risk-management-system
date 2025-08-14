@@ -1,16 +1,16 @@
 package org.patriques.output.technicalindicators;
 
+import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import org.patriques.input.technicalindicators.Interval;
 import org.patriques.output.AlphaVantageException;
 import org.patriques.output.JsonParser;
-
-import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * Since the format for the technical indicator responses differ slightly but on the whole

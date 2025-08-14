@@ -1,11 +1,11 @@
 package org.patriques.output;
 
+import java.time.format.DateTimeFormatter;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-
-import java.time.format.DateTimeFormatter;
 
 /**
  * Every Data response from a top-level call, i.e intraday, daily, sector, etc, uses this class internally

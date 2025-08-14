@@ -1,9 +1,9 @@
 package org.patriques.output.timeseries;
 
-import org.patriques.output.timeseries.data.StockData;
-
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.output.timeseries.data.StockData;
 
 /**
  * Response from time series call. Each specific response, i.e IntraDay, Daily, etc, extends this class.

@@ -1,12 +1,12 @@
 package org.patriques.output.exchange;
 
-import org.patriques.output.AlphaVantageException;
-import org.patriques.output.exchange.data.ForexData;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.output.AlphaVantageException;
+import org.patriques.output.exchange.data.ForexData;
 
 /**
  * Representation of daily response from api.

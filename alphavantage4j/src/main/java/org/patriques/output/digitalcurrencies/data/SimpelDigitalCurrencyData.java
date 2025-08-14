@@ -2,7 +2,6 @@ package org.patriques.output.digitalcurrencies.data;
 
 import java.time.LocalDateTime;
 
-
 /**
  * Representation of json object, i.e:
  * "2014-04-01 17:59:59": {

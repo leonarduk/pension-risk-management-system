@@ -1,14 +1,14 @@
 package org.patriques;
 
-import org.patriques.input.ApiParameter;
-import org.patriques.input.ApiParameterBuilder;
-import org.patriques.output.AlphaVantageException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+
+import org.patriques.input.ApiParameter;
+import org.patriques.input.ApiParameterBuilder;
+import org.patriques.output.AlphaVantageException;
 
 /**
  * Connection to Alpha Vantage API.

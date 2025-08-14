@@ -1,13 +1,13 @@
 package org.patriques.output.technicalindicators;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.patriques.input.technicalindicators.Interval;
 import org.patriques.output.AlphaVantageException;
 import org.patriques.output.JsonParser;
 import org.patriques.output.technicalindicators.data.IndicatorData;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Representation of triple exponential moving average (TEMA) response from api.
