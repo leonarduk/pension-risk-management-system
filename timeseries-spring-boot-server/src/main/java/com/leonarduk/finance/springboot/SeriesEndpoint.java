@@ -66,8 +66,10 @@ public class SeriesEndpoint {
 
     private Map<LocalDate, Double> toSeries(List<Bar> history) {
         return history.stream().collect(
-                Collectors.toMap(bar -> bar.getEndTime().toLocalDate(),
-                        bar -> bar.getClosePrice().doubleValue()));
+                Collectors.toMap(
+                        bar -> bar.getEndTime().toLocalDate(),
+                        bar -> bar.getClosePrice().doubleValue(),
+                        (existing, replacement) -> existing));
     }
 
     private Map<LocalDate, Double> alignSeries(Map<LocalDate, Double> source, Map<LocalDate, Double> target) {
