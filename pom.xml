@@ -22,8 +22,7 @@
         <junit5.version>5.13.0-M3</junit5.version>
         <log4jdbc.log4j2.version>1.16</log4jdbc.log4j2.version>
         <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <org.slf4j.version>2.0.17</org.slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,8 +40,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
                     <configuration>
-                        <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.target}</target>
+                        <release>${maven.compiler.release}</release>
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>com.google.auto.service</groupId>
