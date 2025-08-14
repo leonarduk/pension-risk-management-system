@@ -19,6 +19,7 @@ import org.ta4j.core.num.DoubleNumFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -150,8 +151,8 @@ public class TimeseriesUtils {
         for (final Bar historicalQuote : series) {
             sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
             StringUtils.addValue(sb, historicalQuote.getOpenPrice());
-            StringUtils.addValue(sb, historicalQuote.getMaxPrice());
-            StringUtils.addValue(sb, historicalQuote.getMinPrice());
+            StringUtils.addValue(sb, historicalQuote.getHighPrice());
+            StringUtils.addValue(sb, historicalQuote.getLowPrice());
             StringUtils.addValue(sb, historicalQuote.getClosePrice());
             StringUtils.addValue(sb, historicalQuote.getVolume());
             if (historicalQuote instanceof Commentable commentable) {
