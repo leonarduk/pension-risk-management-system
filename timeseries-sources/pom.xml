@@ -88,10 +88,10 @@
 
                <!-- Official AlphaVantage client -->
                <dependency>
-                       <groupId>com.github.patriques</groupId>
-                       <artifactId>alphavantage4j</artifactId>
-                       <version>${alphavantage4j.version}</version>
-               </dependency>
+            <groupId>org.patriques</groupId>
+            <artifactId>alphavantage4j</artifactId>
+            <version>1.5.0</version>
+        </dependency>
 
                 <!-- Official Yahoo Finance API -->
                 <dependency>

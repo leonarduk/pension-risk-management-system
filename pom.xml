@@ -184,6 +184,7 @@
         </profile>
     </profiles>
     <modules>
+        <module>alphavantage4j</module>
         <module>timeseries-sources</module>
         <module>timeseries-stockfeed</module>
         <module>timeseries-spring-boot-server</module>

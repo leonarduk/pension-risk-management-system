@@ -7,7 +7,7 @@ module timeseries.stockfeed {
     exports com.leonarduk.finance.stockfeed.feed;
     exports com.leonarduk.finance.stockfeed.feed.yahoofinance;
     exports com.leonarduk.finance.scraper;
-    requires alphavantage4j;
+    requires org.patriques.alphavantage4j;
     requires com.google.common;
     requires htmlunit.driver;
     requires http.request;
