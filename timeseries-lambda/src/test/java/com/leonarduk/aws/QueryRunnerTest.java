@@ -69,4 +69,21 @@ class QueryRunnerTest {
         Assertions.assertEquals("USD", feed.lastInstrument.getCurrency());
 
     }
+
+    @Test
+    void currencyAutomaticallyResolved() throws Exception {
+        QueryRunner runner = new QueryRunner();
+        RecordingStockFeed feed = new RecordingStockFeed();
+        Field field = QueryRunner.class.getDeclaredField("stockFeed");
+        field.setAccessible(true);
+        field.set(runner, feed);
+
+        Map<String, String> params = Map.of(
+                QueryRunner.TICKER, "BBAI.N"
+        );
+
+        runner.getResults(params);
+
+        Assertions.assertEquals("USD", feed.lastInstrument.getCurrency());
+    }
 }

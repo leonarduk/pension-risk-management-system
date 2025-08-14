@@ -83,4 +83,12 @@ public class InstrumentTest {
         mapAfter.put("XDND", removed);
     }
 
+    @Test
+    public void testPopulateCurrencyResolvesFromFeed() {
+        Instrument unresolved = Instrument.fromString("BBAI.N");
+        Assert.assertEquals("UNKNOWN", unresolved.getCurrency());
+        Instrument resolved = Instrument.populateCurrency(unresolved);
+        Assert.assertEquals("USD", resolved.getCurrency());
+    }
+
 }

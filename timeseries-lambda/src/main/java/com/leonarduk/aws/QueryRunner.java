@@ -87,12 +87,15 @@ public class QueryRunner {
 
         String region = StringUtils.defaultIfEmpty(inputParams.get("region"), "L");
         String type = StringUtils.defaultIfEmpty(inputParams.get("type"), "UNKNOWN");
-        String currency = StringUtils.defaultIfEmpty(inputParams.get("currency"), "GBP");
+        String currency = inputParams.get("currency");
 
         if (ticker.contains(".")) {
             String[] parts = ticker.split("\\.");
             ticker = parts[0];
             region = parts[1];
+            if ("N".equalsIgnoreCase(region)) {
+                region = "NY";
+            }
         }
 
         if (ticker.contains("/")) {
@@ -106,6 +109,10 @@ public class QueryRunner {
             if (parts.length > 3) {
                 currency = parts[3];
             }
+        }
+
+        if (StringUtils.isBlank(currency)) {
+            currency = Instrument.resolveCurrency(inputParams.get(TICKER));
         }
         final Instrument instrument = Instrument.fromString(ticker, region, type, currency);
 

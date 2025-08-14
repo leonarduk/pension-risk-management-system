@@ -8,6 +8,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -150,7 +152,7 @@ public sealed class Instrument permits FxInstrument {
             String[] parts = symbol.split(":");
             return fromString(parts[0], parts[1], parts[2], parts[3]);
         }
-        return fromString(symbol, "L", "UNKNOWN", "GBP");
+        return fromString(symbol, "L", "UNKNOWN", UNKNOWN_TEXT);
     }
 
     public static Instrument fromString(final String symbol, final String region,
@@ -170,6 +172,47 @@ public sealed class Instrument permits FxInstrument {
 
         return new Instrument(symbol, AssetType.fromString(type), AssetType.fromString(type), Source.MANUAL, symbol, localSymbol,
                 Exchange.valueOf(region), "", "", currency, symbol, true);
+    }
+
+    public static String resolveCurrency(final String symbol) {
+        String lookupSymbol = symbol;
+        final String fullStop = ".";
+        if (lookupSymbol.contains(fullStop) && !lookupSymbol.endsWith(".A")) {
+            lookupSymbol = lookupSymbol.substring(0, lookupSymbol.indexOf(fullStop));
+        }
+
+        try {
+            if (InstrumentLoader.getInstance().getInstruments().containsKey(lookupSymbol.toUpperCase())) {
+                Instrument instrument = InstrumentLoader.getInstance().getInstruments().get(lookupSymbol.toUpperCase());
+                if (StringUtils.isNotBlank(instrument.getCurrency())) {
+                    return instrument.getCurrency();
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.warn("Unable to load instruments for currency resolution", e);
+        }
+
+        try {
+            Stock stock = YahooFinance.get(lookupSymbol);
+            if (stock != null && stock.getCurrency() != null) {
+                return stock.getCurrency();
+            }
+        } catch (IOException e) {
+            LOGGER.warn("Unable to resolve currency for " + symbol, e);
+        }
+
+        return UNKNOWN_TEXT;
+    }
+
+    public static Instrument populateCurrency(final Instrument instrument) {
+        if (instrument == null) {
+            return null;
+        }
+        if (StringUtils.isNotBlank(instrument.getCurrency()) && !UNKNOWN_TEXT.equalsIgnoreCase(instrument.getCurrency())) {
+            return instrument;
+        }
+        String resolved = resolveCurrency(instrument.getCode());
+        return fromString(instrument.getCode(), instrument.getExchange().name(), instrument.assetType().name(), resolved);
     }
 
 
