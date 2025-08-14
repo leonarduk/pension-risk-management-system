@@ -16,6 +16,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -54,6 +56,8 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
                 getS3Filepath(stock.getInstrument()),
                 new File(filepath)
         );
+
+        Files.deleteIfExists(Paths.get(filepath));
     }
 
     @Override
@@ -80,8 +84,9 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
     @Override
     protected String getQueryName(final Instrument instrument) {
-        return "/tmp/" + instrument.getExchange().name() + "_" + instrument.code()
-                + ".csv";
+        return Paths.get(System.getProperty("java.io.tmpdir"),
+                instrument.getExchange().name() + "_" + instrument.code() + ".csv")
+                .toString();
     }
 
     private String getS3Filepath(final Instrument instrument) {
