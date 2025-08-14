@@ -9,6 +9,7 @@ import org.ta4j.core.num.Num;
 import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.List;
+import java.time.ZoneId;
 
 public class BadScalingCorrector implements TimeSeriesCleaner {
 

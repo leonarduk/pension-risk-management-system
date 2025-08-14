@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.time.ZoneId;
 
 public class TimeseriesUtils {
     public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {
