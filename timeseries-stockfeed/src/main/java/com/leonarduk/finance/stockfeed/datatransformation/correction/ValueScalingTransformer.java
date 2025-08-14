@@ -7,6 +7,7 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
+import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,14 +27,14 @@ public class ValueScalingTransformer implements TimeSeriesCleaner {
         return TimeseriesUtils.sortQuoteList(
                 history.stream()
                         .map(current -> new ExtendedHistoricalQuote("",
-                                current.getEndTime().toLocalDate(),
+                                current.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
 
                                 current.getOpenPrice().multipliedBy(scalingFactor),
-                                current.getMinPrice().multipliedBy(scalingFactor),
-                                current.getMaxPrice().multipliedBy(scalingFactor),
+                                current.getLowPrice().multipliedBy(scalingFactor),
+                                current.getHighPrice().multipliedBy(scalingFactor),
                                 current.getClosePrice().multipliedBy(scalingFactor),
 
-                                current.getVolume(),
+                                current.getVolume().longValue(),
                                 instrument.isin() + " scaled from " + current.getClosePrice() + " to "
                                         + current.getClosePrice().multipliedBy(scalingFactor))
                         )

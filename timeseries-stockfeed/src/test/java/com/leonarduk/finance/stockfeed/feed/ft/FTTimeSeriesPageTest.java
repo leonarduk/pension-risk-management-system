@@ -10,6 +10,7 @@ import org.ta4j.core.Bar;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -42,7 +43,7 @@ public class FTTimeSeriesPageTest {
 
         assertEquals(2, bars.size());
         for (Bar bar : bars) {
-            LocalDate date = bar.getEndTime().toLocalDate();
+            LocalDate date = bar.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
             assertFalse(date.isBefore(from));
             assertFalse(date.isAfter(to));
         }

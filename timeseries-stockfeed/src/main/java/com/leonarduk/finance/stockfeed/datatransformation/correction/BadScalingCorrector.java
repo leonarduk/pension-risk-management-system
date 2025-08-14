@@ -6,6 +6,7 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,27 +31,27 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
             int SCALE = 80;
             if (current.getClosePrice().dividedBy(DoubleNum.valueOf(SCALE)).isGreaterThan(previous.getClosePrice())) {
                 ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
-                        current.getEndTime().toLocalDate(),
+                        current.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
 
                         scaleDown(current.getOpenPrice()),
-                        scaleDown(current.getMinPrice()),
-                        scaleDown(current.getMaxPrice()),
+                        scaleDown(current.getLowPrice()),
+                        scaleDown(current.getHighPrice()),
                         scaleDown(current.getClosePrice()),
 
-                        current.getVolume(),
+                        current.getVolume().longValue(),
                         comment + ": Scaled from " + current.getClosePrice() + " to " + scaleDown(current.getClosePrice()));
                 cleanedSeries.add(cleanedQuote);
             } else if (current.getClosePrice().multipliedBy(DoubleNum.valueOf(SCALE))
                     .isLessThan(previous.getClosePrice())) {
                 ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
-                        current.getEndTime().toLocalDate(),
+                        current.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
 
                         scaleUp(current.getOpenPrice()),
-                        scaleUp(current.getMinPrice()),
-                        scaleUp(current.getMaxPrice()),
+                        scaleUp(current.getLowPrice()),
+                        scaleUp(current.getHighPrice()),
                         scaleUp(current.getClosePrice()),
 
-                        current.getVolume(),
+                        current.getVolume().longValue(),
                         "Scaled from " + current.getClosePrice() + " to " + scaleUp(current.getClosePrice()));
                 cleanedSeries.add(cleanedQuote);
             } else {

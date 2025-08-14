@@ -13,6 +13,7 @@ import org.ta4j.core.BaseBarSeriesBuilder;
 import org.ta4j.core.num.DoubleNumFactory;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,10 +40,10 @@ public class HolidayInterpolationTest {
         TimeSeriesInterpolator flat = new FlatLineInterpolator();
         BarSeries actual = flat.interpolate(this.series);
         Assert.assertEquals(2, actual.getBarCount());
-        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().toLocalDate());
+        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
         for (int i = 0; i < actual.getBarCount(); i++) {
-            LocalDate date = actual.getBar(i).getEndTime().toLocalDate();
+            LocalDate date = actual.getBar(i).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
             Assert.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
         }
     }
@@ -52,10 +53,10 @@ public class HolidayInterpolationTest {
         TimeSeriesInterpolator linear = new com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator();
         BarSeries actual = linear.interpolate(this.series);
         Assert.assertEquals(2, actual.getBarCount());
-        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().toLocalDate());
+        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
         for (int i = 0; i < actual.getBarCount(); i++) {
-            LocalDate date = actual.getBar(i).getEndTime().toLocalDate();
+            LocalDate date = actual.getBar(i).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
             Assert.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
         }
     }

@@ -14,6 +14,7 @@ import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -157,10 +158,10 @@ public class QueryRunner {
         for (final Bar historicalQuote : historyData) {
             final ArrayList<DataField> record = Lists.newArrayList();
             records.add(record);
-            record.add(new DataField("Date", historicalQuote.getEndTime().toLocalDate().toString()));
+            record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
             record.add(new DataField("Open", historicalQuote.getOpenPrice()));
-            record.add(new DataField("High", historicalQuote.getMaxPrice()));
-            record.add(new DataField("Low", historicalQuote.getMinPrice()));
+            record.add(new DataField("High", historicalQuote.getHighPrice()));
+            record.add(new DataField("Low", historicalQuote.getLowPrice()));
             record.add(new DataField("Close", historicalQuote.getClosePrice()));
             record.add(new DataField("Volume", historicalQuote.getVolume()));
 
