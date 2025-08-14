@@ -1,5 +1,11 @@
 package org.patriques.output.quote;
 
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -7,12 +13,6 @@ import org.patriques.BatchStockQuotes;
 import org.patriques.output.AlphaVantageException;
 import org.patriques.output.JsonParser;
 import org.patriques.output.quote.data.StockQuote;
-
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Representation of batch stock quote response from api.

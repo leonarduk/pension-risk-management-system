@@ -1,13 +1,13 @@
 package org.patriques.output.digitalcurrencies;
 
-import org.patriques.input.digitalcurrencies.Market;
-import org.patriques.output.JsonParser;
-import org.patriques.output.digitalcurrencies.data.SimpelDigitalCurrencyData;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.input.digitalcurrencies.Market;
+import org.patriques.output.JsonParser;
+import org.patriques.output.digitalcurrencies.data.SimpelDigitalCurrencyData;
 
 /**
  * Representation of intra day response from api.

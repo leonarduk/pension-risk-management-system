@@ -1,12 +1,12 @@
 package org.patriques.output.technicalindicators;
 
-import org.patriques.input.technicalindicators.Interval;
-import org.patriques.output.JsonParser;
-import org.patriques.output.technicalindicators.data.MACDData;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.input.technicalindicators.Interval;
+import org.patriques.output.JsonParser;
+import org.patriques.output.technicalindicators.data.MACDData;
 
 /**
  * Representation of moving average converge/divergence (MACD) response from api.

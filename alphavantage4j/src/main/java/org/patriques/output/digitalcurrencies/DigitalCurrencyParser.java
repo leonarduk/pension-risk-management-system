@@ -1,13 +1,13 @@
 package org.patriques.output.digitalcurrencies;
 
+import java.lang.reflect.Type;
+import java.util.Map;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import org.patriques.output.AlphaVantageException;
 import org.patriques.output.JsonParser;
-
-import java.lang.reflect.Type;
-import java.util.Map;
 
 // TODO rename data to response
 /**

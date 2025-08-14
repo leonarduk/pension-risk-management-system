@@ -1,13 +1,13 @@
 package org.patriques.output.digitalcurrencies;
 
-import org.patriques.input.digitalcurrencies.Market;
-import org.patriques.output.JsonParser;
-import org.patriques.output.digitalcurrencies.data.DigitalCurrencyData;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.input.digitalcurrencies.Market;
+import org.patriques.output.JsonParser;
+import org.patriques.output.digitalcurrencies.data.DigitalCurrencyData;
 
 /**
  * Representation of monthly response from api.

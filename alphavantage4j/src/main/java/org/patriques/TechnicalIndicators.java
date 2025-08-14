@@ -1,11 +1,11 @@
 package org.patriques;
 
+import javax.annotation.Nullable;
+
 import org.patriques.input.Function;
 import org.patriques.input.Symbol;
 import org.patriques.input.technicalindicators.*;
 import org.patriques.output.technicalindicators.*;
-
-import javax.annotation.Nullable;
 
 // TODO add optional in docs to optional values
 

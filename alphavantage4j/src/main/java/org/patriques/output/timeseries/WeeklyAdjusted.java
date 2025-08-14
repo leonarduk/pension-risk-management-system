@@ -1,13 +1,13 @@
 package org.patriques.output.timeseries;
 
-import org.patriques.output.AlphaVantageException;
-import org.patriques.output.JsonParser;
-import org.patriques.output.timeseries.data.StockData;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.patriques.output.AlphaVantageException;
+import org.patriques.output.JsonParser;
+import org.patriques.output.timeseries.data.StockData;
 
 /**
  * Representation of weekly adjusted response from api.
