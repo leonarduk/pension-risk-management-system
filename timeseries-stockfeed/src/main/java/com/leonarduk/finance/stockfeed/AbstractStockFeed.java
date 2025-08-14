@@ -68,8 +68,13 @@ public abstract class AbstractStockFeed implements StockFeed {
     }
 
     public void mergeSeries(final StockV1 stock, final List<Bar> original, final List<Bar> newSeries) {
-        final Map<LocalDate, Bar> dates = original.stream()
-                .collect(Collectors.toMap(quote -> quote.getEndTime().toLocalDate(), Function.identity()));
+        final Map<LocalDate, Bar> dates =
+                original.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        quote -> quote.getEndTime().toLocalDate(),
+                                        Function.identity(),
+                                        (existing, replacement) -> existing));
         newSeries.stream().forEach(historicalQuote -> {
             final LocalDate date = historicalQuote.getEndTime().toLocalDate();
             if ((date != null) && !dates.containsKey(date)
