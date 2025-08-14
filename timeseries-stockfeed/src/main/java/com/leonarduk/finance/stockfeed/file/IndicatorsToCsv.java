@@ -31,6 +31,7 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.helpers.TypicalPriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
+import java.time.ZoneId;
 
 /**
  * This class builds a CSV file containing values from indicators.
@@ -76,7 +77,7 @@ public class IndicatorsToCsv {
          */
         final int nbTicks = series.getBarCount();
         for (int i = 0; i < nbTicks; i++) {
-            sb.append(series.getBar(i).getEndTime().toLocalDate()); //
+            sb.append(series.getBar(i).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()); //
             StringUtils.addValue(sb, (closePrice.getValue(i)));
             StringUtils.addValue(sb, (typicalPrice.getValue(i)));
             Num previous = series.getBar(Math.max(0, i - 1)).getClosePrice();

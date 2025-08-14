@@ -16,6 +16,7 @@ import org.ta4j.core.num.DoubleNum;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed {
@@ -58,14 +59,14 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             if ((quote != null) && quote.isPopulated()) {
                 LocalDate calendarToLocalDate = DateUtils.calendarToLocalDate(quote.getLastTradeTime());
                 if (stock.getHistory().stream()
-                        .filter(dataPoint -> dataPoint.getEndTime().toLocalDate().equals(calendarToLocalDate)).findAny()
+                        .filter(dataPoint -> dataPoint.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().equals(calendarToLocalDate)).findAny()
                         .isPresent()) {
                     return;
                 }
                 List<Bar> history = stock.getHistory();
                 if (!history.isEmpty()) {
                     Bar mostRecentQuote = TimeseriesUtils.getMostRecentQuote(history);
-                    if (mostRecentQuote.getEndTime().toLocalDate().isEqual(calendarToLocalDate)) {
+                    if (mostRecentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(calendarToLocalDate)) {
                         history.remove(mostRecentQuote);
                     }
                     history.add(new ExtendedHistoricalQuote(stock.getInstrument().code(), calendarToLocalDate,

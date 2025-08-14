@@ -8,6 +8,7 @@ import org.ta4j.core.Bar;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -72,11 +73,11 @@ public abstract class AbstractStockFeed implements StockFeed {
                 original.stream()
                         .collect(
                                 Collectors.toMap(
-                                        quote -> quote.getEndTime().toLocalDate(),
+                                        quote -> quote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
                                         Function.identity(),
                                         (existing, replacement) -> existing));
         newSeries.stream().forEach(historicalQuote -> {
-            final LocalDate date = historicalQuote.getEndTime().toLocalDate();
+            final LocalDate date = historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
             if ((date != null) && !dates.containsKey(date)
                     && !historicalQuote.getClosePrice().equals(BigDecimal.valueOf(0))) {
                 dates.putIfAbsent(date, historicalQuote);

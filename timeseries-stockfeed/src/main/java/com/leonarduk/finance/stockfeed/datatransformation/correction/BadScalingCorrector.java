@@ -8,6 +8,7 @@ import org.ta4j.core.num.Num;
 
 import java.util.Iterator;
 import java.util.List;
+import java.time.ZoneId;
 
 public class BadScalingCorrector implements TimeSeriesCleaner {
 
@@ -30,7 +31,7 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
             int SCALE = 80;
             if (current.getClosePrice().dividedBy(DoubleNum.valueOf(SCALE)).isGreaterThan(previous.getClosePrice())) {
                 ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
-                        current.getEndTime().toLocalDate(),
+                        current.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
 
                         scaleDown(current.getOpenPrice()),
                         scaleDown(current.getMinPrice()),
@@ -43,7 +44,7 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
             } else if (current.getClosePrice().multipliedBy(DoubleNum.valueOf(SCALE))
                     .isLessThan(previous.getClosePrice())) {
                 ExtendedHistoricalQuote cleanedQuote = new ExtendedHistoricalQuote("",
-                        current.getEndTime().toLocalDate(),
+                        current.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
 
                         scaleUp(current.getOpenPrice()),
                         scaleUp(current.getMinPrice()),
