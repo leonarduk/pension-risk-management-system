@@ -19,6 +19,7 @@ import org.ta4j.core.num.DoubleNumFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,8 +51,9 @@ public class TimeseriesUtils {
     }
 
     public static List<LocalDate> getMissingDataPoints(final List<Bar> cachedHistory, final LocalDate... dates) {
-        Set<LocalDate> daysWithData = cachedHistory.stream().map(quote -> quote.getEndTime().toLocalDate())
-                .collect(Collectors.toSet());
+        Set<LocalDate> daysWithData = cachedHistory.stream()
+                .map(quote -> quote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate())
+                .collect(Collectors.toCollection(HashSet::new));
         return Arrays.stream(dates).filter(date -> !daysWithData.contains(date)).collect(Collectors.toList());
     }
 
@@ -133,10 +135,13 @@ public class TimeseriesUtils {
                     .extendToToDate(series, toLocalDate));
         }
         final List<Bar> subSeries = history.stream()
-                .filter(q -> (q.getEndTime().toLocalDate().isAfter(fromLocalDate)
-                        && q.getEndTime().toLocalDate().isBefore(toLocalDate))
-                        || q.getEndTime().toLocalDate().isEqual(fromLocalDate)
-                        || q.getEndTime().toLocalDate().isEqual(toLocalDate))
+                .filter(q -> {
+                    LocalDate endDate = q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
+                    return (endDate.isAfter(fromLocalDate)
+                            && endDate.isBefore(toLocalDate))
+                            || endDate.isEqual(fromLocalDate)
+                            || endDate.isEqual(toLocalDate);
+                })
                 .collect(Collectors.toList());
         TimeseriesUtils.sortQuoteList(subSeries);
         liveData.get().setHistory(subSeries);
@@ -147,7 +152,7 @@ public class TimeseriesUtils {
         final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment\n");
         // TODO add comment field if necessary- look at how HTML tools does it
         for (final Bar historicalQuote : series) {
-            sb.append(historicalQuote.getEndTime().toLocalDate().toString());
+            sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
             StringUtils.addValue(sb, historicalQuote.getOpenPrice());
             StringUtils.addValue(sb, historicalQuote.getMaxPrice());
             StringUtils.addValue(sb, historicalQuote.getMinPrice());
