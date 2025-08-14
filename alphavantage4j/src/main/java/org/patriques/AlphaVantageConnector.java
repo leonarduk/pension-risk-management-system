@@ -40,15 +40,16 @@ public class AlphaVantageConnector implements ApiConnector {
       connection.setConnectTimeout(timeOut);
       connection.setReadTimeout(timeOut);
 
-      InputStreamReader inputStream = new InputStreamReader(connection.getInputStream(), "UTF-8");
-      BufferedReader bufferedReader = new BufferedReader(inputStream);
       StringBuilder responseBuilder = new StringBuilder();
 
-      String line;
-      while ((line = bufferedReader.readLine()) != null) {
-        responseBuilder.append(line);
+      try (InputStreamReader inputStream =
+              new InputStreamReader(connection.getInputStream(), "UTF-8");
+          BufferedReader bufferedReader = new BufferedReader(inputStream)) {
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+          responseBuilder.append(line);
+        }
       }
-      bufferedReader.close();
       return responseBuilder.toString();
     } catch (IOException e) {
       throw new AlphaVantageException("failure sending request", e);
