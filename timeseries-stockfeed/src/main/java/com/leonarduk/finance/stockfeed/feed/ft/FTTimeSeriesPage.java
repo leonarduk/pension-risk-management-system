@@ -2,7 +2,6 @@ package com.leonarduk.finance.stockfeed.feed.ft;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
-import com.leonarduk.web.BaseSeleniumPage;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -17,18 +16,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FTTimeSeriesPage extends BaseSeleniumPage {
+public class FTTimeSeriesPage {
     public static final Logger log = LoggerFactory.getLogger(FTTimeSeriesPage.class.getName());
 
+    private final WebDriver webDriver;
+    private final String expectedUrl;
+
     public FTTimeSeriesPage(WebDriver webDriver, String expectedUrl) {
-        super(webDriver, expectedUrl);
-    }
-
-    @Override
-    protected void load() {
-        log.info("Load {}", this.getExpectedUrl());
-        this.getWebDriver().get(getExpectedUrl());
-
+        this.webDriver = webDriver;
+        this.expectedUrl = expectedUrl;
     }
 
     public List<Bar> getTimeseries(Instrument instrument, LocalDate fromDate, LocalDate toDate) {
@@ -41,12 +37,12 @@ public class FTTimeSeriesPage extends BaseSeleniumPage {
         String fromDateString = fromDate.format(numericDateFormatter);
         String toDateString = toDate.format(numericDateFormatter);
 
-        String url = String.format("%s%sstartDate=%s&endDate=%s", getExpectedUrl(),
-                getExpectedUrl().contains("?") ? "&" : "?", fromDateString, toDateString);
+        String url = String.format("%s%sstartDate=%s&endDate=%s", expectedUrl,
+                expectedUrl.contains("?") ? "&" : "?", fromDateString, toDateString);
         log.info("Load {}", url);
-        this.getWebDriver().get(url);
+        this.webDriver.get(url);
 
-        WebElement table = this.getWebDriver().findElement(By.className("mod-tearsheet-historical-prices__results"));
+        WebElement table = this.webDriver.findElement(By.className("mod-tearsheet-historical-prices__results"));
         WebElement body = table.findElement(By.tagName("tbody"));
         List<WebElement> rows = body.findElements(By.tagName("tr"));
 
