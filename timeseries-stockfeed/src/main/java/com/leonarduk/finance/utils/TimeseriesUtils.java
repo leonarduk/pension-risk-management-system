@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.time.ZoneId;
 
 public class TimeseriesUtils {
     public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {
@@ -51,9 +52,8 @@ public class TimeseriesUtils {
     }
 
     public static List<LocalDate> getMissingDataPoints(final List<Bar> cachedHistory, final LocalDate... dates) {
-        Set<LocalDate> daysWithData = cachedHistory.stream()
-                .map(quote -> quote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate())
-                .collect(Collectors.toCollection(HashSet::new));
+        Set<LocalDate> daysWithData = cachedHistory.stream().map(quote -> quote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate())
+                .collect(Collectors.toSet());
         return Arrays.stream(dates).filter(date -> !daysWithData.contains(date)).collect(Collectors.toList());
     }
 
@@ -135,13 +135,10 @@ public class TimeseriesUtils {
                     .extendToToDate(series, toLocalDate));
         }
         final List<Bar> subSeries = history.stream()
-                .filter(q -> {
-                    LocalDate endDate = q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return (endDate.isAfter(fromLocalDate)
-                            && endDate.isBefore(toLocalDate))
-                            || endDate.isEqual(fromLocalDate)
-                            || endDate.isEqual(toLocalDate);
-                })
+                .filter(q -> (q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(fromLocalDate)
+                        && q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(toLocalDate))
+                        || q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(fromLocalDate)
+                        || q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(toLocalDate))
                 .collect(Collectors.toList());
         TimeseriesUtils.sortQuoteList(subSeries);
         liveData.get().setHistory(subSeries);

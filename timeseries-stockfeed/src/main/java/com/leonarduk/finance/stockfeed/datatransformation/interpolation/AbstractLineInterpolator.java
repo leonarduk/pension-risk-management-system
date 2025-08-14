@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
+import java.time.ZoneId;
 
 public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator {
 
@@ -23,7 +24,7 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
             return series;
         }
         final Bar firstQuote = TimeseriesUtils.getOldestQuote(series);
-        final LocalDate firstDateInSeries = firstQuote.getEndTime().toLocalDate();
+        final LocalDate firstDateInSeries = firstQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
         if (firstDateInSeries.isAfter(fromDate)) {
             series.add(this.calculatePastValue(firstQuote, fromDate));
             interpolateRange(series, fromDate, firstDateInSeries);
@@ -37,7 +38,7 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
             return series;
         }
         final Bar lastQuote = TimeseriesUtils.getMostRecentQuote(series);
-        final LocalDate lastDateInSeries = lastQuote.getEndTime().toLocalDate();
+        final LocalDate lastDateInSeries = lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
         if (lastDateInSeries.isBefore(toLocalDate)) {
             // create a temporary tail containing the last quote and a future
             // placeholder so that interpolation can fill the gap
@@ -52,7 +53,7 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
                 extended.remove(extended.size() - 1); // drop placeholder
                 // Drop the previous trading day only if it has been reinserted
                 if (!extended.isEmpty()
-                        && extended.get(0).getEndTime().toLocalDate().isEqual(lastDateInSeries)) {
+                        && extended.get(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(lastDateInSeries)) {
                     extended.remove(0);
                 }
             }
@@ -79,8 +80,8 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
         List<Bar> series = timeseries.getBarData();
         TimeseriesUtils.sortQuoteList(series);
 
-        final LocalDate oldestDate = TimeseriesUtils.getOldestQuote(series).getEndTime().toLocalDate();
-        final LocalDate mostRecentDate = TimeseriesUtils.getMostRecentQuote(series).getEndTime().toLocalDate();
+        final LocalDate oldestDate = TimeseriesUtils.getOldestQuote(series).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
+        final LocalDate mostRecentDate = TimeseriesUtils.getMostRecentQuote(series).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
 
         return new ExtendedHistoricalQuoteTimeSeries(interpolateRange(series, oldestDate, mostRecentDate));
     }
@@ -101,12 +102,12 @@ public abstract class AbstractLineInterpolator implements TimeSeriesInterpolator
             LocalDate currentDate = dateIter.next();
 
             // skip the date already represented by the current quote
-            if (currentDate.isEqual(currentQuote.getEndTime().toLocalDate())) {
+            if (currentDate.isEqual(currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate())) {
                 continue;
             }
 
             final Bar nextQuote = series.get(index + 1);
-            final LocalDate nextQuoteDate = nextQuote.getEndTime().toLocalDate();
+            final LocalDate nextQuoteDate = nextQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
 
             if (currentDate.isBefore(nextQuoteDate)) {
                 if (nextQuote.getEndTime().isAfter(currentQuote.getEndTime())) {
