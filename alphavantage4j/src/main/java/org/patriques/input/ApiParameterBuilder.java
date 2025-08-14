@@ -1,5 +1,7 @@
 package org.patriques.input;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 /**
@@ -13,27 +15,33 @@ public class ApiParameterBuilder {
   }
 
   /**
-   * Append an api paramter to the builder.
+   * Append an api parameter to the builder.
    *
    * @param apiParameter the api parameter to append to the url.
-   * @return an instance of this builder.
+   * @return this builder for method chaining.
    */
-  public void append(@Nullable ApiParameter apiParameter) {
+  public ApiParameterBuilder append(@Nullable ApiParameter apiParameter) {
     if (apiParameter != null) {
       append(apiParameter.getKey(), apiParameter.getValue());
     }
+    return this;
   }
 
   /**
-   * Append raw strings parameters to the builder, key and value.
+   * Append raw string parameters to the builder.
+   * <p>
+   * Both {@code key} and {@code value} are URL encoded before being appended.
    *
-   * @param key in the api paramter key value pair.
+   * @param key in the api parameter key value pair.
    * @param value in the api parameter key value pair.
-   * @return an instance of this builder.
+   * @return this builder for method chaining.
    */
-  public void append(String key, String value) {
-    String parameter = "&" + key + "=" + value;
+  public ApiParameterBuilder append(String key, String value) {
+    String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8);
+    String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8);
+    String parameter = "&" + encodedKey + "=" + encodedValue;
     this.urlBuilder.append(parameter);
+    return this;
   }
 
   /**

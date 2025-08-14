@@ -12,8 +12,7 @@ public class ApiParameterBuilderTest {
     @Test
     public void testAppendParametersAndBuildUrl() {
         ApiParameterBuilder builder = new ApiParameterBuilder();
-        builder.append(new Symbol("IBM"));
-        builder.append("datatype", "json");
+        builder.append(new Symbol("IBM")).append("datatype", "json");
         assertEquals("&symbol=IBM&datatype=json", builder.getUrl());
     }
 
@@ -22,5 +21,12 @@ public class ApiParameterBuilderTest {
         ApiParameterBuilder builder = new ApiParameterBuilder();
         builder.append((ApiParameter) null);
         assertEquals("", builder.getUrl());
+    }
+
+    @Test
+    public void testAppendEncodesParameters() {
+        ApiParameterBuilder builder = new ApiParameterBuilder();
+        builder.append("sp ce", "a+b");
+        assertEquals("&sp+ce=a%2Bb", builder.getUrl());
     }
 }
