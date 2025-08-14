@@ -7,6 +7,7 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
+import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class ValueScalingTransformer implements TimeSeriesCleaner {
                                 current.getHighPrice().multipliedBy(scalingFactor),
                                 current.getClosePrice().multipliedBy(scalingFactor),
 
-                                current.getVolume(),
+                                current.getVolume().longValue(),
                                 instrument.isin() + " scaled from " + current.getClosePrice() + " to "
                                         + current.getClosePrice().multipliedBy(scalingFactor))
                         )

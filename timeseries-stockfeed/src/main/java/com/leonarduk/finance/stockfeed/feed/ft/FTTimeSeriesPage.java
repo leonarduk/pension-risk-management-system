@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.ta4j.core.Bar;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
@@ -62,7 +63,7 @@ public class FTTimeSeriesPage {
                             volume, "FTFeed");
                 })
                 .filter(bar -> {
-                    LocalDate date = bar.getEndTime().toLocalDate();
+                    LocalDate date = bar.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
                     return !(date.isBefore(fromDate) || date.isAfter(toDate));
                 })
                 .collect(Collectors.toList());

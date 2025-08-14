@@ -21,7 +21,7 @@ public abstract class AbstractStockFeed implements StockFeed {
         if ((quotes != null) && !quotes.isEmpty()) {
             final Bar historicalQuote = quotes.get(quotes.size() - 1);
             quoteBuilder.setDayHigh(historicalQuote.getHighPrice()).setDayLow(historicalQuote.getLowPrice())
-                    .setOpen(historicalQuote.getOpenPrice()).setAvgVolume(historicalQuote.getVolume().longValue())
+                    .setOpen(historicalQuote.getOpenPrice()).setAvgVolume(historicalQuote.getVolume())
                     .setPrice(historicalQuote.getClosePrice());
             stock.setQuote(quoteBuilder.build());
             stock.setHistory(quotes);

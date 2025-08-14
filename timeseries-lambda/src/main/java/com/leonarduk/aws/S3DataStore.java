@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -107,10 +108,10 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
         final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment,ticker\n");
         for (final Bar historicalQuote : series) {
             try {
-                sb.append(historicalQuote.getEndTime().toLocalDate().toString());
+                sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
                 StringUtils.addValue(sb, historicalQuote.getOpenPrice());
-                StringUtils.addValue(sb, historicalQuote.getMaxPrice());
-                StringUtils.addValue(sb, historicalQuote.getMinPrice());
+                StringUtils.addValue(sb, historicalQuote.getHighPrice());
+                StringUtils.addValue(sb, historicalQuote.getLowPrice());
                 StringUtils.addValue(sb, historicalQuote.getClosePrice());
                 StringUtils.addValue(sb, historicalQuote.getVolume());
                 String comment = (historicalQuote instanceof Commentable) ?
@@ -121,7 +122,7 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
                 sb.append("\n");
             } catch (Exception e) {
                 log.warn(String.format("Cannot add %s",
-                        historicalQuote.getEndTime().toLocalDate().toString()), e);
+                        historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()), e);
             }
         }
         return sb;

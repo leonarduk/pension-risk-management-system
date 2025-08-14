@@ -35,8 +35,17 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     @Column(timestamp = true)
     private Instant date;
 
-    public LocalDate getDate() {
-        return LocalDate.ofInstant(date, ZoneId.systemDefault());
+    @Override
+    public Calendar getDate() {
+        return DateUtils.localDateToCalendar(getLocalDate());
+    }
+
+    public Calendar getCalendarDate() {
+        return getDate();
+    }
+
+    public LocalDate getLocalDate() {
+        return date.atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     private void setDate(Instant today) {
@@ -63,7 +72,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     }
 
     @Override
-    public Num getMinPrice() {
+    public Num getLowPrice() {
         return DoubleNum.valueOf(getLow());
     }
 
@@ -88,13 +97,16 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return adjClose;
     }
 
-    // Stored as String
     @Column
-    private final Num volume;
+    private final Long volume;
 
     @Override
-    public Num getVolume() {
+    public Long getVolume() {
         return this.volume;
+    }
+
+    public Num getVolumeAsNum() {
+        return DoubleNum.valueOf(getVolume() == null ? 0 : getVolume());
     }
 
     @Column(tag = true)
@@ -110,16 +122,18 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     }
 
     public ExtendedHistoricalQuote(HistoricalQuote original, String comment) {
-        this(original.getSymbol(), original.getDateAsCalendar(), original.getOpen(), original.getLow(), original.getHigh(),
-                original.getClose(), original.getAdjClose(), original.getVolumeAsLong(), comment);
+        this(original.getSymbol(), original.getDate(), original.getOpen(), original.getLow(), original.getHigh(),
+                original.getClose(), original.getAdjClose(), original.getVolume(), comment);
     }
 
     public ExtendedHistoricalQuote(Bar original) {
-        this("", original.getEndTime().toLocalDate(), BigDecimal.valueOf(original.getOpenPrice().doubleValue()),
-                BigDecimal.valueOf(original.getMinPrice().doubleValue()),
-                BigDecimal.valueOf(original.getMaxPrice().doubleValue()),
+        this("", original.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                BigDecimal.valueOf(original.getOpenPrice().doubleValue()),
+                BigDecimal.valueOf(original.getLowPrice().doubleValue()),
+                BigDecimal.valueOf(original.getHighPrice().doubleValue()),
                 BigDecimal.valueOf(original.getClosePrice().doubleValue()),
-                BigDecimal.valueOf(original.getClosePrice().doubleValue()), original.getVolume(), "");
+                BigDecimal.valueOf(original.getClosePrice().doubleValue()),
+                original.getVolume().longValue(), "");
     }
 
     /**
@@ -134,7 +148,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
      * @param comment
      */
     public ExtendedHistoricalQuote(String symbol, LocalDate date, BigDecimal open, BigDecimal low, BigDecimal high,
-                                   BigDecimal close, BigDecimal adjClose, Num volume, final String comment) {
+                                   BigDecimal close, BigDecimal adjClose, Long volume, final String comment) {
         super();
         this.symbol = symbol;
         this.date = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -150,14 +164,14 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     public ExtendedHistoricalQuote(String symbol, Calendar date, BigDecimal open, BigDecimal low, BigDecimal high,
                                    BigDecimal close, BigDecimal adjClose, Long volume, final String comment) {
         this(symbol, DateUtils.calendarToLocalDate(date), open, low, high, close, adjClose,
-                DoubleNum.valueOf(volume == null ? 0 : volume),
+                volume == null ? 0L : volume,
                 comment);
     }
 
     public ExtendedHistoricalQuote(Instrument instrument, LocalDate date, BigDecimal open, BigDecimal low,
                                    BigDecimal high, BigDecimal close, BigDecimal adjClose, Long volume, final String comment) {
         this(instrument.getCode(), date, open, low, high, close, adjClose,
-                DoubleNum.valueOf(volume == null ? 0 : volume), comment);
+                volume == null ? 0L : volume, comment);
     }
 
     public ExtendedHistoricalQuote(Bar lastQuote, LocalDate today, String string) {
@@ -173,7 +187,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     }
 
     public ExtendedHistoricalQuote(ExtendedHistoricalQuote original) {
-        this(original.getSymbol(), original.getDate(), original.getOpen(), original.getLow(), original.getHigh(),
+        this(original.getSymbol(), original.getLocalDate(), original.getOpen(), original.getLow(), original.getHigh(),
                 original.getClose(), original.getAdjClose(), original.getVolume(), "");
     }
 
@@ -194,7 +208,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         this.high = BigDecimal.valueOf((Double) valuesMap.getOrDefault("high", 0.0));
         this.close = BigDecimal.valueOf((Double) valuesMap.getOrDefault("close", 0.0));
         this.adjClose = BigDecimal.valueOf((Double) valuesMap.getOrDefault("adjClose", 0.0));
-        this.volume = DoubleNum.valueOf((String) valuesMap.getOrDefault("volume", "0.0"));
+        this.volume = Long.valueOf((String) valuesMap.getOrDefault("volume", "0"));
         this.comment = "MAP" + valuesMap.getOrDefault("comment", "").toString();
     }
 
@@ -214,12 +228,12 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return Instrument.fromString(getSymbol());
     }
 
-    public Instant getLocaldate() {
+    public Instant getTimestamp() {
         return this.date;
     }
 
     @Override
-    public Num getMaxPrice() {
+    public Num getHighPrice() {
         return DoubleNum.valueOf(getHigh());
     }
 
@@ -234,8 +248,8 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     }
 
     @Override
-    public int getTrades() {
-        return getVolume().intValue();
+    public long getTrades() {
+        return getVolume() == null ? 0L : getVolume();
     }
 
     @Override
@@ -245,14 +259,14 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     }
 
     @Override
-    public ZonedDateTime getBeginTime() {
+    public Instant getBeginTime() {
         throw new UnsupportedOperationException();
 
     }
 
     @Override
-    public ZonedDateTime getEndTime() {
-        return getDate().atStartOfDay(ZoneId.systemDefault());
+    public Instant getEndTime() {
+        return date;
     }
 
     @Override

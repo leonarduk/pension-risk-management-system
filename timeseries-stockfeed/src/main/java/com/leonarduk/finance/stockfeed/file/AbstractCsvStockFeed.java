@@ -70,13 +70,13 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
             final List<Bar> quotes = new LinkedList<>();
             while (this.next()) {
                 ExtendedHistoricalQuote asHistoricalQuote = this.asHistoricalQuote();
-                if (asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SATURDAY
-                        && asHistoricalQuote.getDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
-                    if (parsedDates.contains(asHistoricalQuote.getDate())) {
-                        log.warn("Duplicate date {} - skipping", asHistoricalQuote.getDate().toString());
+                if (asHistoricalQuote.getLocalDate().getDayOfWeek() != DayOfWeek.SATURDAY
+                        && asHistoricalQuote.getLocalDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
+                    if (parsedDates.contains(asHistoricalQuote.getLocalDate())) {
+                        log.warn("Duplicate date {} - skipping", asHistoricalQuote.getLocalDate().toString());
                     } else {
                         quotes.add(asHistoricalQuote);
-                        parsedDates.add(asHistoricalQuote.getDate());
+                        parsedDates.add(asHistoricalQuote.getLocalDate());
                     }
                 }
             }

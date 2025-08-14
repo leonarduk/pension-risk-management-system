@@ -6,6 +6,7 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.List;
 import java.time.ZoneId;
@@ -38,7 +39,7 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
                         scaleDown(current.getHighPrice()),
                         scaleDown(current.getClosePrice()),
 
-                        current.getVolume(),
+                        current.getVolume().longValue(),
                         comment + ": Scaled from " + current.getClosePrice() + " to " + scaleDown(current.getClosePrice()));
                 cleanedSeries.add(cleanedQuote);
             } else if (current.getClosePrice().multipliedBy(DoubleNum.valueOf(SCALE))
@@ -51,7 +52,7 @@ public class BadScalingCorrector implements TimeSeriesCleaner {
                         scaleUp(current.getHighPrice()),
                         scaleUp(current.getClosePrice()),
 
-                        current.getVolume(),
+                        current.getVolume().longValue(),
                         "Scaled from " + current.getClosePrice() + " to " + scaleUp(current.getClosePrice()));
                 cleanedSeries.add(cleanedQuote);
             } else {

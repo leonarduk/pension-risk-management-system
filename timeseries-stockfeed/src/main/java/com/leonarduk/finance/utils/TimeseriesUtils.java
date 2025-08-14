@@ -109,7 +109,7 @@ public class TimeseriesUtils {
         final BigDecimal newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
         return new ExtendedHistoricalQuote(currentQuote.getDateName(), currentDate, newOpenPrice,
                 newClosePrice.min(newOpenPrice), newClosePrice.max(newOpenPrice), newClosePrice, newClosePrice,
-                DoubleNum.valueOf(0), comment);
+                0L, comment);
     }
 
     public static Bar createSyntheticBar(final LocalDate currentDate, final Double newClosePriceRaw,
@@ -120,7 +120,7 @@ public class TimeseriesUtils {
         return new ExtendedHistoricalQuote("", currentDate, BigDecimal.valueOf(newOpenPrice),
                 BigDecimal.valueOf(Double.min(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
                 BigDecimal.valueOf(Double.max(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
-                DoubleNum.valueOf(0), comment);
+                0L, comment);
     }
 
     public static Optional<StockV1> interpolateAndSortSeries(final LocalDate fromLocalDate, final LocalDate toLocalDate,

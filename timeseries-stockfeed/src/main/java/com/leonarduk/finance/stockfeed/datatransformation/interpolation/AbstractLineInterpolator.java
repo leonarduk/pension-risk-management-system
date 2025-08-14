@@ -9,6 +9,7 @@ import org.ta4j.core.BarSeries;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.List;
 import java.time.ZoneId;

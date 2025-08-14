@@ -9,6 +9,7 @@ import org.ta4j.core.Bar;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,7 @@ public class SeriesEndpoint {
     private Map<LocalDate, Double> toSeries(List<Bar> history) {
         return history.stream().collect(
                 Collectors.toMap(
-                        bar -> bar.getEndTime().toLocalDate(),
+                        bar -> bar.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
                         bar -> bar.getClosePrice().doubleValue(),
                         (existing, replacement) -> existing));
     }
