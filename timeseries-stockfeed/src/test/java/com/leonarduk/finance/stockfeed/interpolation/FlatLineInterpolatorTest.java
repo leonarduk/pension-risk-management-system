@@ -9,8 +9,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.BaseBarSeriesBuilder;
+import org.ta4j.core.num.DoubleNumFactory;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class FlatLineInterpolatorTest {
     private TimeSeriesInterpolator interpolator;
-    private TimeSeries series;
+    private BarSeries series;
 
     @Before
     public void setUp() throws Exception {
@@ -33,13 +34,13 @@ public class FlatLineInterpolatorTest {
                         105.0, 1000.0, 0, ""));
 
         final List<Bar> ticks = quotes.stream().map(ExtendedHistoricalQuote::new).collect(Collectors.toList());
-        this.series = new BaseTimeSeries(ticks);
+        this.series = new BaseBarSeriesBuilder().withNumFactory(DoubleNumFactory.getInstance()).withBars(ticks).build();
     }
 
     @Test
     public void testInterpolateTimeSeries() {
 
-        final TimeSeries actual = this.interpolator.interpolate(this.series);
+        final BarSeries actual = this.interpolator.interpolate(this.series);
         Assert.assertEquals(10, actual.getBarCount());
         Assert.assertEquals(LocalDate.parse("2017-04-03"), actual.getBar(0).getEndTime().toLocalDate());
         Assert.assertEquals(LocalDate.parse("2017-04-04"), actual.getBar(1).getEndTime().toLocalDate());
@@ -78,7 +79,7 @@ public class FlatLineInterpolatorTest {
 
     @Test
     public void testInterpolationSkipsDuplicatedFinalEntry() {
-        TimeSeries actual = this.interpolator.interpolate(this.series);
+        BarSeries actual = this.interpolator.interpolate(this.series);
         LocalDate finalDate = LocalDate.parse("2017-04-14");
         int count = 0;
         for (int i = 0; i < actual.getBarCount(); i++) {
