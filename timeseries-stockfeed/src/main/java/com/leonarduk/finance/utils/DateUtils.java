@@ -83,6 +83,11 @@ public class DateUtils {
         return LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
     }
 
+    public static Calendar localDateToCalendar(LocalDate date) {
+        ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneId.systemDefault());
+        return GregorianCalendar.from(zonedDateTime);
+    }
+
     public static Calendar dateToCalendar(final Date date) {
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

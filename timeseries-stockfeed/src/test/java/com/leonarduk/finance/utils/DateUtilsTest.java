@@ -5,6 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Iterator;
 
 public class DateUtilsTest {
@@ -74,5 +76,23 @@ public class DateUtilsTest {
 
         Assert.assertEquals(LocalDate.parse("2017-06-01"), DateUtils.getPreviousDate(LocalDate.parse("2017-06-02")));
 
+    }
+
+    @Test
+    public void testLocalDateToCalendarConversion() {
+        LocalDate localDate = LocalDate.of(2023, 5, 20);
+        Calendar calendar = DateUtils.localDateToCalendar(localDate);
+        Assert.assertEquals(localDate.getYear(), calendar.get(Calendar.YEAR));
+        Assert.assertEquals(localDate.getMonthValue() - 1, calendar.get(Calendar.MONTH));
+        Assert.assertEquals(localDate.getDayOfMonth(), calendar.get(Calendar.DAY_OF_MONTH));
+        Assert.assertEquals(ZoneId.systemDefault(), calendar.getTimeZone().toZoneId());
+    }
+
+    @Test
+    public void testCalendarToLocalDateConversion() {
+        LocalDate localDate = LocalDate.of(2023, 5, 20);
+        Calendar calendar = DateUtils.localDateToCalendar(localDate);
+        LocalDate converted = DateUtils.calendarToLocalDate(calendar);
+        Assert.assertEquals(localDate, converted);
     }
 }
