@@ -237,6 +237,16 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
         return DoubleNum.valueOf(getHigh());
     }
 
+    @Deprecated
+    public Num getMinPrice() {
+        return getLowPrice();
+    }
+
+    @Deprecated
+    public Num getMaxPrice() {
+        return getHighPrice();
+    }
+
     @Override
     public Num getClosePrice() {
         return DoubleNum.valueOf(getClose());
