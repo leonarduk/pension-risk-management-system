@@ -104,6 +104,28 @@ docker run \
   <image>
 ```
 
+## timeseries-stockfeed
+
+The `timeseries-stockfeed` module fetches and prepares historical stock and FX data from providers such as AlphaVantage, Stooq, Yahoo Finance and the Financial Times. It handles caching, data cleansing and interpolation so other modules can work with consistent time series.
+
+### Prerequisites
+
+* Java 11 or later
+* Maven 3.6 or later
+* Optional: `ALPHAVANTAGE_API_KEYS` environment variable for AlphaVantage access (comma-separated list of keys)
+
+### Build and test
+
+Compile the module and run its tests with:
+
+```bash
+mvn -pl timeseries-stockfeed -am verify
+```
+
+### Additional documentation
+
+For a Python client that consumes this stockfeed, see the [timeseries-python integration](timeseries-python/integrations/stockfeed/README.md).
+
 ## android-app
 
 An Android client that fetches available tickers and their latest prices from
