@@ -11,7 +11,6 @@ import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.ZoneId;
 
 public class ValueScalingTransformer implements TimeSeriesCleaner {
 
@@ -35,7 +34,7 @@ public class ValueScalingTransformer implements TimeSeriesCleaner {
                                 current.getHighPrice().multipliedBy(scalingFactor),
                                 current.getClosePrice().multipliedBy(scalingFactor),
 
-                                current.getVolume().longValue(),
+                                current.getVolume(),
                                 instrument.isin() + " scaled from " + current.getClosePrice() + " to "
                                         + current.getClosePrice().multipliedBy(scalingFactor))
                         )
