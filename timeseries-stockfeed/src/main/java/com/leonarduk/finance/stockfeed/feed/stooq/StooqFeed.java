@@ -9,10 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StooqFeed extends AbstractCsvStockFeed {
     public static final String BASE_URL = "https://stooq.com/q/d/l/";
@@ -32,6 +36,21 @@ public class StooqFeed extends AbstractCsvStockFeed {
     private static final String PARAM_INTERFACE = "i";
 
     private static final String PARAM_START_DATE = "d1";
+
+    private static final Map<String, String> CACHE = new ConcurrentHashMap<>();
+    private static final AtomicInteger REQUEST_COUNT = new AtomicInteger();
+    private static LocalDate LAST_REQUEST_DATE = LocalDate.now();
+    private static int DAILY_LIMIT = 100;
+
+    public static void setDailyLimit(int limit) {
+        DAILY_LIMIT = limit;
+    }
+
+    public static void resetDailyLimitCounter() {
+        REQUEST_COUNT.set(0);
+        CACHE.clear();
+        LAST_REQUEST_DATE = LocalDate.now();
+    }
 
     @Override
     public Source getSource() {
@@ -63,23 +82,37 @@ public class StooqFeed extends AbstractCsvStockFeed {
                     AbstractCsvStockFeed.formatDate(StooqFeed.PARAM_FORMATTER, this.getEndDate()));
         }
 
-        final HttpRequest request = this.createRequest(HttpRequest.append(StooqFeed.BASE_URL, params));
+        LocalDate today = LocalDate.now();
+        if (!today.equals(LAST_REQUEST_DATE)) {
+            resetDailyLimitCounter();
+            LAST_REQUEST_DATE = today;
+        }
+
+        String url = HttpRequest.append(StooqFeed.BASE_URL, params);
+        if (CACHE.containsKey(url)) {
+            return new BufferedReader(new StringReader(CACHE.get(url)));
+        }
+
+        if (REQUEST_COUNT.incrementAndGet() > DAILY_LIMIT) {
+            throw new DailyLimitExceededException("Exceeded the daily request limit for Stooq");
+        }
+
+        final HttpRequest request = this.createRequest(url);
         if (!request.ok()) {
             throw new IOException("Bad response " + request.code());
         }
 
-        final BufferedReader reader;
+        String body;
         try {
-            reader = request.bufferedReader();
+            body = request.body();
         } catch (final HttpRequest.HttpRequestException e) {
             throw e.getCause();
         }
-        // Skip first line that contains column names
-        String header = reader.readLine();
-        if (header.contains("Exceeded the daily hits limit")) {
-            log.warn("Exceeded the daily hits limit for Stooq");
+        if (body.contains("Exceeded the daily hits limit")) {
+            throw new DailyLimitExceededException("Exceeded the daily hits limit for Stooq");
         }
-        return reader;
+        CACHE.put(url, body);
+        return new BufferedReader(new StringReader(body));
     }
 
     protected HttpRequest createRequest(final CharSequence uri) throws IOException {
