@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 
 
 @Measurement(name = "HistoricalQuote")
-public class ExtendedHistoricalQuote extends HistoricalQuote
-        implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
+public class ExtendedHistoricalQuote implements Bar, Commentable, Comparable<ExtendedHistoricalQuote> {
     @Serial
     private static final long serialVersionUID = -6391604492688118701L;
 
@@ -35,7 +34,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     @Column(timestamp = true)
     private Instant date;
 
-    @Override
     public Calendar getDate() {
         return DateUtils.localDateToCalendar(getLocalDate());
     }
@@ -149,7 +147,6 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
      */
     public ExtendedHistoricalQuote(String symbol, LocalDate date, BigDecimal open, BigDecimal low, BigDecimal high,
                                    BigDecimal close, BigDecimal adjClose, Long volume, final String comment) {
-        super();
         this.symbol = symbol;
         this.date = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
         this.open = open;
