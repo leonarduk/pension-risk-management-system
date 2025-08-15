@@ -39,7 +39,7 @@ public class ValueScalingTransformer implements TimeSeriesCleaner {
                                 instrument.isin() + " scaled from " + current.getClosePrice() + " to "
                                         + current.getClosePrice().multipliedBy(scalingFactor))
                         )
-                        .collect(Collectors.toCollection(LinkedList::new)));
+                        .collect(Collectors.toCollection(LinkedList<Bar>::new)));
     }
 
 }
