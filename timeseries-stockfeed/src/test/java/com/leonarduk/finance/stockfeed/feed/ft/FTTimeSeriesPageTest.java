@@ -1,6 +1,8 @@
 package com.leonarduk.finance.stockfeed.feed.ft;
 
 import com.leonarduk.finance.stockfeed.Instrument;
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +23,11 @@ public class FTTimeSeriesPageTest {
 
     @Before
     public void setUp() {
-        webDriver = new HtmlUnitDriver();
+        HtmlUnitDriver driver = new HtmlUnitDriver();
+        WebClient webClient = driver.getWebClient();
+        webClient.getOptions().setCssEnabled(false);
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        webDriver = driver;
     }
 
     @After
