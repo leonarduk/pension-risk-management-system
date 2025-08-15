@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ class StockFeedCorsTest {
 
     @MockBean
     private StockFeed stockFeed;
+
+    @MockBean
+    private JavaMailSender mailSender;
 
     @Test
     void corsHeadersPresentOnStockEndpoint() throws Exception {
