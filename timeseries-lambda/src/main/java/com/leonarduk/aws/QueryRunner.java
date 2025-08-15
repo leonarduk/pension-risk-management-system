@@ -8,9 +8,7 @@ import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.ta4j.core.Bar;
-import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -42,7 +40,7 @@ public class QueryRunner {
      * @throws IOException if an IO error occurs
      */
     public static void main(String[] args) throws IOException {
-        log.info(new QueryRunner().getResults(ImmutableMap.of(
+        log.info(new QueryRunner().getResults(Map.of(
                 TICKER, "PHGP.L",
                 YEARS, "1",
                 "interpolate", "true",
@@ -149,14 +147,14 @@ public class QueryRunner {
                                    final Instrument instrument)
             throws IOException {
         final StringBuilder sbBody = new StringBuilder();
-        final List<List<DataField>> records = Lists.newArrayList();
+        final List<List<DataField>> records = new ArrayList<>();
 
         final List<Bar> historyData;
 
         historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
 
         for (final Bar historicalQuote : historyData) {
-            final ArrayList<DataField> record = Lists.newArrayList();
+            final ArrayList<DataField> record = new ArrayList<>();
             records.add(record);
             record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
             record.add(new DataField("Open", historicalQuote.getOpenPrice()));
@@ -182,7 +180,7 @@ public class QueryRunner {
         if (stock.isPresent()) {
             return stock.get().getHistory();
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 
 }

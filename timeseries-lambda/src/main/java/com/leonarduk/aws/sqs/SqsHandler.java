@@ -8,7 +8,6 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
 import com.leonarduk.aws.QueryRunner;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, Void> {
     public Map<String, String> getParameterMap(String messageBody) {
         Gson gson = new Gson();
         QueryRequest request = gson.fromJson(messageBody, QueryRequest.class);
-        return ImmutableMap.of(
+        return Map.of(
                 QueryRunner.TICKER, request.getTicker(),
                 QueryRunner.YEARS, String.valueOf(request.getYears()),
                 QueryRunner.CLEAN_DATA, String.valueOf(request.isCleanData()),
