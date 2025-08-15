@@ -102,7 +102,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                                  final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) {
         try {
             return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, addLatestQuoteToTheSeries);
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             System.err.println(Arrays.toString(e.getStackTrace()));
             IntelligentStockFeed.log.warn("Failed to get data {}", e.getMessage());
             return Optional.empty();
@@ -136,8 +136,9 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
 
         if (cachedData.isEmpty()) {
-            IntelligentStockFeed.log.warn("No data for " + instrument);
-            return Optional.empty();
+            String message = "No data for " + instrument;
+            IntelligentStockFeed.log.warn(message);
+            throw new StockFeedException(message);
         }
 
         if (cleanData) {
