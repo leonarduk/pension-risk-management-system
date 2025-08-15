@@ -100,13 +100,13 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
     @Column
     private final Long volume;
 
-    @Override
-    public Long getVolume() {
+    public Long getVolumeLong() {
         return this.volume;
     }
 
-    public Num getVolumeAsNum() {
-        return DoubleNum.valueOf(getVolume() == null ? 0 : getVolume());
+    @Override
+    public Num getVolume() {
+        return DoubleNum.valueOf(getVolumeLong() == null ? 0 : getVolumeLong());
     }
 
     @Column(tag = true)
@@ -188,7 +188,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 
     public ExtendedHistoricalQuote(ExtendedHistoricalQuote original) {
         this(original.getSymbol(), original.getLocalDate(), original.getOpen(), original.getLow(), original.getHigh(),
-                original.getClose(), original.getAdjClose(), original.getVolume(), "");
+                original.getClose(), original.getAdjClose(), original.getVolumeLong(), "");
     }
 
 
@@ -259,7 +259,7 @@ public class ExtendedHistoricalQuote extends HistoricalQuote
 
     @Override
     public long getTrades() {
-        return getVolume() == null ? 0L : getVolume();
+        return getVolumeLong() == null ? 0L : getVolumeLong();
     }
 
     @Override
