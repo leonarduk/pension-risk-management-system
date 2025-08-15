@@ -26,7 +26,7 @@ public class FTFeed extends AbstractStockFeed {
     final WebDriver webDriver;
 
     public FTFeed() {
-        webDriver = new HtmlUnitDriver(false);
+        webDriver = new HtmlUnitDriver(true);
     }
 
     @Override
@@ -38,8 +38,9 @@ public class FTFeed extends AbstractStockFeed {
     public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from {} : {}", ftInstrument, instrument);
-        return Optional.of(new StockV1(instrument,
-                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument, fromDate, toDate)));
+        return new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl())
+                .getTimeseries(instrument, fromDate, toDate)
+                .map(bars -> new StockV1(instrument, bars));
     }
 
     @Override
