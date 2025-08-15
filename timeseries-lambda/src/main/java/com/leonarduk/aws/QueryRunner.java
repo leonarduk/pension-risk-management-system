@@ -113,6 +113,11 @@ public class QueryRunner {
         if (StringUtils.isBlank(currency)) {
             currency = Instrument.resolveCurrency(inputParams.get(TICKER));
         }
+        final Map<String, String> regionCurrencyMap = Map.of("NY", "USD", "L", "GBP");
+        if ((StringUtils.isBlank(currency) || "UNKNOWN".equalsIgnoreCase(currency))
+                && regionCurrencyMap.containsKey(region.toUpperCase())) {
+            currency = regionCurrencyMap.get(region.toUpperCase());
+        }
         final Instrument instrument = Instrument.fromString(ticker, region, type, currency);
 
         LocalDate toLocalDate;
