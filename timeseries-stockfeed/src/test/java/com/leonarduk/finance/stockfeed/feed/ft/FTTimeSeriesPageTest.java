@@ -2,6 +2,10 @@ package com.leonarduk.finance.stockfeed.feed.ft;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import org.junit.Assert;
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -24,6 +28,17 @@ public class FTTimeSeriesPageTest {
 
     private Instrument createInstrument() {
         return Instrument.fromString("TEST","L","EQUITY",Instrument.GBP);
+    }
+  
+    private WebDriver webDriver;
+
+    @Before
+    public void setUp() {
+        HtmlUnitDriver driver = new HtmlUnitDriver();
+        WebClient webClient = driver.getWebClient();
+        webClient.getOptions().setCssEnabled(false);
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        webDriver = driver;
     }
 
     @Test
