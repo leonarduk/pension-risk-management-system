@@ -104,6 +104,12 @@ docker run \
   <image>
 ```
 
+## android-app
+
+An Android client that fetches available tickers and their latest prices from
+the Spring Boot service and displays them in a simple list. See
+[android-app/README.md](android-app/README.md) for setup details and policies
+such as the backup configuration.
 
 ## ui
 
