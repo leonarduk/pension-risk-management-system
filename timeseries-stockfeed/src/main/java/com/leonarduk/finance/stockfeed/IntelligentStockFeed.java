@@ -6,6 +6,7 @@ import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockQuoteBuilder;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import com.leonarduk.finance.stockfeed.feed.stooq.DailyLimitExceededException;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
 import org.slf4j.Logger;
@@ -81,7 +82,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
     }
 
     @Override
-    public Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) {
+    public Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) throws IOException {
         return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), false, false, addLatestQuoteToTheSeries);
     }
 
@@ -99,7 +100,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
 
     @Override
     public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDateRaw, final LocalDate toDateRaw,
-                                 final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) {
+                                 final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException {
         try {
             return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, addLatestQuoteToTheSeries);
         } catch (final IOException e) {
@@ -173,6 +174,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                         webdata = this.getDataIfFeedAvailable(instrument, fromDate1,
                                 toDate1, webDataFeed, refresh, addLatestQuoteToTheSeries);
 
+                    } catch (DailyLimitExceededException e) {
+                        throw e;
                     } catch (Exception e) {
                         log.warn("Exception from " + webDataFeed.getSource(), e);
                     }
@@ -181,6 +184,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                 try {
                     webdata = this.getDataIfFeedAvailable(instrument, fromDate, toDate, webDataFeed,
                             refresh, addLatestQuoteToTheSeries);
+                } catch (DailyLimitExceededException e) {
+                    throw e;
                 } catch (Exception e) {
                     log.warn("Exception from " + webDataFeed.getSource(), e);
                 }
@@ -206,7 +211,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
     }
 
     public Optional<StockV1> get(final Instrument instrument, final String fromDate, final String toDate,
-                                 final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) {
+                                 final boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException {
         return this.get(instrument, LocalDate.parse(fromDate), LocalDate.parse(toDate), interpolate, cleanData, addLatestQuoteToTheSeries);
     }
 
