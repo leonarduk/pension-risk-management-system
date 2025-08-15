@@ -21,7 +21,8 @@
                 <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
                 <org.seleniumhq.selenium.version>4.13.0</org.seleniumhq.selenium.version>
                 <org.junit.jupiter.version>5.13.0-M3</org.junit.jupiter.version>
-                <org.ta4j.version>0.18</org.ta4j.version>
+                <!-- TA4J 0.14 replaced TimeSeries/BaseTimeSeries with BarSeries; 0.13 is the last version supporting our current API. Update once code migrates to BarSeries. -->
+                <org.ta4j.version>0.13</org.ta4j.version>
                 <org.jfree.version>3.4.4</org.jfree.version>
                 <org.apache.xmlgraphics.version>1.19</org.apache.xmlgraphics.version>
                 <alphavantage4j.version>1.5.0</alphavantage4j.version>
