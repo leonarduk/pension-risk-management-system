@@ -5,6 +5,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AbstractStockFeedMergeSeriesTest {
 
     @Test
-    void mergeSeriesHandlesDuplicateDates() {
+    void mergeSeriesHandlesDuplicateDates() throws IOException {
         AbstractStockFeed feed = new AbstractStockFeed() {
             @Override
             public Optional<StockV1> get(
