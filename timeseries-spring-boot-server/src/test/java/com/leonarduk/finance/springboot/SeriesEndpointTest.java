@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.ta4j.core.Bar;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -32,6 +33,9 @@ class SeriesEndpointTest {
     @MockBean
     private StockFeed stockFeed;
 
+    @MockBean
+    private JavaMailSender mailSender;
+
     @Test
     void mapSeriesAlignsSourceToTarget() throws Exception {
         List<Bar> srcQuotes = Arrays.asList(
@@ -48,9 +52,9 @@ class SeriesEndpointTest {
         StockV1 srcStock = AbstractStockFeed.createStock(Instrument.CASH, srcQuotes);
         StockV1 tgtStock = AbstractStockFeed.createStock(Instrument.UNKNOWN, tgtQuotes);
 
-        Mockito.when(stockFeed.get(eq(Instrument.CASH), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+        Mockito.when(stockFeed.get(argThat(i -> i != null && "CASH".equalsIgnoreCase(i.getCode())), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.of(srcStock));
-        Mockito.when(stockFeed.get(eq(Instrument.UNKNOWN), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+        Mockito.when(stockFeed.get(argThat(i -> i != null && "UNKNOWN".equalsIgnoreCase(i.getCode())), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.of(tgtStock));
 
         mockMvc.perform(post("/series/map")
@@ -80,9 +84,9 @@ class SeriesEndpointTest {
         StockV1 srcStock = AbstractStockFeed.createStock(Instrument.CASH, srcQuotes);
         StockV1 tgtStock = AbstractStockFeed.createStock(Instrument.UNKNOWN, tgtQuotes);
 
-        Mockito.when(stockFeed.get(eq(Instrument.CASH), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+        Mockito.when(stockFeed.get(argThat(i -> i != null && "CASH".equalsIgnoreCase(i.getCode())), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.of(srcStock));
-        Mockito.when(stockFeed.get(eq(Instrument.UNKNOWN), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+        Mockito.when(stockFeed.get(argThat(i -> i != null && "UNKNOWN".equalsIgnoreCase(i.getCode())), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.of(tgtStock));
 
         mockMvc.perform(post("/series/map")

@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -31,11 +32,14 @@ class StockFeedEndpointTest {
     @MockBean
     private StockFeed stockFeed;
 
+    @MockBean
+    private JavaMailSender mailSender;
+
     @Test
     void displayHistoryReturnsHtmlTable() throws Exception {
         Instrument instrument = Instrument.CASH;
         StockV1 stock = AbstractStockFeed.createStock(instrument, Collections.emptyList());
-        Mockito.when(stockFeed.get(eq(instrument), eq(LocalDate.parse("2024-01-01")),
+        Mockito.when(stockFeed.get(argThat(i -> i.getCode().equals("CASH")), eq(LocalDate.parse("2024-01-01")),
                 eq(LocalDate.parse("2024-01-02")), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.of(stock));
 
@@ -54,7 +58,7 @@ class StockFeedEndpointTest {
     void displayHistoryAsJsonFiltersOutNonMatchingCategory() throws Exception {
         Instrument instrument = Instrument.CASH;
         StockV1 stock = AbstractStockFeed.createStock(instrument, Collections.emptyList());
-        Mockito.when(stockFeed.get(eq(instrument), eq(LocalDate.parse("2024-01-01")),
+        Mockito.when(stockFeed.get(argThat(i -> i.getCode().equals("CASH")), eq(LocalDate.parse("2024-01-01")),
                 eq(LocalDate.parse("2024-01-02")), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.of(stock));
 

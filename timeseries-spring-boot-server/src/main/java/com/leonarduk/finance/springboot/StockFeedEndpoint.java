@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
 import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
@@ -59,7 +60,7 @@ public class StockFeedEndpoint {
      * @return HTML table with historical stock data
      * @throws IOException if data retrieval fails
      */
-    @GetMapping("/ticker/{ticker}")
+    @GetMapping(value = "/ticker/{ticker}", produces = MediaType.TEXT_HTML_VALUE)
     public String displayHistory(@PathVariable(name = "ticker") final String ticker,
                                  @RequestParam(name = "years", required = false) Integer years,
                                  @RequestParam(name = "fromDate", required = false) String fromDate,
