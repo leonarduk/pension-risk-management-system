@@ -15,6 +15,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
@@ -83,8 +85,13 @@ public class StockFeedEndpoint {
         LocaleContextHolder.setLocale(locale);
         Locale.setDefault(locale);
 
-        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
-                category);
+        List<List<DataField>> records;
+        try {
+            records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                    category);
+        } catch (StockFeedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
+        }
 
         final StringBuilder sbBody = new StringBuilder();
         String heading = messageSource.getMessage("stock.title", new Object[]{ticker}, locale);
@@ -145,32 +152,36 @@ public class StockFeedEndpoint {
             tickers.add(tickerArg);
         }
 
-        for (String ticker : tickers) {
-            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
-                    category);
-            if (records.isEmpty()) {
-                continue;
-            }
-            Map<String, Double> datePriceMap = new TreeMap<>();
+        try {
+            for (String ticker : tickers) {
+                List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                        category);
+                if (records.isEmpty()) {
+                    continue;
+                }
+                Map<String, Double> datePriceMap = new TreeMap<>();
 
-            for (List<DataField> record : records) {
-                String date = null;
-                Double closePrice = null;
+                for (List<DataField> record : records) {
+                    String date = null;
+                    Double closePrice = null;
 
-                for (DataField field : record) {
-                    if ("Date".equals(field.getName())) {
-                        date = field.getValue().toString();
-                    } else if ("Close".equals(field.getName())) {
-                        closePrice = Double.valueOf(field.getValue().toString());
+                    for (DataField field : record) {
+                        if ("Date".equals(field.getName())) {
+                            date = field.getValue().toString();
+                        } else if ("Close".equals(field.getName())) {
+                            closePrice = Double.valueOf(field.getValue().toString());
+                        }
+                    }
+
+                    if (date != null && closePrice != null) {
+                        datePriceMap.put(date, closePrice);
                     }
                 }
 
-                if (date != null && closePrice != null) {
-                    datePriceMap.put(date, closePrice);
-                }
+                result.put(ticker, datePriceMap);
             }
-
-            result.put(ticker, datePriceMap);
+        } catch (StockFeedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
         }
         return result;
     }
@@ -187,10 +198,14 @@ public class StockFeedEndpoint {
     public Map<String, BigDecimal> getLatestClosePrice(
             @PathVariable(name = "ticker") final String ticker) throws IOException {
         Instrument instrument = Instrument.fromString(ticker);
-        Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
-        return stock
-                .map(s -> Collections.singletonMap("close", s.getQuote().getPrice()))
-                .orElse(Collections.emptyMap());
+        try {
+            Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
+            return stock
+                    .map(s -> Collections.singletonMap("close", s.getQuote().getPrice()))
+                    .orElse(Collections.emptyMap());
+        } catch (StockFeedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
+        }
     }
 
     /**
