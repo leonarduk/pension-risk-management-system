@@ -104,3 +104,18 @@ docker run \
   <image>
 ```
 
+
+## ui
+
+The `ui/` module provides a React-based front-end for exploring price data and analytics. It fetches timeseries and risk metrics from the backend services (such as the Spring Boot server) via REST endpoints like `/stock/ticker` and `/analytics/risk-return`.
+
+### Setup
+
+```bash
+npm install
+npm run dev
+npm run build
+```
+
+[Vite](https://vitejs.dev) powers the development server and build process, while tests run with [Vitest](https://vitest.dev) (`npm test`).
+
