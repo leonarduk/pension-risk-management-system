@@ -6,8 +6,7 @@ import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.FileUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 
 import java.io.BufferedReader;
@@ -16,10 +15,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStore {
-
-    public static final Logger log = LoggerFactory
-            .getLogger(FileBasedDataStore.class.getName());
 
     private final String storeLocation;
 
@@ -31,7 +28,7 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
     public void storeSeries(final StockV1 stock) throws IOException {
 
         final File file = this.getStock(stock);
-        FileBasedDataStore.log.info("Save stock to {}", file.getAbsolutePath());
+        log.info("Save stock to {}", file.getAbsolutePath());
         final List<Bar> series = stock.getHistory();
 
         /**
@@ -64,7 +61,7 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
     protected BufferedReader openReader() throws IOException {
         final File file = new File(this.storeLocation,
                 this.getQueryName(this.getInstrument()));
-        FileBasedDataStore.log.info("Read file from {}", file.getAbsolutePath());
+        log.info("Read file from {}", file.getAbsolutePath());
 
         if (!file.exists()) {
             throw new IOException(file.getAbsolutePath() + " not found");

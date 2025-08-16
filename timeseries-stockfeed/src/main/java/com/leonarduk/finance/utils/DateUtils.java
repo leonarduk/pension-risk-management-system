@@ -22,8 +22,7 @@
 package com.leonarduk.finance.utils;
 
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,8 +40,8 @@ import java.util.stream.Collectors;
 /**
  * Helpers for common dates
  */
+@Slf4j
 public class DateUtils {
-    public static final Logger logger = LoggerFactory.getLogger(DateUtils.class.getName());
     private static Map<String, Date> dates;
 
     /**
@@ -70,14 +69,14 @@ public class DateUtils {
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream in = DateUtils.class.getResourceAsStream(resourcePath)) {
             if (in == null) {
-                logger.warn("Holiday resource {} not found", resourcePath);
+                log.warn("Holiday resource {} not found", resourcePath);
                 return Collections.emptyList();
             }
             List<String> dates = mapper.readValue(in, new TypeReference<List<String>>() {
             });
             return dates.stream().map(LocalDate::parse).collect(Collectors.toList());
         } catch (IOException e) {
-            logger.warn("Failed to load holidays from {}", resourcePath, e);
+            log.warn("Failed to load holidays from {}", resourcePath, e);
             return Collections.emptyList();
         }
     }
@@ -223,8 +222,8 @@ public class DateUtils {
 
             return parsedDate;
         } catch (final ParseException ex) {
-            DateUtils.logger.warn("Failed to parse dividend date: {}", date);
-            DateUtils.logger.trace("Failed to parse dividend date: {}", date, ex);
+            log.warn("Failed to parse dividend date: {}", date);
+            log.trace("Failed to parse dividend date: {}", date, ex);
             return null;
         }
     }
