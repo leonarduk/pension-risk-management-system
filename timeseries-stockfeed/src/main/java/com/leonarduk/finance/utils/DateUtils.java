@@ -112,7 +112,9 @@ public class DateUtils {
 
         // Iterate over stream of all dates and check each day against any weekday or
         // holiday
-        List<LocalDate> businessDays = startDate.datesUntil(endDate)
+        // `datesUntil` excludes the final date. Include it to count the end date when
+        // it falls on a working day.
+        List<LocalDate> businessDays = startDate.datesUntil(endDate.plusDays(1))
                 .filter(isWeekend().or(isHoliday).negate())
                 .collect(Collectors.toList());
 
