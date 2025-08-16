@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 public class DateUtilsTest {
 
@@ -37,10 +39,17 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void testGetDiffInWorkDaysSkipsBankHolidays() {
+    public void testGetDiffInWorkDaysSkipsConfiguredHolidays() {
         LocalDate start = LocalDate.parse("2023-04-28");
         LocalDate end = LocalDate.parse("2023-05-09");
-        Assert.assertEquals(6, DateUtils.getDiffInWorkDays(start, end));
+        List<LocalDate> holidays = DateUtils.loadHolidays("/uk_bank_holidays.json");
+        Assert.assertTrue(holidays.contains(LocalDate.parse("2023-05-08")));
+        Assert.assertEquals(6, DateUtils.getDiffInWorkDays(start, end, Optional.of(holidays)));
+    }
+
+    @Test
+    public void testIsHolidayFromConfig() {
+        Assert.assertTrue(DateUtils.isHoliday().test(LocalDate.parse("2023-05-08")));
     }
 
     @Test

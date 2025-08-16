@@ -103,12 +103,30 @@ class SeriesEndpointTest {
     void mapSeriesReturnsEmptyWhenDataMissing() throws Exception {
         Mockito.when(stockFeed.get(any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(Optional.empty());
+                .andExpect(jsonPath("$.mapped").isMap())
+
+    }
+    void mapSeriesReturnsEmptyWhenSourceBaselineZero() throws Exception {
+        List<Bar> srcQuotes = Arrays.asList(
+                new ExtendedHistoricalQuote(Instrument.CASH, LocalDate.parse("2023-01-01"), 0, 0, 0, 0, 0, 0, ""),
+                new ExtendedHistoricalQuote(Instrument.CASH, LocalDate.parse("2023-01-02"), 10, 10, 10, 10, 10, 0, "")
+        );
+        List<Bar> tgtQuotes = Arrays.asList(
+                new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2023-01-01"), 50, 50, 50, 50, 50, 0, ""),
+                new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2023-01-02"), 55, 55, 55, 55, 55, 0, "")
+        );
+        StockV1 srcStock = AbstractStockFeed.createStock(Instrument.CASH, srcQuotes);
+        StockV1 tgtStock = AbstractStockFeed.createStock(Instrument.UNKNOWN, tgtQuotes);
+
+        Mockito.when(stockFeed.get(argThat(i -> i != null && "CASH".equalsIgnoreCase(i.getCode())), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(Optional.of(srcStock));
+        Mockito.when(stockFeed.get(argThat(i -> i != null && "UNKNOWN".equalsIgnoreCase(i.getCode())), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(Optional.of(tgtStock));
 
         mockMvc.perform(post("/series/map")
                         .param("source", "CASH")
                         .param("target", "UNKNOWN"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mapped").isMap())
                 .andExpect(jsonPath("$.mapped").isEmpty());
     }
 }
