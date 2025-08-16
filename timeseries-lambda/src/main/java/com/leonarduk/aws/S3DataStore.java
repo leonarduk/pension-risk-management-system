@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZoneId;
@@ -36,25 +37,25 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
     private final String folderName;
     private final AmazonS3 s3;
 
-    public S3DataStore(String bucketName, String folderName, String region) {
+    public S3DataStore(final String bucketName, final String folderName, final String region) {
         this.bucketName = bucketName;
         this.folderName = folderName;
-        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
+        final AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
         builder.setRegion(region);
-        s3 = builder.build();
+        this.s3 = builder.build();
     }
 
     @Override
-    public void storeSeries(final StockV1 stock) throws IOException {
-        final String filepath = getQueryName(stock.getInstrument());
-        log.info("Save stock to {}", filepath);
+    public void storeSeries(StockV1 stock) throws IOException {
+        String filepath = this.getQueryName(stock.getInstrument());
+        S3DataStore.log.info("Save stock to {}", filepath);
 
-        final StringBuilder sb = seriesToCsv(stock.getHistory(), stock.getInstrument());
+        StringBuilder sb = this.seriesToCsv(stock.getHistory(), stock.getInstrument());
         com.leonarduk.finance.utils.FileUtils.writeFile(filepath, sb);
 
-        s3.putObject(
-                bucketName,
-                getS3Filepath(stock.getInstrument()),
+        this.s3.putObject(
+                this.bucketName,
+                this.getS3Filepath(stock.getInstrument()),
                 new File(filepath)
         );
 
@@ -62,21 +63,21 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
     }
 
     @Override
-    public boolean contains(StockV1 stock) {
-        return s3.doesObjectExist(bucketName, getS3Filepath(stock.getInstrument()));
+    public boolean contains(final StockV1 stock) {
+        return this.s3.doesObjectExist(this.bucketName, this.getS3Filepath(stock.getInstrument()));
     }
 
     @Override
     protected BufferedReader openReader() throws IOException {
-        final File file = new File(this.getQueryName(this.getInstrument()));
-        log.info("Read file from " + file.getAbsolutePath());
+        File file = new File(getQueryName(getInstrument()));
+        S3DataStore.log.info("Read file from " + file.getAbsolutePath());
 
         if (!file.exists()) {
             throw new IOException(file.getAbsolutePath() + " not found");
         }
 
-        final FileReader in = new FileReader(file);
-        final BufferedReader br = new BufferedReader(in);
+        FileReader in = new FileReader(file, StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(in);
 
         // Skip first line that contains column names
         br.readLine();
@@ -84,14 +85,14 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
     }
 
     @Override
-    protected String getQueryName(final Instrument instrument) {
+    protected String getQueryName(Instrument instrument) {
         return Paths.get(System.getProperty("java.io.tmpdir"),
                 instrument.getExchange().name() + "_" + instrument.code() + ".csv")
                 .toString();
     }
 
-    private String getS3Filepath(final Instrument instrument) {
-        return this.folderName + "/" + instrument.code() + ".csv";
+    private String getS3Filepath(Instrument instrument) {
+        return folderName + "/" + instrument.code() + ".csv";
     }
 
     @Override
@@ -104,9 +105,9 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
         return true;
     }
 
-    private StringBuilder seriesToCsv(final List<Bar> series, final Instrument instrument) {
-        final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment,ticker\n");
-        for (final Bar historicalQuote : series) {
+    private StringBuilder seriesToCsv(List<Bar> series, Instrument instrument) {
+        StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment,ticker\n");
+        for (Bar historicalQuote : series) {
             try {
                 sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
                 StringUtils.addValue(sb, historicalQuote.getOpenPrice());
@@ -114,14 +115,14 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
                 StringUtils.addValue(sb, historicalQuote.getLowPrice());
                 StringUtils.addValue(sb, historicalQuote.getClosePrice());
                 StringUtils.addValue(sb, historicalQuote.getVolume());
-                String comment = (historicalQuote instanceof Commentable) ?
+                final String comment = (historicalQuote instanceof Commentable) ?
                         ((Commentable) historicalQuote).getComment()
                         : "";
                 sb.append(",").append(comment);
                 sb.append(",").append(instrument.code());
                 sb.append("\n");
-            } catch (Exception e) {
-                log.warn(String.format("Cannot add %s",
+            } catch (final Exception e) {
+                S3DataStore.log.warn(String.format("Cannot add %s",
                         historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()), e);
             }
         }

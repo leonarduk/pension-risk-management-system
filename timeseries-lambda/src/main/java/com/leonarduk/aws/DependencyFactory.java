@@ -4,10 +4,8 @@ import com.amazonaws.regions.Regions;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
 
-public class DependencyFactory {
-
-    private DependencyFactory() {
-    }
+public enum DependencyFactory {
+    ;
 
     private static volatile StockFeed instance;
 
@@ -17,10 +15,10 @@ public class DependencyFactory {
      * @return A stock feed
      */
     public static StockFeed stockFeed() {
-        if (instance == null) {
+        if (null == instance) {
             synchronized (DependencyFactory.class) {
-                if (instance == null) {
-                    instance =
+                if (null == instance) {
+                    DependencyFactory.instance =
                             new IntelligentStockFeed(
                                     new S3DataStore(
                                             "timeseries-leonarduk",
@@ -29,6 +27,6 @@ public class DependencyFactory {
                 }
             }
         }
-        return instance;
+        return DependencyFactory.instance;
     }
 }

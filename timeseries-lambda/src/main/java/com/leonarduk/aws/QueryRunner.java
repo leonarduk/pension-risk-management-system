@@ -27,7 +27,7 @@ public class QueryRunner {
     private final StockFeed stockFeed;
 
     public QueryRunner() {
-        this.stockFeed = DependencyFactory.stockFeed();
+        stockFeed = DependencyFactory.stockFeed();
 
     }
 
@@ -39,12 +39,12 @@ public class QueryRunner {
      * @param args command line args, not used
      * @throws IOException if an IO error occurs
      */
-    public static void main(String[] args) throws IOException {
-        log.info(new QueryRunner().getResults(Map.of(
-                TICKER, "PHGP.L",
-                YEARS, "1",
+    public static void main(final String[] args) throws IOException {
+        QueryRunner.log.info(new QueryRunner().getResults(Map.of(
+                QueryRunner.TICKER, "PHGP.L",
+                QueryRunner.YEARS, "1",
                 "interpolate", "true",
-                CLEAN_DATA, "true"
+                QueryRunner.CLEAN_DATA, "true"
         )));
     }
 
@@ -59,37 +59,37 @@ public class QueryRunner {
      * @throws IllegalArgumentException if the {@code inputParams} map is {@code null} or missing the required
      *                                  {@code ticker} key.
      */
-    public String getResults(Map<String, String> inputParams) throws IOException {
+    public String getResults(final Map<String, String> inputParams) throws IOException {
 
-        if (inputParams == null)
+        if (null == inputParams)
         {
             throw new IllegalArgumentException("No parameters provided. Expect at least ticker");
         }
-        log.debug("Input parameters: {}", inputParams);
+        QueryRunner.log.debug("Input parameters: {}", inputParams);
 
-        if (!inputParams.containsKey(TICKER) || StringUtils.isBlank(inputParams.get(TICKER))) {
+        if (!inputParams.containsKey(QueryRunner.TICKER) || StringUtils.isBlank(inputParams.get(QueryRunner.TICKER))) {
             throw new IllegalArgumentException("Ticker parameter is required");
         }
 
 
-        String ticker = inputParams.get(TICKER);
+        String ticker = inputParams.get(QueryRunner.TICKER);
 
-        final int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get(YEARS), "10"));
-        final int months = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("months"), "0"));
-        final int weeks = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("weeks"), "0"));
-        final int days = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("days"), "0"));
+        int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get(QueryRunner.YEARS), "10"));
+        int months = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("months"), "0"));
+        int weeks = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("weeks"), "0"));
+        int days = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("days"), "0"));
 
-        final String fromDate = inputParams.get("fromDate");
-        final String toDate = inputParams.get("toDate");
-        final boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(INTERPOLATE), "False"));
-        final boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(CLEAN_DATA), "False"));
+        String fromDate = inputParams.get("fromDate");
+        String toDate = inputParams.get("toDate");
+        boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(QueryRunner.INTERPOLATE), "False"));
+        boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(QueryRunner.CLEAN_DATA), "False"));
 
         String region = StringUtils.defaultIfEmpty(inputParams.get("region"), "L");
         String type = StringUtils.defaultIfEmpty(inputParams.get("type"), "UNKNOWN");
         String currency = inputParams.get("currency");
 
         if (ticker.contains(".")) {
-            String[] parts = ticker.split("\\.");
+            final String[] parts = ticker.split("\\.");
             ticker = parts[0];
             region = parts[1];
             if ("N".equalsIgnoreCase(region)) {
@@ -98,30 +98,30 @@ public class QueryRunner {
         }
 
         if (ticker.contains("/")) {
-            String[] parts = ticker.split("/");
+            final String[] parts = ticker.split("/");
             ticker = parts[0];
             region = parts[1];
 
-            if (parts.length > 2) {
+            if (2 < parts.length) {
                 type = parts[2];
             }
-            if (parts.length > 3) {
+            if (3 < parts.length) {
                 currency = parts[3];
             }
         }
 
         if (StringUtils.isBlank(currency)) {
-            currency = Instrument.resolveCurrency(inputParams.get(TICKER));
+            currency = Instrument.resolveCurrency(inputParams.get(QueryRunner.TICKER));
         }
-        final Map<String, String> regionCurrencyMap = Map.of("NY", "USD", "L", "GBP");
+        Map<String, String> regionCurrencyMap = Map.of("NY", "USD", "L", "GBP");
         if ((StringUtils.isBlank(currency) || "UNKNOWN".equalsIgnoreCase(currency))
                 && regionCurrencyMap.containsKey(region.toUpperCase())) {
             currency = regionCurrencyMap.get(region.toUpperCase());
         }
-        final Instrument instrument = Instrument.fromString(ticker, region, type, currency);
+        Instrument instrument = Instrument.fromString(ticker, region, type, currency);
 
-        LocalDate toLocalDate;
-        final LocalDate fromLocalDate;
+        final LocalDate toLocalDate;
+        LocalDate fromLocalDate;
 
         if (!StringUtils.isEmpty(fromDate)) {
             fromLocalDate = LocalDate.parse(fromDate);
@@ -132,11 +132,11 @@ public class QueryRunner {
             }
         } else {
             toLocalDate = LocalDate.now();
-            if (days > 0) {
+            if (0 < days) {
                 fromLocalDate = LocalDate.now().plusDays(-1 * days);
-            } else if (weeks > 0) {
+            } else if (0 < weeks) {
                 fromLocalDate = LocalDate.now().plusWeeks(-1 * weeks);
-            } else if (months > 0) {
+            } else if (0 < months) {
                 fromLocalDate = LocalDate.now().plusMonths(-1 * months);
             } else {
                 fromLocalDate = LocalDate.now().plusYears(-1 * years);
@@ -144,22 +144,22 @@ public class QueryRunner {
         }
 
 
-        return generateResults(fromLocalDate, toLocalDate, interpolate, cleanData, instrument);
+        return this.generateResults(fromLocalDate, toLocalDate, interpolate, cleanData, instrument);
     }
 
-    private String generateResults(final LocalDate fromLocalDate, final LocalDate toLocalDate,
-                                   final boolean interpolate, final boolean cleanData,
-                                   final Instrument instrument)
+    private String generateResults(LocalDate fromLocalDate, LocalDate toLocalDate,
+                                   boolean interpolate, boolean cleanData,
+                                   Instrument instrument)
             throws IOException {
-        final StringBuilder sbBody = new StringBuilder();
-        final List<List<DataField>> records = new ArrayList<>();
+        StringBuilder sbBody = new StringBuilder();
+        List<List<DataField>> records = new ArrayList<>();
 
-        final List<Bar> historyData;
+        List<Bar> historyData;
 
-        historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
+        historyData = getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
 
-        for (final Bar historicalQuote : historyData) {
-            final ArrayList<DataField> record = new ArrayList<>();
+        for (Bar historicalQuote : historyData) {
+            ArrayList<DataField> record = new ArrayList<>();
             records.add(record);
             record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
             record.add(new DataField("Open", historicalQuote.getOpenPrice()));
@@ -168,7 +168,7 @@ public class QueryRunner {
             record.add(new DataField("Close", historicalQuote.getClosePrice()));
             record.add(new DataField("Volume", historicalQuote.getVolume()));
 
-            if (historicalQuote instanceof Commentable commentable) {
+            if (historicalQuote instanceof final Commentable commentable) {
                 record.add(new DataField("Comment", commentable.getComment()));
 
             }
@@ -178,9 +178,9 @@ public class QueryRunner {
         return HtmlTools.createHtmlText(null, sbBody).toString();
     }
 
-    private List<Bar> getHistoryData(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate,
-                                     boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException {
-        final Optional<StockV1> stock = this.stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate,
+    private List<Bar> getHistoryData(final Instrument instrument, final LocalDate fromLocalDate, final LocalDate toLocalDate,
+                                     final boolean interpolate, final boolean cleanData, final boolean addLatestQuoteToTheSeries) throws IOException {
+        Optional<StockV1> stock = stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate,
                 cleanData, addLatestQuoteToTheSeries);
         if (stock.isPresent()) {
             return stock.get().getHistory();

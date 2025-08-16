@@ -11,18 +11,18 @@ class SqsHandlerTest {
     SqsHandler handler;
     @BeforeEach
     void setUp() {
-        handler = new SqsHandler();
+        this.handler = new SqsHandler();
     }
 
     @Test
     void getStringStringMap() {
-        String message = """
+        final String message = """
                 {
                     "ticker": "PHGP"
                 }
                 """;
-        Map<String, String> actualMap = this.handler.getParameterMap(message);
-        Map<String,String> expectedMap = ImmutableMap.of("ticker","PHGP", "interpolate","false", "cleanData","false", "years","0");
+        final Map<String, String> actualMap = handler.getParameterMap(message);
+        final Map<String,String> expectedMap = ImmutableMap.of("ticker","PHGP", "interpolate","false", "cleanData","false", "years","0");
         Assertions.assertEquals(expectedMap, actualMap);
     }
 }
