@@ -4,12 +4,10 @@ import com.leonarduk.finance.stockfeed.feed.alphavantage.AlphavantageFeed;
 import com.leonarduk.finance.stockfeed.feed.ft.FTFeed;
 import com.leonarduk.finance.stockfeed.feed.stooq.StooqFeed;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class StockFeedFactory {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(StockFeedFactory.class);
 
     private final DataStore dataStore;
 
@@ -24,7 +22,7 @@ public class StockFeedFactory {
                     return new CachedStockFeed(dataStore);
 
                 // If db not available,  use local files
-                LOGGER.warn("Primary data store unavailable. Falling back to FileBasedDataStore");
+                log.warn("Primary data store unavailable. Falling back to FileBasedDataStore");
                 return new CachedStockFeed(new FileBasedDataStore("db"));
             case FT:
                 return new FTFeed();

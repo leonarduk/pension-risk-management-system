@@ -9,8 +9,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.feed.stooq.DailyLimitExceededException;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 
@@ -20,8 +19,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 
+@Slf4j
 public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed {
-    public static final Logger log = LoggerFactory.getLogger(IntelligentStockFeed.class.getName());
 
     private final StockFeedFactory stockFeedFactory;
     public boolean refresh = true;
@@ -76,7 +75,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                 }
             }
         } else {
-            IntelligentStockFeed.log.warn(String.format("Failed to populate quote for %s", stock.getInstrument()));
+            log.warn(String.format("Failed to populate quote for %s", stock.getInstrument()));
         }
 
     }
@@ -105,7 +104,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             return getUsingCache(instrument, fromDateRaw, toDateRaw, interpolate, cleanData, addLatestQuoteToTheSeries);
         } catch (final IOException e) {
             System.err.println(Arrays.toString(e.getStackTrace()));
-            IntelligentStockFeed.log.warn("Failed to get data {}", e.getMessage());
+              log.warn("Failed to get data {}", e.getMessage());
             return Optional.empty();
         }
 
@@ -137,8 +136,8 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
                 stockFeedFactory.getDataFeed(Source.ALPHAVANTAGE));
 
         if (cachedData.isEmpty()) {
-            String message = "No data for " + instrument;
-            IntelligentStockFeed.log.warn(message);
+              String message = "No data for " + instrument;
+              log.warn(message);
             throw new StockFeedException(message);
         }
 
@@ -222,7 +221,7 @@ public class IntelligentStockFeed extends AbstractStockFeed implements StockFeed
             if (dataFeed.isAvailable()) {
                 data = dataFeed.get(instrument, fromDate, toDate, addLatestQuoteToTheSeries);
             } else {
-                IntelligentStockFeed.log.warn(dataFeed.getClass().getName() + " is not available");
+                  log.warn(dataFeed.getClass().getName() + " is not available");
                 data = Optional.empty();
             }
         } else {

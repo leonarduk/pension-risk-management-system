@@ -8,8 +8,7 @@ import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,8 +21,8 @@ import java.util.Optional;
  * https://markets.ft.com/data/investment-trust/tearsheet/historical?s=TRG:LSE
  * https://markets.ft.com/data/equities/tearsheet/summary?s=TSCO:LSE
  */
+@Slf4j
 public class FTFeed extends AbstractStockFeed {
-    public static final Logger log = LoggerFactory.getLogger(FTFeed.class.getName());
 
     final WebDriver webDriver;
 

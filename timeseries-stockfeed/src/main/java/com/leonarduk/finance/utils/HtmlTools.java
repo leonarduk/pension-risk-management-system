@@ -1,15 +1,14 @@
 package com.leonarduk.finance.utils;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+@Slf4j
 public class HtmlTools {
-    public static final Logger logger = LoggerFactory.getLogger(HtmlTools.class.getName());
     private static final String BUNDLE_NAME = "messages";
 
     private static ResourceBundle bundle() {
@@ -22,7 +21,7 @@ public class HtmlTools {
             throw new IllegalArgumentException(bundle().getString("htmltools.null_stringbuilder"));
         }
         if (null == value) {
-            HtmlTools.logger.warn(bundle().getString("htmltools.null_value"));
+            log.warn(bundle().getString("htmltools.null_value"));
         }
         sb.append("<td bgcolor='")
                 .append(HtmlTools.getColour(value == null ? "" : value)).append("'>")
@@ -37,7 +36,7 @@ public class HtmlTools {
         String name = nameRaw;
         if (null == name) {
             name = "";
-            HtmlTools.logger.warn(bundle().getString("htmltools.null_field"));
+            log.warn(bundle().getString("htmltools.null_field"));
         }
         sb.append("<th>")
                 .append(StringEscapeUtils.escapeHtml4(name))

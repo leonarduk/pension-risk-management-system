@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistQuotesRequest;
@@ -21,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
+@Slf4j
 @Getter
 @Setter
 public class StockV1 {
@@ -35,7 +35,6 @@ public class StockV1 {
 
     private StockQuote quote;
 
-    public static final Logger logger = LoggerFactory.getLogger(StockV1.class.getName());
 
     public StockV1(final Instrument instrument) {
         this.instrument = instrument;
@@ -218,7 +217,7 @@ public class StockV1 {
             try {
                 System.out.println(f.getName() + ": " + f.get(this));
             } catch (final IllegalArgumentException | IllegalAccessException ex) {
-                LoggerFactory.getLogger(StockV1.class.getName()).error(null, ex);
+                log.error(null, ex);
             }
         }
         System.out.println("--------------------------------");
