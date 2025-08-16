@@ -36,7 +36,8 @@ import java.util.stream.Collectors;
 /**
  * Helpers for common dates
  */
-public class DateUtils {
+public enum DateUtils {
+    ;
     public static final Logger logger = LoggerFactory.getLogger(DateUtils.class.getName());
     private static Map<String, Date> dates;
 
@@ -79,58 +80,58 @@ public class DateUtils {
             LocalDate.of(2024, 12, 26)  // Boxing Day
     ));
 
-    public static LocalDate calendarToLocalDate(Calendar calendar) {
+    public static LocalDate calendarToLocalDate(final Calendar calendar) {
         return LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
     }
 
-    public static Calendar localDateToCalendar(LocalDate date) {
-        ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneId.systemDefault());
+    public static Calendar localDateToCalendar(final LocalDate date) {
+        final ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneId.systemDefault());
         return GregorianCalendar.from(zonedDateTime);
     }
 
-    public static Calendar dateToCalendar(final Date date) {
-        final Calendar calendar = Calendar.getInstance();
+    public static Calendar dateToCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar;
     }
 
-    public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate) {
-        return getDiffInWorkDays(startDate, endDate, Optional.of(UK_BANK_HOLIDAYS));
+    public static int getDiffInWorkDays(LocalDate startDate, LocalDate endDate) {
+        return DateUtils.getDiffInWorkDays(startDate, endDate, Optional.of(DateUtils.UK_BANK_HOLIDAYS));
     }
 
-    public static int getDiffInWorkDays(final LocalDate startDate, final LocalDate endDate,
-                                        final Optional<List<LocalDate>> holidays) {
+    public static int getDiffInWorkDays(LocalDate startDate, LocalDate endDate,
+                                        Optional<List<LocalDate>> holidays) {
         // Validate method arguments
-        if (startDate == null || endDate == null) {
+        if (null == startDate || null == endDate) {
             throw new IllegalArgumentException(
                     "Invalid method argument(s) to countBusinessDaysBetween (" + startDate + "," + endDate + "," + holidays + ")");
         }
 
-        List<LocalDate> holidayList = holidays.orElse(UK_BANK_HOLIDAYS);
+        final List<LocalDate> holidayList = holidays.orElse(DateUtils.UK_BANK_HOLIDAYS);
         // Predicate 1: Is a given date a holiday
-        Predicate<LocalDate> isHoliday = holidayList::contains;
+        final Predicate<LocalDate> isHoliday = holidayList::contains;
 
         // Iterate over stream of all dates and check each day against any weekday or
         // holiday
         // `datesUntil` excludes the final date. Include it to count the end date when
         // it falls on a working day.
-        List<LocalDate> businessDays = startDate.datesUntil(endDate.plusDays(1))
-                .filter(isWeekend().or(isHoliday).negate())
+        final List<LocalDate> businessDays = startDate.datesUntil(endDate.plusDays(1))
+                .filter(DateUtils.isWeekend().or(isHoliday).negate())
                 .collect(Collectors.toList());
 
         return businessDays.size();
     }
 
     public static Predicate<LocalDate> isWeekend() {
-        return date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
-                || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+        return date -> DayOfWeek.SATURDAY == date.getDayOfWeek()
+                || DayOfWeek.SUNDAY == date.getDayOfWeek();
     }
 
     public static Predicate<LocalDate> isHoliday() {
-        return UK_BANK_HOLIDAYS::contains;
+        return DateUtils.UK_BANK_HOLIDAYS::contains;
     }
 
-    private static String getDividendDateFormat(final String date) {
+    private static String getDividendDateFormat(String date) {
         if (date.matches("[0-9][0-9]-...-[0-9][0-9]")) {
             return "dd-MMM-yy";
         } else if (date.matches("[0-9]-...-[0-9][0-9]")) {
@@ -142,22 +143,22 @@ public class DateUtils {
         }
     }
 
-    public static Iterator<LocalDate> getLocalDateIterator(final LocalDate oldestDate, final LocalDate mostRecentDate) {
+    public static Iterator<LocalDate> getLocalDateIterator(LocalDate oldestDate, LocalDate mostRecentDate) {
         return new Iterator<>() {
 
             LocalDate nextDate = oldestDate;
 
             @Override
             public boolean hasNext() {
-                return !this.nextDate.isAfter(mostRecentDate);
+                return !nextDate.isAfter(mostRecentDate);
             }
 
             @Override
             public LocalDate next() {
-                final LocalDate currentDate = this.nextDate;
+                LocalDate currentDate = nextDate;
                 do {
-                    this.nextDate = this.nextDate.plusDays(1);
-                } while (isWeekend().or(isHoliday()).test(this.nextDate) && this.nextDate.isBefore(mostRecentDate.plusDays(1)));
+                    nextDate = nextDate.plusDays(1);
+                } while (DateUtils.isWeekend().or(DateUtils.isHoliday()).test(nextDate) && nextDate.isBefore(mostRecentDate.plusDays(1)));
                 return currentDate;
             }
 
@@ -165,24 +166,24 @@ public class DateUtils {
 
     }
 
-    public static LocalDate getPreviousDate(final LocalDate localDate) {
-        final LocalDate returnDate = localDate.minusDays(1);
-        return getLastWeekday(returnDate);
+    public static LocalDate getPreviousDate(LocalDate localDate) {
+        LocalDate returnDate = localDate.minusDays(1);
+        return DateUtils.getLastWeekday(returnDate);
     }
 
-    public static LocalDate getLastWeekday(final LocalDate returnDate) {
-        if (isWeekend().or(isHoliday()).test(returnDate)) {
-            return DateUtils.getPreviousDate(returnDate);
+    public static LocalDate getLastWeekday(LocalDate returnDate) {
+        if (DateUtils.isWeekend().or(DateUtils.isHoliday()).test(returnDate)) {
+            return getPreviousDate(returnDate);
         }
         return returnDate;
     }
 
-    public static Date parseDate(final String fieldValue) throws ParseException {
-        if (null == DateUtils.dates) {
-            DateUtils.dates = Maps.newConcurrentMap();
+    public static Date parseDate(String fieldValue) throws ParseException {
+        if (null == dates) {
+            dates = Maps.newConcurrentMap();
         }
-        return (DateUtils.dates.computeIfAbsent(fieldValue,
-                v -> DateUtils.convertToDateViaInstant(LocalDate.parse(v, DateTimeFormatter.ISO_DATE))));
+        return (dates.computeIfAbsent(fieldValue,
+                v -> convertToDateViaInstant(LocalDate.parse(v, DateTimeFormatter.ISO_DATE))));
     }
 
     public static final String TIMEZONE = "America/New_York";
@@ -193,40 +194,40 @@ public class DateUtils {
      * @param date String received that represents the date
      * @return Calendar object representing the parsed date
      */
-    public static Calendar parseDividendDate(final String date) {
+    public static Calendar parseDividendDate(String date) {
         if (StringUtils.isNotParseable(date)) {
             return null;
         }
         
-        final SimpleDateFormat format = new SimpleDateFormat(DateUtils.getDividendDateFormat(date.trim()), Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
+        SimpleDateFormat format = new SimpleDateFormat(getDividendDateFormat(date.trim()), Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone(DateUtils.TIMEZONE));
         try {
-            final Calendar today = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
-            final Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(TIMEZONE));
+            Calendar today = Calendar.getInstance(TimeZone.getTimeZone(DateUtils.TIMEZONE));
+            Calendar parsedDate = Calendar.getInstance(TimeZone.getTimeZone(DateUtils.TIMEZONE));
             parsedDate.setTime(format.parse(date.trim()));
 
-            if (parsedDate.get(Calendar.YEAR) == 1970) {
+            if (1970 == parsedDate.get(Calendar.YEAR)) {
                 // Not really clear which year the dividend date is... making a
                 // reasonable guess.
-                final int monthDiff = parsedDate.get(Calendar.MONTH) - today.get(Calendar.MONTH);
+                int monthDiff = parsedDate.get(Calendar.MONTH) - today.get(Calendar.MONTH);
                 int year = today.get(Calendar.YEAR);
-                if (monthDiff > 6) {
+                if (6 < monthDiff) {
                     year -= 1;
-                } else if (monthDiff < -6) {
+                } else if (-6 > monthDiff) {
                     year += 1;
                 }
                 parsedDate.set(Calendar.YEAR, year);
             }
 
             return parsedDate;
-        } catch (final ParseException ex) {
-            DateUtils.logger.warn("Failed to parse dividend date: {}", date);
-            DateUtils.logger.trace("Failed to parse dividend date: {}", date, ex);
+        } catch (ParseException ex) {
+            logger.warn("Failed to parse dividend date: {}", date);
+            logger.trace("Failed to parse dividend date: {}", date, ex);
             return null;
         }
     }
 
-    public static Date convertToDateViaInstant(LocalDate fromDate) {
+    public static Date convertToDateViaInstant(final LocalDate fromDate) {
         return java.util.Date.from(fromDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 

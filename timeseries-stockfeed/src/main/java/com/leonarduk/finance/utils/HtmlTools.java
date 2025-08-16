@@ -52,21 +52,21 @@ public class HtmlTools {
     }
 
 
-    public static void printTable(final StringBuilder sb, final List<List<DataField>> records) {
+    public static void printTable(StringBuilder sb, List<List<DataField>> records) {
         if (!records.isEmpty()) {
             sb.append("<table border=\"1\"><tr>");
             records.get(0).stream().forEach(f -> {
                 if (f.isDisplay()) {
-                    HtmlTools.addHeader(f.getName(), sb);
+                    addHeader(f.getName(), sb);
                 }
             });
             sb.append("</tr>");
 
-            for (final List<DataField> list : records) {
+            for (List<DataField> list : records) {
                 sb.append("<tr>");
                 list.stream().forEach(f -> {
                     if (f.isDisplay()) {
-                        HtmlTools.addField(f.getValue(), sb, f.getFormatter());
+                        addField(f.getValue(), sb, f.getFormatter());
                     }
                 });
                 sb.append("</tr>");
@@ -76,8 +76,8 @@ public class HtmlTools {
         }
     }
 
-    public static String getColour(final Object value) {
-        String colour = "white";
+    public static String getColour(Object value) {
+        final String colour = "white";
         //        if (((value != null) && (value.equals(RecommendedTrade.BUY.name())
         //            || ((value instanceof LocalDate)
         //            && (Double.valueOf(Duration.between(LocalDate.now(), ((LocalDate) value)).toDays()))

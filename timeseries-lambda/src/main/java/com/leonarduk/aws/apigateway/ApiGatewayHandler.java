@@ -20,17 +20,17 @@ public class ApiGatewayHandler
     private final QueryRunner queryRunner;
 
     public ApiGatewayHandler() {
-        this.queryRunner = new QueryRunner();
+        queryRunner = new QueryRunner();
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         // TODO: invoking the api call using s3Client.
-        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        final APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
-            responseEvent.setBody(this.queryRunner.getResults(input.getQueryStringParameters()));
+            responseEvent.setBody(queryRunner.getResults(input.getQueryStringParameters()));
             responseEvent.setStatusCode(200);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             responseEvent.setBody("FAILED: " + e.getMessage());
             responseEvent.setStatusCode(500);
