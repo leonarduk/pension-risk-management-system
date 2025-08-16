@@ -46,7 +46,13 @@ public class FTFeed extends AbstractStockFeed {
         log.info("Fetch from {} : {}", ftInstrument, instrument);
         return new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl())
                 .getTimeseries(instrument, fromDate, toDate)
-                .map(bars -> new StockV1(instrument, bars));
+                .map(bars -> {
+                    try {
+                        return new StockV1(instrument, bars);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     @Override
