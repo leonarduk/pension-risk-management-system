@@ -29,6 +29,15 @@ from typing import Dict, Optional
 
 import pandas as pd
 
+# Mapping of raw security names from Moneyhub exports to the names used
+# within Portfolio Performance.  The mapping is intentionally kept in a
+# separate module so that it can be customised or extended without touching
+# the core converter logic.
+try:  # pragma: no cover - during tests the module is always present
+    from .stock_name_map import STOCK_NAME_MAP
+except Exception:  # pragma: no cover - fall back to an empty map
+    STOCK_NAME_MAP: Dict[str, str] = {}
+
 STEVE_SIPP = "Steve SIPP"
 ALEX_SIPP = "Alex SIPP"
 JOE_SIPP = "Alex SIPP"
@@ -126,13 +135,28 @@ def _convert_account_df(
         _extract_security(d, t) for d, t in zip(sub["DESCRIPTION"], sub["Type"])
     ]
 
-    # only for dividends, replace with STOCK_NAME_MAP overrides
+    # only for dividends, replace with STOCK_NAME_MAP overrides and drop
+    # any dividend rows that cannot be mapped.  Without a known security
+    # name Portfolio Performance cannot attribute the dividend correctly,
+    # so it is safer to skip the row entirely.
     is_div = sub["Type"] == "Dividend"
-    sub.loc[is_div, "Security Name"] = (
-        sub.loc[is_div, "Security Name"]
-        .map(STOCK_NAME_MAP)
-        .fillna(sub.loc[is_div, "Security Name"])
-    )
+    if is_div.any():
+        # map known securities
+        mapped = sub.loc[is_div, "Security Name"].map(STOCK_NAME_MAP)
+        missing = mapped.isna()
+        if missing.any():
+            # warn and drop unmapped dividends
+            for sec in sub.loc[is_div, "Security Name"][missing]:
+                print(
+                    f"⚠ Unknown dividend security '{sec}' for account '{account}', skipping"
+                )
+            sub = sub.loc[~(is_div & missing)].copy()
+            is_div = sub["Type"] == "Dividend"
+            mapped = mapped[~missing]
+        sub.loc[is_div, "Security Name"] = mapped
+
+    if sub.empty:
+        raise ValueError(f"All rows for '{account}' filtered out.")
 
     # Extra columns
     sub["Note"] = sub["DESCRIPTION"].astype(str).str.strip()
