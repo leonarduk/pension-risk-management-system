@@ -51,7 +51,7 @@ public class NumberUtils {
     }
 
     private static String cleanNumberString(final String data) {
-        return StringUtils.join(data.trim().split(","), "");
+        return String.join("", data.trim().split(","));
     }
 
     public static BigDecimal getBigDecimal(final String data) {
