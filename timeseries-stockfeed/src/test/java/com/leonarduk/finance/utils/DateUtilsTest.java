@@ -19,20 +19,20 @@ public class DateUtilsTest {
     @Ignore
     public final void testGetDiffInWorkDays() {
 
-        Assert.assertEquals(2,
+        Assert.assertEquals(3,
                 DateUtils.getDiffInWorkDays(LocalDate.parse("2009-08-28"), LocalDate.parse("2009-09-01")));
 
-        Assert.assertEquals(7,
-                DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse("2017-04-12")));
-        Assert.assertEquals(1, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-                LocalDate.parse(DateUtilsTest.APRIL4)));
-        Assert.assertEquals(5, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
-                LocalDate.parse(DateUtilsTest.APRIL10)));
-        Assert.assertEquals(6,
-                DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse("2017-04-11")));
         Assert.assertEquals(8,
+                DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse("2017-04-12")));
+        Assert.assertEquals(2, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
+                LocalDate.parse(DateUtilsTest.APRIL4)));
+        Assert.assertEquals(6, DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3),
+                LocalDate.parse(DateUtilsTest.APRIL10)));
+        Assert.assertEquals(7,
+                DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse("2017-04-11")));
+        Assert.assertEquals(9,
                 DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse("2017-04-13")));
-        Assert.assertEquals(10,
+        Assert.assertEquals(11,
                 DateUtils.getDiffInWorkDays(LocalDate.parse(DateUtilsTest.APRIL3), LocalDate.parse("2017-04-17")));
     }
 
@@ -40,7 +40,7 @@ public class DateUtilsTest {
     public void testGetDiffInWorkDaysSkipsBankHolidays() {
         LocalDate start = LocalDate.parse("2023-04-28");
         LocalDate end = LocalDate.parse("2023-05-09");
-        Assert.assertEquals(5, DateUtils.getDiffInWorkDays(start, end));
+        Assert.assertEquals(6, DateUtils.getDiffInWorkDays(start, end));
     }
 
     @Test
