@@ -1,12 +1,17 @@
 package com.leonarduk.aws.apigateway;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.leonarduk.aws.QueryRunner;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Lambda function entry point. You can change to use other pojo type or implement
@@ -18,19 +23,38 @@ public class ApiGatewayHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final QueryRunner queryRunner;
+    private final AmazonS3 s3Client;
+    private final String resultBucket;
 
     public ApiGatewayHandler() {
-        queryRunner = new QueryRunner();
+        this(AmazonS3ClientBuilder.standard().build(), System.getenv("RESULT_BUCKET"));
+    }
+
+    ApiGatewayHandler(AmazonS3 s3Client, String resultBucket) {
+        this.queryRunner = new QueryRunner();
+        this.s3Client = s3Client;
+        this.resultBucket = resultBucket;
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-        // TODO: invoking the api call using s3Client.
-        final APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+    public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
-            responseEvent.setBody(queryRunner.getResults(input.getQueryStringParameters()));
+            Map<String, String> params = input.getQueryStringParameters();
+            String result = this.queryRunner.getResults(params);
+
+            if (this.s3Client != null && this.resultBucket != null && !this.resultBucket.isBlank()) {
+                String ticker = params != null ? params.get(QueryRunner.TICKER) : "result";
+                String key = "results/" + (ticker != null ? ticker : "result") + ".html";
+                this.s3Client.putObject(this.resultBucket, key, result);
+            }
+
+            responseEvent.setBody(result);
             responseEvent.setStatusCode(200);
-        } catch (final IOException e) {
+        } catch (AmazonServiceException | SdkClientException e) {
+            responseEvent.setBody("S3_ERROR: " + e.getMessage());
+            responseEvent.setStatusCode(502);
+        } catch (IOException e) {
             e.printStackTrace();
             responseEvent.setBody("FAILED: " + e.getMessage());
             responseEvent.setStatusCode(500);

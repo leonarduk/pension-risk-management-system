@@ -23,11 +23,20 @@ public class StringUtils {
     }
 
     public static void addValue(final StringBuilder buf, final long value) {
-        buf.append(',').append(value);
+        StringUtils.addValue(buf, String.valueOf(value));
     }
 
     public static void addValue(final StringBuilder buf, final String value) {
-        buf.append(',').append(value);
+        buf.append(',');
+        if (value == null) {
+            return;
+        }
+        String escaped = value.replace("\"", "\"\"");
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            buf.append('"').append(escaped).append('"');
+        } else {
+            buf.append(escaped);
+        }
     }
 
     public static String getString(final String data) {
