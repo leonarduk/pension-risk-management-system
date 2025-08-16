@@ -87,8 +87,56 @@ public class TimeseriesUtilsTest {
     }
 
     @Test
+    public void testCleanUpSeriesGbpToGbxConversion() throws Exception {
+        Instrument instrument = Instrument.fromString("TEST_GBP_GBX", "L", "EQUITY", "GBX");
+        List<Bar> history = Lists.newArrayList();
+        history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, 1L, ""));
+        StockV1 stock = new StockV1(instrument, history);
+        stock.setCurrency("GBP");
+
+        final int[] calls = {0};
+        ExchangeRateService service = (from, to) -> {
+            calls[0]++;
+            return BigDecimal.ONE; // should not be used
+        };
+        TimeseriesUtils.setExchangeRateService(service);
+
+        TimeseriesUtils.cleanUpSeries(Optional.of(stock));
+        Bar converted = stock.getHistory().get(0);
+        Assert.assertEquals(100.0, converted.getClosePrice().doubleValue(), 0.0001);
+        Assert.assertEquals("GBX", stock.getCurrency());
+        Assert.assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void testCleanUpSeriesGbxToGbpConversion() throws Exception {
+        Instrument instrument = Instrument.fromString("TEST_GBX_GBP", "L", "EQUITY", "GBP");
+        List<Bar> history = Lists.newArrayList();
+        history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, 1L, ""));
+        StockV1 stock = new StockV1(instrument, history);
+        stock.setCurrency("GBX");
+
+        final int[] calls = {0};
+        ExchangeRateService service = (from, to) -> {
+            calls[0]++;
+            return BigDecimal.ONE; // should not be used
+        };
+        TimeseriesUtils.setExchangeRateService(service);
+
+        TimeseriesUtils.cleanUpSeries(Optional.of(stock));
+        Bar converted = stock.getHistory().get(0);
+        Assert.assertEquals(0.01, converted.getClosePrice().doubleValue(), 0.0001);
+        Assert.assertEquals("GBP", stock.getCurrency());
+        Assert.assertEquals(0, calls[0]);
+    }
+
+    @Test
     public void testCleanUpSeriesUsdToGbpConversion() throws Exception {
-        Instrument instrument = Instrument.fromString("TEST1", "L", "EQUITY", "GBP");
+        Instrument instrument = Instrument.fromString("TEST_USD_GBP", "L", "EQUITY", "GBP");
         List<Bar> history = Lists.newArrayList();
         history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
@@ -107,7 +155,7 @@ public class TimeseriesUtilsTest {
 
     @Test
     public void testCleanUpSeriesUsdToGbxConversion() throws Exception {
-        Instrument instrument = Instrument.fromString("TEST2", "L", "EQUITY", "GBX");
+        Instrument instrument = Instrument.fromString("TEST_USD_GBX", "L", "EQUITY", "GBX");
         List<Bar> history = Lists.newArrayList();
         history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
@@ -122,6 +170,68 @@ public class TimeseriesUtilsTest {
         Bar converted = stock.getHistory().get(0);
         Assert.assertEquals(80.0, converted.getClosePrice().doubleValue(), 0.0001);
         Assert.assertEquals("GBX", stock.getCurrency());
+    }
+
+    @Test
+    public void testCleanUpSeriesGbpToUsdConversion() throws Exception {
+        Instrument instrument = Instrument.fromString("TEST_GBP_USD", "L", "EQUITY", "USD");
+        List<Bar> history = Lists.newArrayList();
+        history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, 1L, ""));
+        StockV1 stock = new StockV1(instrument, history);
+        stock.setCurrency("GBP");
+
+        ExchangeRateService service = (from, to) -> BigDecimal.valueOf(1.25);
+        TimeseriesUtils.setExchangeRateService(service);
+
+        TimeseriesUtils.cleanUpSeries(Optional.of(stock));
+        Bar converted = stock.getHistory().get(0);
+        Assert.assertEquals(1.25, converted.getClosePrice().doubleValue(), 0.0001);
+        Assert.assertEquals("USD", stock.getCurrency());
+    }
+
+    @Test
+    public void testCleanUpSeriesGbxToUsdConversion() throws Exception {
+        Instrument instrument = Instrument.fromString("TEST_GBX_USD", "L", "EQUITY", "USD");
+        List<Bar> history = Lists.newArrayList();
+        history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, 1L, ""));
+        StockV1 stock = new StockV1(instrument, history);
+        stock.setCurrency("GBX");
+
+        ExchangeRateService service = (from, to) -> BigDecimal.valueOf(1.25);
+        TimeseriesUtils.setExchangeRateService(service);
+
+        TimeseriesUtils.cleanUpSeries(Optional.of(stock));
+        Bar converted = stock.getHistory().get(0);
+        Assert.assertEquals(0.0125, converted.getClosePrice().doubleValue(), 0.0001);
+        Assert.assertEquals("USD", stock.getCurrency());
+    }
+
+    @Test
+    public void testFallbackPathUsesExchangeService() throws Exception {
+        Instrument instrument = Instrument.fromString("TEST_FALLBACK", "L", "EQUITY", "USD");
+        List<Bar> history = Lists.newArrayList();
+        history.add(new ExtendedHistoricalQuote(instrument, LocalDate.parse("2020-01-01"),
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, 1L, ""));
+        StockV1 stock = new StockV1(instrument, history);
+        stock.setCurrency("CHF");
+
+        final int[] calls = {0};
+        ExchangeRateService service = (from, to) -> {
+            calls[0]++;
+            return BigDecimal.valueOf(1.3);
+        };
+        TimeseriesUtils.setExchangeRateService(service);
+
+        TimeseriesUtils.cleanUpSeries(Optional.of(stock));
+        Bar converted = stock.getHistory().get(0);
+        Assert.assertEquals(1.3, converted.getClosePrice().doubleValue(), 0.0001);
+        Assert.assertEquals("USD", stock.getCurrency());
+        Assert.assertEquals(1, calls[0]);
     }
 
 }
