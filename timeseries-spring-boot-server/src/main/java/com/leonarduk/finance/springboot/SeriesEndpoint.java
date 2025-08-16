@@ -3,8 +3,7 @@ package com.leonarduk.finance.springboot;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ta4j.core.Bar;
@@ -18,11 +17,10 @@ import java.util.stream.Collectors;
 /**
  * REST endpoint exposing time-series utilities.
  */
+@Slf4j
 @RequestMapping("/series")
 @RestController
 public class SeriesEndpoint {
-
-    private static final Logger log = LoggerFactory.getLogger(SeriesEndpoint.class);
 
     @Autowired
     private final StockFeed stockFeed;
