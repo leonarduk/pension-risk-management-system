@@ -222,7 +222,7 @@ public class TimeseriesUtils {
             StringUtils.addValue(sb, historicalQuote.getClosePrice());
             StringUtils.addValue(sb, historicalQuote.getVolume());
             if (historicalQuote instanceof Commentable commentable) {
-                sb.append(",").append(commentable.getComment());
+                StringUtils.addValue(sb, commentable.getComment());
             }
             sb.append("\n");
         }
