@@ -98,4 +98,17 @@ class SeriesEndpointTest {
                 .andExpect(jsonPath("$.mapped['2023-01-03']").value(55.0))
                 .andExpect(jsonPath("$.mapped['2023-01-04']").value(60.0));
     }
+
+    @Test
+    void mapSeriesReturnsEmptyWhenDataMissing() throws Exception {
+        Mockito.when(stockFeed.get(any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/series/map")
+                        .param("source", "CASH")
+                        .param("target", "UNKNOWN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mapped").isMap())
+                .andExpect(jsonPath("$.mapped").isEmpty());
+    }
 }
