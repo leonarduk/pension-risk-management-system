@@ -10,16 +10,28 @@ public class StringUtils {
     private static final NumberFormat formatter = new DecimalFormat("#0.00");
 
     public static void addValue(final StringBuilder buf, final Num num) {
-        final String format = StringUtils.formatter.format(num == null ? BigDecimal.ZERO : num.doubleValue());
-        StringUtils.addValue(buf, format);
+        if (num == null) {
+            StringUtils.addValue(buf, "");
+        } else {
+            final String format = StringUtils.formatter.format(num.doubleValue());
+            StringUtils.addValue(buf, format);
+        }
     }
 
     public static void addValue(final StringBuilder buf, final BigDecimal value) {
-        StringUtils.addValue(buf, value.doubleValue());
+        if (value == null) {
+            StringUtils.addValue(buf, "");
+        } else {
+            StringUtils.addValue(buf, value.doubleValue());
+        }
     }
 
     public static void addValue(final StringBuilder buf, final Double value) {
-        StringUtils.addValue(buf, String.valueOf(value));
+        if (value == null) {
+            StringUtils.addValue(buf, "");
+        } else {
+            StringUtils.addValue(buf, String.valueOf(value));
+        }
     }
 
     public static void addValue(final StringBuilder buf, final long value) {
@@ -48,30 +60,6 @@ public class StringUtils {
 
     public static boolean isNotParseable(final String data) {
         return (data == null) || data.equals("N/A") || data.equals("-") || data.equals("") || data.equals("nan");
-    }
-
-    public static String join(final String[] data, final String d) {
-        if (data.length == 0) {
-            return "";
-        }
-        final StringBuilder sb = new StringBuilder();
-        int i;
-
-        for (i = 0; i < (data.length - 1); i++) {
-            sb.append(data[i]).append(d);
-        }
-        return sb.append(data[i]).toString();
-    }
-
-    /**
-     * Strips the unwanted chars from a line returned in the CSV Used for parsing
-     * the FX CSV lines
-     *
-     * @param line the original CSV line
-     * @return the stripped line
-     */
-    public static String stripOverhead(final String line) {
-        return line.replaceAll("\"", "");
     }
 
     public static String unescape(final String data) {
