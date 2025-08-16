@@ -2,6 +2,9 @@ package org.patriques.output.digitalcurrencies.data;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Representation of json object, i.e:
  * "2014-04-01 17:59:59": {
@@ -11,44 +14,13 @@ import java.time.LocalDateTime;
  *   "3. market cap (USD)": "2596155.69911398"
  * }
  */
+@AllArgsConstructor
+@Getter
 public class SimpelDigitalCurrencyData {
 
-  private final LocalDateTime parse;
+  private final LocalDateTime dateTime;
   private final double priceA;
   private final double priceB;
   private final double volume;
   private final double marketCap;
-
-  public SimpelDigitalCurrencyData(LocalDateTime parse,
-                                   double priceA,
-                                   double priceB,
-                                   double volume,
-                                   double marketCap) {
-    this.parse = parse;
-    this.priceA = priceA;
-    this.priceB = priceB;
-    this.volume = volume;
-    this.marketCap = marketCap;
-  }
-
-  public LocalDateTime getDateTime() {
-    return parse;
-  }
-
-  public double getPriceA() {
-    return priceA;
-  }
-
-  public double getPriceB() {
-    return priceB;
-  }
-
-  public double getVolume() {
-    return volume;
-  }
-
-  public double getMarketCap() {
-    return marketCap;
-  }
-
 }

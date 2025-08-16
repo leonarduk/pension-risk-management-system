@@ -2,6 +2,9 @@ package org.patriques.output.digitalcurrencies.data;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Representation of json object, i.e:
  * "2014-04-01": {
@@ -17,6 +20,8 @@ import java.time.LocalDateTime;
  *   "6. market cap (USD)": "2596155.69911398"
  * }
  */
+@AllArgsConstructor
+@Getter
 public class DigitalCurrencyData {
 
   private final LocalDateTime dateTime;
@@ -30,73 +35,4 @@ public class DigitalCurrencyData {
   private final double closeB;
   private final double volume;
   private final double marketCap;
-
-  public DigitalCurrencyData(LocalDateTime dateTime,
-                             double openA,
-                             double openB,
-                             double highA,
-                             double highB,
-                             double lowA,
-                             double lowB,
-                             double closeA,
-                             double closeB,
-                             double volume,
-                             double marketCap) {
-    this.dateTime = dateTime;
-    this.openA = openA;
-    this.openB = openB;
-    this.highA = highA;
-    this.highB = highB;
-    this.lowA = lowA;
-    this.lowB = lowB;
-    this.closeA = closeA;
-    this.closeB = closeB;
-    this.volume = volume;
-    this.marketCap = marketCap;
-  }
-
-  public LocalDateTime getDateTime() {
-    return dateTime;
-  }
-
-  public double getOpenA() {
-    return openA;
-  }
-
-  public double getOpenB() {
-    return openB;
-  }
-
-  public double getHighA() {
-    return highA;
-  }
-
-  public double getHighB() {
-    return highB;
-  }
-
-  public double getLowA() {
-    return lowA;
-  }
-
-  public double getLowB() {
-    return lowB;
-  }
-
-  public double getCloseA() {
-    return closeA;
-  }
-
-  public double getCloseB() {
-    return closeB;
-  }
-
-  public double getVolume() {
-    return volume;
-  }
-
-  public double getMarketCap() {
-    return marketCap;
-  }
-
 }

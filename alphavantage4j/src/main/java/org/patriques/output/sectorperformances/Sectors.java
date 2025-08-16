@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -16,33 +20,11 @@ import org.patriques.output.sectorperformances.data.SectorData;
 /**
  * Representation of sectors percentual change over different timeperiods
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
 public class Sectors {
-  private final Map<String, String> metadata;
+  private final Map<String, String> metaData;
   private final List<SectorData> sectors;
-
-  Sectors(final Map<String, String> metadata,
-          final List<SectorData> sectors) {
-    this.metadata = metadata;
-    this.sectors = sectors;
-  }
-
-  /**
-   * Meta data for sectors data.
-   *
-   * @return map of keys and values in json representation of metadata.
-   */
-  public Map<String, String> getMetaData() {
-    return metadata;
-  }
-
-  /**
-   * Percentual changes in different sectors during different timeperiods; from real-time to 10 years.
-   *
-   * @return list of percentual changes in different sectors.
-   */
-  public List<SectorData> getSectors() {
-    return sectors;
-  }
 
   /**
    * Create Sectors data representation from json object.

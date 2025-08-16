@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -15,17 +19,11 @@ import org.patriques.output.exchange.data.CurrencyExchangeData;
 /**
  * Representation of currency exchange.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
 public class CurrencyExchange {
 
-  private CurrencyExchangeData data;
-
-  CurrencyExchange(final CurrencyExchangeData data) {
-    this.data = data;
-  }
-
-  public CurrencyExchangeData getData() {
-    return data;
-  }
+  private final CurrencyExchangeData data;
 
   /**
    * Create Currency Exchange data representation from json object
