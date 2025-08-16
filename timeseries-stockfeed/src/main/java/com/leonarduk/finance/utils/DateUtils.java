@@ -29,6 +29,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,43 +46,41 @@ public class DateUtils {
     private static Map<String, Date> dates;
 
     /**
-     * Static list of UK bank holidays used when determining working days.
-     * <p>
-     * The list is intentionally limited to the most recent years required by the
-     * application and test cases. It can be extended as needed.
+     * Path to the default holiday configuration file on the classpath.
      */
-    public static final List<LocalDate> UK_BANK_HOLIDAYS = Collections.unmodifiableList(Arrays.asList(
-            // 2022
-            LocalDate.of(2022, 1, 3), // New Year's Day (substitute)
-            LocalDate.of(2022, 4, 15), // Good Friday
-            LocalDate.of(2022, 4, 18), // Easter Monday
-            LocalDate.of(2022, 5, 2), // Early May bank holiday
-            LocalDate.of(2022, 6, 2), // Spring bank holiday
-            LocalDate.of(2022, 6, 3), // Platinum Jubilee bank holiday
-            LocalDate.of(2022, 8, 29), // Summer bank holiday
-            LocalDate.of(2022, 9, 19), // Queen's funeral
-            LocalDate.of(2022, 12, 26), // Boxing Day
-            LocalDate.of(2022, 12, 27), // Christmas Day (substitute)
-            // 2023
-            LocalDate.of(2023, 1, 2), // New Year's Day (substitute)
-            LocalDate.of(2023, 4, 7), // Good Friday
-            LocalDate.of(2023, 4, 10), // Easter Monday
-            LocalDate.of(2023, 5, 1), // Early May bank holiday
-            LocalDate.of(2023, 5, 8), // Coronation of King Charles III
-            LocalDate.of(2023, 5, 29), // Spring bank holiday
-            LocalDate.of(2023, 8, 28), // Summer bank holiday
-            LocalDate.of(2023, 12, 25), // Christmas Day
-            LocalDate.of(2023, 12, 26), // Boxing Day
-            // 2024
-            LocalDate.of(2024, 1, 1), // New Year's Day
-            LocalDate.of(2024, 3, 29), // Good Friday
-            LocalDate.of(2024, 4, 1), // Easter Monday
-            LocalDate.of(2024, 5, 6), // Early May bank holiday
-            LocalDate.of(2024, 5, 27), // Spring bank holiday
-            LocalDate.of(2024, 8, 26), // Summer bank holiday
-            LocalDate.of(2024, 12, 25), // Christmas Day
-            LocalDate.of(2024, 12, 26)  // Boxing Day
-    ));
+    private static final String HOLIDAY_RESOURCE = "/uk_bank_holidays.json";
+
+    /**
+     * List of UK bank holidays loaded from a configuration file. The default
+     * configuration is bundled with the application but can be replaced or
+     * reloaded using {@link #loadHolidays(String)}.
+     */
+    public static final List<LocalDate> UK_BANK_HOLIDAYS = Collections
+            .unmodifiableList(loadHolidays(HOLIDAY_RESOURCE));
+
+    /**
+     * Load a list of holidays from a JSON resource containing an array of ISO-8601
+     * date strings. The resource is read from the classpath.
+     *
+     * @param resourcePath path to the JSON resource
+     * @return list of {@link LocalDate} instances. An empty list is returned if the
+     * resource cannot be read.
+     */
+    public static List<LocalDate> loadHolidays(String resourcePath) {
+        ObjectMapper mapper = new ObjectMapper();
+        try (InputStream in = DateUtils.class.getResourceAsStream(resourcePath)) {
+            if (in == null) {
+                logger.warn("Holiday resource {} not found", resourcePath);
+                return Collections.emptyList();
+            }
+            List<String> dates = mapper.readValue(in, new TypeReference<List<String>>() {
+            });
+            return dates.stream().map(LocalDate::parse).collect(Collectors.toList());
+        } catch (IOException e) {
+            logger.warn("Failed to load holidays from {}", resourcePath, e);
+            return Collections.emptyList();
+        }
+    }
 
     public static LocalDate calendarToLocalDate(Calendar calendar) {
         return LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
