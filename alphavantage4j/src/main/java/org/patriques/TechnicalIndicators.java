@@ -7,10 +7,8 @@ import org.patriques.input.Symbol;
 import org.patriques.input.technicalindicators.*;
 import org.patriques.output.technicalindicators.*;
 
-// TODO add optional in docs to optional values
-
 /**
- * Technical indicator values are updated realtime: the latest data point is derived from the current trading day of a given equity.
+ * Technical indicator values are updated in real time: the latest data point is derived from the current trading day of a given equity. Many indicator functions include optional parameters with default values if omitted.
  */
 public class TechnicalIndicators {
 
@@ -42,8 +40,8 @@ public class TechnicalIndicators {
    *
    * @param symbol     the stock symbol to lookup.
    * @param interval   the interval between two consecutive data points in the time series {@link Interval}.
-   * @param fastPeriod the time period of the fast EMA, default 3 {@link FastPeriod}.
-   * @param slowPeriod the time period of the fast EMA, default 10 {@link SlowPeriod}.
+   * @param fastPeriod the time period of the fast EMA. Optional, defaults to 3 {@link FastPeriod}.
+   * @param slowPeriod the time period of the slow EMA. Optional, defaults to 10 {@link SlowPeriod}.
    * @return {@link ADOSC} indicator data.
    */
   public ADOSC adosc(String symbol,
@@ -86,9 +84,9 @@ public class TechnicalIndicators {
    * @param symbol     the stock symbol to lookup.
    * @param interval   the interval between two consecutive data points in the time series {@link Interval}.
    * @param seriesType The desired price type in the time series {@link SeriesType}.
-   * @param fastPeriod default 12 {@link FastPeriod}.
-   * @param slowPeriod default 26 {@link SlowPeriod}.
-   * @param maType     Moving average type, default SMA {@link MaType}.
+   * @param fastPeriod the time period of the fast EMA. Optional, defaults to 12 {@link FastPeriod}.
+   * @param slowPeriod the time period of the slow EMA. Optional, defaults to 26 {@link SlowPeriod}.
+   * @param maType     Moving average type. Optional, defaults to SMA {@link MaType}.
    * @return {@link APO} indicator data.
    */
   public APO apo(String symbol,
@@ -147,8 +145,9 @@ public class TechnicalIndicators {
    * @param interval   the interval between two consecutive data points in the time series {@link Interval}.
    * @param timePeriod number of data points used to calculate each moving average value. Positive integers are accepted {@link TimePeriod}.
    * @param seriesType the desired price type in the time series {@link SeriesType}.
-   * @param nbDevUp    The standard deviation multiplier of the upper band. Positive integers are accepted. By default 2 {@link NBDevUp}.
-   * @param nbDevDn    The standard deviation multiplier of the lower band. Positive integers are accepted. By default 2 {@link NBDevDn}.
+   * @param nbDevUp    The standard deviation multiplier of the upper band. Optional, defaults to 2 {@link NBDevUp}.
+   * @param nbDevDn    The standard deviation multiplier of the lower band. Optional, defaults to 2 {@link NBDevDn}.
+   * @param maType     Moving average type. Optional, defaults to SMA {@link MaType}.
    * @return {@link BBANDS} indicator data.
    */
   public BBANDS bbands(String symbol,
@@ -348,9 +347,9 @@ public class TechnicalIndicators {
    * @param interval     the interval between two consecutive data points in the time series {@link Interval}.
    * @param seriesType   The desired price type in the time series {@link SeriesType}.
    * @param timePeriod   Number of data points used to calculate each moving average value. Positive integers are accepted {@link TimePeriod}.
-   * @param fastPeriod   Positive integers are accepted, by default 12 {@link FastPeriod}
-   * @param slowPeriod   Positive integers are accepted, by default 26 {@link SlowPeriod}
-   * @param signalPeriod Positive integers are accepted, by default 9 {@link SignalPeriod}
+   * @param fastPeriod   Positive integers are accepted. Optional, defaults to 12 {@link FastPeriod}.
+   * @param slowPeriod   Positive integers are accepted. Optional, defaults to 26 {@link SlowPeriod}.
+   * @param signalPeriod Positive integers are accepted. Optional, defaults to 9 {@link SignalPeriod}.
    * @return {@link MACD} indicator data.
    */
   public MACD macd(String symbol,
@@ -378,12 +377,12 @@ public class TechnicalIndicators {
    * @param symbol       the stock symbol to lookup.
    * @param interval     the interval between two consecutive data points in the time series {@link Interval}.
    * @param timePeriod   Number of data points used to calculate each moving average value. Positive integers are accepted {@link TimePeriod}.
-   * @param fastPeriod   Positive integers are accepted, by default 12 {@link FastPeriod}
-   * @param slowPeriod   Positive integers are accepted, by default 26 {@link SlowPeriod}
-   * @param signalPeriod Positive integers are accepted, by default 9 {@link SignalPeriod}
-   * @param fastMaType   Moving average type for the faster moving average, by default SMA {@link FastMaType}
-   * @param slowMaType   Moving average type for the slower moving average. by default SMA {@link SlowMaType}
-   * @param signalMaType Moving average type for the signal moving average. by default SMA {@link SignalMaType}
+   * @param fastPeriod   Positive integers are accepted. Optional, defaults to 12 {@link FastPeriod}.
+   * @param slowPeriod   Positive integers are accepted. Optional, defaults to 26 {@link SlowPeriod}.
+   * @param signalPeriod Positive integers are accepted. Optional, defaults to 9 {@link SignalPeriod}.
+   * @param fastMaType   Moving average type for the faster moving average. Optional, defaults to SMA {@link FastMaType}.
+   * @param slowMaType   Moving average type for the slower moving average. Optional, defaults to SMA {@link SlowMaType}.
+   * @param signalMaType Moving average type for the signal moving average. Optional, defaults to SMA {@link SignalMaType}.
    * @return {@link MACDEXT} indicator data.
    */
   public MACDEXT macdext(String symbol,
@@ -418,8 +417,8 @@ public class TechnicalIndicators {
    * @param interval   the interval between two consecutive data points in the time series {@link Interval}.
    * @param timePeriod Number of data points used to calculate each moving average value. Positive integers are accepted {@link TimePeriod}.
    * @param seriesType The desired price type in the time series {@link SeriesType}.
-   * @param fastLimit  Positive floats are accepted, by default 0.01 {@link FastLimit}
-   * @param slowLimit  Positive floats are accepted, by default 0.01 {@link SlowLimit}
+   * @param fastLimit  Positive floats are accepted. Optional, defaults to 0.01 {@link FastLimit}.
+   * @param slowLimit  Positive floats are accepted. Optional, defaults to 0.01 {@link SlowLimit}.
    * @return {@link MAMA} indicator data.
    */
   public MAMA mama(String symbol,
@@ -576,9 +575,9 @@ public class TechnicalIndicators {
    * @param symbol     the stock symbol to lookup.
    * @param interval   the interval between two consecutive data points in the time series {@link Interval}.
    * @param seriesType The desired price type in the time series {@link SeriesType}.
-   * @param fastPeriod default 12 {@link FastPeriod}.
-   * @param slowPeriod default 26 {@link SlowPeriod}.
-   * @param maType     Moving average type, default SMA {@link MaType}.
+   * @param fastPeriod the time period of the fast EMA. Optional, defaults to 12 {@link FastPeriod}.
+   * @param slowPeriod the time period of the slow EMA. Optional, defaults to 26 {@link SlowPeriod}.
+   * @param maType     Moving average type. Optional, defaults to SMA {@link MaType}.
    * @return {@link PPO} indicator data.
    */
   public PPO ppo(String symbol,
@@ -638,8 +637,8 @@ public class TechnicalIndicators {
    *
    * @param symbol       the stock symbol to lookup.
    * @param interval     the interval between two consecutive data points in the time series {@link Interval}.
-   * @param acceleration the acceleration factor. Positive floats are accepted, by default 0.01 {@link Acceleration}.
-   * @param maximum      the acceleration factor maximum value. Positive floats are accepted, by default 0.20 {@link Maximum}.
+   * @param acceleration the acceleration factor. Optional, defaults to 0.01 {@link Acceleration}.
+   * @param maximum      the acceleration factor maximum value. Optional, defaults to 0.20 {@link Maximum}.
    * @return {@link SAR} indicator data.
    */
   public SAR sar(String symbol,
@@ -669,11 +668,11 @@ public class TechnicalIndicators {
    *
    * @param symbol      the stock symbol to lookup.
    * @param interval    the interval between two consecutive data points in the time series {@link Interval}.
-   * @param fastKPeriod The time period of the fastk moving average {@link FastKPeriod}.
-   * @param slowKPeriod The desired price type in the time series {@link SlowKPeriod}.
-   * @param slowDPeriod The desired price type in the time series {@link SlowDPeriod}.
-   * @param slowKMaType The desired price type in the time series {@link SlowKMaType}.
-   * @param slowDMaType The desired price type in the time series {@link SlowDMaType}.
+   * @param fastKPeriod The time period of the fastk moving average. Optional, defaults to 5 {@link FastKPeriod}.
+   * @param slowKPeriod The time period of the slowk moving average. Optional, defaults to 3 {@link SlowKPeriod}.
+   * @param slowDPeriod The time period of the slowd moving average. Optional, defaults to 3 {@link SlowDPeriod}.
+   * @param slowKMaType Moving average type for the slowk moving average. Optional, defaults to SMA {@link SlowKMaType}.
+   * @param slowDMaType Moving average type for the slowd moving average. Optional, defaults to SMA {@link SlowDMaType}.
    * @return {@link STOCH} indicator data.
    */
   public STOCH stoch(String symbol,
@@ -701,9 +700,9 @@ public class TechnicalIndicators {
    *
    * @param symbol      the stock symbol to lookup.
    * @param interval    the interval between two consecutive data points in the time series {@link Interval}.
-   * @param fastKPeriod The time period of the fastk moving average, positive integers are accepted, by default 5 {@link FastKPeriod}.
-   * @param fastDPeriod The time period of the fastd moving average, positive integers are accepted, by default 3 {@link FastDPeriod}.
-   * @param fastDMaType Moving average type for the fastd moving average, by default SMA {@link FastDMaType}.
+   * @param fastKPeriod The time period of the fastk moving average. Optional, defaults to 5 {@link FastKPeriod}.
+   * @param fastDPeriod The time period of the fastd moving average. Optional, defaults to 3 {@link FastDPeriod}.
+   * @param fastDMaType Moving average type for the fastd moving average. Optional, defaults to SMA {@link FastDMaType}.
    * @return {@link STOCHF} indicator data.
    */
   public STOCHF stochf(String symbol,
@@ -729,9 +728,9 @@ public class TechnicalIndicators {
    * @param interval    the interval between two consecutive data points in the time series {@link Interval}.
    * @param timePeriod  Number of data points used to calculate each moving average value. Positive integers are accepted {@link TimePeriod}.
    * @param seriesType  The desired price type in the time series {@link SeriesType}.
-   * @param fastKPeriod The time period of the fastk moving average, positive integers are accepted, by default 5 {@link FastKPeriod}.
-   * @param fastDPeriod The time period of the fastd moving average, positive integers are accepted, by default 3 {@link FastDPeriod}.
-   * @param fastDMaType Moving average type for the fastd moving average, by default SMA {@link FastDMaType}.
+   * @param fastKPeriod The time period of the fastk moving average. Optional, defaults to 5 {@link FastKPeriod}.
+   * @param fastDPeriod The time period of the fastd moving average. Optional, defaults to 3 {@link FastDPeriod}.
+   * @param fastDMaType Moving average type for the fastd moving average. Optional, defaults to SMA {@link FastDMaType}.
    * @return {@link STOCHRSI} indicator data.
    */
   public STOCHRSI stochrsi(String symbol,
@@ -826,9 +825,9 @@ public class TechnicalIndicators {
    *
    * @param symbol      the stock symbol to lookup.
    * @param interval    the interval between two consecutive data points in the time series {@link Interval}.
-   * @param timePeriod1 the first time period for the indicator. Positive integers are accepted, by default 7 {@link TimePeriod1}.
-   * @param timePeriod2 the second time period for the indicator. Positive integers are accepted, by default 14 {@link TimePeriod2}.
-   * @param timePeriod3 the third time period for the indicator. Positive integers are accepted, by default 28 {@link TimePeriod3}.
+   * @param timePeriod1 the first time period for the indicator. Optional, defaults to 7 {@link TimePeriod1}.
+   * @param timePeriod2 the second time period for the indicator. Optional, defaults to 14 {@link TimePeriod2}.
+   * @param timePeriod3 the third time period for the indicator. Optional, defaults to 28 {@link TimePeriod3}.
    * @return {@link ULTOSC} indicator data.
    */
   public ULTOSC ultosc(String symbol,
