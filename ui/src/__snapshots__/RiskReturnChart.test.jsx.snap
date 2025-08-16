@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renders scatter chart with provided data 1`] = `
+<pre
+  data-testid="scatter-chart"
+>
+  {"data":{"datasets":[{"label":"Risk vs Return","data":[{"x":0.1,"y":0.2,"label":"AAPL"}],"backgroundColor":"rgb(75, 192, 192)"}]},"options":{"plugins":{"tooltip":{"callbacks":{}}},"scales":{"x":{"title":{"display":true,"text":"Annual Std Dev"}},"y":{"title":{"display":true,"text":"Annual Return"}}}}}
+</pre>
+`;

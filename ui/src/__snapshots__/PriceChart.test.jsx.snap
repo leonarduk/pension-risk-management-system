@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renders line chart with provided data 1`] = `
+<pre
+  data-testid="line-chart"
+>
+  {"data":{"labels":["Jan","Feb"],"datasets":[{"label":"Test Label","data":[1,2],"borderColor":"rgb(75, 192, 192)","backgroundColor":"rgba(75, 192, 192, 0.2)"}]}}
+</pre>
+`;
