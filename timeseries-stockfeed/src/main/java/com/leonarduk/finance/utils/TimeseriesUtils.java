@@ -6,10 +6,13 @@ import com.leonarduk.finance.stockfeed.datatransformation.correction.BadScalingC
 import com.leonarduk.finance.stockfeed.datatransformation.correction.NullValueRemover;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
+import com.leonarduk.finance.utils.exchange.ExchangeRateService;
+import com.leonarduk.finance.utils.exchange.EnvironmentExchangeRateService;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
@@ -24,22 +27,85 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.time.ZoneId;
 
 public class TimeseriesUtils {
+
+    private static ExchangeRateService exchangeRateService = new EnvironmentExchangeRateService();
+
+    public static void setExchangeRateService(ExchangeRateService service) {
+        exchangeRateService = service;
+    }
+
     public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {
         if (liveData.isPresent()) {
             final List<Bar> history = liveData.get().getHistory();
             final int original = history.size();
-            final List<Bar> clean = new BadScalingCorrector().clean(new BadDateRemover().clean(new NullValueRemover().clean(history)));
+            List<Bar> clean = new BadScalingCorrector().clean(new BadDateRemover().clean(new NullValueRemover().clean(history)));
 
-            // TODO scale to/from USD to GBP or GBX
+            Instrument instrument = liveData.get().getInstrument();
+            clean = convertCurrencyIfRequired(liveData.get().getCurrency(), instrument.getCurrency(), instrument, clean);
             liveData.get().setHistory(clean);
+            liveData.get().setCurrency(instrument.getCurrency());
 
             final int fixed = clean.size();
             return original - fixed;
         }
         return 0;
+    }
+
+    private static List<Bar> convertCurrencyIfRequired(String dataCurrency, String instrumentCurrency,
+                                                       Instrument instrument, List<Bar> bars) throws IOException {
+        if (dataCurrency == null || instrumentCurrency == null || dataCurrency.equalsIgnoreCase(instrumentCurrency)) {
+            return bars;
+        }
+        double rate = getConversionRate(dataCurrency, instrumentCurrency);
+        if (rate == 1d) {
+            return bars;
+        }
+        final double conversion = rate;
+        return bars.stream()
+                .map(b -> scaleBar(b, conversion, instrument))
+                .collect(Collectors.toList());
+    }
+
+    private static double getConversionRate(String fromCurrency, String toCurrency) throws IOException {
+        String from = fromCurrency.toUpperCase();
+        String to = toCurrency.toUpperCase();
+        if (from.equals(to)) {
+            return 1d;
+        }
+        if (from.equals("GBP") && to.equals("GBX")) {
+            return 100d;
+        }
+        if (from.equals("GBX") && to.equals("GBP")) {
+            return 0.01d;
+        }
+        if (from.equals("USD") && to.equals("GBP")) {
+            return exchangeRateService.getRate("USD", "GBP").doubleValue();
+        }
+        if (from.equals("USD") && to.equals("GBX")) {
+            return exchangeRateService.getRate("USD", "GBP").multiply(BigDecimal.valueOf(100d)).doubleValue();
+        }
+        if (from.equals("GBP") && to.equals("USD")) {
+            return exchangeRateService.getRate("GBP", "USD").doubleValue();
+        }
+        if (from.equals("GBX") && to.equals("USD")) {
+            return exchangeRateService.getRate("GBP", "USD").multiply(BigDecimal.valueOf(0.01d)).doubleValue();
+        }
+        return 1d;
+    }
+
+    private static Bar scaleBar(Bar bar, double rate, Instrument instrument) {
+        BigDecimal factor = BigDecimal.valueOf(rate);
+        BigDecimal open = BigDecimal.valueOf(bar.getOpenPrice().doubleValue()).multiply(factor);
+        BigDecimal high = BigDecimal.valueOf(bar.getHighPrice().doubleValue()).multiply(factor);
+        BigDecimal low = BigDecimal.valueOf(bar.getLowPrice().doubleValue()).multiply(factor);
+        BigDecimal close = BigDecimal.valueOf(bar.getClosePrice().doubleValue()).multiply(factor);
+        String comment = bar instanceof Commentable ? ((Commentable) bar).getComment() : "";
+        return new ExtendedHistoricalQuote(instrument,
+                bar.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                open, low, high, close, close,
+                bar.getVolume().longValue(), comment);
     }
 
     public static boolean containsDatePoints(final List<Bar> cachedHistory, final LocalDate... dates) {
