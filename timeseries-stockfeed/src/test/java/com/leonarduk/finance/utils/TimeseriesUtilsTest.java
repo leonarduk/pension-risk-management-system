@@ -50,6 +50,19 @@ public class TimeseriesUtilsTest {
     }
 
     @Test
+    public void testSeriesToCsvEscapesCommaInComment() {
+        final List<Bar> series = Lists.newArrayList();
+        series.add(new ExtendedHistoricalQuote(Instrument.CASH, LocalDate.parse("2017-01-01"), BigDecimal.valueOf(12.3),
+                BigDecimal.TEN, BigDecimal.valueOf(9.3), BigDecimal.valueOf(12.2), BigDecimal.valueOf(12.2), 23L,
+                "Comment, with comma"));
+        final StringBuilder actual = TimeseriesUtils.seriesToCsv(series);
+        Assert.assertEquals(
+                "date,open,high,low,close,volume,comment\n" +
+                        "2017-01-01,12.30,9.30,10.00,12.20,23.00,\"Comment, with comma\"\n",
+                actual.toString());
+    }
+
+    @Test
     public void testGetMissingDataPoints() throws Exception {
         final LocalDate toDate = LocalDate.parse("2017-01-03");
         final LocalDate fromDate = LocalDate.parse("2017-01-01");
