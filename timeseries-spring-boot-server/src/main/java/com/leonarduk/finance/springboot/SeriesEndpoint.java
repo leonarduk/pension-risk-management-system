@@ -3,6 +3,8 @@ package com.leonarduk.finance.springboot;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ta4j.core.Bar;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/series")
 @RestController
 public class SeriesEndpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(SeriesEndpoint.class);
 
     @Autowired
     private final StockFeed stockFeed;
@@ -80,7 +84,12 @@ public class SeriesEndpoint {
             return Collections.emptyMap();
         }
         LocalDate start = intersection.first();
-        double scale = target.get(start) / source.get(start);
+        double sourceStart = source.get(start);
+        if (sourceStart == 0.0) {
+            log.warn("Source baseline value is zero for date {}", start);
+            return Collections.emptyMap();
+        }
+        double scale = target.get(start) / sourceStart;
 
         Map<LocalDate, Double> rebased = source.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue() * scale));
