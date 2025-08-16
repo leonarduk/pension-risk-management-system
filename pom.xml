@@ -49,6 +49,13 @@
                                 <version>1.0</version>
                             </path>
 
+                            <!-- Lombok annotation processor -->
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+
                             <!-- This is needed when using Lombok 1.18.16 and above -->
                             <path>
                                 <groupId>org.projectlombok</groupId>
@@ -166,6 +173,13 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </pluginRepository>
+    </pluginRepositories>
     <profiles>
         <profile>
             <id>release</id>
