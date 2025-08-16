@@ -51,7 +51,7 @@ public class ApiGatewayHandler
 
             responseEvent.setBody(result);
             responseEvent.setStatusCode(200);
-        } catch (AmazonServiceException | SdkClientException e) {
+        } catch (SdkClientException e) {
             responseEvent.setBody("S3_ERROR: " + e.getMessage());
             responseEvent.setStatusCode(502);
         } catch (IOException e) {

@@ -100,12 +100,6 @@ class SeriesEndpointTest {
     }
 
     @Test
-    void mapSeriesReturnsEmptyWhenDataMissing() throws Exception {
-        Mockito.when(stockFeed.get(any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean()))
-                .thenReturn(Optional.empty());
-                .andExpect(jsonPath("$.mapped").isMap())
-
-    }
     void mapSeriesReturnsEmptyWhenSourceBaselineZero() throws Exception {
         List<Bar> srcQuotes = Arrays.asList(
                 new ExtendedHistoricalQuote(Instrument.CASH, LocalDate.parse("2023-01-01"), 0, 0, 0, 0, 0, 0, ""),
