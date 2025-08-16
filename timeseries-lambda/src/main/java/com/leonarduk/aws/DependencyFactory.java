@@ -1,8 +1,8 @@
 package com.leonarduk.aws;
 
+import com.amazonaws.regions.Regions;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.StockFeed;
-import software.amazon.awssdk.regions.Region;
 
 public class DependencyFactory {
 
@@ -25,7 +25,7 @@ public class DependencyFactory {
                                     new S3DataStore(
                                             "timeseries-leonarduk",
                                             "timeseries",
-                                            Region.EU_WEST_1.toString()));
+                                            Regions.EU_WEST_1.getName()));
                 }
             }
         }

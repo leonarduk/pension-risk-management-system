@@ -50,7 +50,13 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
         logger.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
         if (instrument instanceof FxInstrument fXInstrument) {
             return getFxSeriesInternal(fXInstrument.getCurrencyOne(), fXInstrument.getCurrencyTwo(), fromDate, toDate)
-                    .map(series -> new StockV1(instrument, series));
+                    .map(series -> {
+                        try {
+                            return new StockV1(instrument, series);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         }
 
         return withApiKey(connector -> {
@@ -62,7 +68,11 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
             List<Bar> series = convertSeries(instrument, response.getStockData());
             logger.info("Returning series of size {}", series.size());
-            return new StockV1(instrument, series);
+            try {
+                return new StockV1(instrument, series);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

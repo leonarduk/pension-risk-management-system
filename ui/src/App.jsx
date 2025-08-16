@@ -15,6 +15,7 @@ export default function App() {
   const [data, setData] = useState({});
   const [riskData, setRiskData] = useState([]);
   const [error, setError] = useState(null);
+  const [viewMode, setViewMode] = useState('total');
 
   const fetchData = async () => {
     try {
@@ -75,6 +76,11 @@ export default function App() {
         placeholder={t.placeholder}
       />
       <button onClick={fetchData}>{t.load}</button>
+      <button onClick={() =>
+        setViewMode(viewMode === 'total' ? 'relative' : 'total')
+      }>
+        View: {viewMode}
+      </button>
       {error && <p>{error}</p>}
       <table id="ticker-table">
         <thead>
@@ -85,6 +91,9 @@ export default function App() {
         </thead>
         <tbody>{renderRows()}</tbody>
       </table>
+      {Object.keys(data).length > 0 && (
+        <TickerTable data={data} viewMode={viewMode} />
+      )}
       {chartLabels.length > 0 && (
         <div id="price-chart" style={{ maxWidth: '600px' }}>
           <PriceChart labels={chartLabels} data={chartData} label={t.priceLabel} />

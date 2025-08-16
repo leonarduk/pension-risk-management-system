@@ -4,6 +4,8 @@ import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
@@ -26,7 +28,11 @@ public class FTFeed extends AbstractStockFeed {
     final WebDriver webDriver;
 
     public FTFeed() {
-        webDriver = new HtmlUnitDriver(false);
+        HtmlUnitDriver driver = new HtmlUnitDriver(false);
+        WebClient webClient = driver.getWebClient();
+        webClient.getOptions().setCssEnabled(false);
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        webDriver = driver;
     }
 
     @Override
@@ -38,8 +44,9 @@ public class FTFeed extends AbstractStockFeed {
     public Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException {
         FTInstrument ftInstrument = new FTInstrument(instrument);
         log.info("Fetch from {} : {}", ftInstrument, instrument);
-        return Optional.of(new StockV1(instrument,
-                new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl()).getTimeseries(instrument, fromDate, toDate)));
+        return new FTTimeSeriesPage(webDriver, ftInstrument.getFTUrl())
+                .getTimeseries(instrument, fromDate, toDate)
+                .map(bars -> new StockV1(instrument, bars));
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.ta4j.core.Bar;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public abstract class AbstractStockFeed implements StockFeed {
 
         if ((quotes != null) && !quotes.isEmpty()) {
             final Bar historicalQuote = quotes.get(quotes.size() - 1);
-            quoteBuilder.setDayHigh(historicalQuote.getMaxPrice()).setDayLow(historicalQuote.getMinPrice())
+            quoteBuilder.setDayHigh(historicalQuote.getHighPrice()).setDayLow(historicalQuote.getLowPrice())
                     .setOpen(historicalQuote.getOpenPrice()).setAvgVolume(historicalQuote.getVolume().longValue())
                     .setPrice(historicalQuote.getClosePrice());
             stock.setQuote(quoteBuilder.build());
@@ -68,10 +69,15 @@ public abstract class AbstractStockFeed implements StockFeed {
     }
 
     public void mergeSeries(final StockV1 stock, final List<Bar> original, final List<Bar> newSeries) {
-        final Map<LocalDate, Bar> dates = original.stream()
-                .collect(Collectors.toMap(quote -> quote.getEndTime().toLocalDate(), Function.identity()));
+        final Map<LocalDate, Bar> dates =
+                original.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        quote -> quote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                                        Function.identity(),
+                                        (existing, replacement) -> existing));
         newSeries.stream().forEach(historicalQuote -> {
-            final LocalDate date = historicalQuote.getEndTime().toLocalDate();
+            final LocalDate date = historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
             if ((date != null) && !dates.containsKey(date)
                     && !historicalQuote.getClosePrice().equals(BigDecimal.valueOf(0))) {
                 dates.putIfAbsent(date, historicalQuote);

@@ -8,12 +8,11 @@ import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.ta4j.core.Bar;
-import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class QueryRunner {
      * @throws IOException if an IO error occurs
      */
     public static void main(String[] args) throws IOException {
-        log.info(new QueryRunner().getResults(ImmutableMap.of(
+        log.info(new QueryRunner().getResults(Map.of(
                 TICKER, "PHGP.L",
                 YEARS, "1",
                 "interpolate", "true",
@@ -87,12 +86,15 @@ public class QueryRunner {
 
         String region = StringUtils.defaultIfEmpty(inputParams.get("region"), "L");
         String type = StringUtils.defaultIfEmpty(inputParams.get("type"), "UNKNOWN");
-        String currency = StringUtils.defaultIfEmpty(inputParams.get("currency"), "GBP");
+        String currency = inputParams.get("currency");
 
         if (ticker.contains(".")) {
             String[] parts = ticker.split("\\.");
             ticker = parts[0];
             region = parts[1];
+            if ("N".equalsIgnoreCase(region)) {
+                region = "NY";
+            }
         }
 
         if (ticker.contains("/")) {
@@ -106,6 +108,15 @@ public class QueryRunner {
             if (parts.length > 3) {
                 currency = parts[3];
             }
+        }
+
+        if (StringUtils.isBlank(currency)) {
+            currency = Instrument.resolveCurrency(inputParams.get(TICKER));
+        }
+        final Map<String, String> regionCurrencyMap = Map.of("NY", "USD", "L", "GBP");
+        if ((StringUtils.isBlank(currency) || "UNKNOWN".equalsIgnoreCase(currency))
+                && regionCurrencyMap.containsKey(region.toUpperCase())) {
+            currency = regionCurrencyMap.get(region.toUpperCase());
         }
         final Instrument instrument = Instrument.fromString(ticker, region, type, currency);
 
@@ -141,19 +152,19 @@ public class QueryRunner {
                                    final Instrument instrument)
             throws IOException {
         final StringBuilder sbBody = new StringBuilder();
-        final List<List<DataField>> records = Lists.newArrayList();
+        final List<List<DataField>> records = new ArrayList<>();
 
         final List<Bar> historyData;
 
         historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
 
         for (final Bar historicalQuote : historyData) {
-            final ArrayList<DataField> record = Lists.newArrayList();
+            final ArrayList<DataField> record = new ArrayList<>();
             records.add(record);
-            record.add(new DataField("Date", historicalQuote.getEndTime().toLocalDate().toString()));
+            record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
             record.add(new DataField("Open", historicalQuote.getOpenPrice()));
-            record.add(new DataField("High", historicalQuote.getMaxPrice()));
-            record.add(new DataField("Low", historicalQuote.getMinPrice()));
+            record.add(new DataField("High", historicalQuote.getHighPrice()));
+            record.add(new DataField("Low", historicalQuote.getLowPrice()));
             record.add(new DataField("Close", historicalQuote.getClosePrice()));
             record.add(new DataField("Volume", historicalQuote.getVolume()));
 
@@ -174,7 +185,7 @@ public class QueryRunner {
         if (stock.isPresent()) {
             return stock.get().getHistory();
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 
 }

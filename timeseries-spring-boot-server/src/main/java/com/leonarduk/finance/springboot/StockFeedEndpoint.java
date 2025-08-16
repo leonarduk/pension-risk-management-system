@@ -3,6 +3,7 @@ package com.leonarduk.finance.springboot;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 import com.leonarduk.finance.stockfeed.*;
@@ -13,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.ta4j.core.Bar;
 
 import com.google.common.collect.Lists;
@@ -58,7 +62,7 @@ public class StockFeedEndpoint {
      * @return HTML table with historical stock data
      * @throws IOException if data retrieval fails
      */
-    @GetMapping("/ticker/{ticker}")
+    @GetMapping(value = "/ticker/{ticker}", produces = MediaType.TEXT_HTML_VALUE)
     public String displayHistory(@PathVariable(name = "ticker") final String ticker,
                                  @RequestParam(name = "years", required = false) Integer years,
                                  @RequestParam(name = "fromDate", required = false) String fromDate,
@@ -81,8 +85,13 @@ public class StockFeedEndpoint {
         LocaleContextHolder.setLocale(locale);
         Locale.setDefault(locale);
 
-        List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
-                category);
+        List<List<DataField>> records;
+        try {
+            records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                    category);
+        } catch (StockFeedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
+        }
 
         final StringBuilder sbBody = new StringBuilder();
         String heading = messageSource.getMessage("stock.title", new Object[]{ticker}, locale);
@@ -143,32 +152,36 @@ public class StockFeedEndpoint {
             tickers.add(tickerArg);
         }
 
-        for (String ticker : tickers) {
-            List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
-                    category);
-            if (records.isEmpty()) {
-                continue;
-            }
-            Map<String, Double> datePriceMap = new TreeMap<>();
+        try {
+            for (String ticker : tickers) {
+                List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
+                        category);
+                if (records.isEmpty()) {
+                    continue;
+                }
+                Map<String, Double> datePriceMap = new TreeMap<>();
 
-            for (List<DataField> record : records) {
-                String date = null;
-                Double closePrice = null;
+                for (List<DataField> record : records) {
+                    String date = null;
+                    Double closePrice = null;
 
-                for (DataField field : record) {
-                    if ("Date".equals(field.getName())) {
-                        date = field.getValue().toString();
-                    } else if ("Close".equals(field.getName())) {
-                        closePrice = Double.valueOf(field.getValue().toString());
+                    for (DataField field : record) {
+                        if ("Date".equals(field.getName())) {
+                            date = field.getValue().toString();
+                        } else if ("Close".equals(field.getName())) {
+                            closePrice = Double.valueOf(field.getValue().toString());
+                        }
+                    }
+
+                    if (date != null && closePrice != null) {
+                        datePriceMap.put(date, closePrice);
                     }
                 }
 
-                if (date != null && closePrice != null) {
-                    datePriceMap.put(date, closePrice);
-                }
+                result.put(ticker, datePriceMap);
             }
-
-            result.put(ticker, datePriceMap);
+        } catch (StockFeedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
         }
         return result;
     }
@@ -185,10 +198,14 @@ public class StockFeedEndpoint {
     public Map<String, BigDecimal> getLatestClosePrice(
             @PathVariable(name = "ticker") final String ticker) throws IOException {
         Instrument instrument = Instrument.fromString(ticker);
-        Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
-        return stock
-                .map(s -> Collections.singletonMap("close", s.getQuote().getPrice()))
-                .orElse(Collections.emptyMap());
+        try {
+            Optional<StockV1> stock = stockFeed.get(instrument, 1, true);
+            return stock
+                    .map(s -> Collections.singletonMap("close", s.getQuote().getPrice()))
+                    .orElse(Collections.emptyMap());
+        } catch (StockFeedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
+        }
     }
 
     /**
@@ -241,10 +258,10 @@ public class StockFeedEndpoint {
         for (final Bar historicalQuote : historyData) {
             final ArrayList<DataField> record = Lists.newArrayList();
             records.add(record);
-            record.add(new DataField("Date", historicalQuote.getEndTime().toLocalDate().toString()));
+            record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
             record.add(new DataField("Open", historicalQuote.getOpenPrice()));
-            record.add(new DataField("High", historicalQuote.getMaxPrice()));
-            record.add(new DataField("Low", historicalQuote.getMinPrice()));
+            record.add(new DataField("High", historicalQuote.getHighPrice()));
+            record.add(new DataField("Low", historicalQuote.getLowPrice()));
             record.add(new DataField("Close", historicalQuote.getClosePrice()));
             record.add(new DataField("Volume", historicalQuote.getVolume()));
 

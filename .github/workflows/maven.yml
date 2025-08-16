@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -51,19 +55,20 @@ jobs:
       - name: Build with Maven
         run: mvn -B verify --file pom.xml
       - name: Log in to container registry
-        # Registry credentials are provided via encrypted GitHub secrets
         uses: docker/login-action@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.REGISTRY_URL != '' && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != '' }}
         with:
-          registry: ${{ secrets.REGISTRY_URL }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ env.REGISTRY_URL }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.REGISTRY_URL != '' && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != '' }}
         with:
           context: ./timeseries-lambda
           file: ./timeseries-lambda/Dockerfile
           push: true
-          tags: ${{ secrets.REGISTRY_URL }}/pension-risk-management-system/timeseries-lambda:latest
+          tags: ${{ env.REGISTRY_URL }}/pension-risk-management-system/timeseries-lambda:latest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
       - name: Update dependency graph

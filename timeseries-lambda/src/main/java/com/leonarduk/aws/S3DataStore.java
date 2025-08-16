@@ -16,6 +16,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -54,6 +57,8 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
                 getS3Filepath(stock.getInstrument()),
                 new File(filepath)
         );
+
+        Files.deleteIfExists(Paths.get(filepath));
     }
 
     @Override
@@ -80,8 +85,9 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
     @Override
     protected String getQueryName(final Instrument instrument) {
-        return "/tmp/" + instrument.getExchange().name() + "_" + instrument.code()
-                + ".csv";
+        return Paths.get(System.getProperty("java.io.tmpdir"),
+                instrument.getExchange().name() + "_" + instrument.code() + ".csv")
+                .toString();
     }
 
     private String getS3Filepath(final Instrument instrument) {
@@ -102,10 +108,10 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
         final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment,ticker\n");
         for (final Bar historicalQuote : series) {
             try {
-                sb.append(historicalQuote.getEndTime().toLocalDate().toString());
+                sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
                 StringUtils.addValue(sb, historicalQuote.getOpenPrice());
-                StringUtils.addValue(sb, historicalQuote.getMaxPrice());
-                StringUtils.addValue(sb, historicalQuote.getMinPrice());
+                StringUtils.addValue(sb, historicalQuote.getHighPrice());
+                StringUtils.addValue(sb, historicalQuote.getLowPrice());
                 StringUtils.addValue(sb, historicalQuote.getClosePrice());
                 StringUtils.addValue(sb, historicalQuote.getVolume());
                 String comment = (historicalQuote instanceof Commentable) ?
@@ -116,7 +122,7 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
                 sb.append("\n");
             } catch (Exception e) {
                 log.warn(String.format("Cannot add %s",
-                        historicalQuote.getEndTime().toLocalDate().toString()), e);
+                        historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()), e);
             }
         }
         return sb;

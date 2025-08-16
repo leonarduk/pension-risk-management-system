@@ -11,17 +11,20 @@ import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.BaseBarSeriesBuilder;
 import org.ta4j.core.num.DoubleNum;
+import org.ta4j.core.num.DoubleNumFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.time.ZoneId;
 
 public class TimeseriesUtils {
     public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {
@@ -49,7 +52,7 @@ public class TimeseriesUtils {
     }
 
     public static List<LocalDate> getMissingDataPoints(final List<Bar> cachedHistory, final LocalDate... dates) {
-        Set<LocalDate> daysWithData = cachedHistory.stream().map(quote -> quote.getEndTime().toLocalDate())
+        Set<LocalDate> daysWithData = cachedHistory.stream().map(quote -> quote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate())
                 .collect(Collectors.toSet());
         return Arrays.stream(dates).filter(date -> !daysWithData.contains(date)).collect(Collectors.toList());
     }
@@ -66,11 +69,11 @@ public class TimeseriesUtils {
         return history.get(0);
     }
 
-    public static TimeSeries getTimeSeries(final StockV1 stock, final int i, boolean addLatestQuoteToTheSeries) throws IOException {
+    public static BarSeries getTimeSeries(final StockV1 stock, final int i, boolean addLatestQuoteToTheSeries) throws IOException {
         return TimeseriesUtils.getTimeSeries(stock, LocalDate.now().minusYears(i), LocalDate.now(), addLatestQuoteToTheSeries);
     }
 
-    public static TimeSeries getTimeSeries(final StockV1 stock, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
+    public static BarSeries getTimeSeries(final StockV1 stock, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries)
             throws IOException {
         List<Bar> history = stock.getHistory();
         if ((null == history) || history.isEmpty()) {
@@ -95,7 +98,8 @@ public class TimeseriesUtils {
                 return null;
             }
         }
-        return new LinearInterpolator().interpolate(new BaseTimeSeries(stock.getName(), ticks));
+        return new LinearInterpolator().interpolate(
+                new BaseBarSeriesBuilder().withName(stock.getName()).withNumFactory(DoubleNumFactory.getInstance()).withBars(ticks).build());
     }
 
     public static Bar createSyntheticQuote(final Bar currentQuote, final LocalDate currentDate,
@@ -105,7 +109,7 @@ public class TimeseriesUtils {
         final BigDecimal newOpenPrice = NumberUtils.roundDecimal(newOpenPriceRaw);
         return new ExtendedHistoricalQuote(currentQuote.getDateName(), currentDate, newOpenPrice,
                 newClosePrice.min(newOpenPrice), newClosePrice.max(newOpenPrice), newClosePrice, newClosePrice,
-                DoubleNum.valueOf(0), comment);
+                0L, comment);
     }
 
     public static Bar createSyntheticBar(final LocalDate currentDate, final Double newClosePriceRaw,
@@ -116,7 +120,7 @@ public class TimeseriesUtils {
         return new ExtendedHistoricalQuote("", currentDate, BigDecimal.valueOf(newOpenPrice),
                 BigDecimal.valueOf(Double.min(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
                 BigDecimal.valueOf(Double.max(newClosePrice, newOpenPrice)), BigDecimal.valueOf(newClosePrice),
-                DoubleNum.valueOf(0), comment);
+                0L, comment);
     }
 
     public static Optional<StockV1> interpolateAndSortSeries(final LocalDate fromLocalDate, final LocalDate toLocalDate,
@@ -131,10 +135,10 @@ public class TimeseriesUtils {
                     .extendToToDate(series, toLocalDate));
         }
         final List<Bar> subSeries = history.stream()
-                .filter(q -> (q.getEndTime().toLocalDate().isAfter(fromLocalDate)
-                        && q.getEndTime().toLocalDate().isBefore(toLocalDate))
-                        || q.getEndTime().toLocalDate().isEqual(fromLocalDate)
-                        || q.getEndTime().toLocalDate().isEqual(toLocalDate))
+                .filter(q -> (q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(fromLocalDate)
+                        && q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(toLocalDate))
+                        || q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(fromLocalDate)
+                        || q.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(toLocalDate))
                 .collect(Collectors.toList());
         TimeseriesUtils.sortQuoteList(subSeries);
         liveData.get().setHistory(subSeries);
@@ -145,10 +149,10 @@ public class TimeseriesUtils {
         final StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment\n");
         // TODO add comment field if necessary- look at how HTML tools does it
         for (final Bar historicalQuote : series) {
-            sb.append(historicalQuote.getEndTime().toLocalDate().toString());
+            sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
             StringUtils.addValue(sb, historicalQuote.getOpenPrice());
-            StringUtils.addValue(sb, historicalQuote.getMaxPrice());
-            StringUtils.addValue(sb, historicalQuote.getMinPrice());
+            StringUtils.addValue(sb, historicalQuote.getHighPrice());
+            StringUtils.addValue(sb, historicalQuote.getLowPrice());
             StringUtils.addValue(sb, historicalQuote.getClosePrice());
             StringUtils.addValue(sb, historicalQuote.getVolume());
             if (historicalQuote instanceof Commentable commentable) {

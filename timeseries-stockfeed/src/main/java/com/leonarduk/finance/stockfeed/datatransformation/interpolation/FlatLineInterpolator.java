@@ -7,12 +7,13 @@ import org.ta4j.core.Bar;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class FlatLineInterpolator extends AbstractLineInterpolator {
 
     @Override
     protected Bar calculateFutureValue(final Bar lastQuote, final LocalDate today) {
-        return new ExtendedHistoricalQuote(lastQuote, today, "Copied from " + lastQuote.getEndTime().toLocalDate());
+        return new ExtendedHistoricalQuote(lastQuote, today, "Copied from " + lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
     @Override
@@ -20,7 +21,7 @@ public class FlatLineInterpolator extends AbstractLineInterpolator {
         return TimeseriesUtils.createSyntheticQuote(currentQuote, fromDate,
                 BigDecimal.valueOf(currentQuote.getClosePrice().doubleValue()),
                 BigDecimal.valueOf(currentQuote.getOpenPrice().doubleValue()),
-                "Copied from " + currentQuote.getEndTime().toLocalDate());
+                "Copied from " + currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
     @Override
@@ -29,13 +30,13 @@ public class FlatLineInterpolator extends AbstractLineInterpolator {
         return TimeseriesUtils.createSyntheticQuote(currentQuote, currentDate,
                 BigDecimal.valueOf(currentQuote.getClosePrice().doubleValue()),
                 BigDecimal.valueOf(currentQuote.getOpenPrice().doubleValue()),
-                "Copied from " + currentQuote.getEndTime().toLocalDate());
+                "Copied from " + currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
     @Override
     public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
         return TimeseriesUtils.createSyntheticBar(currentDate, currentQuote.getClosePrice().doubleValue(),
-                currentQuote.getOpenPrice().doubleValue(), "Copied from " + currentQuote.getEndTime().toLocalDate());
+                currentQuote.getOpenPrice().doubleValue(), "Copied from " + currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
 
     }
 
