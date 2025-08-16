@@ -1,9 +1,10 @@
 package com.leonarduk.finance.stockfeed.feed.yahoofinance;
 
-import com.google.common.collect.Lists;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ import java.util.Calendar;
 import java.util.List;
 
 @Slf4j
+@Getter
+@Setter
 public class StockV1 {
 
     private String currency;
@@ -68,57 +71,6 @@ public class StockV1 {
                 .append(this.quote, castOther.quote).isEquals();
     }
 
-    /**
-     * Get the currency of the stock
-     *
-     * @return the currency or null if the data is not available
-     */
-    public String getCurrency() {
-        return this.currency;
-    }
-
-    /**
-     * Returns the dividend data available for this stock.
-     *
-     * @return dividend data available for this stock
-     * @see #getDividend(boolean)
-     */
-    public StockDividend getDividend() {
-        return this.dividend;
-    }
-
-    /**
-     * This method will return historical quotes from this stock. If the historical
-     * quotes are not available yet, they will be requested first from Yahoo
-     * Finance.
-     * <p>
-     * If the historical quotes are not available yet, the following characteristics
-     * will be used for the request:
-     * <ul>
-     * <li>from: 1 year ago (default)
-     * <li>to: today (default)
-     * <li>interval: MONTHLY (default)
-     * </ul>
-     * <p>
-     * There are several more methods available that allow you to define some
-     * characteristics of the historical data. Calling one of those methods will
-     * result in a new request being sent to Yahoo Finance.
-     *
-     * @return a list of historical quotes from this stock
-     * @throws java.io.IOException when there's a connection problem
-     * @see #getHistory(yahoofinance.histquotes.Interval)
-     * @see #getHistory(java.util.Calendar)
-     * @see #getHistory(java.util.Calendar, java.util.Calendar)
-     * @see #getHistory(java.util.Calendar, yahoofinance.histquotes.Interval)
-     * @see #getHistory(java.util.Calendar, java.util.Calendar,
-     * yahoofinance.histquotes.Interval)
-     */
-    public List<Bar> getHistory() throws IOException {
-        if (this.history == null) {
-            return Lists.newArrayList();
-        }
-        return this.history;
-    }
 
     /**
      * Requests the historical quotes for this stock with the following
@@ -217,10 +169,6 @@ public class StockV1 {
         return this.getHistory(HistQuotesRequest.DEFAULT_FROM, interval);
     }
 
-    public Instrument getInstrument() {
-        return this.instrument;
-    }
-
     /**
      * Get the full name of the stock
      *
@@ -273,22 +221,6 @@ public class StockV1 {
             }
         }
         System.out.println("--------------------------------");
-    }
-
-    public void setCurrency(final String currency) {
-        this.currency = currency;
-    }
-
-    public void setDividend(final StockDividend dividend) {
-        this.dividend = dividend;
-    }
-
-    public void setHistory(final List<Bar> list) {
-        this.history = list;
-    }
-
-    public void setQuote(final StockQuote quote) {
-        this.quote = quote;
     }
 
     @Override
