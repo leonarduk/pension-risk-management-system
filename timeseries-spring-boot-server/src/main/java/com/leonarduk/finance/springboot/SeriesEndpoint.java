@@ -27,6 +27,7 @@ public class SeriesEndpoint {
     @Autowired
     private final StockFeed stockFeed;
 
+    @Autowired
     public SeriesEndpoint(StockFeed stockFeed) {
         this.stockFeed = stockFeed;
     }
@@ -40,7 +41,6 @@ public class SeriesEndpoint {
      * @return mapped series keyed by date
      */
     @PostMapping("/map")
-    @ResponseBody
     public Map<String, Map<String, Double>> mapSeries(
             @RequestParam("source") String sourceTicker,
             @RequestParam("target") String targetTicker,
