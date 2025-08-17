@@ -6,7 +6,6 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
@@ -53,11 +52,8 @@ class QueryRunnerTest {
 
     @Test
     void providedCurrencyParameterIsRespected() throws Exception {
-        QueryRunner runner = new QueryRunner();
         RecordingStockFeed feed = new RecordingStockFeed();
-        Field field = QueryRunner.class.getDeclaredField("stockFeed");
-        field.setAccessible(true);
-        field.set(runner, feed);
+        QueryRunner runner = new QueryRunner(feed);
 
         Map<String, String> params = Map.of(
                 QueryRunner.TICKER, "TEST",
@@ -72,11 +68,8 @@ class QueryRunnerTest {
 
     @Test
     void currencyAutomaticallyResolved() throws Exception {
-        QueryRunner runner = new QueryRunner();
         RecordingStockFeed feed = new RecordingStockFeed();
-        Field field = QueryRunner.class.getDeclaredField("stockFeed");
-        field.setAccessible(true);
-        field.set(runner, feed);
+        QueryRunner runner = new QueryRunner(feed);
 
         Map<String, String> params = Map.of(
                 QueryRunner.TICKER, "BBAI.N"

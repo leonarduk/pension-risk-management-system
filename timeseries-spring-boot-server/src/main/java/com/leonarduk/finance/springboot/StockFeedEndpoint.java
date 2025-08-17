@@ -2,14 +2,11 @@ package com.leonarduk.finance.springboot;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 import com.leonarduk.finance.stockfeed.*;
-import com.leonarduk.finance.stockfeed.datatransformation.correction.ValueScalingTransformer;
+import com.leonarduk.finance.stockfeed.HistoricalDataService;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -17,10 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import org.ta4j.core.Bar;
-
-import com.google.common.collect.Lists;
-import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
 import com.leonarduk.finance.utils.HtmlTools;
@@ -35,6 +28,8 @@ public class StockFeedEndpoint {
     @Autowired
     private final StockFeed stockFeed;
 
+    private final HistoricalDataService historicalDataService;
+
     @Autowired
     private MessageSource messageSource;
 
@@ -45,6 +40,7 @@ public class StockFeedEndpoint {
      */
     public StockFeedEndpoint(StockFeed stockFeed) {
         this.stockFeed = stockFeed;
+        this.historicalDataService = new HistoricalDataService(stockFeed);
     }
 
     /**
@@ -87,8 +83,16 @@ public class StockFeedEndpoint {
 
         List<List<DataField>> records;
         try {
-            records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
-                    category);
+            Map<String, String> params = new HashMap<>();
+            params.put("ticker", ticker);
+            if (years != null) params.put("years", years.toString());
+            if (fromDate != null) params.put("fromDate", fromDate);
+            if (toDate != null) params.put("toDate", toDate);
+            if (scaling != null) params.put("scaling", scaling.toString());
+            params.put("interpolate", Boolean.toString(interpolate));
+            params.put("cleanData", Boolean.toString(cleanDate));
+            if (category != null) params.put("category", category);
+            records = historicalDataService.getRecords(params);
         } catch (StockFeedException e) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
         }
@@ -98,25 +102,6 @@ public class StockFeedEndpoint {
         sbBody.append("<h1>").append(heading).append("</h1>");
         HtmlTools.printTable(sbBody, records);
         return HtmlTools.createHtmlText(null, sbBody).toString();
-    }
-
-    private @NotNull List<List<DataField>> getRecords(String ticker, Integer years, String fromDate, String toDate,
-                                                      String fields, Double scaling, boolean interpolate, boolean cleanDate,
-                                                      String category) throws IOException {
-        Instrument instrument = Instrument.fromString(ticker);
-
-        if (category != null && !category.equalsIgnoreCase(instrument.category())) {
-            return Collections.emptyList();
-        }
-
-        String[] fieldArray = {};
-        if (fields != null) {
-            fieldArray = fields.split(",");
-        }
-
-        List<List<DataField>> records = generateResults(years, fromDate, toDate, instrument,
-                fieldArray, interpolate, cleanDate, scaling);
-        return records;
     }
 
     @PostMapping("/ticker")
@@ -154,8 +139,17 @@ public class StockFeedEndpoint {
 
         try {
             for (String ticker : tickers) {
-                List<List<DataField>> records = getRecords(ticker, years, fromDate, toDate, fields, scaling, interpolate, cleanDate,
-                        category);
+                Map<String, String> params = new HashMap<>();
+                params.put("ticker", ticker);
+                if (years != null) params.put("years", years.toString());
+                if (fromDate != null) params.put("fromDate", fromDate);
+                if (toDate != null) params.put("toDate", toDate);
+                if (scaling != null) params.put("scaling", scaling.toString());
+                params.put("interpolate", Boolean.toString(interpolate));
+                params.put("cleanData", Boolean.toString(cleanDate));
+                if (category != null) params.put("category", category);
+
+                List<List<DataField>> records = historicalDataService.getRecords(params);
                 if (records.isEmpty()) {
                     continue;
                 }
@@ -206,102 +200,6 @@ public class StockFeedEndpoint {
         } catch (StockFeedException e) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
         }
-    }
-
-    /**
-     * Generate historical stock data records.
-     *
-     * @param years number of years to go back
-     * @param fromDate start date string
-     * @param toDate end date string
-     * @param instrument the stock instrument
-     * @param fields fields to include in output
-     * @param interpolate whether to interpolate data
-     * @param cleanDate whether to remove non-trading days
-     * @param scaling optional value scaling factor
-     * @return list of historical data records
-     * @throws IOException if data fetch fails
-     */
-    private List<List<DataField>> generateResults(Integer years,
-                                                  final String fromDate,
-                                                  final String toDate,
-                                                  final Instrument instrument,
-                                                  String[] fields,
-                                                  boolean interpolate,
-                                                  boolean cleanDate,
-                                                  Double scaling)
-        throws IOException {
-
-        final List<List<DataField>> records = Lists.newArrayList();
-
-        final List<Bar> historyData;
-        LocalDate toLocalDate;
-        final LocalDate fromLocalDate;
-
-        if (!StringUtils.isEmpty(fromDate)) {
-            fromLocalDate = LocalDate.parse(fromDate);
-            if (StringUtils.isEmpty(toDate)) {
-                toLocalDate = LocalDate.now();
-            } else {
-                toLocalDate = LocalDate.parse(toDate);
-            }
-        } else {
-            if (years == null) {
-                years = 10;
-            }
-            toLocalDate = LocalDate.now();
-            fromLocalDate = LocalDate.now().plusYears(-1L * years);
-        }
-
-        historyData = this.getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanDate, scaling);
-
-        for (final Bar historicalQuote : historyData) {
-            final ArrayList<DataField> record = Lists.newArrayList();
-            records.add(record);
-            record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
-            record.add(new DataField("Open", historicalQuote.getOpenPrice()));
-            record.add(new DataField("High", historicalQuote.getHighPrice()));
-            record.add(new DataField("Low", historicalQuote.getLowPrice()));
-            record.add(new DataField("Close", historicalQuote.getClosePrice()));
-            record.add(new DataField("Volume", historicalQuote.getVolume()));
-
-            if (historicalQuote instanceof Commentable commentable) {
-                record.add(new DataField("Comment", commentable.getComment()));
-            }
-        }
-        return records;
-    }
-
-    /**
-     * Fetches historical stock data.
-     *
-     * @param instrument the stock instrument
-     * @param fromLocalDate start date
-     * @param toLocalDate end date
-     * @param interpolate whether to interpolate data
-     * @param clearData whether to clear non-trading days
-     * @param scaling optional value scaling
-     * @return list of bars (stock history data)
-     * @throws IOException if data fetch fails
-     */
-    private List<Bar> getHistoryData(Instrument instrument,
-                                     LocalDate fromLocalDate,
-                                     LocalDate toLocalDate,
-                                     boolean interpolate,
-                                     boolean clearData,
-                                     Double scaling) throws IOException {
-        final Optional<StockV1> stock = this.stockFeed.get(instrument,
-            fromLocalDate, toLocalDate, interpolate, clearData,
-            false);
-
-        if (stock.isPresent()) {
-            List<Bar> history = stock.get().getHistory();
-            if (scaling != null) {
-                return new ValueScalingTransformer(instrument, scaling).clean(history);
-            }
-            return history;
-        }
-        return Lists.newArrayList();
     }
 
 }
