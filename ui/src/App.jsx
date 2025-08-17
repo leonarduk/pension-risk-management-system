@@ -19,18 +19,16 @@ export default function App() {
 
   const fetchData = async () => {
     try {
-      const params = new URLSearchParams();
-      params.append('ticker', tickers);
-      const response = await fetch('/stock/ticker?lang=' + lang, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept-Language': lang,
-        },
-        body: params.toString(),
+      const tickerList = tickers.split(',').map((t) => t.trim()).filter(Boolean);
+      const responses = await Promise.all(
+        tickerList.map((t) => fetch(`/stock/ticker/${t}?lang=${lang}`))
+      );
+      const jsonData = await Promise.all(responses.map((r) => r.json()));
+      const result = {};
+      tickerList.forEach((t, idx) => {
+        result[t] = jsonData[idx];
       });
-      const json = await response.json();
-      setData(json);
+      setData(result);
       const riskResp = await fetch(`/analytics/risk-return?tickers=${encodeURIComponent(tickers)}`);
       const riskJson = await riskResp.json();
       setRiskData(riskJson);
@@ -42,10 +40,9 @@ export default function App() {
   };
 
   const renderRows = () =>
-    Object.entries(data).map(([ticker, prices]) => {
-      const dates = Object.keys(prices);
-      const latestDate = dates[dates.length - 1];
-      const latestPrice = prices[latestDate];
+    Object.entries(data).map(([ticker, records]) => {
+      const latest = records[records.length - 1];
+      const latestPrice = latest ? latest.Close : null;
       return (
         <tr key={ticker}>
           <td>{ticker}</td>
@@ -55,9 +52,9 @@ export default function App() {
     });
 
   const firstTicker = Object.keys(data)[0];
-  const firstPrices = firstTicker ? data[firstTicker] : null;
-  const chartLabels = firstPrices ? Object.keys(firstPrices) : [];
-  const chartData = firstPrices ? Object.values(firstPrices) : [];
+  const firstRecords = firstTicker ? data[firstTicker] : null;
+  const chartLabels = firstRecords ? firstRecords.map((r) => r.Date) : [];
+  const chartData = firstRecords ? firstRecords.map((r) => r.Close) : [];
 
   return (
     <div>

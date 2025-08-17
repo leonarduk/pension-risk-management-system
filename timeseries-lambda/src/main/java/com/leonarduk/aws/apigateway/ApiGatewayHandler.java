@@ -45,12 +45,13 @@ public class ApiGatewayHandler
 
             if (this.s3Client != null && this.resultBucket != null && !this.resultBucket.isBlank()) {
                 String ticker = params != null ? params.get(QueryRunner.TICKER) : "result";
-                String key = "results/" + (ticker != null ? ticker : "result") + ".html";
+                String key = "results/" + (ticker != null ? ticker : "result") + ".json";
                 this.s3Client.putObject(this.resultBucket, key, result);
             }
 
             responseEvent.setBody(result);
             responseEvent.setStatusCode(200);
+            responseEvent.setHeaders(Map.of("Content-Type", "application/json"));
         } catch (SdkClientException e) {
             responseEvent.setBody("S3_ERROR: " + e.getMessage());
             responseEvent.setStatusCode(502);

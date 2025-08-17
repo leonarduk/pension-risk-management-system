@@ -8,7 +8,6 @@ import com.leonarduk.finance.stockfeed.*;
 import com.leonarduk.finance.stockfeed.HistoricalDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DataField;
-import com.leonarduk.finance.utils.HtmlTools;
 
 /**
  * REST endpoint for accessing stock feed data.
@@ -27,11 +25,6 @@ public class StockFeedEndpoint {
 
     @Autowired
     private final StockFeed stockFeed;
-
-    private final HistoricalDataService historicalDataService;
-
-    @Autowired
-    private MessageSource messageSource;
 
     /**
      * Constructor for dependency injection.
@@ -44,7 +37,7 @@ public class StockFeedEndpoint {
     }
 
     /**
-     * Display stock history data in HTML format.
+     * Return stock history data as JSON.
      *
      * @param ticker the stock ticker
      * @param years optional number of years to look back
@@ -55,21 +48,21 @@ public class StockFeedEndpoint {
      * @param interpolate whether to interpolate missing data
      * @param cleanDate whether to clean non-trading days
      * @param category optional instrument category filter
-     * @return HTML table with historical stock data
+     * @return list of historical records
      * @throws IOException if data retrieval fails
      */
-    @GetMapping(value = "/ticker/{ticker}", produces = MediaType.TEXT_HTML_VALUE)
-    public String displayHistory(@PathVariable(name = "ticker") final String ticker,
-                                 @RequestParam(name = "years", required = false) Integer years,
-                                 @RequestParam(name = "fromDate", required = false) String fromDate,
-                                 @RequestParam(name = "toDate", required = false) String toDate,
-                                 @RequestParam(name = "fields", required = false) String fields,
-                                 @RequestParam(name = "scaling", required = false) Double scaling,
-                                 @RequestParam(name = "interpolate", required = false) boolean interpolate,
-                                 @RequestParam(name = "cleanDate", required = false) boolean cleanDate,
-                                 @RequestParam(name = "category", required = false) String category,
-                              @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
-                                 @RequestParam(name = "lang", required = false) String lang
+    @GetMapping(value = "/ticker/{ticker}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> displayHistory(@PathVariable(name = "ticker") final String ticker,
+                                                   @RequestParam(name = "years", required = false) Integer years,
+                                                   @RequestParam(name = "fromDate", required = false) String fromDate,
+                                                   @RequestParam(name = "toDate", required = false) String toDate,
+                                                   @RequestParam(name = "fields", required = false) String fields,
+                                                   @RequestParam(name = "scaling", required = false) Double scaling,
+                                                   @RequestParam(name = "interpolate", required = false) boolean interpolate,
+                                                   @RequestParam(name = "cleanDate", required = false) boolean cleanDate,
+                                                   @RequestParam(name = "category", required = false) String category,
+                                                   @RequestHeader(name = "Accept-Language", required = false) String acceptLanguage,
+                                                   @RequestParam(name = "lang", required = false) String lang
     ) throws IOException {
 
         Locale locale = Locale.getDefault();
@@ -97,11 +90,15 @@ public class StockFeedEndpoint {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
         }
 
-        final StringBuilder sbBody = new StringBuilder();
-        String heading = messageSource.getMessage("stock.title", new Object[]{ticker}, locale);
-        sbBody.append("<h1>").append(heading).append("</h1>");
-        HtmlTools.printTable(sbBody, records);
-        return HtmlTools.createHtmlText(null, sbBody).toString();
+        List<Map<String, Object>> jsonRecords = new ArrayList<>();
+        for (List<DataField> record : records) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            for (DataField field : record) {
+                map.put(field.getName(), field.getValue());
+            }
+            jsonRecords.add(map);
+        }
+        return jsonRecords;
     }
 
     @PostMapping("/ticker")
