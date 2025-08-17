@@ -14,28 +14,5 @@
     <packaging>pom</packaging>
     <name>Python module</name>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>run-python-script</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>python3</executable>
-                            <arguments>
-                                <argument>src/main.py</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <build/>
 </project>

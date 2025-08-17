@@ -9,29 +9,37 @@ import com.leonarduk.finance.stockfeed.StockFeedFactory;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.CachedStockFeed;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
 public class StooqFeedLimiterTest {
 
-    @Before
+    @BeforeEach
     public void setup() {
         StooqFeed.setDailyLimit(2);
         StooqFeed.resetDailyLimitCounter();
     }
 
-    @Test(expected = DailyLimitExceededException.class)
+    @Test
     public void testLimitExceeded() throws IOException {
         TestStooqFeed feed = new TestStooqFeed();
         feed.get(Instrument.fromString("AAA"), LocalDate.now().minusDays(1), LocalDate.now(), false);
         feed.get(Instrument.fromString("BBB"), LocalDate.now().minusDays(1), LocalDate.now(), false);
-        feed.get(Instrument.fromString("CCC"), LocalDate.now().minusDays(1), LocalDate.now(), false);
+        Assertions.assertThrows(
+                DailyLimitExceededException.class,
+                () ->
+                        feed.get(
+                                Instrument.fromString("CCC"),
+                                LocalDate.now().minusDays(1),
+                                LocalDate.now(),
+                                false));
     }
 
-    @Test(expected = DailyLimitExceededException.class)
+    @Test
     public void testIntelligentFeedPropagatesError() throws Exception {
         StooqFeed.setDailyLimit(0);
         StooqFeed.resetDailyLimitCounter();
@@ -39,10 +47,13 @@ public class StooqFeedLimiterTest {
         IntelligentStockFeed feed = new IntelligentStockFeed(ds);
         TestStooqFeed stooq = new TestStooqFeed();
         TestStockFeedFactory factory = new TestStockFeedFactory(ds, stooq);
-        java.lang.reflect.Field field = IntelligentStockFeed.class.getDeclaredField("stockFeedFactory");
+        java.lang.reflect.Field field =
+                IntelligentStockFeed.class.getDeclaredField("stockFeedFactory");
         field.setAccessible(true);
         field.set(feed, factory);
-        feed.get(Instrument.fromString("AAA"), 1, false, false, false);
+        Assertions.assertThrows(
+                DailyLimitExceededException.class,
+                () -> feed.get(Instrument.fromString("AAA"), 1, false, false, false));
     }
 
     private static class TestStooqFeed extends StooqFeed {

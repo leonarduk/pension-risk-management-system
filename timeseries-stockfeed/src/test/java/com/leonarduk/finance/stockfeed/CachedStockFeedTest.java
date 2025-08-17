@@ -2,8 +2,8 @@ package com.leonarduk.finance.stockfeed;
 
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.ta4j.core.Bar;
 
@@ -25,7 +25,7 @@ public class CachedStockFeedTest {
 
         List<Bar> result = feed.loadSeries(cached);
 
-        Assert.assertEquals(history, result);
+        Assertions.assertEquals(history, result);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class CachedStockFeedTest {
 
         List<Bar> result = feed.loadSeries(stock);
 
-        Assert.assertTrue(result.isEmpty());
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class CachedStockFeedTest {
         feed.storeSeries(newStock);
 
         Mockito.verify(store).storeSeries(newStock);
-        Assert.assertEquals(2, newStock.getHistory().size());
+        Assertions.assertEquals(2, newStock.getHistory().size());
     }
 
     @Test

@@ -1,11 +1,11 @@
 package com.leonarduk.finance.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.num.Num;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringUtilsTest {
 

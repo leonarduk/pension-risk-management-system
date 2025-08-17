@@ -1,12 +1,11 @@
 package com.leonarduk.finance.stockfeed.feed.ft;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.ta4j.core.Bar;
@@ -32,7 +31,7 @@ public class FTTimeSeriesPageTest {
   
     private WebDriver webDriver;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         HtmlUnitDriver driver = new HtmlUnitDriver();
         WebClient webClient = driver.getWebClient();
@@ -57,10 +56,10 @@ public class FTTimeSeriesPageTest {
         Optional<List<Bar>> barsOpt = page.getTimeseries(instrument,
                 LocalDate.of(2021,8,20), LocalDate.of(2021,8,20));
         driver.quit();
-        Assert.assertTrue(barsOpt.isPresent());
+        Assertions.assertTrue(barsOpt.isPresent());
         List<Bar> bars = barsOpt.get();
-        Assert.assertEquals(1, bars.size());
-        Assert.assertEquals(11.0, bars.get(0).getClosePrice().doubleValue(), 0.001);
+        Assertions.assertEquals(1, bars.size());
+        Assertions.assertEquals(11.0, bars.get(0).getClosePrice().doubleValue(), 0.001);
     }
 
     @Test
@@ -97,8 +96,8 @@ public class FTTimeSeriesPageTest {
         driver.quit();
         server.stop(0);
 
-        Assert.assertTrue("Fallback should return data", barsOpt.isPresent());
-        Assert.assertEquals(1, barsOpt.get().size());
+        Assertions.assertTrue("Fallback should return data", barsOpt.isPresent());
+        Assertions.assertEquals(1, barsOpt.get().size());
     }
 }
 

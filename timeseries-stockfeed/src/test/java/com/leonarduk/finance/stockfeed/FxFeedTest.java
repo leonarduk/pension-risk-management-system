@@ -1,8 +1,8 @@
 package com.leonarduk.finance.stockfeed;
 
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.ta4j.core.Bar;
 
@@ -24,7 +24,7 @@ public class FxFeedTest {
         Mockito.when(mockFeed.getFxSeries("USD", "GBP", from, to)).thenReturn(series);
 
         List<Bar> result = mockFeed.getFxSeries("USD", "GBP", from, to);
-        Assert.assertEquals(series, result);
+        Assertions.assertEquals(series, result);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class FxFeedTest {
         Mockito.when(mockFeed.getFxSeries("AAA", "BBB", from, to)).thenReturn(Collections.emptyList());
 
         List<Bar> result = mockFeed.getFxSeries("AAA", "BBB", from, to);
-        Assert.assertTrue(result.isEmpty());
+        Assertions.assertTrue(result.isEmpty());
     }
 }
 

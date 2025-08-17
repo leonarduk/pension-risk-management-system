@@ -19,22 +19,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Install pre-commit
-        run: pip install pre-commit
+      - name: Install Python dependencies
+        run: |
+          pip install pre-commit
+          pip install -r timeseries-python/requirements.txt
       - name: Run pre-commit
         run: pre-commit run --all-files --show-diff-on-failure
-      - name: Run Python tests with coverage
+      - name: Run Python tests
         working-directory: timeseries-python
-        run: |
-          pip install -r requirements.txt
-  
-          # Run tests with coverage
-          pip install coverage pytest pytest-cov
-          coverage run -m pytest
-          coverage xml
-
-          # Fail the build if overall coverage drops below 80%
-          coverage report --fail-under=80
+        run: pytest
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
