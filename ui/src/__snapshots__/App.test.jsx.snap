@@ -3,6 +3,23 @@
 exports[`loads and displays data with charts and toggles view 1`] = `
 <DocumentFragment>
   <div>
+    <nav>
+      <a
+        href="#ticker-table"
+      >
+        Table
+      </a>
+      <a
+        href="#price-chart"
+      >
+        Price Chart
+      </a>
+      <a
+        href="#risk-return"
+      >
+        Risk/Return
+      </a>
+    </nav>
     <h1>
       Pension Risk Management
     </h1>
@@ -17,6 +34,30 @@ exports[`loads and displays data with charts and toggles view 1`] = `
     <button>
       View: relative
     </button>
+    <table
+      id="ticker-table"
+    >
+      <thead>
+        <tr>
+          <th>
+            Ticker
+          </th>
+          <th>
+            Latest Close
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            AAPL
+          </td>
+          <td>
+            100
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <table>
       <thead>
         <tr>
@@ -40,6 +81,7 @@ exports[`loads and displays data with charts and toggles view 1`] = `
       </tbody>
     </table>
     <div
+      id="price-chart"
       style="max-width: 600px;"
     >
       <div
@@ -47,6 +89,7 @@ exports[`loads and displays data with charts and toggles view 1`] = `
       />
     </div>
     <div
+      id="risk-return"
       style="max-width: 600px; margin-top: 20px;"
     >
       <div

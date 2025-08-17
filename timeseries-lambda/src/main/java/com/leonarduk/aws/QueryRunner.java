@@ -4,8 +4,7 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.utils.DataField;
-import com.leonarduk.finance.utils.HtmlTools;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ta4j.core.Bar;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.LinkedHashMap;
 
 @Slf4j
 public class QueryRunner {
@@ -144,38 +144,38 @@ public class QueryRunner {
         }
 
 
-        return this.generateResults(fromLocalDate, toLocalDate, interpolate, cleanData, instrument);
+        List<Map<String, Object>> results = this.generateResults(fromLocalDate, toLocalDate, interpolate, cleanData, instrument);
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(results);
     }
 
-    private String generateResults(LocalDate fromLocalDate, LocalDate toLocalDate,
-                                   boolean interpolate, boolean cleanData,
-                                   Instrument instrument)
+    private List<Map<String, Object>> generateResults(LocalDate fromLocalDate, LocalDate toLocalDate,
+                                                      boolean interpolate, boolean cleanData,
+                                                      Instrument instrument)
             throws IOException {
-        StringBuilder sbBody = new StringBuilder();
-        List<List<DataField>> records = new ArrayList<>();
+        List<Map<String, Object>> records = new ArrayList<>();
 
         List<Bar> historyData;
 
         historyData = getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
 
         for (Bar historicalQuote : historyData) {
-            ArrayList<DataField> record = new ArrayList<>();
+            Map<String, Object> record = new LinkedHashMap<>();
             records.add(record);
-            record.add(new DataField("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString()));
-            record.add(new DataField("Open", historicalQuote.getOpenPrice()));
-            record.add(new DataField("High", historicalQuote.getHighPrice()));
-            record.add(new DataField("Low", historicalQuote.getLowPrice()));
-            record.add(new DataField("Close", historicalQuote.getClosePrice()));
-            record.add(new DataField("Volume", historicalQuote.getVolume()));
+            record.put("Date", historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
+            record.put("Open", historicalQuote.getOpenPrice());
+            record.put("High", historicalQuote.getHighPrice());
+            record.put("Low", historicalQuote.getLowPrice());
+            record.put("Close", historicalQuote.getClosePrice());
+            record.put("Volume", historicalQuote.getVolume());
 
             if (historicalQuote instanceof final Commentable commentable) {
-                record.add(new DataField("Comment", commentable.getComment()));
+                record.put("Comment", commentable.getComment());
 
             }
         }
 
-        HtmlTools.printTable(sbBody, records);
-        return HtmlTools.createHtmlText(null, sbBody).toString();
+        return records;
     }
 
     private List<Bar> getHistoryData(final Instrument instrument, final LocalDate fromLocalDate, final LocalDate toLocalDate,

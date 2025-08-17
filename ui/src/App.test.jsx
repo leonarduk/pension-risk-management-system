@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 test('loads and displays data with charts and toggles view', async () => {
-  const mockTickerData = { AAPL: { '2024-01-01': 100 } };
+  const mockTickerData = [{ Date: '2024-01-01', Close: 100 }];
   const mockRiskData = [
     { ticker: 'AAPL', annual_std: 0.1, annual_return: 0.2 },
   ];
@@ -34,9 +34,9 @@ test('loads and displays data with charts and toggles view', async () => {
   );
   fireEvent.click(screen.getByText('Load'));
 
-  await screen.findByText('AAPL');
+  await screen.findAllByText('AAPL');
   expect(global.fetch).toHaveBeenCalledTimes(2);
-  expect(screen.getByText('100')).toBeTruthy();
+  expect(screen.getAllByText('100')[0]).toBeTruthy();
   expect(screen.getByTestId('line-chart')).toBeTruthy();
   expect(screen.getByTestId('scatter-chart')).toBeTruthy();
 

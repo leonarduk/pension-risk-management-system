@@ -4,8 +4,8 @@ import { expect, test } from 'vitest';
 import TickerTable from './TickerTable.jsx';
 
 const sampleData = {
-  AAA: { '2024-01-01': 1 },
-  BBB: { '2024-01-01': 3 },
+  AAA: [{ Date: '2024-01-01', Close: 1 }],
+  BBB: [{ Date: '2024-01-01', Close: 3 }],
 };
 
 function Wrapper() {
