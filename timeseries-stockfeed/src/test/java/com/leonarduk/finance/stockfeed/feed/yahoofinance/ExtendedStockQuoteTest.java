@@ -1,8 +1,8 @@
 package com.leonarduk.finance.stockfeed.feed.yahoofinance;
 
 import com.leonarduk.finance.stockfeed.Instrument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
@@ -14,7 +14,7 @@ public class ExtendedStockQuoteTest {
                 null, null, null, null, null, null, null, Instrument.UNKNOWN, null, null,
                 null, null, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.valueOf(100), null, null,
                 null, null, null, null);
-        Assert.assertTrue(quote.isPopulated());
+        Assertions.assertTrue(quote.isPopulated());
     }
 
     @Test
@@ -23,6 +23,6 @@ public class ExtendedStockQuoteTest {
                 null, null, null, null, null, null, null, Instrument.UNKNOWN, null, null,
                 null, null, null, null, null, null, null,
                 null, null, null, null);
-        Assert.assertFalse(quote.isPopulated());
+        Assertions.assertFalse(quote.isPopulated());
     }
 }

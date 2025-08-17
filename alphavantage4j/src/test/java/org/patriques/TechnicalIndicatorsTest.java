@@ -1,6 +1,6 @@
 package org.patriques;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.patriques.input.technicalindicators.Interval;
 import org.patriques.input.technicalindicators.SeriesType;
 import org.patriques.input.ApiParameter;
@@ -8,7 +8,7 @@ import org.patriques.output.AlphaVantageException;
 import org.patriques.output.technicalindicators.*;
 import org.patriques.output.technicalindicators.data.IndicatorData;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TechnicalIndicatorsTest {
 
@@ -28,10 +28,10 @@ public class TechnicalIndicatorsTest {
         assertEquals(10.0, data.getData(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testAdError() {
         TechnicalIndicators ti = new TechnicalIndicators(connectorWith(ERROR_JSON));
-        ti.ad("IBM", Interval.DAILY);
+        assertThrows(AlphaVantageException.class, () -> ti.ad("IBM", Interval.DAILY));
     }
 
     @Test

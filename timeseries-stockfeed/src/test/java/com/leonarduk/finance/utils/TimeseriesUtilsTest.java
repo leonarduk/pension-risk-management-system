@@ -5,8 +5,8 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.exchange.ExchangeRateService;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 
 import java.math.BigDecimal;
@@ -31,24 +31,24 @@ public class TimeseriesUtilsTest {
 
         final List<Bar> cachedHistory = Lists.newArrayList();
 
-        Assert.assertFalse(TimeseriesUtils.containsDatePoints(cachedHistory, fromDate, toDate));
+        Assertions.assertFalse(TimeseriesUtils.containsDatePoints(cachedHistory, fromDate, toDate));
 
         cachedHistory
                 .add(new ExtendedHistoricalQuote(Instrument.CASH, fromDate, BigDecimal.valueOf(12.3), BigDecimal.TEN,
                         BigDecimal.valueOf(9.3), BigDecimal.valueOf(12.2), BigDecimal.valueOf(12.2), 23L, "TestCache"));
 
-        Assert.assertFalse(TimeseriesUtils.containsDatePoints(cachedHistory, fromDate, toDate));
+        Assertions.assertFalse(TimeseriesUtils.containsDatePoints(cachedHistory, fromDate, toDate));
 
         cachedHistory.add(new ExtendedHistoricalQuote(Instrument.CASH, toDate, BigDecimal.valueOf(12.3), BigDecimal.TEN,
                 BigDecimal.valueOf(9.3), BigDecimal.valueOf(12.2), BigDecimal.valueOf(12.2), 23L, "TestCache"));
 
-        Assert.assertTrue(TimeseriesUtils.containsDatePoints(cachedHistory, fromDate, toDate));
+        Assertions.assertTrue(TimeseriesUtils.containsDatePoints(cachedHistory, fromDate, toDate));
     }
 
     @Test
     public final void testSeriesToCsv() {
         final StringBuilder actual = TimeseriesUtils.seriesToCsv(this.getQuotes());
-        Assert.assertEquals("date,open,high,low,close,volume,comment\n" + "2017-01-01,12.30,9.30,10.00,12.20,23.00,TestCache\n",
+        Assertions.assertEquals("date,open,high,low,close,volume,comment\n" + "2017-01-01,12.30,9.30,10.00,12.20,23.00,TestCache\n",
                 actual.toString());
     }
 
@@ -59,7 +59,7 @@ public class TimeseriesUtilsTest {
                 BigDecimal.TEN, BigDecimal.valueOf(9.3), BigDecimal.valueOf(12.2), BigDecimal.valueOf(12.2), 23L,
                 "Comment, with comma"));
         final StringBuilder actual = TimeseriesUtils.seriesToCsv(series);
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 "date,open,high,low,close,volume,comment\n" +
                         "2017-01-01,12.30,9.30,10.00,12.20,23.00,\"Comment, with comma\"\n",
                 actual.toString());
@@ -72,18 +72,18 @@ public class TimeseriesUtilsTest {
 
         final List<Bar> cachedHistory = Lists.newArrayList();
 
-        Assert.assertEquals(2, TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate, toDate).size());
+        Assertions.assertEquals(2, TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate, toDate).size());
 
         cachedHistory
                 .add(new ExtendedHistoricalQuote(Instrument.CASH, fromDate, BigDecimal.valueOf(12.3), BigDecimal.TEN,
                         BigDecimal.valueOf(9.3), BigDecimal.valueOf(12.2), BigDecimal.valueOf(12.2), 23L, "TestCache"));
 
-        Assert.assertEquals(1, TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate, toDate).size());
+        Assertions.assertEquals(1, TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate, toDate).size());
 
         cachedHistory.add(new ExtendedHistoricalQuote(Instrument.CASH, toDate, BigDecimal.valueOf(12.3), BigDecimal.TEN,
                 BigDecimal.valueOf(9.3), BigDecimal.valueOf(12.2), BigDecimal.valueOf(12.2), 23L, "TestCache"));
 
-        Assert.assertEquals(0, TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate, toDate).size());
+        Assertions.assertEquals(0, TimeseriesUtils.getMissingDataPoints(cachedHistory, fromDate, toDate).size());
     }
 
     @Test
@@ -105,9 +105,9 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(100.0, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("GBX", stock.getCurrency());
-        Assert.assertEquals(0, calls[0]);
+        Assertions.assertEquals(100.0, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("GBX", stock.getCurrency());
+        Assertions.assertEquals(0, calls[0]);
     }
 
     @Test
@@ -129,9 +129,9 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(0.01, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("GBP", stock.getCurrency());
-        Assert.assertEquals(0, calls[0]);
+        Assertions.assertEquals(0.01, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("GBP", stock.getCurrency());
+        Assertions.assertEquals(0, calls[0]);
     }
 
     @Test
@@ -149,8 +149,8 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(0.8, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("GBP", stock.getCurrency());
+        Assertions.assertEquals(0.8, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("GBP", stock.getCurrency());
     }
 
     @Test
@@ -168,8 +168,8 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(80.0, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("GBX", stock.getCurrency());
+        Assertions.assertEquals(80.0, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("GBX", stock.getCurrency());
     }
 
     @Test
@@ -187,8 +187,8 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(1.25, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("USD", stock.getCurrency());
+        Assertions.assertEquals(1.25, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("USD", stock.getCurrency());
     }
 
     @Test
@@ -206,8 +206,8 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(0.0125, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("USD", stock.getCurrency());
+        Assertions.assertEquals(0.0125, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("USD", stock.getCurrency());
     }
 
     @Test
@@ -229,9 +229,9 @@ public class TimeseriesUtilsTest {
 
         TimeseriesUtils.cleanUpSeries(Optional.of(stock));
         Bar converted = stock.getHistory().get(0);
-        Assert.assertEquals(1.3, converted.getClosePrice().doubleValue(), 0.0001);
-        Assert.assertEquals("USD", stock.getCurrency());
-        Assert.assertEquals(1, calls[0]);
+        Assertions.assertEquals(1.3, converted.getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals("USD", stock.getCurrency());
+        Assertions.assertEquals(1, calls[0]);
     }
 
 }

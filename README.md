@@ -21,6 +21,41 @@ pre-commit run --all-files
 
 The GitHub Actions workflow runs these tools on every push and pull request.
 
+## Running tests
+
+Execute the full test suite across all modules:
+
+### Java modules
+
+```bash
+mvn verify
+```
+
+### Kotlin (Android)
+
+```bash
+cd android-app
+./gradlew test
+# Instrumentation tests require an emulator:
+# ./gradlew connectedAndroidTest
+```
+
+### Python
+
+```bash
+cd timeseries-python
+pre-commit run --all-files
+pytest
+```
+
+### Frontend
+
+```bash
+cd ui
+npm install
+npm test
+```
+
 ## Configuration
 
 The Alphavantage feed requires one or more API keys supplied via the

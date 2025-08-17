@@ -1,6 +1,6 @@
 package org.patriques;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.patriques.input.timeseries.OutputSize;
 import org.patriques.output.AlphaVantageException;
 import org.patriques.output.exchange.CurrencyExchange;
@@ -9,7 +9,7 @@ import org.patriques.output.exchange.data.CurrencyExchangeData;
 import org.patriques.output.exchange.data.ForexData;
 import org.patriques.input.ApiParameter;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ForeignExchangeTest {
 
@@ -32,10 +32,10 @@ public class ForeignExchangeTest {
         assertEquals(110.00f, data.getExchangeRate(), 0.0f);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testCurrencyExchangeRateError() {
         ForeignExchange fx = new ForeignExchange(connectorWith(ERROR_JSON));
-        fx.currencyExchangeRate("USD", "JPY");
+        assertThrows(AlphaVantageException.class, () -> fx.currencyExchangeRate("USD", "JPY"));
     }
 
     @Test
@@ -48,10 +48,11 @@ public class ForeignExchangeTest {
         assertEquals(1.0, data.getOpen(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testDailyError() {
         ForeignExchange fx = new ForeignExchange(connectorWith(ERROR_JSON));
-        fx.daily("EUR", "USD", OutputSize.COMPACT);
+        assertThrows(AlphaVantageException.class,
+                () -> fx.daily("EUR", "USD", OutputSize.COMPACT));
     }
 }
 

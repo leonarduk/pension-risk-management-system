@@ -1,8 +1,8 @@
 package org.patriques;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.patriques.input.Function;
 import org.patriques.input.Symbol;
 import org.patriques.output.AlphaVantageException;
@@ -13,17 +13,17 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AlphaVantageConnectorTest {
     private static final MockURLStreamHandler URL_HANDLER = new MockURLStreamHandler();
 
-    @BeforeClass
+    @BeforeAll
     public static void initUrlHandler() {
         URL.setURLStreamHandlerFactory(protocol -> "https".equals(protocol) ? URL_HANDLER : null);
     }
 
-    @Before
+    @BeforeEach
     public void resetHandler() {
         URL_HANDLER.reset();
     }
@@ -38,11 +38,13 @@ public class AlphaVantageConnectorTest {
                 URL_HANDLER.getLastUrl().toString());
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testGetRequestThrowsAlphaVantageExceptionOnIoError() {
         URL_HANDLER.setThrowIOException(true);
         AlphaVantageConnector connector = new AlphaVantageConnector("demo", 5000);
-        connector.getRequest(Function.TIME_SERIES_DAILY);
+        assertThrows(
+                AlphaVantageException.class,
+                () -> connector.getRequest(Function.TIME_SERIES_DAILY));
     }
 
     private static class MockURLStreamHandler extends URLStreamHandler {

@@ -5,9 +5,9 @@ import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
 import com.leonarduk.finance.stockfeed.datatransformation.correction.BadDateRemover;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class BadDateRemoverTest {
 
     private BadDateRemover remover;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.remover = new BadDateRemover();
     }
@@ -34,9 +34,9 @@ public class BadDateRemoverTest {
                 LocalDate.parse("1232-01-01"), "bad point"));
         series.add(new ExtendedHistoricalQuote(series.get(0),
                 LocalDate.parse("1001-01-01"), "bad point"));
-        Assert.assertEquals(size + 2, series.size());
+        Assertions.assertEquals(size + 2, series.size());
 
-        Assert.assertEquals(size, this.remover.clean(series).size());
+        Assertions.assertEquals(size, this.remover.clean(series).size());
     }
 
 }
