@@ -1,18 +1,17 @@
 package com.leonarduk.finance.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+@Slf4j
 public class NumberUtils {
 
     public static final BigDecimal BILLION = NumberUtils.getBigDecimal("1000000000");
     private static DecimalFormat format;
     public static final BigDecimal HUNDRED = NumberUtils.getBigDecimal("100");
-    public static final Logger logger = LoggerFactory.getLogger(NumberUtils.class.getName());
 
     public static final BigDecimal MILLION = NumberUtils.getBigDecimal("1000000");
 
@@ -45,13 +44,13 @@ public class NumberUtils {
             }
             return new BigDecimal(data).multiply(multiplier);
         } catch (final NumberFormatException e) {
-            NumberUtils.logger.warn("Failed to parse: {}", dataRaw, e);
+            log.warn("Failed to parse: {}", dataRaw, e);
         }
         return null;
     }
 
     private static String cleanNumberString(final String data) {
-        return StringUtils.join(data.trim().split(","), "");
+        return String.join("", data.trim().split(","));
     }
 
     public static BigDecimal getBigDecimal(final String data) {

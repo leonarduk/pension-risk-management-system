@@ -2,6 +2,9 @@ package org.patriques.output.technicalindicators.data;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Representation of Hilbert transform, phasor components indicator json objects, i.e:
  * "2000-01-24": {
@@ -9,29 +12,11 @@ import java.time.LocalDateTime;
  *   "QUADRATURE": "-10.8250"
  * }
  */
+@AllArgsConstructor
+@Getter
 public class HT_PHASORData {
   private final LocalDateTime datetime;
   private final double phase;
   private final double quadrature;
-
-  public HT_PHASORData(LocalDateTime datetime,
-                       double phase,
-                       double quadrature) {
-    this.datetime = datetime;
-    this.phase = phase;
-    this.quadrature = quadrature;
-  }
-
-  public LocalDateTime getDateTime() {
-    return datetime;
-  }
-
-  public double getPhase() {
-    return phase;
-  }
-
-  public double getQuadrature() {
-    return quadrature;
-  }
 }
 

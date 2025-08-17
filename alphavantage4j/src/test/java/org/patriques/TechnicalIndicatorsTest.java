@@ -24,7 +24,7 @@ public class TechnicalIndicatorsTest {
                 "\"Technical Analysis: Chaikin A/D\":{\"2024-01-01\":{\"Chaikin A/D\":\"10.0\"}}}";
         TechnicalIndicators ti = new TechnicalIndicators(connectorWith(json));
         AD ad = ti.ad("IBM", Interval.DAILY);
-        IndicatorData data = ad.getData().get(0);
+        IndicatorData data = ad.getIndicatorData().get(0);
         assertEquals(10.0, data.getData(), 0.0);
     }
 
@@ -40,7 +40,7 @@ public class TechnicalIndicatorsTest {
                 "\"Technical Analysis: ADOSC\":{\"2024-01-01\":{\"ADOSC\":\"10.0\"}}}";
         TechnicalIndicators ti = new TechnicalIndicators(connectorWith(json));
         ADOSC adosc = ti.adosc("IBM", Interval.DAILY, null, null);
-        assertEquals(10.0, adosc.getData().get(0).getData(), 0.0);
+        assertEquals(10.0, adosc.getIndicatorData().get(0).getData(), 0.0);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class TechnicalIndicatorsTest {
                 "\"Technical Analysis: APO\":{\"2024-01-01\":{\"APO\":\"10.0\"}}}";
         TechnicalIndicators ti = new TechnicalIndicators(connectorWith(json));
         APO apo = ti.apo("IBM", Interval.DAILY, SeriesType.CLOSE, null, null, null);
-        assertEquals(10.0, apo.getData().get(0).getData(), 0.0);
+        assertEquals(10.0, apo.getIndicatorData().get(0).getData(), 0.0);
     }
 }
 

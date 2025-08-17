@@ -30,6 +30,7 @@
         <org.ta4j.version>0.18</org.ta4j.version>
         <org.apache.commons.version>3.18.0</org.apache.commons.version>
         <javax.xml.bind.version>2.4.0-b180830.0359</javax.xml.bind.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <build>
@@ -46,6 +47,13 @@
                                 <groupId>com.google.auto.service</groupId>
                                 <artifactId>auto-service</artifactId>
                                 <version>1.0</version>
+                            </path>
+
+                            <!-- Lombok annotation processor -->
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
                             </path>
 
                             <!-- This is needed when using Lombok 1.18.16 and above -->
@@ -156,8 +164,22 @@
                 <version>${org.slf4j.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </pluginRepository>
+    </pluginRepositories>
     <profiles>
         <profile>
             <id>release</id>

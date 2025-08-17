@@ -4,8 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.file.AbstractCsvStockFeed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,12 +17,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 public class StooqFeed extends AbstractCsvStockFeed {
     public static final String BASE_URL = "https://stooq.com/q/d/l/";
-    /**
-     * The logger
-     */
-    public static final Logger log = LoggerFactory.getLogger(StooqFeed.class.getName());
 
     private static final String OUTPUT_DOWNLOAD = "d";
 
@@ -117,7 +113,7 @@ public class StooqFeed extends AbstractCsvStockFeed {
 
     protected HttpRequest createRequest(final CharSequence uri) throws IOException {
         try {
-            StooqFeed.log.info("Request: " + uri);
+              log.info("Request: " + uri);
             return HttpRequest.get(uri);
         } catch (final HttpRequest.HttpRequestException e) {
             throw e.getCause();

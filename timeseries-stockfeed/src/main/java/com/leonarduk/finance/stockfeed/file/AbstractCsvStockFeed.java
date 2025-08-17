@@ -7,8 +7,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 
 import java.io.BufferedReader;
@@ -20,9 +19,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 
+@Slf4j
 public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
-
-    public static final Logger log = LoggerFactory.getLogger(AbstractCsvStockFeed.class.getName());
     private Optional<BigDecimal> close;
     private String comment;
     private Date date;
@@ -58,7 +56,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
                                  boolean addLatestQuoteToTheSeries)
             throws IOException {
         if (!this.isAvailable()) {
-            AbstractCsvStockFeed.log.warn("Feed is not available");
+            log.warn("Feed is not available");
             return Optional.empty();
         }
         try {
@@ -73,7 +71,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
                 if (asHistoricalQuote.getLocalDate().getDayOfWeek() != DayOfWeek.SATURDAY
                         && asHistoricalQuote.getLocalDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
                     if (parsedDates.contains(asHistoricalQuote.getLocalDate())) {
-                        log.warn("Duplicate date {} - skipping", asHistoricalQuote.getLocalDate().toString());
+                          log.warn("Duplicate date {} - skipping", asHistoricalQuote.getLocalDate().toString());
                     } else {
                         quotes.add(asHistoricalQuote);
                         parsedDates.add(asHistoricalQuote.getLocalDate());
@@ -84,7 +82,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
             quotes.sort((o1, o2) -> o2.getEndTime().compareTo(o1.getEndTime()));
             return Optional.of(AbstractStockFeed.createStock(instrument, quotes));
         } catch (final Exception e) {
-            AbstractCsvStockFeed.log.warn("Failed:{} : {}", this, e.getMessage());
+              log.warn("Failed:{} : {}", this, e.getMessage());
             return Optional.empty();
         }
 
@@ -243,7 +241,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
             }
             return Optional.of(NumberUtils.getBigDecimal(input));
         } catch (final NumberFormatException e) {
-            AbstractCsvStockFeed.log.warn("Failed to parse {}", input);
+              log.warn("Failed to parse {}", input);
             return Optional.empty();
         }
     }
@@ -261,7 +259,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
             }
             final String tab = "\t";
             if (line.contains(tab)) {
-                AbstractCsvStockFeed.log.warn("Messed up Csv - found tabs");
+                  log.warn("Messed up Csv - found tabs");
                 line = line.replace(tab, ",");
             }
 

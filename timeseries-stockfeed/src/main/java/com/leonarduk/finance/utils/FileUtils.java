@@ -1,15 +1,13 @@
 package com.leonarduk.finance.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+@Slf4j
 public class FileUtils {
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(FileUtils.class.getName());
 
     public static void writeFile(final String fileName,
                                  final StringBuilder sb) {
@@ -19,9 +17,9 @@ public class FileUtils {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 
             writer.write(sb.toString());
-            FileUtils.LOGGER.info("Saved to {}", fileName);
+            log.info("Saved to {}", fileName);
         } catch (final IOException ioe) {
-            FileUtils.LOGGER.error("Unable to write CSV file", ioe);
+            log.error("Unable to write CSV file", ioe);
         }
     }
 }

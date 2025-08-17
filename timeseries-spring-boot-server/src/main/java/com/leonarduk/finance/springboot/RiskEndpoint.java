@@ -1,7 +1,6 @@
 package com.leonarduk.finance.springboot;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -21,8 +20,11 @@ import java.util.Map;
 @RequestMapping("/risk")
 public class RiskEndpoint {
 
-    @Autowired
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
+
+    public RiskEndpoint(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     /**
      * Calculate historical simulation Value at Risk (VaR) for a series of returns.

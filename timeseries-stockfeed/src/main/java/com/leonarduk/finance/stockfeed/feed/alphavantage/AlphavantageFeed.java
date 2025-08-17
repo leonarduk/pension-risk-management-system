@@ -13,8 +13,7 @@ import org.patriques.output.exchange.Daily;
 import org.patriques.output.exchange.data.ForexData;
 import org.patriques.output.timeseries.DailyAdjusted;
 import org.patriques.output.timeseries.data.StockData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 
 import java.io.IOException;
@@ -25,9 +24,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, FxFeed {
-
-    public static final Logger logger = LoggerFactory.getLogger(AlphavantageFeed.class.getName());
 
     private static final String API_KEYS_ENV_VAR = "ALPHAVANTAGE_API_KEYS";
     private static final List<String> API_KEYS = Arrays.stream(
@@ -47,7 +45,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
     @Override
     public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries) {
-        logger.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
+        log.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
         if (instrument instanceof FxInstrument fXInstrument) {
             return getFxSeriesInternal(fXInstrument.getCurrencyOne(), fXInstrument.getCurrencyTwo(), fromDate, toDate)
                     .map(series -> {
@@ -67,7 +65,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
             DailyAdjusted response = stockTimeSeries.dailyAdjusted(symbol, OutputSize.FULL);
 
             List<Bar> series = convertSeries(instrument, response.getStockData());
-            logger.info("Returning series of size {}", series.size());
+              log.info("Returning series of size {}", series.size());
             try {
                 return new StockV1(instrument, series);
             } catch (IOException e) {
@@ -80,20 +78,20 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
 
     private <T> Optional<T> withApiKey(Function<AlphaVantageConnector, T> action) {
         if (API_KEYS.isEmpty()) {
-            logger.error("No Alphavantage API keys configured. Set {} environment variable.", API_KEYS_ENV_VAR);
+            log.error("No Alphavantage API keys configured. Set {} environment variable.", API_KEYS_ENV_VAR);
             return Optional.empty();
         }
         for (int i = 0; i < API_KEYS.size(); i++) {
             String apiKey = apiKeyIterator.next();
             try {
-                logger.debug("Using key {}", apiKey);
+            log.debug("Using key {}", apiKey);
                 AlphaVantageConnector apiConnector = new AlphaVantageConnector(apiKey, TIMEOUT);
                 return Optional.ofNullable(action.apply(apiConnector));
             } catch (Exception e) {
-                logger.warn("Alphavantage request failed with key {}: {}", apiKey, e.getMessage());
+                log.warn("Alphavantage request failed with key {}: {}", apiKey, e.getMessage());
             }
         }
-        logger.error("All Alphavantage API keys failed.");
+        log.error("All Alphavantage API keys failed.");
         return Optional.empty();
     }
 

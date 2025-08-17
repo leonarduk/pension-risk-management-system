@@ -13,6 +13,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.stockfeed.file.FileBasedDataStore;
 import com.leonarduk.finance.utils.exchange.ExchangeRateService;
 import com.leonarduk.finance.utils.exchange.EnvironmentExchangeRateService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
@@ -32,8 +33,21 @@ public class TimeseriesUtils {
 
     private static ExchangeRateService exchangeRateService = new EnvironmentExchangeRateService();
 
+    private static final Map<Pair<String, String>, Double> CURRENCY_CONVERSIONS = new HashMap<>();
+
+    static {
+        resetConversions();
+    }
+
     public static void setExchangeRateService(ExchangeRateService service) {
         exchangeRateService = service;
+        resetConversions();
+    }
+
+    private static void resetConversions() {
+        CURRENCY_CONVERSIONS.clear();
+        CURRENCY_CONVERSIONS.put(Pair.of("GBP", "GBX"), 100d);
+        CURRENCY_CONVERSIONS.put(Pair.of("GBX", "GBP"), 0.01d);
     }
 
     public static int cleanUpSeries(final Optional<StockV1> liveData) throws IOException {
@@ -68,31 +82,46 @@ public class TimeseriesUtils {
                 .collect(Collectors.toList());
     }
 
+    private static void ensureSpecialRates() throws IOException {
+        if (!CURRENCY_CONVERSIONS.containsKey(Pair.of("USD", "GBP"))) {
+            BigDecimal usdToGbp = exchangeRateService.getRate("USD", "GBP");
+            CURRENCY_CONVERSIONS.put(Pair.of("USD", "GBP"), usdToGbp.doubleValue());
+            CURRENCY_CONVERSIONS.put(Pair.of("USD", "GBX"), usdToGbp.multiply(BigDecimal.valueOf(100d)).doubleValue());
+        }
+        if (!CURRENCY_CONVERSIONS.containsKey(Pair.of("GBP", "USD"))) {
+            BigDecimal gbpToUsd = exchangeRateService.getRate("GBP", "USD");
+            CURRENCY_CONVERSIONS.put(Pair.of("GBP", "USD"), gbpToUsd.doubleValue());
+            CURRENCY_CONVERSIONS.put(Pair.of("GBX", "USD"), gbpToUsd.multiply(BigDecimal.valueOf(0.01d)).doubleValue());
+        }
+    }
+
     private static double getConversionRate(String fromCurrency, String toCurrency) throws IOException {
         String from = fromCurrency.toUpperCase();
         String to = toCurrency.toUpperCase();
         if (from.equals(to)) {
             return 1d;
         }
-        if (from.equals("GBP") && to.equals("GBX")) {
-            return 100d;
+
+        ensureSpecialRates();
+
+        Pair<String, String> key = Pair.of(from, to);
+        Double known = CURRENCY_CONVERSIONS.get(key);
+        if (known != null) {
+            return known;
         }
-        if (from.equals("GBX") && to.equals("GBP")) {
-            return 0.01d;
+
+        BigDecimal baseRate = exchangeRateService.getRate(
+                from.equals("GBX") ? "GBP" : from,
+                to.equals("GBX") ? "GBP" : to);
+        double result = baseRate.doubleValue();
+        if (from.equals("GBX")) {
+            result *= 0.01d;
         }
-        if (from.equals("USD") && to.equals("GBP")) {
-            return exchangeRateService.getRate("USD", "GBP").doubleValue();
+        if (to.equals("GBX")) {
+            result *= 100d;
         }
-        if (from.equals("USD") && to.equals("GBX")) {
-            return exchangeRateService.getRate("USD", "GBP").multiply(BigDecimal.valueOf(100d)).doubleValue();
-        }
-        if (from.equals("GBP") && to.equals("USD")) {
-            return exchangeRateService.getRate("GBP", "USD").doubleValue();
-        }
-        if (from.equals("GBX") && to.equals("USD")) {
-            return exchangeRateService.getRate("GBP", "USD").multiply(BigDecimal.valueOf(0.01d)).doubleValue();
-        }
-        return 1d;
+        CURRENCY_CONVERSIONS.put(key, result);
+        return result;
     }
 
     private static Bar scaleBar(Bar bar, double rate, Instrument instrument) {

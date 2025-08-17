@@ -3,6 +3,7 @@ package com.leonarduk.finance.springboot;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ta4j.core.Bar;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 /**
  * REST endpoint exposing time-series utilities.
  */
+@Slf4j
 @RequestMapping("/series")
 @RestController
 public class SeriesEndpoint {
@@ -23,6 +25,7 @@ public class SeriesEndpoint {
     @Autowired
     private final StockFeed stockFeed;
 
+    @Autowired
     public SeriesEndpoint(StockFeed stockFeed) {
         this.stockFeed = stockFeed;
     }
@@ -36,7 +39,6 @@ public class SeriesEndpoint {
      * @return mapped series keyed by date
      */
     @PostMapping("/map")
-    @ResponseBody
     public Map<String, Map<String, Double>> mapSeries(
             @RequestParam("source") String sourceTicker,
             @RequestParam("target") String targetTicker,
@@ -80,7 +82,12 @@ public class SeriesEndpoint {
             return Collections.emptyMap();
         }
         LocalDate start = intersection.first();
-        double scale = target.get(start) / source.get(start);
+        double sourceStart = source.get(start);
+        if (sourceStart == 0.0) {
+            log.warn("Source baseline value is zero for date {}", start);
+            return Collections.emptyMap();
+        }
+        double scale = target.get(start) / sourceStart;
 
         Map<LocalDate, Double> rebased = source.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue() * scale));

@@ -6,8 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
@@ -16,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public sealed class Instrument permits FxInstrument {
     public Instrument() {
     }
@@ -51,7 +51,6 @@ public sealed class Instrument permits FxInstrument {
 
     public static final String GBP = "GBP";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Instrument.class.getName());
 
     public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
             AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.LONDON,
@@ -67,12 +66,13 @@ public sealed class Instrument permits FxInstrument {
             try {
                 return AssetType.valueOf(value.toUpperCase());
             } catch (final IllegalArgumentException e) {
-                Instrument.LOGGER.warn("Cannot map " + e + " to AssetType");
+                log.warn("Cannot map " + e + " to AssetType");
                 return AssetType.UNKNOWN;
             }
         }
     }
 
+    @Slf4j
     public static class InstrumentLoader {
         private Map<String, Instrument> instruments = null;
 
@@ -95,8 +95,6 @@ public sealed class Instrument permits FxInstrument {
             return instance;
         }
 
-        private final static Logger logger = LoggerFactory.getLogger(Instrument.class.getName());
-
         private Instrument create(final String line) {
             try {
                 List<String> strings = Arrays.asList(line.split(","));
@@ -118,7 +116,7 @@ public sealed class Instrument permits FxInstrument {
 
                 return new Instrument(name, assetType, underlying, source, isin, code, exchange, category, indexCategory, currency, googleCode, active);
             } catch (Exception e) {
-                logger.warn(String.format("Could not map %s to an instrument", line), e);
+                log.warn(String.format("Could not map %s to an instrument", line), e);
                 throw e;
             }
         }
@@ -189,7 +187,7 @@ public sealed class Instrument permits FxInstrument {
                 }
             }
         } catch (IOException e) {
-            LOGGER.warn("Unable to load instruments for currency resolution", e);
+            log.warn("Unable to load instruments for currency resolution", e);
         }
 
         try {
@@ -198,7 +196,7 @@ public sealed class Instrument permits FxInstrument {
                 return stock.getCurrency();
             }
         } catch (IOException e) {
-            LOGGER.warn("Unable to resolve currency for " + symbol, e);
+            log.warn("Unable to resolve currency for " + symbol, e);
         }
 
         return UNKNOWN_TEXT;

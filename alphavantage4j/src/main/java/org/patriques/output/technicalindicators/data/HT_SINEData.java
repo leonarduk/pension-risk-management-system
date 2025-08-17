@@ -2,6 +2,9 @@ package org.patriques.output.technicalindicators.data;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Representation of Hilbert transform, sine wave indicator json objects, i.e:
  * "2000-01-24": {
@@ -9,28 +12,10 @@ import java.time.LocalDateTime;
  *   "SINE": "-0.9737"
  * }
  */
+@AllArgsConstructor
+@Getter
 public class HT_SINEData {
   private final LocalDateTime datetime;
   private final double leadSine;
   private final double sine;
-
-  public HT_SINEData(LocalDateTime datetime,
-                   double leadSine,
-                   double sine) {
-    this.datetime = datetime;
-    this.leadSine = leadSine;
-    this.sine = sine;
-  }
-
-  public LocalDateTime getDateTime() {
-    return datetime;
-  }
-
-  public double getLeadSine() {
-    return leadSine;
-  }
-
-  public double getSine() {
-    return sine;
-  }
 }

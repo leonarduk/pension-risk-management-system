@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -19,32 +23,11 @@ import org.patriques.output.quote.data.StockQuote;
  *
  * @see BatchStockQuotes
  */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public class BatchStockQuotesResponse {
   private final Map<String, String> metaData;
   private final List<StockQuote> stockQuotes;
-
-  private BatchStockQuotesResponse(final Map<String, String> metaData, final List<StockQuote> stockQuotes) {
-    this.stockQuotes = stockQuotes;
-    this.metaData = metaData;
-  }
-
-  /**
-   * Meta data for response
-   *
-   * @return map of keys and values in json representation of metadata.
-   */
-  public Map<String, String> getMetaData() {
-    return metaData;
-  }
-
-  /**
-   * List of StockQuote
-   *
-   * @return list of {@link StockQuote}
-   */
-  public List<StockQuote> getStockQuotes() {
-    return stockQuotes;
-  }
 
   /**
    * Creates {@code BatchStockQuotesResponse} instance from json.
