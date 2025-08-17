@@ -5,7 +5,6 @@ import com.amazonaws.lambda.thirdparty.com.google.gson.Gson;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
 import com.leonarduk.aws.QueryRunner;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,21 +15,21 @@ public class SqsHandler implements RequestHandler<SQSEvent, Void> {
     private final QueryRunner queryRunner;
 
     public SqsHandler() {
-        this.queryRunner = new QueryRunner();
+        queryRunner = new QueryRunner();
     }
 
     @Override
-    public Void handleRequest(SQSEvent event, Context context) {
-        if (event == null || event.getRecords() == null || event.getRecords().isEmpty()){
-            log.info("SQS Message has no records");
+    public Void handleRequest(final SQSEvent event, final Context context) {
+        if (null == event || null == event.getRecords() || event.getRecords().isEmpty()){
+            SqsHandler.log.info("SQS Message has no records");
         }
 
-        assert event != null;
-        for (SQSMessage msg : event.getRecords()) {
-            String messageBody = msg.getBody();
+        assert null != event;
+        for (final SQSEvent.SQSMessage msg : event.getRecords()) {
+            final String messageBody = msg.getBody();
             try {
-                this.queryRunner.getResults(getParameterMap(messageBody));
-            } catch (Exception e) {
+                queryRunner.getResults(this.getParameterMap(messageBody));
+            } catch (final Exception e) {
                 System.err.printf("""
                         Error parsing message\s
                          %s.\s
@@ -40,9 +39,9 @@ public class SqsHandler implements RequestHandler<SQSEvent, Void> {
         return null;
     }
 
-    public Map<String, String> getParameterMap(String messageBody) {
-        Gson gson = new Gson();
-        QueryRequest request = gson.fromJson(messageBody, QueryRequest.class);
+    public Map<String, String> getParameterMap(final String messageBody) {
+        final Gson gson = new Gson();
+        final QueryRequest request = gson.fromJson(messageBody, QueryRequest.class);
         return Map.of(
                 QueryRunner.TICKER, request.getTicker(),
                 QueryRunner.YEARS, String.valueOf(request.getYears()),
