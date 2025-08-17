@@ -2,7 +2,7 @@ package org.patriques.input;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Builder for api parameters.

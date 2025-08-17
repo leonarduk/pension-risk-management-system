@@ -1,6 +1,6 @@
 package org.patriques;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.patriques.input.Function;
 import org.patriques.input.Symbol;
