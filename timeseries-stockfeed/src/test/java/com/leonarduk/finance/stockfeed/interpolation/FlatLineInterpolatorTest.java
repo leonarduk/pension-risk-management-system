@@ -5,9 +5,9 @@ import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLine
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.TimeSeriesInterpolator;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
@@ -23,7 +23,7 @@ public class FlatLineInterpolatorTest {
     private TimeSeriesInterpolator interpolator;
     private BarSeries series;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.interpolator = new FlatLineInterpolator();
         List<ExtendedHistoricalQuote> quotes = Arrays.asList(
@@ -42,15 +42,15 @@ public class FlatLineInterpolatorTest {
     public void testInterpolateTimeSeries() {
 
         final BarSeries actual = this.interpolator.interpolate(this.series);
-        Assert.assertEquals(10, actual.getBarCount());
-        Assert.assertEquals(LocalDate.parse("2017-04-03"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2017-04-04"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2017-04-05"), actual.getBar(2).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2017-04-07"), actual.getBar(4).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2017-04-14"), actual.getBar(9).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(10, actual.getBarCount());
+        Assertions.assertEquals(LocalDate.parse("2017-04-03"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(LocalDate.parse("2017-04-04"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(LocalDate.parse("2017-04-05"), actual.getBar(2).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(LocalDate.parse("2017-04-07"), actual.getBar(4).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(LocalDate.parse("2017-04-14"), actual.getBar(9).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
 
-        Assert.assertEquals(actual.getBar(0).getClosePrice(), actual.getBar(1).getClosePrice());
-        Assert.assertEquals(actual.getBar(4).getClosePrice(), actual.getBar(5).getClosePrice());
+        Assertions.assertEquals(actual.getBar(0).getClosePrice(), actual.getBar(1).getClosePrice());
+        Assertions.assertEquals(actual.getBar(4).getClosePrice(), actual.getBar(5).getClosePrice());
 
     }
 
@@ -71,11 +71,11 @@ public class FlatLineInterpolatorTest {
 
         LocalDate lastDate = extended.get(extended.size() - 1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        Assert.assertEquals(6, extended.size());
-        Assert.assertEquals(LocalDate.parse("2017-04-13"), lastDate);
+        Assertions.assertEquals(6, extended.size());
+        Assertions.assertEquals(LocalDate.parse("2017-04-13"), lastDate);
         long occurrences = extended.stream()
                 .filter(bar -> bar.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(lastDate)).count();
-        Assert.assertEquals(1, occurrences);
+        Assertions.assertEquals(1, occurrences);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class FlatLineInterpolatorTest {
                 count++;
             }
         }
-        Assert.assertEquals(1, count);
+        Assertions.assertEquals(1, count);
     }
 
 }

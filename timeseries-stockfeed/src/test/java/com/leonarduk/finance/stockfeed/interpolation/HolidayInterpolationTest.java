@@ -4,9 +4,9 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.FlatLineInterpolator;
 import com.leonarduk.finance.stockfeed.datatransformation.interpolation.TimeSeriesInterpolator;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class HolidayInterpolationTest {
     private BarSeries series;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         List<ExtendedHistoricalQuote> quotes = Arrays.asList(
                 new ExtendedHistoricalQuote(Instrument.UNKNOWN, LocalDate.parse("2022-12-23"), 100.0, 100.0, 100.0,
@@ -39,12 +39,12 @@ public class HolidayInterpolationTest {
     public void testSkipsUKBankHolidaysFlatLine() {
         TimeSeriesInterpolator flat = new FlatLineInterpolator();
         BarSeries actual = flat.interpolate(this.series);
-        Assert.assertEquals(2, actual.getBarCount());
-        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(2, actual.getBarCount());
+        Assertions.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
         for (int i = 0; i < actual.getBarCount(); i++) {
             LocalDate date = actual.getBar(i).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
-            Assert.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
+            Assertions.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
         }
     }
 
@@ -52,12 +52,12 @@ public class HolidayInterpolationTest {
     public void testSkipsUKBankHolidaysLinear() {
         TimeSeriesInterpolator linear = new com.leonarduk.finance.stockfeed.datatransformation.interpolation.LinearInterpolator();
         BarSeries actual = linear.interpolate(this.series);
-        Assert.assertEquals(2, actual.getBarCount());
-        Assert.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        Assert.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(2, actual.getBarCount());
+        Assertions.assertEquals(LocalDate.parse("2022-12-23"), actual.getBar(0).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
+        Assertions.assertEquals(LocalDate.parse("2022-12-28"), actual.getBar(1).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
         for (int i = 0; i < actual.getBarCount(); i++) {
             LocalDate date = actual.getBar(i).getEndTime().atZone(ZoneId.systemDefault()).toLocalDate();
-            Assert.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
+            Assertions.assertFalse(date.equals(LocalDate.parse("2022-12-26")) || date.equals(LocalDate.parse("2022-12-27")));
         }
     }
 }

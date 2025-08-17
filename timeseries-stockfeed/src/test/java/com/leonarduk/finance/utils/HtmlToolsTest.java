@@ -1,7 +1,7 @@
 package com.leonarduk.finance.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class HtmlToolsTest {
 
@@ -10,7 +10,7 @@ public class HtmlToolsTest {
         StringBuilder sb = new StringBuilder();
         String malicious = "<script>alert(1)</script>";
         HtmlTools.addField(malicious, sb, null);
-        Assert.assertEquals("<td bgcolor='white'>&lt;script&gt;alert(1)&lt;/script&gt;</td>", sb.toString());
+        Assertions.assertEquals("<td bgcolor='white'>&lt;script&gt;alert(1)&lt;/script&gt;</td>", sb.toString());
     }
 
     @Test
@@ -18,6 +18,6 @@ public class HtmlToolsTest {
         StringBuilder sb = new StringBuilder();
         String malicious = "<script>alert(1)</script>";
         HtmlTools.addHeader(malicious, sb);
-        Assert.assertEquals("<th>&lt;script&gt;alert(1)&lt;/script&gt;</th>", sb.toString());
+        Assertions.assertEquals("<th>&lt;script&gt;alert(1)&lt;/script&gt;</th>", sb.toString());
     }
 }

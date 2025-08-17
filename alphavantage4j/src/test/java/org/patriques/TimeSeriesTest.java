@@ -1,6 +1,6 @@
 package org.patriques;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.patriques.input.timeseries.Interval;
 import org.patriques.input.timeseries.OutputSize;
 import org.patriques.input.ApiParameter;
@@ -9,7 +9,7 @@ import org.patriques.output.timeseries.*;
 import org.patriques.output.timeseries.data.StockData;
 
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TimeSeriesTest {
 
@@ -34,10 +34,10 @@ public class TimeSeriesTest {
         assertNotNull(result.getStockData());
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testIntraDayError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.intraDay("IBM", Interval.ONE_MIN);
+        assertThrows(AlphaVantageException.class, () -> ts.intraDay("IBM", Interval.ONE_MIN));
     }
 
     @Test
@@ -51,10 +51,10 @@ public class TimeSeriesTest {
         assertEquals(1.0, daily.getStockData().get(0).getOpen(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testDailyError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.daily("IBM");
+        assertThrows(AlphaVantageException.class, () -> ts.daily("IBM"));
     }
 
     @Test
@@ -70,10 +70,10 @@ public class TimeSeriesTest {
         assertEquals(1.0, da.getStockData().get(0).getAdjustedClose(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testDailyAdjustedError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.dailyAdjusted("IBM");
+        assertThrows(AlphaVantageException.class, () -> ts.dailyAdjusted("IBM"));
     }
 
     @Test
@@ -85,10 +85,10 @@ public class TimeSeriesTest {
         assertEquals(1.0, weekly.getStockData().get(0).getOpen(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testWeeklyError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.weekly("IBM");
+        assertThrows(AlphaVantageException.class, () -> ts.weekly("IBM"));
     }
 
     @Test
@@ -102,10 +102,10 @@ public class TimeSeriesTest {
         assertEquals(1.0, wa.getStockData().get(0).getAdjustedClose(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testWeeklyAdjustedError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.weeklyAdjusted("IBM");
+        assertThrows(AlphaVantageException.class, () -> ts.weeklyAdjusted("IBM"));
     }
 
     @Test
@@ -117,10 +117,10 @@ public class TimeSeriesTest {
         assertEquals(1.0, monthly.getStockData().get(0).getOpen(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testMonthlyError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.monthly("IBM");
+        assertThrows(AlphaVantageException.class, () -> ts.monthly("IBM"));
     }
 
     @Test
@@ -134,10 +134,10 @@ public class TimeSeriesTest {
         assertEquals(1.0, ma.getStockData().get(0).getAdjustedClose(), 0.0);
     }
 
-    @Test(expected = AlphaVantageException.class)
+    @Test
     public void testMonthlyAdjustedError() {
         TimeSeries ts = new TimeSeries(connectorWith(ERROR_JSON));
-        ts.monthlyAdjusted("IBM");
+        assertThrows(AlphaVantageException.class, () -> ts.monthlyAdjusted("IBM"));
     }
 }
 

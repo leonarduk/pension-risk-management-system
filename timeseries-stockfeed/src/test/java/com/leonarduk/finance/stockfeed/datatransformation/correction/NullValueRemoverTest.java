@@ -1,8 +1,8 @@
 package com.leonarduk.finance.stockfeed.datatransformation.correction;
 
 import com.leonarduk.finance.utils.TimeseriesUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 
 import java.time.LocalDate;
@@ -18,7 +18,7 @@ public class NullValueRemoverTest {
                 TimeseriesUtils.createSyntheticBar(LocalDate.of(2020,1,2), 0.0, 0.0, "")
         );
         List<Bar> cleaned = new NullValueRemover().clean(history);
-        Assert.assertEquals(1, cleaned.size());
-        Assert.assertEquals(10.0, cleaned.get(0).getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals(1, cleaned.size());
+        Assertions.assertEquals(10.0, cleaned.get(0).getClosePrice().doubleValue(), 0.0001);
     }
 }

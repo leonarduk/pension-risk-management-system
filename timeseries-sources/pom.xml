@@ -20,7 +20,6 @@
                 <start-class>com.leonarduk.finance.springboot.App</start-class>
                 <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
                 <org.seleniumhq.selenium.version>4.13.0</org.seleniumhq.selenium.version>
-                <org.junit.jupiter.version>5.13.0-M3</org.junit.jupiter.version>
                 <org.ta4j.version>0.18</org.ta4j.version>
                 <org.jfree.version>3.4.4</org.jfree.version>
                 <org.apache.xmlgraphics.version>1.19</org.apache.xmlgraphics.version>
@@ -57,10 +56,17 @@
                        <version>2.17.2</version>
                </dependency>
 
-                <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-                <dependency>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
+               <!-- JetBrains annotations -->
+               <dependency>
+                       <groupId>org.jetbrains</groupId>
+                       <artifactId>annotations</artifactId>
+                       <version>24.1.0</version>
+               </dependency>
+
+               <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+               <dependency>
+                       <groupId>org.projectlombok</groupId>
+                       <artifactId>lombok</artifactId>
                         <scope>provided</scope>
                 </dependency>
 
@@ -95,7 +101,6 @@
                 <dependency>
                         <groupId>ch.qos.logback</groupId>
                         <artifactId>logback-classic</artifactId>
-                        <version>1.5.18</version>
                 </dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -135,7 +140,6 @@
                <dependency>
                        <groupId>org.slf4j</groupId>
                        <artifactId>slf4j-api</artifactId>
-                       <version>2.0.17</version>
                </dependency>
 		<!-- ta4j -->
 		<dependency>
@@ -162,23 +166,18 @@
                         <version>7.3.0</version>
                 </dependency>
 
-		<!-- test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-		</dependency>
-                <dependency>
+               <!-- test -->
+               <dependency>
                         <groupId>com.google.code.gson</groupId>
                         <artifactId>gson</artifactId>
                         <version>2.13.1</version>
-                </dependency>
-                <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter</artifactId>
-                        <version>${org.junit.jupiter.version}</version>
-                        <scope>test</scope>
-                </dependency>
+               </dependency>
+               <dependency>
+                       <groupId>org.junit.jupiter</groupId>
+                       <artifactId>junit-jupiter</artifactId>
+                       <version>${junit5.version}</version>
+                       <scope>test</scope>
+               </dependency>
     </dependencies>
 	<build>
 		<plugins>

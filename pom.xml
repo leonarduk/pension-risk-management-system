@@ -18,8 +18,7 @@
         <jacoco.version>0.8.13</jacoco.version>
         <jahoo.finance.version>3.17.0</jahoo.finance.version>
         <java.version>21</java.version>
-        <junit.version>4.13.2</junit.version>
-        <junit5.version>5.13.0-M3</junit5.version>
+        <junit5.version>5.10.2</junit5.version>
         <log4jdbc.log4j2.version>1.16</log4jdbc.log4j2.version>
         <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
         <maven.compiler.release>21</maven.compiler.release>
@@ -31,6 +30,7 @@
         <org.apache.commons.version>3.18.0</org.apache.commons.version>
         <javax.xml.bind.version>2.4.0-b180830.0359</javax.xml.bind.version>
         <lombok.version>1.18.38</lombok.version>
+        <logback.version>1.5.18</logback.version>
     </properties>
 
     <build>
@@ -64,6 +64,16 @@
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.2.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.2.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -131,6 +141,36 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.5.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.44.5</version>
+                <configuration>
+                    <java>
+                        <googleJavaFormat/>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.6.4</version>
+                <configuration>
+                    <failOnError>true</failOnError>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -144,6 +184,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.21.0</version>
+                <configuration>
+                    <failOnViolation>true</failOnViolation>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -154,9 +197,13 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.8.5.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <failOnViolation>true</failOnViolation>
+                    <configLocation>google_checks.xml</configLocation>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -180,9 +227,9 @@
                 <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${org.slf4j.version}</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
 
             <dependency>
@@ -230,7 +277,7 @@
         <module>timeseries-stockfeed</module>
         <module>timeseries-spring-boot-server</module>
         <module>timeseries-lambda</module>
-<!--        <module>timeseries-python</module>-->
+        <module>timeseries-python</module>
     </modules>
     <organization>
         <name>Leonard UK Ltd</name>

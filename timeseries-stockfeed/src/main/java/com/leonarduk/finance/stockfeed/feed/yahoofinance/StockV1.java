@@ -211,16 +211,16 @@ public class StockV1 {
     }
 
     public void print() {
-        System.out.println(this.getSymbol());
-        System.out.println("--------------------------------");
+        log.info(this.getSymbol());
+        log.info("--------------------------------");
         for (final Field f : this.getClass().getDeclaredFields()) {
             try {
-                System.out.println(f.getName() + ": " + f.get(this));
+                log.info("{}: {}", f.getName(), f.get(this));
             } catch (final IllegalArgumentException | IllegalAccessException ex) {
-                log.error(null, ex);
+                log.error("Error accessing field", ex);
             }
         }
-        System.out.println("--------------------------------");
+        log.info("--------------------------------");
     }
 
     @Override

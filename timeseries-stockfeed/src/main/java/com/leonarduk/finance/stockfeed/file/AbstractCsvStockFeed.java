@@ -18,6 +18,9 @@ import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
@@ -33,13 +36,13 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
     private Date startDate;
     private Optional<BigDecimal> volume;
 
-    protected static String formatDate(final DateFormat formatter, final Date date) {
+    protected static @NotNull String formatDate(@NotNull final DateFormat formatter, @NotNull final Date date) {
         synchronized (formatter) {
             return formatter.format(date);
         }
     }
 
-    public ExtendedHistoricalQuote asHistoricalQuote() {
+    public @NotNull ExtendedHistoricalQuote asHistoricalQuote() {
         return new ExtendedHistoricalQuote(this.instrument.code(), DateUtils.dateToCalendar(this.date),
                 this.getOpen().orElse(null), this.getLow().orElse(null), this.getHigh().orElse(null),
                 this.getClose().orElse(null), this.getClose().orElse(null),
@@ -47,14 +50,18 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
     }
 
     @Override
-    public Optional<StockV1> get(final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) throws IOException {
+    public @NotNull Optional<StockV1> get(@NotNull final Instrument instrument, final int years, boolean addLatestQuoteToTheSeries) throws IOException {
+        Objects.requireNonNull(instrument, "instrument");
         return this.get(instrument, LocalDate.now().minusYears(years), LocalDate.now(), addLatestQuoteToTheSeries);
     }
 
     @Override
-    public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate,
+    public @NotNull Optional<StockV1> get(@NotNull final Instrument instrument, @NotNull final LocalDate fromDate, @NotNull final LocalDate toDate,
                                  boolean addLatestQuoteToTheSeries)
             throws IOException {
+        Objects.requireNonNull(instrument, "instrument");
+        Objects.requireNonNull(fromDate, "fromDate");
+        Objects.requireNonNull(toDate, "toDate");
         if (!this.isAvailable()) {
             log.warn("Feed is not available");
             return Optional.empty();
@@ -101,18 +108,18 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
      * @return close
      * @see #next()
      */
-    public Optional<BigDecimal> getClose() {
+    public @NotNull Optional<BigDecimal> getClose() {
         return this.close;
     }
 
-    public String getComment() {
+    public @NotNull String getComment() {
         if (StringUtils.isEmpty(this.comment)) {
             return this.getClass().getName();
         }
         return this.comment;
     }
 
-    public void setComment(final String comment) {
+    public void setComment(@Nullable final String comment) {
         this.comment = comment;
     }
 
@@ -122,24 +129,24 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
      * @return date
      * @see #next()
      */
-    public Date getDate() {
+    public @Nullable Date getDate() {
         return this.date;
     }
 
-    public Date getEndDate() {
+    public @Nullable Date getEndDate() {
         return this.endDate;
     }
 
-    public AbstractCsvStockFeed setEndDate(final Calendar endDate) {
+    public @NotNull AbstractCsvStockFeed setEndDate(@Nullable final Calendar endDate) {
         return this.setEndDate(endDate != null ? endDate.getTime() : null);
     }
 
-    public AbstractCsvStockFeed setEndDate(final Date endDate) {
+    public @NotNull AbstractCsvStockFeed setEndDate(@Nullable final Date endDate) {
         this.endDate = endDate;
         return this;
     }
 
-    public Exchange getExchange() {
+    public @NotNull Exchange getExchange() {
         return this.instrument.getExchange();
     }
 
@@ -149,16 +156,16 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
      * @return high
      * @see #next()
      */
-    public Optional<BigDecimal> getHigh() {
+    public @NotNull Optional<BigDecimal> getHigh() {
         return this.high;
     }
 
-    public Instrument getInstrument() {
+    public @NotNull Instrument getInstrument() {
         return this.instrument;
     }
 
-    public void setInstrument(final Instrument instrument) {
-        this.instrument = instrument;
+    public void setInstrument(@NotNull final Instrument instrument) {
+        this.instrument = Objects.requireNonNull(instrument, "instrument");
     }
 
     /**
@@ -167,7 +174,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
      * @return low
      * @see #next()
      */
-    public Optional<BigDecimal> getLow() {
+    public @NotNull Optional<BigDecimal> getLow() {
         return this.low;
     }
 
@@ -177,30 +184,30 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
      * @return open
      * @see #next()
      */
-    public Optional<BigDecimal> getOpen() {
+    public @NotNull Optional<BigDecimal> getOpen() {
         return this.open;
     }
 
-    protected abstract String getQueryName(final Instrument instrument);
+    protected abstract @NotNull String getQueryName(@NotNull final Instrument instrument);
 
-    public BufferedReader getReader() {
+    public @Nullable BufferedReader getReader() {
         return this.reader;
     }
 
-    public Date getStartDate() {
+    public @Nullable Date getStartDate() {
         return this.startDate;
     }
 
-    public AbstractCsvStockFeed setStartDate(final Calendar startDate) {
+    public @NotNull AbstractCsvStockFeed setStartDate(@Nullable final Calendar startDate) {
         return this.setStartDate(startDate != null ? startDate.getTime() : null);
     }
 
-    public AbstractCsvStockFeed setStartDate(final Date startDate) {
+    public @NotNull AbstractCsvStockFeed setStartDate(@Nullable final Date startDate) {
         this.startDate = startDate;
         return this;
     }
 
-    public String getSymbol() {
+    public @NotNull String getSymbol() {
         return this.instrument.code();
     }
 
@@ -210,7 +217,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
      * @return volume
      * @see #next()
      */
-    public Optional<BigDecimal> getVolume() {
+    public @NotNull Optional<BigDecimal> getVolume() {
         return this.volume;
     }
 
@@ -232,9 +239,9 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
         return this.parseReader(this.reader);
     }
 
-    protected abstract BufferedReader openReader() throws IOException;
+    protected abstract @NotNull BufferedReader openReader() throws IOException;
 
-    private Optional<BigDecimal> parseBigDecimal(final String input) {
+    private @NotNull Optional<BigDecimal> parseBigDecimal(@NotNull final String input) {
         try {
             if ("-".equals(input)) {
                 return Optional.empty();
@@ -246,11 +253,11 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
         }
     }
 
-    protected Date parseDate(final String fieldValue) throws ParseException {
+    protected @NotNull Date parseDate(@NotNull final String fieldValue) throws ParseException {
         return DateUtils.parseDate(fieldValue);
     }
 
-    protected boolean parseReader(final BufferedReader reader2) throws IOException {
+    protected boolean parseReader(@NotNull final BufferedReader reader2) throws IOException {
         try {
             String line = reader2.readLine();
             if ((line == null) || (line.isEmpty())) {
@@ -307,7 +314,7 @@ public abstract class AbstractCsvStockFeed extends AbstractStockFeed {
         }
     }
 
-    public AbstractCsvStockFeed release() {
+    public @NotNull AbstractCsvStockFeed release() {
         if (this.reader != null) {
             try {
                 this.reader.close();

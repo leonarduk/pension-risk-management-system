@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,7 +36,7 @@ class StockFeedEndpointTest {
     private JavaMailSender mailSender;
 
     @Test
-    void displayHistoryReturnsHtmlTable() throws Exception {
+    void displayHistoryReturnsJsonData() throws Exception {
         Instrument instrument = Instrument.CASH;
         StockV1 stock = AbstractStockFeed.createStock(instrument, Collections.emptyList());
         Mockito.when(stockFeed.get(argThat(i -> i.getCode().equals("CASH")), eq(LocalDate.parse("2024-01-01")),
@@ -51,8 +50,8 @@ class StockFeedEndpointTest {
                         .param("cleanDate", "true")
                         .param("category", "Cash"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(content().string(containsString("<html")));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[]"));
     }
 
     @Test

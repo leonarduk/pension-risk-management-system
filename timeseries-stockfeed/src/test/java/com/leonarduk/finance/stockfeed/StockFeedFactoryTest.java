@@ -7,8 +7,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class StockFeedFactoryTest {
 
         StockFeed feed = factory.getDataFeed(Source.MANUAL);
 
-        Assert.assertTrue(feed instanceof CachedStockFeed);
+        Assertions.assertTrue(feed instanceof CachedStockFeed);
         Mockito.verify(dataStore).isAvailable();
     }
 
@@ -36,28 +36,28 @@ public class StockFeedFactoryTest {
 
         StockFeed feed = factory.getDataFeed(Source.MANUAL);
 
-        Assert.assertTrue(feed instanceof CachedStockFeed);
+        Assertions.assertTrue(feed instanceof CachedStockFeed);
 
         Field field = CachedStockFeed.class.getDeclaredField("dataStore");
         field.setAccessible(true);
         DataStore used = (DataStore) field.get(feed);
-        Assert.assertNotSame(dataStore, used);
+        Assertions.assertNotSame(dataStore, used);
     }
 
     @Test
     public void testReturnsSpecificFeedsForSources() {
         StockFeedFactory factory = new StockFeedFactory(Mockito.mock(DataStore.class));
 
-        Assert.assertTrue(factory.getDataFeed(Source.FT) instanceof FTFeed);
-        Assert.assertTrue(factory.getDataFeed(Source.ALPHAVANTAGE) instanceof AlphavantageFeed);
-        Assert.assertTrue(factory.getDataFeed(Source.STOOQ) instanceof StooqFeed);
+        Assertions.assertTrue(factory.getDataFeed(Source.FT) instanceof FTFeed);
+        Assertions.assertTrue(factory.getDataFeed(Source.ALPHAVANTAGE) instanceof AlphavantageFeed);
+        Assertions.assertTrue(factory.getDataFeed(Source.STOOQ) instanceof StooqFeed);
     }
 
     @Test
     public void testReturnsStooqFeedForUnknownSource() {
         StockFeedFactory factory = new StockFeedFactory(Mockito.mock(DataStore.class));
         StockFeed feed = factory.getDataFeed(Source.GOOGLE);
-        Assert.assertTrue(feed instanceof StooqFeed);
+        Assertions.assertTrue(feed instanceof StooqFeed);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class StockFeedFactoryTest {
         boolean warningLogged = listAppender.list.stream()
                 .anyMatch(event -> event.getLevel().equals(Level.WARN)
                         && event.getFormattedMessage().contains("Primary data store unavailable"));
-        Assert.assertTrue("Warning should be logged when data store is unavailable", warningLogged);
+        Assertions.assertTrue("Warning should be logged when data store is unavailable", warningLogged);
     }
 }
 

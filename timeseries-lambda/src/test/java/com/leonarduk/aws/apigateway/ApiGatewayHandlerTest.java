@@ -29,7 +29,7 @@ class ApiGatewayHandlerTest {
     void uploadsResultToS3() throws Exception {
         AmazonS3 s3 = Mockito.mock(AmazonS3.class);
         QueryRunner runner = Mockito.mock(QueryRunner.class);
-        Mockito.when(runner.getResults(Mockito.any())).thenReturn("HTML");
+        Mockito.when(runner.getResults(Mockito.any())).thenReturn("JSON");
 
         ApiGatewayHandler handler = buildHandler(s3, runner, "bucket");
 
@@ -39,7 +39,7 @@ class ApiGatewayHandlerTest {
         APIGatewayProxyResponseEvent response = handler.handleRequest(request, null);
 
         Assertions.assertEquals(200, response.getStatusCode());
-        Mockito.verify(s3).putObject(Mockito.eq("bucket"), Mockito.eq("results/TEST.html"), Mockito.anyString());
+        Mockito.verify(s3).putObject(Mockito.eq("bucket"), Mockito.eq("results/TEST.json"), Mockito.anyString());
     }
 
     @Test
@@ -48,7 +48,7 @@ class ApiGatewayHandlerTest {
         Mockito.doThrow(new AmazonServiceException("fail"))
                 .when(s3).putObject(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         QueryRunner runner = Mockito.mock(QueryRunner.class);
-        Mockito.when(runner.getResults(Mockito.any())).thenReturn("HTML");
+        Mockito.when(runner.getResults(Mockito.any())).thenReturn("JSON");
 
         ApiGatewayHandler handler = buildHandler(s3, runner, "bucket");
 

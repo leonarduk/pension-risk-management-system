@@ -2,8 +2,8 @@ package com.leonarduk.finance.stockfeed.datatransformation.correction;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ta4j.core.Bar;
 
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ public class ValueScalingTransformerTest {
         );
         ValueScalingTransformer transformer = new ValueScalingTransformer(Instrument.CASH, 10.0);
         List<Bar> scaled = transformer.clean(history);
-        Assert.assertEquals(1, scaled.size());
-        Assert.assertEquals(20.0, scaled.get(0).getClosePrice().doubleValue(), 0.0001);
+        Assertions.assertEquals(1, scaled.size());
+        Assertions.assertEquals(20.0, scaled.get(0).getClosePrice().doubleValue(), 0.0001);
     }
 }
