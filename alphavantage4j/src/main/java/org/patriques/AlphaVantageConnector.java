@@ -16,9 +16,10 @@ import org.patriques.output.AlphaVantageException;
  * @see ApiConnector
  */
 public class AlphaVantageConnector implements ApiConnector {
-  private static final String BASE_URL = "https://www.alphavantage.co/query?";
+  private static final String DEFAULT_BASE_URL = "https://www.alphavantage.co/query?";
   private final String apiKey;
   private final int timeOut;
+  private final String baseUrl;
 
   /**
    * Creates an AlphaVantageConnector.
@@ -27,15 +28,28 @@ public class AlphaVantageConnector implements ApiConnector {
    * @param timeOut the timeout for when reading the connection should give up.
    */
   public AlphaVantageConnector(String apiKey, int timeOut) {
+    this(apiKey, timeOut, DEFAULT_BASE_URL);
+  }
+
+  /**
+   * Creates an AlphaVantageConnector with a custom base URL. Primarily used for
+   * testing to point at a mock HTTP server.
+   *
+   * @param apiKey the secret key to access the api.
+   * @param timeOut the timeout for when reading the connection should give up.
+   * @param baseUrl base URL including query path and trailing question mark.
+   */
+  public AlphaVantageConnector(String apiKey, int timeOut, String baseUrl) {
     this.apiKey = apiKey;
     this.timeOut = timeOut;
+    this.baseUrl = baseUrl;
   }
 
   @Override
   public String getRequest(ApiParameter... apiParameters) {
     String params = getParameters(apiParameters);
     try {
-      URL request = new URL(BASE_URL + params);
+      URL request = new URL(baseUrl + params);
       URLConnection connection = request.openConnection();
       connection.setConnectTimeout(timeOut);
       connection.setReadTimeout(timeOut);
