@@ -3,10 +3,11 @@ package com.leonarduk.finance.stockfeed;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.ExtendedStockQuote;
 
 import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 public interface QuoteFeed {
 
-    ExtendedStockQuote getStockQuote(Instrument instrument) throws IOException;
+    @NotNull ExtendedStockQuote getStockQuote(@NotNull Instrument instrument) throws IOException;
 
     boolean isAvailable();
 
