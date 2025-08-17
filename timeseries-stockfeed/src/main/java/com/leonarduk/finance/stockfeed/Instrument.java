@@ -174,9 +174,12 @@ public sealed class Instrument permits FxInstrument {
 
     public static String resolveCurrency(final String symbol) {
         String lookupSymbol = symbol;
+        String suffix = "";
         final String fullStop = ".";
         if (lookupSymbol.contains(fullStop) && !lookupSymbol.endsWith(".A")) {
-            lookupSymbol = lookupSymbol.substring(0, lookupSymbol.indexOf(fullStop));
+            int pos = lookupSymbol.indexOf(fullStop);
+            suffix = lookupSymbol.substring(pos + 1);
+            lookupSymbol = lookupSymbol.substring(0, pos);
         }
 
         try {
@@ -199,6 +202,22 @@ public sealed class Instrument permits FxInstrument {
             log.warn("Unable to resolve currency for " + symbol, e);
         }
 
+        if (StringUtils.isNotBlank(suffix)) {
+            switch (suffix.toUpperCase()) {
+                case "L":
+                case "LON":
+                case "LONDON":
+                    return "GBP";
+                case "N":
+                case "NY":
+                case "NYQ":
+                case "NA":
+                    return "USD";
+                default:
+                    break;
+            }
+        }
+
         return UNKNOWN_TEXT;
     }
 
@@ -209,7 +228,7 @@ public sealed class Instrument permits FxInstrument {
         if (StringUtils.isNotBlank(instrument.getCurrency()) && !UNKNOWN_TEXT.equalsIgnoreCase(instrument.getCurrency())) {
             return instrument;
         }
-        String resolved = resolveCurrency(instrument.getCode());
+        String resolved = resolveCurrency(instrument.getGoogleCode());
         return fromString(instrument.getCode(), instrument.getExchange().name(), instrument.assetType().name(), resolved);
     }
 
