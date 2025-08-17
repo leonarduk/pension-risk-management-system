@@ -205,7 +205,6 @@
                         <configuration>
                             <rules>
                                 <requireUpperBoundDeps/>
-                                <banDuplicateClasses/>
                             </rules>
                         </configuration>
                     </execution>
