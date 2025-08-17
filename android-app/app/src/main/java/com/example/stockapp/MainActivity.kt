@@ -2,57 +2,39 @@ package com.example.stockapp
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ListView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.stockapp.api.RetrofitClient
-import com.example.stockapp.api.StockService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var listView: ListView
-    private val service: StockService = RetrofitClient.instance.create(StockService::class.java)
+    private lateinit var retryButton: Button
+    private val viewModel: StockViewModel by viewModels()
+    private lateinit var adapter: ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         listView = findViewById(R.id.listView)
-        loadTickers()
-    }
+        retryButton = findViewById(R.id.retryButton)
 
-    private fun loadTickers() {
-        service.listTickers().enqueue(object : Callback<List<String>> {
-            override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-                if (response.isSuccessful) {
-                    val tickers = response.body() ?: emptyList()
-                    fetchPrices(tickers)
-                }
-            }
-
-            override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                // Handle error
-            }
-        })
-    }
-
-    private fun fetchPrices(tickers: List<String>) {
-        val items = mutableListOf<String>()
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, items)
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
         listView.adapter = adapter
-        for (ticker in tickers) {
-            service.getPrice(ticker).enqueue(object : Callback<Double> {
-                override fun onResponse(call: Call<Double>, response: Response<Double>) {
-                    val price = response.body()
-                    items.add("$ticker: ${'$'}price")
-                    adapter.notifyDataSetChanged()
-                }
 
-                override fun onFailure(call: Call<Double>, t: Throwable) {
-                    items.add("$ticker: error")
-                    adapter.notifyDataSetChanged()
-                }
-            })
+        retryButton.setOnClickListener { viewModel.retry() }
+
+        viewModel.items.observe(this) { items ->
+            adapter.clear()
+            adapter.addAll(items)
+            adapter.notifyDataSetChanged()
         }
+
+        viewModel.error.observe(this) { msg ->
+            msg?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+        }
+
+        viewModel.loadData()
     }
 }
