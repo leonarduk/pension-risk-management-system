@@ -9,9 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +26,7 @@ public class StooqFeed extends AbstractCsvStockFeed {
 
     private static final String PARAM_SYMBOL = "s";
 
-    private static final DateFormat PARAM_FORMATTER = new SimpleDateFormat("yyyyMMdd");
+    private static final DateTimeFormatter PARAM_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private static final String PARAM_INTERFACE = "i";
 

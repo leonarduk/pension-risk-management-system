@@ -14,10 +14,10 @@ import org.ta4j.core.Bar;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.List;
@@ -69,17 +69,14 @@ public class S3DataStore extends AbstractCsvStockFeed implements DataStore {
 
     @Override
     protected BufferedReader openReader() throws IOException {
-        File file = new File(getQueryName(getInstrument()));
-        S3DataStore.log.info("Read file from " + file.getAbsolutePath());
+        Path path = new File(getQueryName(getInstrument())).toPath();
+        S3DataStore.log.info("Read file from " + path.toAbsolutePath());
 
-        if (!file.exists()) {
-            throw new IOException(file.getAbsolutePath() + " not found");
+        if (!Files.exists(path)) {
+            throw new IOException(path.toAbsolutePath() + " not found");
         }
 
-        FileReader in = new FileReader(file, StandardCharsets.UTF_8);
-        BufferedReader br = new BufferedReader(in);
-
-        // Skip first line that contains column names
+        BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8);
         br.readLine();
         return br;
     }

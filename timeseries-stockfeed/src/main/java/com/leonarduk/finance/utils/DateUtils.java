@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class DateUtils {
-    private static Map<String, Date> dates;
+    private static Map<String, LocalDate> dates;
 
     /**
      * Path to the default holiday configuration file on the classpath.
@@ -88,12 +88,6 @@ public class DateUtils {
     public static Calendar localDateToCalendar(final LocalDate date) {
         final ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneId.systemDefault());
         return GregorianCalendar.from(zonedDateTime);
-    }
-
-    public static Calendar dateToCalendar(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
     }
 
     public static int getDiffInWorkDays(LocalDate startDate, LocalDate endDate) {
@@ -179,12 +173,11 @@ public class DateUtils {
         return returnDate;
     }
 
-    public static Date parseDate(String fieldValue) throws ParseException {
+    public static LocalDate parseDate(String fieldValue) throws ParseException {
         if (null == dates) {
             dates = Maps.newConcurrentMap();
         }
-        return (dates.computeIfAbsent(fieldValue,
-                v -> convertToDateViaInstant(LocalDate.parse(v, DateTimeFormatter.ISO_DATE))));
+        return dates.computeIfAbsent(fieldValue, v -> LocalDate.parse(v, DateTimeFormatter.ISO_DATE));
     }
 
     public static final String TIMEZONE = "America/New_York";
@@ -226,10 +219,6 @@ public class DateUtils {
             log.trace("Failed to parse dividend date: {}", date, ex);
             return null;
         }
-    }
-
-    public static Date convertToDateViaInstant(final LocalDate fromDate) {
-        return java.util.Date.from(fromDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 
 }

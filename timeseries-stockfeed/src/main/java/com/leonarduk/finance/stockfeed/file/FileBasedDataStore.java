@@ -11,8 +11,9 @@ import org.ta4j.core.Bar;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 @Slf4j
@@ -59,18 +60,14 @@ public class FileBasedDataStore extends AbstractCsvStockFeed implements DataStor
 
     @Override
     protected BufferedReader openReader() throws IOException {
-        final File file = new File(this.storeLocation,
-                this.getQueryName(this.getInstrument()));
+        final File file = new File(this.storeLocation, this.getQueryName(this.getInstrument()));
         log.info("Read file from {}", file.getAbsolutePath());
 
         if (!file.exists()) {
             throw new IOException(file.getAbsolutePath() + " not found");
         }
 
-        final FileReader in = new FileReader(file);
-        final BufferedReader br = new BufferedReader(in);
-
-        // Skip first line that contains column names
+        BufferedReader br = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
         br.readLine();
         return br;
     }

@@ -46,8 +46,8 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
     @Override
     public Optional<StockV1> get(final Instrument instrument, final LocalDate fromDate, final LocalDate toDate, boolean addLatestQuoteToTheSeries) {
         log.info(String.format("Get %s for %s to %s", instrument.getName(), fromDate.toString(), toDate.toString()));
-        if (instrument instanceof FxInstrument fXInstrument) {
-            return getFxSeriesInternal(fXInstrument.getCurrencyOne(), fXInstrument.getCurrencyTwo(), fromDate, toDate)
+        if (instrument.getAssetType() == Instrument.AssetType.FX) {
+            return getFxSeriesInternal(instrument.getCategory(), instrument.getIndexCategory(), fromDate, toDate)
                     .map(series -> {
                         try {
                             return new StockV1(instrument, series);
@@ -132,7 +132,7 @@ public class AlphavantageFeed extends AbstractStockFeed implements QuoteFeed, Fx
             Daily fxResults = foreignExchange.daily(currencyOne.toUpperCase(), currencyTwo.toUpperCase(), OutputSize.FULL);
             List<ForexData> fxData = fxResults.getForexData();
 
-            return convertFxSeries(new FxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo), fxData);
+            return convertFxSeries(Instrument.fxInstrument(Source.ALPHAVANTAGE, currencyOne, currencyTwo), fxData);
         });
     }
 

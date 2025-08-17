@@ -17,7 +17,7 @@ public class FxFeedTest {
         FxFeed mockFeed = Mockito.mock(FxFeed.class);
         LocalDate from = LocalDate.now().minusDays(1);
         LocalDate to = LocalDate.now();
-        Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
+        Instrument instrument = Instrument.fxInstrument(Source.MANUAL, "USD", "GBP");
         List<Bar> series = List.of(
                 new ExtendedHistoricalQuote(instrument, from, 1d, 1d, 1d, 1d, 1d, 0L, "test"),
                 new ExtendedHistoricalQuote(instrument, to, 1d, 1d, 1d, 1d, 1d, 0L, "test"));

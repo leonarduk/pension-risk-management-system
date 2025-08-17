@@ -17,7 +17,7 @@ public class CachedStockFeedTest {
     public void testLoadSeriesReturnsCachedData() throws Exception {
         DataStore store = Mockito.mock(DataStore.class);
         CachedStockFeed feed = new CachedStockFeed(store);
-        Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
+        Instrument instrument = Instrument.fxInstrument(Source.MANUAL, "USD", "GBP");
         List<Bar> history = List.of(
                 new ExtendedHistoricalQuote(instrument, LocalDate.now().minusDays(1), 1d, 1d, 1d, 1d, 1d, 0L, "orig"));
         StockV1 cached = new StockV1(instrument, history);
@@ -32,7 +32,7 @@ public class CachedStockFeedTest {
     public void testLoadSeriesReturnsEmptyWhenCacheMiss() throws Exception {
         DataStore store = Mockito.mock(DataStore.class);
         CachedStockFeed feed = new CachedStockFeed(store);
-        Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
+        Instrument instrument = Instrument.fxInstrument(Source.MANUAL, "USD", "GBP");
         StockV1 stock = new StockV1(instrument, List.of());
         Mockito.when(store.get(instrument, 1000, false)).thenReturn(Optional.empty());
 
@@ -45,7 +45,7 @@ public class CachedStockFeedTest {
     public void testStoreSeriesMergesExistingData() throws Exception {
         DataStore store = Mockito.mock(DataStore.class);
         CachedStockFeed feed = new CachedStockFeed(store);
-        Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
+        Instrument instrument = Instrument.fxInstrument(Source.MANUAL, "USD", "GBP");
 
         List<Bar> originalHistory = List.of(
                 new ExtendedHistoricalQuote(instrument, LocalDate.now().minusDays(2), 1d, 1d, 1d, 1d, 1d, 0L, "orig"));
@@ -68,7 +68,7 @@ public class CachedStockFeedTest {
     public void testStoreSeriesWithoutExistingData() throws Exception {
         DataStore store = Mockito.mock(DataStore.class);
         CachedStockFeed feed = new CachedStockFeed(store);
-        Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
+        Instrument instrument = Instrument.fxInstrument(Source.MANUAL, "USD", "GBP");
         StockV1 stock = new StockV1(instrument, List.of());
 
         Mockito.when(store.contains(stock)).thenReturn(false);

@@ -2,62 +2,42 @@ package com.leonarduk.finance.stockfeed;
 
 import com.leonarduk.finance.stockfeed.StockFeed.Exchange;
 import com.leonarduk.finance.utils.ResourceTools;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-public sealed class Instrument permits FxInstrument {
-    public Instrument() {
-    }
-
-    private AssetType assetType;
-
-    private String category;
-
-    private String code;
-
-    private String currency;
-
-    private Exchange exchange;
-
-    private String googleCode;
-
-    private String indexCategory;
-
-    private String isin;
-
-    private String name;
-
-    private Source source;
-
-    private AssetType underlyingType;
-
-    private boolean active = true;
-
-    public static final Instrument CASH = new Instrument("CASH", AssetType.CASH, AssetType.CASH, Source.MANUAL,
-            Instrument.CASH_TEXT, Instrument.CASH_TEXT, Exchange.LONDON, Instrument.CASH_TEXT, "", Instrument.GBP, "N/A", true);
-
-    private static final String CASH_TEXT = "Cash";
+public record Instrument(
+        String name,
+        AssetType assetType,
+        AssetType underlyingType,
+        Source source,
+        String isin,
+        String code,
+        Exchange exchange,
+        String category,
+        String indexCategory,
+        String currency,
+        String googleCode,
+        boolean active
+) implements Comparable<Instrument> {
 
     public static final String GBP = "GBP";
-
-
-    public static final Instrument UNKNOWN = new Instrument(Instrument.UNKNOWN_TEXT, AssetType.UNKNOWN,
-            AssetType.UNKNOWN, Source.MANUAL, Instrument.UNKNOWN_TEXT, Instrument.UNKNOWN_TEXT, Exchange.LONDON,
-            Instrument.UNKNOWN_TEXT, "", Instrument.GBP, Instrument.UNKNOWN_TEXT, true);
-
+    private static final String CASH_TEXT = "Cash";
     private static final String UNKNOWN_TEXT = "UNKNOWN";
 
+    public static final Instrument CASH = new Instrument(CASH_TEXT, AssetType.CASH, AssetType.CASH, Source.MANUAL,
+            CASH_TEXT, CASH_TEXT, Exchange.LONDON, CASH_TEXT, "", GBP, "N/A", true);
+
+    public static final Instrument UNKNOWN = new Instrument(UNKNOWN_TEXT, AssetType.UNKNOWN, AssetType.UNKNOWN,
+            Source.MANUAL, UNKNOWN_TEXT, UNKNOWN_TEXT, Exchange.LONDON, UNKNOWN_TEXT, "", GBP, UNKNOWN_TEXT, true);
 
     public enum AssetType {
         BOND, CASH, COMMODITIES, EQUITY, ETF, FUND, FX, PORTFOLIO, PROPERTY, INDEX, INVESTMENT_TRUST, UNKNOWN, OTHER;
@@ -66,7 +46,7 @@ public sealed class Instrument permits FxInstrument {
             try {
                 return AssetType.valueOf(value.toUpperCase());
             } catch (final IllegalArgumentException e) {
-                log.warn("Cannot map " + e + " to AssetType");
+                log.warn("Cannot map {} to AssetType", value);
                 return AssetType.UNKNOWN;
             }
         }
@@ -95,6 +75,16 @@ public sealed class Instrument permits FxInstrument {
             return instance;
         }
 
+        private void init(String resource) throws IOException, URISyntaxException {
+            List<String> lines = ResourceTools.getLines(resource);
+            this.instruments = lines.stream()
+                    .skip(1)
+                    .map(this::create)
+                    .filter(Instrument::isActive)
+                    .collect(Collectors.toMap(i -> i.isin().toUpperCase(), Function.identity()));
+            this.instruments.put(Instrument.CASH.isin().toUpperCase(), Instrument.CASH);
+        }
+
         private Instrument create(final String line) {
             try {
                 List<String> strings = Arrays.asList(line.split(","));
@@ -121,31 +111,12 @@ public sealed class Instrument permits FxInstrument {
             }
         }
 
-        public void init(String filePath) throws IOException, URISyntaxException {
-            // Load all instruments from the CSV and retain only those marked as active.
-            List<Instrument> activeInstruments = ResourceTools.getResourceAsLines(filePath).stream()
-                    .skip(1)
-                    .map(this::create)
-                    .filter(Instrument::isActive)
-                    .collect(Collectors.toList());
-
-            // Map ticker codes to instruments.
-            this.instruments = activeInstruments.stream()
-                    .collect(Collectors.toConcurrentMap(i -> i.getCode().toUpperCase(), i -> i));
-
-            // Add alternative identifiers (ISIN and Google codes) for lookups.
-            activeInstruments.forEach(i -> this.instruments.put(i.getIsin().toUpperCase(), i));
-            activeInstruments.forEach(i -> this.instruments.put(i.getGoogleCode().toUpperCase(), i));
-            this.instruments.put(Instrument.CASH.isin.toUpperCase(), Instrument.CASH);
-        }
-
         public Map<String, Instrument> getInstruments() {
-            // instruments already contains only active entries; expose an unmodifiable view
             return Collections.unmodifiableMap(instruments);
         }
     }
 
-    public static Instrument fromString(final String symbol)  {
+    public static Instrument fromString(final String symbol) {
         if(symbol.contains(":")){
             String[] parts = symbol.split(":");
             return fromString(parts[0], parts[1], parts[2], parts[3]);
@@ -182,8 +153,8 @@ public sealed class Instrument permits FxInstrument {
         try {
             if (InstrumentLoader.getInstance().getInstruments().containsKey(lookupSymbol.toUpperCase())) {
                 Instrument instrument = InstrumentLoader.getInstance().getInstruments().get(lookupSymbol.toUpperCase());
-                if (StringUtils.isNotBlank(instrument.getCurrency())) {
-                    return instrument.getCurrency();
+                if (StringUtils.isNotBlank(instrument.currency())) {
+                    return instrument.currency();
                 }
             }
         } catch (IOException e) {
@@ -206,139 +177,35 @@ public sealed class Instrument permits FxInstrument {
         if (instrument == null) {
             return null;
         }
-        if (StringUtils.isNotBlank(instrument.getCurrency()) && !UNKNOWN_TEXT.equalsIgnoreCase(instrument.getCurrency())) {
+        if (StringUtils.isNotBlank(instrument.currency()) && !UNKNOWN_TEXT.equalsIgnoreCase(instrument.currency())) {
             return instrument;
         }
-        String resolved = resolveCurrency(instrument.getCode());
-        return fromString(instrument.getCode(), instrument.getExchange().name(), instrument.assetType().name(), resolved);
+        String resolved = resolveCurrency(instrument.code());
+        return fromString(instrument.code(), instrument.exchange().name(), instrument.assetType().name(), resolved);
     }
 
-
-    protected Instrument(final String name, final AssetType type, final AssetType underlying, final Source source,
-                         final String isin, final String code, final Exchange exchange, final String category, final String indexCategory, final String currency,
-                         final String googleCode, final boolean active) {
-        this.assetType = type;
-        this.underlyingType = underlying;
-        this.source = source;
-        this.isin = isin;
-        this.code = code;
-        this.name = name;
-        this.category = category;
-        this.indexCategory = indexCategory;
-        this.currency = currency;
-        this.googleCode = googleCode;
-        this.exchange = exchange;
-        this.active = active;
+    public static Instrument fxInstrument(Source source, String currencyOne, String currencyTwo) {
+        return new Instrument(currencyOne + "/" + currencyTwo,
+                AssetType.FX, AssetType.FX, source,
+                currencyOne + currencyTwo, currencyOne + currencyTwo,
+                Exchange.NA, currencyOne, currencyTwo, currencyTwo, "", true);
     }
 
-    public AssetType assetType() {
-        return this.assetType;
-    }
+    // compatibility getters
+    public AssetType getAssetType() { return assetType; }
+    public String getCategory() { return category; }
+    public String getIndexCategory() { return indexCategory; }
+    public String getCode() { return code; }
+    public String getCurrency() { return currency; }
+    public Exchange getExchange() { return exchange; }
+    public String getGoogleCode() { return googleCode; }
+    public String getIsin() { return isin; }
+    public String getName() { return name; }
+    public Source getSource() { return source; }
+    public boolean isActive() { return active; }
 
-    public String category() {
-        return this.category;
-    }
-
-    public String indexCategory() {
-        return this.indexCategory;
-    }
-
-    public String code() {
-        return this.code;
-    }
-
+    @Override
     public int compareTo(final Instrument instrument) {
         return this.code.compareTo(instrument.code);
     }
-
-    public String currency() {
-        return this.currency;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Instrument castOther)) {
-            return false;
-        }
-        return new EqualsBuilder().append(this.assetType, castOther.assetType).append(this.category, castOther.category)
-                .append(this.indexCategory, castOther.indexCategory)
-                .append(this.code, castOther.code).append(this.currency, castOther.currency)
-                .append(this.exchange, castOther.exchange).append(this.googleCode, castOther.googleCode)
-                .append(this.isin, castOther.isin).append(this.name, castOther.name)
-                .append(this.source, castOther.source).append(this.underlyingType, castOther.underlyingType)
-                .append(this.active, castOther.active)
-                .isEquals();
-    }
-
-    public AssetType getAssetType() {
-        return this.assetType;
-    }
-
-    public String getCategory() {
-        return this.category;
-    }
-
-    public String getIndexCategory() {
-        return this.indexCategory;
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public String getCurrency() {
-        return this.currency;
-    }
-
-    public Exchange getExchange() {
-        return this.exchange;
-    }
-
-    public String getGoogleCode() {
-        return this.googleCode;
-    }
-
-    public String getIsin() {
-        return this.isin;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Source getSource() {
-        return this.source;
-    }
-
-    public boolean isActive() {
-        return this.active;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(this.assetType).append(this.category).append(this.code)
-                .append(this.indexCategory).append(this.currency).append(this.exchange).append(this.googleCode).append(this.isin).append(this.name)
-                .append(this.source).append(this.underlyingType).append(this.active).toHashCode();
-    }
-
-    public String isin() {
-        return this.isin;
-    }
-
-    public Source source() {
-        return this.source;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("assetType", this.assetType).append("category", this.category)
-                .append("indexCategory", this.indexCategory).append("code", this.code).append("currency", this.currency).append("exchange", this.exchange)
-                .append("googleCode", this.googleCode).append("isin", this.isin).append("name", this.name)
-                .append("source", this.source).append("underlyingType", this.underlyingType).append("active", this.active).toString();
-    }
-
-    public AssetType underlyingType() {
-        return this.underlyingType;
-    }
-
 }
