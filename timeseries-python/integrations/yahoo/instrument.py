@@ -89,7 +89,6 @@ def bulk_add_from_yahoo(xml_in: str, tickers: set[str], xml_out: str):
     """
     print(f"🔎  starting bulk import for {len(tickers)} tickers")
 
-    # <<<<<<<<<<  tree is created right here  >>>>>>>>>>
     tree = ET.parse(xml_in)
     root = tree.getroot()
     secs = root.find(".//securities")
@@ -130,7 +129,6 @@ def bulk_add_from_yahoo(xml_in: str, tickers: set[str], xml_out: str):
 
         print(f"  ✅  added/updated {tkr:<8}  → {inst_json['name'][:40]}")
 
-    # <<<<<<<<<<  and we can still see `tree` here  >>>>>>>>>>
     tree.write(xml_out, encoding="utf-8", xml_declaration=True)
     print(f"\n✅  bulk import finished → {xml_out}")
 
