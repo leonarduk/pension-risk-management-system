@@ -9,6 +9,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.leonarduk.aws.QueryRunner;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Map;
  *
  * @see <a href=https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html>Lambda Java Handler</a> for more information
  */
+@Slf4j
 public class ApiGatewayHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
@@ -56,7 +58,7 @@ public class ApiGatewayHandler
             responseEvent.setBody("S3_ERROR: " + e.getMessage());
             responseEvent.setStatusCode(502);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to handle request", e);
             responseEvent.setBody("FAILED: " + e.getMessage());
             responseEvent.setStatusCode(500);
         }
