@@ -6,7 +6,6 @@
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
-      <env name="FINNHUB_API_KEY" value="btjtt2v48v6vivbnrcf0" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/integrations/finnhub" />
