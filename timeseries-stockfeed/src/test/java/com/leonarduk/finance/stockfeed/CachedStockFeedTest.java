@@ -18,8 +18,9 @@ public class CachedStockFeedTest {
         DataStore store = Mockito.mock(DataStore.class);
         CachedStockFeed feed = new CachedStockFeed(store);
         Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
+        LocalDate date = LocalDate.of(2024, 1, 2);
         List<Bar> history = List.of(
-                new ExtendedHistoricalQuote(instrument, LocalDate.now().minusDays(1), 1d, 1d, 1d, 1d, 1d, 0L, "orig"));
+                new ExtendedHistoricalQuote(instrument, date.minusDays(1), 1d, 1d, 1d, 1d, 1d, 0L, "orig"));
         StockV1 cached = new StockV1(instrument, history);
         Mockito.when(store.get(instrument, 1000, false)).thenReturn(Optional.of(cached));
 
@@ -47,12 +48,13 @@ public class CachedStockFeedTest {
         CachedStockFeed feed = new CachedStockFeed(store);
         Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
 
+        LocalDate date = LocalDate.of(2024, 1, 3);
         List<Bar> originalHistory = List.of(
-                new ExtendedHistoricalQuote(instrument, LocalDate.now().minusDays(2), 1d, 1d, 1d, 1d, 1d, 0L, "orig"));
+                new ExtendedHistoricalQuote(instrument, date.minusDays(2), 1d, 1d, 1d, 1d, 1d, 0L, "orig"));
         StockV1 originalStock = new StockV1(instrument, originalHistory);
 
         List<Bar> newHistory = List.of(
-                new ExtendedHistoricalQuote(instrument, LocalDate.now().minusDays(1), 2d, 2d, 2d, 2d, 2d, 0L, "new"));
+                new ExtendedHistoricalQuote(instrument, date.minusDays(1), 2d, 2d, 2d, 2d, 2d, 0L, "new"));
         StockV1 newStock = new StockV1(instrument, newHistory);
 
         Mockito.when(store.contains(newStock)).thenReturn(true);

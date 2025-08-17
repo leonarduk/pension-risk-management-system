@@ -27,15 +27,19 @@ public class StooqFeedLimiterTest {
     @Test
     public void testLimitExceeded() throws IOException {
         TestStooqFeed feed = new TestStooqFeed();
-        feed.get(Instrument.fromString("AAA"), LocalDate.now().minusDays(1), LocalDate.now(), false);
-        feed.get(Instrument.fromString("BBB"), LocalDate.now().minusDays(1), LocalDate.now(), false);
+        LocalDate end = LocalDate.of(2024, 1, 2);
+        LocalDate start = end.minusDays(1);
+        feed.get(Instrument.fromString("AAA"), start, end, false);
+        feed.get(Instrument.fromString("BBB"), start, end, false);
+        LocalDate finalStart = start;
+        LocalDate finalEnd = end;
         Assertions.assertThrows(
                 DailyLimitExceededException.class,
                 () ->
                         feed.get(
                                 Instrument.fromString("CCC"),
-                                LocalDate.now().minusDays(1),
-                                LocalDate.now(),
+                                finalStart,
+                                finalEnd,
                                 false));
     }
 

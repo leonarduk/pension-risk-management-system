@@ -15,8 +15,8 @@ public class FxFeedTest {
     @Test
     public void testGetFxSeriesReturnsData() {
         FxFeed mockFeed = Mockito.mock(FxFeed.class);
-        LocalDate from = LocalDate.now().minusDays(1);
-        LocalDate to = LocalDate.now();
+        LocalDate to = LocalDate.of(2024, 1, 2);
+        LocalDate from = to.minusDays(1);
         Instrument instrument = new FxInstrument(Source.MANUAL, "USD", "GBP");
         List<Bar> series = List.of(
                 new ExtendedHistoricalQuote(instrument, from, 1d, 1d, 1d, 1d, 1d, 0L, "test"),
@@ -30,8 +30,8 @@ public class FxFeedTest {
     @Test
     public void testGetFxSeriesUnknownPairReturnsEmptyList() {
         FxFeed mockFeed = Mockito.mock(FxFeed.class);
-        LocalDate from = LocalDate.now().minusDays(1);
-        LocalDate to = LocalDate.now();
+        LocalDate to = LocalDate.of(2024, 1, 2);
+        LocalDate from = to.minusDays(1);
         Mockito.when(mockFeed.getFxSeries("AAA", "BBB", from, to)).thenReturn(Collections.emptyList());
 
         List<Bar> result = mockFeed.getFxSeries("AAA", "BBB", from, to);
