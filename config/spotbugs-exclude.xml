@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter xmlns="http://findbugs.sourceforge.net/filter/3.0.0">
+    <Match>
+        <Package name="~.*"/>
+    </Match>
+</FindBugsFilter>
