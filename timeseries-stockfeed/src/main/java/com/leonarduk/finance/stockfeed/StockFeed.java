@@ -5,6 +5,7 @@ import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 public interface StockFeed {
     enum Exchange {
@@ -17,7 +18,7 @@ public interface StockFeed {
         private final String yahooSuffix;
         private final String stooqSuffix;
 
-        public String getYahooSuffix() {
+        public @NotNull String getYahooSuffix() {
             return yahooSuffix;
         }
 
@@ -27,21 +28,21 @@ public interface StockFeed {
         }
 
 
-        public String getStooqSuffix() {
+        public @NotNull String getStooqSuffix() {
             return stooqSuffix;
         }
     }
 
-    Optional<StockV1> get(Instrument fromString, int i, boolean addLatestQuoteToTheSeries) throws IOException;
+    @NotNull Optional<StockV1> get(@NotNull Instrument fromString, int i, boolean addLatestQuoteToTheSeries) throws IOException;
 
-    Optional<StockV1> get(Instrument instrument, int years, boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException;
+    @NotNull Optional<StockV1> get(@NotNull Instrument instrument, int years, boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException;
 
-    Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException;
+    @NotNull Optional<StockV1> get(@NotNull Instrument instrument, @NotNull LocalDate fromDate, @NotNull LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException;
 
-    Optional<StockV1> get(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate, boolean interpolate,
+    @NotNull Optional<StockV1> get(@NotNull Instrument instrument, @NotNull LocalDate fromLocalDate, @NotNull LocalDate toLocalDate, boolean interpolate,
                           boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException;
 
-    Object getSource();
+    @NotNull Object getSource();
 
     boolean isAvailable();
 

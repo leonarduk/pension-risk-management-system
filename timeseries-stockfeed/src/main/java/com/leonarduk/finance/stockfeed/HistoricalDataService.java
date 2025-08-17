@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Service for retrieving and formatting historical data from a {@link StockFeed}.
@@ -20,8 +23,8 @@ import java.util.*;
 public class HistoricalDataService {
     private final StockFeed stockFeed;
 
-    public HistoricalDataService(StockFeed stockFeed) {
-        this.stockFeed = stockFeed;
+    public HistoricalDataService(@NotNull StockFeed stockFeed) {
+        this.stockFeed = Objects.requireNonNull(stockFeed, "stockFeed");
     }
 
     /**
@@ -40,8 +43,9 @@ public class HistoricalDataService {
      * @return list of {@link DataField} records
      * @throws IOException when the underlying feed cannot be accessed
      */
-    public List<List<DataField>> getRecords(Map<String, String> params) throws IOException {
-        if (params == null || !params.containsKey("ticker") || StringUtils.isBlank(params.get("ticker"))) {
+    public @NotNull List<List<DataField>> getRecords(@NotNull Map<String, String> params) throws IOException {
+        Objects.requireNonNull(params, "params");
+        if (!params.containsKey("ticker") || StringUtils.isBlank(params.get("ticker"))) {
             throw new IllegalArgumentException("Ticker parameter is required");
         }
 
@@ -122,12 +126,15 @@ public class HistoricalDataService {
     /**
      * Generates {@link DataField} records for the supplied instrument and period.
      */
-    public List<List<DataField>> generateRecords(Instrument instrument,
-                                                 LocalDate fromLocalDate,
-                                                 LocalDate toLocalDate,
+    public @NotNull List<List<DataField>> generateRecords(@NotNull Instrument instrument,
+                                                 @NotNull LocalDate fromLocalDate,
+                                                 @NotNull LocalDate toLocalDate,
                                                  boolean interpolate,
                                                  boolean cleanData,
-                                                 Double scaling) throws IOException {
+                                                 @Nullable Double scaling) throws IOException {
+        Objects.requireNonNull(instrument, "instrument");
+        Objects.requireNonNull(fromLocalDate, "fromLocalDate");
+        Objects.requireNonNull(toLocalDate, "toLocalDate");
         List<Bar> historyData = getHistoryData(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, scaling);
         List<List<DataField>> records = new ArrayList<>();
         for (Bar historicalQuote : historyData) {
@@ -146,12 +153,15 @@ public class HistoricalDataService {
         return records;
     }
 
-    private List<Bar> getHistoryData(Instrument instrument,
-                                     LocalDate fromLocalDate,
-                                     LocalDate toLocalDate,
+    private @NotNull List<Bar> getHistoryData(@NotNull Instrument instrument,
+                                     @NotNull LocalDate fromLocalDate,
+                                     @NotNull LocalDate toLocalDate,
                                      boolean interpolate,
                                      boolean cleanData,
-                                     Double scaling) throws IOException {
+                                     @Nullable Double scaling) throws IOException {
+        Objects.requireNonNull(instrument, "instrument");
+        Objects.requireNonNull(fromLocalDate, "fromLocalDate");
+        Objects.requireNonNull(toLocalDate, "toLocalDate");
         Optional<StockV1> stock = stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate, cleanData, false);
         if (stock.isPresent()) {
             List<Bar> history = stock.get().getHistory();

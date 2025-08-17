@@ -57,10 +57,17 @@
                        <version>2.17.2</version>
                </dependency>
 
-                <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-                <dependency>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
+               <!-- JetBrains annotations -->
+               <dependency>
+                       <groupId>org.jetbrains</groupId>
+                       <artifactId>annotations</artifactId>
+                       <version>24.1.0</version>
+               </dependency>
+
+               <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+               <dependency>
+                       <groupId>org.projectlombok</groupId>
+                       <artifactId>lombok</artifactId>
                         <scope>provided</scope>
                 </dependency>
 
