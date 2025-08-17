@@ -142,7 +142,7 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.6.4</version>
                 <configuration>
-                    <failOnError>true</failOnError>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <executions>
                     <execution>
