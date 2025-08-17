@@ -30,6 +30,7 @@
         <org.apache.commons.version>3.18.0</org.apache.commons.version>
         <javax.xml.bind.version>2.4.0-b180830.0359</javax.xml.bind.version>
         <lombok.version>1.18.38</lombok.version>
+        <logback.version>1.5.18</logback.version>
     </properties>
 
     <build>
@@ -163,9 +164,9 @@
                 <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${org.slf4j.version}</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
 
             <dependency>
