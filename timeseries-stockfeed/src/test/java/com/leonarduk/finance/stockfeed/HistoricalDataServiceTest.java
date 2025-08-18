@@ -45,7 +45,7 @@ class HistoricalDataServiceTest {
         Instrument instrument = Instrument.fromString("TEST");
         Bar bar = new ExtendedHistoricalQuote(instrument, LocalDate.parse("2024-01-01"),
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.valueOf(2), BigDecimal.ONE, 0L, "");
-        when(feed.get(any(Instrument.class), any(LocalDate.class), any(LocalDate.class), anyBoolean(), anyBoolean(), eq(false)))
+        when(feed.get(eq(instrument), any(LocalDate.class), any(LocalDate.class), anyBoolean(), anyBoolean(), eq(false)))
                 .thenReturn(Optional.of(new StockV1(instrument, List.of(bar))));
 
         Map<String,String> params = Map.of("ticker","TEST","scaling","2.0");
@@ -59,7 +59,7 @@ class HistoricalDataServiceTest {
         StockFeed feed = Mockito.mock(StockFeed.class);
         HistoricalDataService service = new HistoricalDataService(feed);
         Instrument instrument = Instrument.fromString("TEST");
-        when(feed.get(any(Instrument.class), any(LocalDate.class), any(LocalDate.class), anyBoolean(), anyBoolean(), eq(false)))
+        when(feed.get(eq(instrument), any(LocalDate.class), any(LocalDate.class), anyBoolean(), anyBoolean(), eq(false)))
                 .thenReturn(Optional.of(new StockV1(instrument, List.of())));
 
         Map<String,String> params = Map.of(
@@ -70,7 +70,7 @@ class HistoricalDataServiceTest {
         service.getRecords(params);
         ArgumentCaptor<LocalDate> fromCaptor = ArgumentCaptor.forClass(LocalDate.class);
         ArgumentCaptor<LocalDate> toCaptor = ArgumentCaptor.forClass(LocalDate.class);
-        verify(feed).get(any(Instrument.class), fromCaptor.capture(), toCaptor.capture(), anyBoolean(), anyBoolean(), eq(false));
+        verify(feed).get(eq(instrument), fromCaptor.capture(), toCaptor.capture(), anyBoolean(), anyBoolean(), eq(false));
         Assertions.assertEquals(LocalDate.parse("2020-01-01"), fromCaptor.getValue());
         Assertions.assertEquals(LocalDate.parse("2020-01-10"), toCaptor.getValue());
     }
