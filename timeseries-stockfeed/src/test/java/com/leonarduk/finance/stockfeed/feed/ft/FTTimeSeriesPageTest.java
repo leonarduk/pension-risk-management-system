@@ -96,7 +96,7 @@ public class FTTimeSeriesPageTest {
         driver.quit();
         server.stop(0);
 
-        Assertions.assertTrue("Fallback should return data", barsOpt.isPresent());
+        Assertions.assertTrue(barsOpt.isPresent(), "Fallback should return data");
         Assertions.assertEquals(1, barsOpt.get().size());
     }
 }

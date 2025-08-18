@@ -24,3 +24,4 @@ anyio~=4.9.0
 curl_cffi~=0.10.0
 openai>=1.0.0
 Flask~=3.0.3
+pytest~=8.4.1

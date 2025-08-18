@@ -78,7 +78,7 @@ public class StockFeedFactoryTest {
         boolean warningLogged = listAppender.list.stream()
                 .anyMatch(event -> event.getLevel().equals(Level.WARN)
                         && event.getFormattedMessage().contains("Primary data store unavailable"));
-        Assertions.assertTrue("Warning should be logged when data store is unavailable", warningLogged);
+        Assertions.assertTrue(warningLogged, "Warning should be logged when data store is unavailable");
     }
 }
 

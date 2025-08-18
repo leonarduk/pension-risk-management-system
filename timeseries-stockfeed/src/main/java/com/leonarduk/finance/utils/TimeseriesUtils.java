@@ -102,7 +102,10 @@ public class TimeseriesUtils {
             return 1d;
         }
 
-        ensureSpecialRates();
+        if ((from.equals("USD") && (to.equals("GBP") || to.equals("GBX")))
+                || (to.equals("USD") && (from.equals("GBP") || from.equals("GBX")))) {
+            ensureSpecialRates();
+        }
 
         Pair<String, String> key = Pair.of(from, to);
         Double known = CURRENCY_CONVERSIONS.get(key);
@@ -244,6 +247,9 @@ public class TimeseriesUtils {
         StringBuilder sb = new StringBuilder("date,open,high,low,close,volume,comment\n");
         // TODO add comment field if necessary- look at how HTML tools does it
         for (Bar historicalQuote : series) {
+            if (historicalQuote.getEndTime() == null) {
+                continue;
+            }
             sb.append(historicalQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate().toString());
             StringUtils.addValue(sb, historicalQuote.getOpenPrice());
             StringUtils.addValue(sb, historicalQuote.getHighPrice());

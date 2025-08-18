@@ -1,8 +1,8 @@
 package com.leonarduk.finance.stockfeed.datatransformation.interpolation;
 
+import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.TimeseriesUtils;
-import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
 import org.ta4j.core.Bar;
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import java.time.ZoneId;
 
 public class LinearInterpolator extends AbstractLineInterpolator {
 
@@ -43,13 +42,16 @@ public class LinearInterpolator extends AbstractLineInterpolator {
                     "Copied from " + lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
         }
 
-        double interval = DateUtils.getDiffInWorkDays(lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
-                previous.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        if (interval == 0) {
+        double interval = DateUtils.getDiffInWorkDays(
+                previous.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()) - 1;
+        if (interval <= 0) {
             return new ExtendedHistoricalQuote(lastQuote, today,
                     "Copied from " + lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
         }
-        double multiplier = DateUtils.getDiffInWorkDays(today, lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()) / interval;
+        double multiplier = (DateUtils.getDiffInWorkDays(
+                lastQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), today) - 1)
+                / interval;
 
         Num changeClosePrice = lastQuote.getClosePrice().minus(previous.getClosePrice());
         Num changeOpenPrice = lastQuote.getOpenPrice().minus(previous.getOpenPrice());
@@ -93,9 +95,10 @@ public class LinearInterpolator extends AbstractLineInterpolator {
             }
         }
 
-        double interval = DateUtils.getDiffInWorkDays(next.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
-                firstQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        if (interval == 0) {
+        double interval = DateUtils.getDiffInWorkDays(
+                firstQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                next.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()) - 1;
+        if (interval <= 0) {
             try {
                 return TimeseriesUtils.createSyntheticQuote(firstQuote, fromDate,
                         BigDecimal.valueOf(firstQuote.getClosePrice().doubleValue()),
@@ -105,7 +108,9 @@ public class LinearInterpolator extends AbstractLineInterpolator {
                 throw new RuntimeException(e);
             }
         }
-        double multiplier = DateUtils.getDiffInWorkDays(firstQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), fromDate) / interval;
+        double multiplier = (DateUtils.getDiffInWorkDays(
+                fromDate, firstQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()) - 1)
+                / interval;
 
         Num changeClosePrice = next.getClosePrice().minus(firstQuote.getClosePrice());
         Num changeOpenPrice = next.getOpenPrice().minus(firstQuote.getOpenPrice());
@@ -129,9 +134,11 @@ public class LinearInterpolator extends AbstractLineInterpolator {
     @Override
     public Bar createSyntheticQuote(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote)
             throws IOException {
-        final double timeInteval = DateUtils.getDiffInWorkDays(nextQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
-                currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), currentDate);
+        final double timeInteval = DateUtils.getDiffInWorkDays(
+                currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                nextQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()) - 1;
+        final int dayCount = DateUtils.getDiffInWorkDays(
+                currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), currentDate) - 1;
         final double multiplier = dayCount / timeInteval;
 
         final Num changeClosePrice = nextQuote.getClosePrice().minus(currentQuote.getClosePrice());
@@ -152,8 +159,10 @@ public class LinearInterpolator extends AbstractLineInterpolator {
     public Bar createSyntheticBar(final Bar currentQuote, final LocalDate currentDate, final Bar nextQuote) {
 
         final double timeInterval = DateUtils.getDiffInWorkDays(
-                currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), nextQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate());
-        final int dayCount = DateUtils.getDiffInWorkDays(currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), currentDate);
+                currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(),
+                nextQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate()) - 1;
+        final int dayCount = DateUtils.getDiffInWorkDays(
+                currentQuote.getEndTime().atZone(ZoneId.systemDefault()).toLocalDate(), currentDate) - 1;
         final double multiplier = dayCount / timeInterval;
 
         final double changeClosePrice = nextQuote.getClosePrice().doubleValue()
