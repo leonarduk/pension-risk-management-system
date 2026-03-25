@@ -1,4 +1,4 @@
-FROM openjdk:18-jdk
+FROM eclipse-temurin:21-jre-alpine@sha256:6ad8ed080d9be96b61438ec3ce99388e294af216ed57356000c06070e85c5d5d
 
 # Placeholder environment variables for AWS credentials and SQS configuration
 ENV AWS_ACCESS_KEY_ID="" \
@@ -16,4 +16,3 @@ COPY target/timeseries-lambda-1.0-SNAPSHOT.jar /function
 ENTRYPOINT [ "java", "--add-opens", "java.base/java.util=ALL-UNNAMED", "-cp", "/function/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 #CMD ["com.leonarduk.aws.apigateway.ApiGatewayHandler::handleRequest"]
 CMD ["com.leonarduk.aws.sqs.SqsHandler::handleRequest"]
-
