@@ -252,6 +252,13 @@
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>${jacoco.version}</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.codehaus.plexus</groupId>
+								<artifactId>plexus-utils</artifactId>
+								<version>${plexus.utils.version}</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<goals>

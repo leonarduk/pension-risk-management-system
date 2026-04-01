@@ -24,6 +24,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <org.slf4j.version>2.0.17</org.slf4j.version>
+        <plexus.utils.version>4.0.3</plexus.utils.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rest.assured.version>5.5.0</rest.assured.version>
         <org.ta4j.version>0.18</org.ta4j.version>
@@ -105,6 +106,13 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.plexus</groupId>
+                            <artifactId>plexus-utils</artifactId>
+                            <version>${plexus.utils.version}</version>
+                        </dependency>
+                    </dependencies>
                     <executions>
                         <execution>
                             <goals>
