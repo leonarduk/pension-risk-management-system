@@ -5,7 +5,6 @@ import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.HistoricalDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ta4j.core.Bar;
@@ -22,8 +21,7 @@ import java.util.Optional;
 
 /**
  * Helper class used by AWS components to retrieve historical data and render it as
- * HTML. Parameter parsing and record generation are delegated to
- * {@link HistoricalDataService}.
+ * HTML.
  */
 @Slf4j
 public class QueryRunner {
@@ -33,7 +31,6 @@ public class QueryRunner {
     public static final String TICKER = "ticker";
 
     private final StockFeed stockFeed;
-    private final HistoricalDataService historicalDataService;
 
     public QueryRunner() {
         this(DependencyFactory.stockFeed());
@@ -41,7 +38,6 @@ public class QueryRunner {
 
     public QueryRunner(StockFeed stockFeed) {
         this.stockFeed = stockFeed;
-        this.historicalDataService = new HistoricalDataService(stockFeed);
     }
 
     /**
