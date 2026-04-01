@@ -3,6 +3,7 @@ package com.leonarduk.finance.stockfeed.file;
 import com.leonarduk.finance.stockfeed.AbstractStockFeed;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.feed.ExtendedHistoricalQuote;
+import com.leonarduk.finance.stockfeed.feed.stooq.DailyLimitExceededException;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
 import com.leonarduk.finance.utils.DateUtils;
 import com.leonarduk.finance.utils.NumberUtils;
