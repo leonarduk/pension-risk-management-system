@@ -19,7 +19,7 @@
         <properties>
                 <start-class>com.leonarduk.finance.springboot.App</start-class>
                 <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
-                <org.seleniumhq.selenium.version>4.13.0</org.seleniumhq.selenium.version>
+                <org.seleniumhq.selenium.version>4.32.0</org.seleniumhq.selenium.version>
                 <org.ta4j.version>0.18</org.ta4j.version>
                 <org.jfree.version>3.4.4</org.jfree.version>
                 <org.apache.xmlgraphics.version>1.19</org.apache.xmlgraphics.version>
@@ -94,7 +94,7 @@
                 <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/htmlunit-driver -->
                 <dependency>
                         <groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>htmlunit-driver</artifactId>
+			<artifactId>htmlunit3-driver</artifactId>
 			<version>${org.seleniumhq.selenium.version}</version>
 		</dependency>
                 <!-- Removed legacy SLF4J binding to Log4j 1.x -->
