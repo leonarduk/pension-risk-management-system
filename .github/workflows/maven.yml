@@ -48,7 +48,7 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: |
-          mvn -B spotless:apply --file pom.xml
+          mvn -B com.diffplug.spotless:spotless-maven-plugin:2.44.5:apply --file pom.xml
           mvn -B verify --file pom.xml
       - name: Log in to container registry
         uses: docker/login-action@v3
