@@ -94,7 +94,7 @@
                 <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/htmlunit-driver -->
                 <dependency>
                         <groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>htmlunit-driver</artifactId>
+			<artifactId>htmlunit3-driver</artifactId>
 			<version>${org.seleniumhq.selenium.version}</version>
 		</dependency>
                 <!-- Removed legacy SLF4J binding to Log4j 1.x -->

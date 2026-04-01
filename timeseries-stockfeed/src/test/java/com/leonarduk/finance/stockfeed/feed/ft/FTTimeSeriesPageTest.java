@@ -2,8 +2,8 @@ package com.leonarduk.finance.stockfeed.feed.ft;
 
 import com.leonarduk.finance.stockfeed.Instrument;
 import org.junit.jupiter.api.Assertions;
-import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
-import com.gargoylesoftware.htmlunit.WebClient;
+import org.htmlunit.SilentCssErrorHandler;
+import org.htmlunit.WebClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
@@ -96,7 +96,7 @@ public class FTTimeSeriesPageTest {
         driver.quit();
         server.stop(0);
 
-        Assertions.assertTrue("Fallback should return data", barsOpt.isPresent());
+        Assertions.assertTrue(barsOpt.isPresent(), "Fallback should return data");
         Assertions.assertEquals(1, barsOpt.get().size());
     }
 }
