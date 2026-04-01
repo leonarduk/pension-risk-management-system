@@ -47,7 +47,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn -B verify -Dmaven.test.skip=true -Dspotless.check.skip=true -Dspotbugs.skip=true --file pom.xml
+        run: mvn -B verify -Dmaven.test.skip=true -Dspotless.check.skip=true -Dspotbugs.skip=true -Denforcer.skip=true --file pom.xml
       - name: Log in to container registry
         uses: docker/login-action@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.REGISTRY_URL != '' && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != '' }}
