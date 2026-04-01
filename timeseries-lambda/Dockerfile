@@ -1,4 +1,4 @@
-FROM openjdk:26-rc-jdk-slim-trixie
+FROM eclipse-temurin:21-jre-ubi10-minimal@sha256:0c715a8e3cb716fe70b004c405fda5887f5876031df63a67f051bf11b6bc151b
 
 # Placeholder environment variables for AWS credentials and SQS configuration
 ENV AWS_ACCESS_KEY_ID="" \
