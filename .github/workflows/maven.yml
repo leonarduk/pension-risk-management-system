@@ -22,6 +22,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install pre-commit
+          pip install pytest
           pip install -r timeseries-python/requirements.txt
       - name: Run pre-commit
         run: pre-commit run --all-files --show-diff-on-failure
