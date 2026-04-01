@@ -9,6 +9,7 @@ textblob
 beautifulsoup4~=4.13.4
 requests~=2.33.0
 urllib3>=2.2.0  # Explicitly require modern urllib3 for security fixes
+filelock>=3.20.3  # Explicitly require patched filelock for CVE-2025-68146/CVE-2026-22701
 python-dotenv~=1.1.0
 
 numpy~=2.2.5
