@@ -1,4 +1,4 @@
-FROM openjdk:26-jdk
+FROM openjdk:26-rc-jdk-slim-trixie
 
 # Placeholder environment variables for AWS credentials and SQS configuration
 ENV AWS_ACCESS_KEY_ID="" \
