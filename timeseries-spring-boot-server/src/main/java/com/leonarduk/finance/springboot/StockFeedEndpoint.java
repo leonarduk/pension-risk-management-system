@@ -25,6 +25,7 @@ public class StockFeedEndpoint {
 
     @Autowired
     private final StockFeed stockFeed;
+    private final HistoricalDataService historicalDataService;
 
     /**
      * Constructor for dependency injection.

@@ -1,29 +1,27 @@
 package com.leonarduk.aws;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.StockFeed;
-
 import com.leonarduk.finance.stockfeed.feed.Commentable;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.leonarduk.finance.stockfeed.HistoricalDataService;
-import com.leonarduk.finance.utils.DataField;
-import com.leonarduk.finance.utils.HtmlTools;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.ta4j.core.Bar;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Optional;
-import java.util.LinkedHashMap;
 
 
 /**
  * Helper class used by AWS components to retrieve historical data and render it as
- * HTML. Parameter parsing and record generation are delegated to
- * {@link HistoricalDataService}.
+ * HTML.
  */
 @Slf4j
 public class QueryRunner {
@@ -33,7 +31,6 @@ public class QueryRunner {
     public static final String TICKER = "ticker";
 
     private final StockFeed stockFeed;
-    private final HistoricalDataService historicalDataService;
 
     public QueryRunner() {
         this(DependencyFactory.stockFeed());
@@ -41,7 +38,6 @@ public class QueryRunner {
 
     public QueryRunner(StockFeed stockFeed) {
         this.stockFeed = stockFeed;
-        this.historicalDataService = new HistoricalDataService(stockFeed);
     }
 
     /**
@@ -57,8 +53,17 @@ public class QueryRunner {
         }
         log.debug("Input parameters: {}", inputParams);
 
+        if (!inputParams.containsKey(QueryRunner.TICKER) || StringUtils.isBlank(inputParams.get(QueryRunner.TICKER))) {
+            throw new IllegalArgumentException("Ticker parameter is required");
+        }
 
-      String fromDate = inputParams.get("fromDate");
+        String ticker = inputParams.get(QueryRunner.TICKER);
+        int years = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get(QueryRunner.YEARS), "10"));
+        int months = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("months"), "0"));
+        int weeks = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("weeks"), "0"));
+        int days = Integer.parseInt(StringUtils.defaultIfEmpty(inputParams.get("days"), "0"));
+
+        String fromDate = inputParams.get("fromDate");
         String toDate = inputParams.get("toDate");
         boolean interpolate = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(QueryRunner.INTERPOLATE), "False"));
         boolean cleanData = Boolean.parseBoolean(StringUtils.defaultIfEmpty(inputParams.get(QueryRunner.CLEAN_DATA), "False"));
@@ -155,5 +160,19 @@ public class QueryRunner {
         }
 
         return records;
+    }
+
+    private List<Bar> getHistoryData(final Instrument instrument,
+                                     final LocalDate fromLocalDate,
+                                     final LocalDate toLocalDate,
+                                     final boolean interpolate,
+                                     final boolean cleanData,
+                                     final boolean addLatestQuoteToTheSeries) throws IOException {
+        Optional<StockV1> stock = stockFeed.get(instrument, fromLocalDate, toLocalDate, interpolate,
+                cleanData, addLatestQuoteToTheSeries);
+        if (stock.isPresent()) {
+            return stock.get().getHistory();
+        }
+        return new ArrayList<>();
     }
 }
