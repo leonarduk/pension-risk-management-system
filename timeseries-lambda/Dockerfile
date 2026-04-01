@@ -1,4 +1,4 @@
-FROM openjdk:18-jdk
+FROM openjdk:26-jdk
 
 # Placeholder environment variables for AWS credentials and SQS configuration
 ENV AWS_ACCESS_KEY_ID="" \
