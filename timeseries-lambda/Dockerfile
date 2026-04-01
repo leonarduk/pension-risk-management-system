@@ -1,4 +1,4 @@
-FROM openjdk:18-jdk
+FROM openjdk:26-rc-jdk-slim-trixie
 
 # Placeholder environment variables for AWS credentials and SQS configuration
 ENV AWS_ACCESS_KEY_ID="" \
@@ -16,4 +16,3 @@ COPY target/timeseries-lambda-1.0-SNAPSHOT.jar /function
 ENTRYPOINT [ "java", "--add-opens", "java.base/java.util=ALL-UNNAMED", "-cp", "/function/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 #CMD ["com.leonarduk.aws.apigateway.ApiGatewayHandler::handleRequest"]
 CMD ["com.leonarduk.aws.sqs.SqsHandler::handleRequest"]
-
