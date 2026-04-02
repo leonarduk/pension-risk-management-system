@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.13</version>
+        <version>3.5.11</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -27,8 +27,8 @@
                 <jacoco.version>0.8.13</jacoco.version>
                 <jahoo.finance.version>3.15.0</jahoo.finance.version>
                 <org.ta4j.version>0.18</org.ta4j.version>
-                <jackson.version>2.17.3</jackson.version>
                 <plexus.utils.version>4.0.3</plexus.utils.version>
+                <commons-io.version>2.14.0</commons-io.version>
         </properties>
 
         <repositories>
@@ -73,8 +73,18 @@
                         <artifactId>spring-boot-starter-mail</artifactId>
                 </dependency>
                 <dependency>
+                        <groupId>org.eclipse.angus</groupId>
+                        <artifactId>jakarta.mail</artifactId>
+                        <version>2.0.4</version>
+                </dependency>
+                <dependency>
                         <groupId>org.hibernate.validator</groupId>
                         <artifactId>hibernate-validator</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>commons-io</groupId>
+                        <artifactId>commons-io</artifactId>
+                        <version>${commons-io.version}</version>
                 </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -118,7 +128,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
 
     </dependencies>
@@ -195,7 +204,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.enforcer</groupId>
+                        <artifactId>enforcer-rules</artifactId>
+                        <version>3.6.0</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -208,6 +224,45 @@
                                 <requireUpperBoundDeps/>
                             </rules>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.21.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

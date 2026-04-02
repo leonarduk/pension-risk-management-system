@@ -1,20 +1,18 @@
 package com.leonarduk.finance.stockfeed.feed.stooq;
 
-import com.github.kevinsawicki.http.HttpRequest;
+import com.leonarduk.finance.stockfeed.CachedStockFeed;
+import com.leonarduk.finance.stockfeed.DataStore;
 import com.leonarduk.finance.stockfeed.Instrument;
 import com.leonarduk.finance.stockfeed.IntelligentStockFeed;
-import com.leonarduk.finance.stockfeed.DataStore;
+import com.leonarduk.finance.stockfeed.Source;
 import com.leonarduk.finance.stockfeed.StockFeed;
 import com.leonarduk.finance.stockfeed.StockFeedFactory;
 import com.leonarduk.finance.stockfeed.feed.yahoofinance.StockV1;
-import com.leonarduk.finance.stockfeed.Source;
-import com.leonarduk.finance.stockfeed.CachedStockFeed;
+import java.io.IOException;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.time.LocalDate;
 
 public class StooqFeedLimiterTest {
 
@@ -35,12 +33,7 @@ public class StooqFeedLimiterTest {
         LocalDate finalEnd = end;
         Assertions.assertThrows(
                 DailyLimitExceededException.class,
-                () ->
-                        feed.get(
-                                Instrument.fromString("CCC"),
-                                finalStart,
-                                finalEnd,
-                                false));
+                () -> feed.get(Instrument.fromString("CCC"), finalStart, finalEnd, false));
     }
 
     @Test
@@ -51,8 +44,7 @@ public class StooqFeedLimiterTest {
         IntelligentStockFeed feed = new IntelligentStockFeed(ds);
         TestStooqFeed stooq = new TestStooqFeed();
         TestStockFeedFactory factory = new TestStockFeedFactory(ds, stooq);
-        java.lang.reflect.Field field =
-                IntelligentStockFeed.class.getDeclaredField("stockFeedFactory");
+        java.lang.reflect.Field field = IntelligentStockFeed.class.getDeclaredField("stockFeedFactory");
         field.setAccessible(true);
         field.set(feed, factory);
         Assertions.assertThrows(
@@ -62,33 +54,9 @@ public class StooqFeedLimiterTest {
 
     private static class TestStooqFeed extends StooqFeed {
         @Override
-        protected HttpRequest createRequest(CharSequence uri) {
-            try {
-                return new DummyHttpRequest();
-            } catch (HttpRequest.HttpRequestException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private static class DummyHttpRequest extends HttpRequest {
-        protected DummyHttpRequest() throws HttpRequest.HttpRequestException {
-            super("http://localhost", "GET");
-        }
-
-        @Override
-        public boolean ok() {
-            return true;
-        }
-
-        @Override
-        public int code() {
-            return 200;
-        }
-
-        @Override
-        public String body() {
-            return "date,open,high,low,close,volume\n2020-01-01,1,1,1,1,100\n";
+        protected StooqHttpResponse createRequest(String uri) {
+            return new StooqHttpResponse(
+                    200, "date,open,high,low,close,volume\n2020-01-01,1,1,1,1,100\n");
         }
     }
 
@@ -97,43 +65,94 @@ public class StooqFeedLimiterTest {
         public void storeSeries(StockV1 stock) {}
 
         @Override
-        public boolean isAvailable() { return false; }
+        public boolean isAvailable() {
+            return false;
+        }
 
         @Override
-        public java.util.Optional<StockV1> get(Instrument instrument, int years, boolean addLatest) { return java.util.Optional.empty(); }
+        public java.util.Optional<StockV1> get(Instrument instrument, int years, boolean addLatest) {
+            return java.util.Optional.empty();
+        }
 
         @Override
-        public java.util.Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatest) { return java.util.Optional.empty(); }
+        public java.util.Optional<StockV1> get(
+                Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatest) {
+            return java.util.Optional.empty();
+        }
 
         @Override
-        public boolean contains(StockV1 stock) { return false; }
+        public boolean contains(StockV1 stock) {
+            return false;
+        }
     }
 
     private static class StubStockFeed implements StockFeed {
         private final Source source;
-        StubStockFeed(Source source) { this.source = source; }
+
+        StubStockFeed(Source source) {
+            this.source = source;
+        }
+
         @Override
-        public java.util.Optional<StockV1> get(Instrument fromString, int i, boolean addLatestQuoteToTheSeries) throws IOException { return java.util.Optional.empty(); }
+        public java.util.Optional<StockV1> get(
+                Instrument fromString, int i, boolean addLatestQuoteToTheSeries) throws IOException {
+            return java.util.Optional.empty();
+        }
+
         @Override
-        public java.util.Optional<StockV1> get(Instrument instrument, int years, boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException { return java.util.Optional.empty(); }
+        public java.util.Optional<StockV1> get(
+                Instrument instrument,
+                int years,
+                boolean interpolate,
+                boolean cleanData,
+                boolean addLatestQuoteToTheSeries)
+                throws IOException {
+            return java.util.Optional.empty();
+        }
+
         @Override
-        public java.util.Optional<StockV1> get(Instrument instrument, LocalDate fromDate, LocalDate toDate, boolean addLatestQuoteToTheSeries) throws IOException { return java.util.Optional.empty(); }
+        public java.util.Optional<StockV1> get(
+                Instrument instrument,
+                LocalDate fromDate,
+                LocalDate toDate,
+                boolean addLatestQuoteToTheSeries)
+                throws IOException {
+            return java.util.Optional.empty();
+        }
+
         @Override
-        public java.util.Optional<StockV1> get(Instrument instrument, LocalDate fromLocalDate, LocalDate toLocalDate, boolean interpolate, boolean cleanData, boolean addLatestQuoteToTheSeries) throws IOException { return java.util.Optional.empty(); }
+        public java.util.Optional<StockV1> get(
+                Instrument instrument,
+                LocalDate fromLocalDate,
+                LocalDate toLocalDate,
+                boolean interpolate,
+                boolean cleanData,
+                boolean addLatestQuoteToTheSeries)
+                throws IOException {
+            return java.util.Optional.empty();
+        }
+
         @Override
-        public Source getSource() { return source; }
+        public Source getSource() {
+            return source;
+        }
+
         @Override
-        public boolean isAvailable() { return false; }
+        public boolean isAvailable() {
+            return false;
+        }
     }
 
     private static class TestStockFeedFactory extends StockFeedFactory {
         private final DataStore ds;
         private final StockFeed stooq;
+
         TestStockFeedFactory(DataStore ds, StockFeed stooq) {
             super(ds);
             this.ds = ds;
             this.stooq = stooq;
         }
+
         @Override
         public StockFeed getDataFeed(final Source source) {
             switch (source) {

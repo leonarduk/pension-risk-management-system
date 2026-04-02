@@ -2,13 +2,14 @@ yfinance~=0.2.58
 pandas~=2.2.3
 PyPortfolioOpt
 
-torch>=2.0.0
+torch>=2.10.0
 transformers>=4.30.0
 praw~=7.8.1
 textblob
 beautifulsoup4~=4.13.4
 requests~=2.33.0
 urllib3>=2.2.0  # Explicitly require modern urllib3 for security fixes
+filelock>=3.20.3  # Explicitly require patched filelock for CVE-2025-68146/CVE-2026-22701
 python-dotenv~=1.1.0
 
 numpy~=2.2.5
@@ -23,4 +24,5 @@ python-dateutil~=2.9.0.post0
 anyio~=4.9.0
 curl_cffi~=0.10.0
 openai>=1.0.0
-Flask~=3.0.3
+pytest~=8.4.1
+Flask~=3.1.3

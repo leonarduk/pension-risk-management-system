@@ -43,15 +43,9 @@ class FileBasedDataStoreTest {
         FileBasedDataStore store = new FileBasedDataStore(tempDir.toString());
         Instrument instrument = Instrument.CASH;
 
-        Bar bar = new BaseBar(Duration.ofDays(1),
-                ZonedDateTime.now(),
-                BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE);
-
         StockV1 stock = Mockito.mock(StockV1.class);
         Mockito.when(stock.getInstrument()).thenReturn(instrument);
-        Mockito.when(stock.getHistory()).thenReturn(Collections.singletonList(bar));
+        Mockito.when(stock.getHistory()).thenReturn(Collections.singletonList(Mockito.mock(Bar.class)));
 
         store.storeSeries(stock);
         assertTrue(store.contains(stock));
