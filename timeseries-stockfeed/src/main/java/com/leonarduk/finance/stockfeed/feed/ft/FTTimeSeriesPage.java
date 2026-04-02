@@ -16,7 +16,8 @@ import org.ta4j.core.Bar;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -98,9 +99,10 @@ public class FTTimeSeriesPage {
             String url = String.format("%s%sstartDate=%s&endDate=%s&format=csv", expectedUrl,
                     expectedUrl.contains("?") ? "&" : "?", fromDateString, toDateString);
             log.info("CSV fallback {}", url);
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) URI.create(url).toURL().openConnection();
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 List<Bar> bars = reader.lines()
                         .skip(1)
                         .map(line -> parseCsvLine(instrument, line))
