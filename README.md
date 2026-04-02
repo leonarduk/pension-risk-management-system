@@ -45,7 +45,8 @@ cd android-app
 ```bash
 cd timeseries-python
 pre-commit run --all-files
-pytest
+pip install -r requirements-test.txt
+pytest --basetemp=.pytest_tmp
 ```
 
 ### Frontend
