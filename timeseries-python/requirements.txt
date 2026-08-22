@@ -3,7 +3,7 @@ pandas~=2.2.3
 PyPortfolioOpt
 
 torch>=2.10.0
-transformers>=4.30.0
+transformers>=5.10.0  # Explicitly require patched transformers for CVE-2026-5241/CVE-2026-4372/CVE-2026-9856/CVE-2026-1839 (only the top-level sentiment-analysis pipeline() is used here, not Trainer/LightGlue/custom tokenizer save paths, so the 5.x jump is low-risk for this codebase's usage)
 praw~=7.8.1
 textblob
 beautifulsoup4~=4.13.4
