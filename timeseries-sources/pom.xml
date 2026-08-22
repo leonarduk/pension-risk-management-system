@@ -42,6 +42,15 @@
 
 	<dependencies>
 
+               <!-- Explicit override: selenium-remote-driver (via timeseries-stockfeed) pulls
+                    opentelemetry-api 1.59.0, which is still vulnerable to CVE-2026-45292
+                    (unbounded memory/CPU from oversized baggage headers, fixed in 1.62.0). -->
+               <dependency>
+                       <groupId>io.opentelemetry</groupId>
+                       <artifactId>opentelemetry-api</artifactId>
+                       <version>1.62.0</version>
+               </dependency>
+
                <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
                <dependency>
                        <groupId>com.google.guava</groupId>
